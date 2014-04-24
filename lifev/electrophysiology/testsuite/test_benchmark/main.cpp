@@ -398,18 +398,20 @@ Int main ( Int argc, char** argv )
         solver -> setLumpedMassMatrix (true);
     }
 
-    //We create a pointer to store a full mass matrix
-    matrixPtr_Type fullMass;
+	//We create a pointer to store a full mass matrix
+	matrixPtr_Type hlmass;
 
-    //if we are using ICI then we need to compute the fullMass matrix even
-    // if we are using lumping
-    if ( lumpedMass && solutionMethod == "ICI")
-    {
-        solver -> setLumpedMassMatrix (false);
-        solver -> setupMassMatrix();
-        fullMass.reset (new matrix_Type ( * (solver -> massMatrixPtr() ) ) );
-        solver -> setFullMassMatrixPtr (fullMass);
-        solver -> setLumpedMassMatrix (lumpedMass);
+	//if we are using ICI then we need to compute the fullMass matrix even
+	// if we are using lumping
+	bool lumpedMass = monodomainList.get ("LumpedMass", true);
+
+	if( lumpedMass )
+    { 
+        solver -> setLumpedMassMatrix(false);
+		solver -> setupMassMatrix();
+		hlmass.reset(new matrix_Type( *(solver -> massMatrixPtr() ) ) );
+		solver -> setFullMassMatrixPtr(hlmass);
+		solver -> setLumpedMassMatrix(lumpedMass);
     }
 
     //Build the solver mass matrix
