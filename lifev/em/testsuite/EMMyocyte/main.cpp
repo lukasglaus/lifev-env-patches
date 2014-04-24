@@ -106,7 +106,7 @@ int main (int argc, char** argv)
 
     typedef IonicMinimalModel                                        ionicModel_Type;
     typedef boost::shared_ptr<ionicModel_Type>                       ionicModelPtr_Type;
-    typedef ElectroETAMonodomainSolver< mesh_Type, ionicModel_Type > monodomainSolver_Type;
+    typedef EMMonodomainSolver< mesh_Type, ionicModel_Type > monodomainSolver_Type;
     typedef boost::shared_ptr< monodomainSolver_Type >               monodomainSolverPtr_Type;
 
     typedef VectorEpetra                                             vector_Type;

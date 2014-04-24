@@ -2,8 +2,8 @@ INCLUDE(TribitsAddExecutableAndTest)
 INCLUDE(AddSubdirectories)
 
 ADD_SUBDIRECTORIES(
-  EMBenchmark
-  EMCell
-  EMVentricle
-  EMMyocyte
+#  EMBenchmark
+#  EMCell
+#  EMVentricle
+#  EMMyocyte
 )

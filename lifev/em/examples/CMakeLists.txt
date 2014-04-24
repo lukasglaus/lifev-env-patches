@@ -14,8 +14,8 @@ ADD_SUBDIRECTORIES(
 #  example_CalciumDependentActivation
 #  example_laplacian
 #  linearizedGHO
-  linearizedGHObiventricle
+#  linearizedGHObiventricle
 #  linearizedGHOrotation
-  linearizedGHOventricle
-  prestress
+#  linearizedGHOventricle
+#  prestress
 )
