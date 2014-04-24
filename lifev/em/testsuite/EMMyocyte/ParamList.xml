@@ -1,0 +1,59 @@
+<ParameterList>	<!-- LinearSolver parameters -->
+    <Parameter name="surfaceVolumeRatio" type="double" value="1400.0"/><!-- cm ^ -1-->
+    <Parameter name="membraneCapacitance" type="double" value="1.00"/><!-- mu F cm ^ -2 -->
+    <Parameter name="timeStep" type="double" value="0.01"  /><!-- ms ^ -1-->
+    <Parameter name="endTime" type="double" value="1.05"  />
+    <Parameter name="emdt" type="double" value="0.1"  />
+    <Parameter name="saveStep" type="double" value="0.1"  />
+    <Parameter name="active_coefficient" type="double" value="-4"  />
+    <Parameter name="value" type="double" value="1.0"  />
+    <Parameter name="period" type="double" value="2.0"  />
+    <Parameter name="reaction_subiter" type="int" value="1"  />
+    <Parameter name="stimulus_value" type="double" value="80.0"  />
+    <Parameter name="longitudinalDiffusion" type="double" value="1.33417721518987"  /><!-- 1.33417721518987 k Ohm ^-1 cm ^ -1-->
+    <Parameter name="transversalDiffusion" type="double" value ="0.176061776061776"  /><!--0.176061776061776 k Ohm ^-1 cm ^ -1-->
+    <Parameter name="Ca_diastolic" type="double" value="0.02156"  />
+    <Parameter name="elementsOrder" type="string" value="P1"  />
+    <!--Parameter name="ionic_model" type="string" value="MinimalModel"  /-->
+    <Parameter name="solutionMethod" type="string" value="SVI"  />
+    <Parameter name="LumpedMass" type="bool" value="true"/>
+    <Parameter name="coupling" type="bool" value="true"/>
+    <Parameter name="one_way_coupling" type="bool" value="true"/>
+    <Parameter name="mesh_name" type="string" value="Cardiomyocyte-77031_rescaled.mesh"  />
+    <Parameter name="mesh_path" type="string" value="/scratch/srossi/meshes/myocyte/"  />
+    <Parameter name="fibers_file" type="string" value="FiberDirection"  />
+    <Parameter name="fibers_field" type="string" value="fibers"  />
+    <Parameter name="solid_mesh_name" type="string" value="Cardiomyocyte-77031_rescaled.mesh"  />
+    <Parameter name="solid_mesh_path" type="string" value="/scratch/srossi/meshes/myocyte/"  />
+    <Parameter name="solid_fibers_file" type="string" value="FiberDirection"  />
+    <Parameter name="solid_fibers_field" type="string" value="fibers"  />
+    <Parameter name="c2f" type="string" value="RBFhtpVectorial"  />
+    <Parameter name="f2c" type="string" value="RBFlocallyRescaledScalar"  />
+    <Parameter name="Reuse Preconditioner" type="bool" value="true"/>
+    <Parameter name="Max Iterations For Reuse" type="int" value="80"/>
+    <Parameter name="Quit On Failure" type="bool" value="false"/>
+    <Parameter name="Silent" type="bool" value="false"/>
+    <Parameter name="Solver Type" type="string" value="AztecOO"/>
+    <Parameter name="OutputFile" type="string" value="Solution"/>
+	
+	<!-- Operator specific parameters (AztecOO) -->
+	<ParameterList name="Solver: Operator List">
+
+		<!-- Trilinos parameters -->
+		<ParameterList name="Trilinos: AztecOO List">
+    		<Parameter name="solver" type="string" value="cg"/>
+	    	<Parameter name="conv" type="string" value="rhs"/>
+    		<Parameter name="scaling" type="string" value="none"/>
+	    	<Parameter name="output" type="string" value="all"/>
+    		<Parameter name="tol" type="double" value="1.e-10"/>
+	    	<Parameter name="max_iter" type="int" value="200"/>
+    		<Parameter name="kspace" type="int" value="100"/>
+    		<!-- az_aztec_defs.h -->
+    		<!-- #define AZ_classic 0 /* Does double classic */ -->
+	    	<Parameter name="orthog" type="int" value="0"/>
+	    	<!-- az_aztec_defs.h -->
+	    	<!-- #define AZ_resid 0 -->
+    		<Parameter name="aux_vec" type="int" value="0"/>
+    	</ParameterList>
+    </ParameterList>
+</ParameterList>

@@ -1,0 +1,220 @@
+###################################################################################################
+#
+#                       This file is part of the LifeV Library
+#                Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
+#                Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
+#
+#      Author(s): Umberto Villa <uvilla@emory.edu>
+#                 Tiziano Passerini <tiziano@mathcs.emory.edu>
+#           Date: 10-12-2010
+#  License Terms: GNU LGPL
+#
+###################################################################################################
+### TESTSUITE: STRUCTURE MECHANICS ################################################################
+###################################################################################################
+#-------------------------------------------------
+#      Data file for Structure Solver
+#-------------------------------------------------
+
+
+[exporter]
+type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+multimesh  = false
+start      = 0
+save       = 1
+
+
+[solid]
+
+[./physics]
+density   	= 0 
+material_flag   = 1000 
+a			= 3330
+af			= 185350
+as			= 25640
+afs			= 4170
+b			= 9.242
+bf			= 15.972
+bs			= 10.446
+bfs			= 11.602
+bulk		= 35000
+solidType 	= GAHO #Only work with this 
+lawType     = nonlinear
+viscosity = 0.00025;
+active_coefficient = -3.0;
+Ca_diastolic = 0.02156;
+
+
+   [../boundary_conditions]
+   list = 'symm0 symm1 symm2 point'
+
+
+
+
+        [./symm0]
+        type       = Essential
+        flag       = 500
+        mode       = Component
+        component  = 0
+	    function  = '0.0'
+
+
+        [../point]
+        type       = EssentialVertices
+        flag       = 33
+        mode       = Full
+        component  = 3
+        function  = '0.0, 0.0, 0.0'
+
+
+        [../symm1]
+        type       = Essential
+        flag       = 200
+        mode       = Component
+        component  = 1
+		function  = '0.0'
+
+        [../symm2]
+        type       = Essential
+        flag       = 900
+        mode       = Component
+        component  = 2
+		function  = '0.0'
+
+        [../]
+
+  #  [../]
+
+
+[../time_discretization]
+initialtime 	= 0.
+endtime     	= 0.4
+timestep    	= 0.1
+theta       	= 0.35
+zeta        	= 0.75
+BDF_order   	= 2
+
+[../space_discretization]
+mesh_type = .mesh
+mesh_dir  	= /usr/scratch/srossi/meshes/ #./ #/usr/scratch/srossi/meshes/
+mesh_file 	= CoarseSymmCube.mesh #SymmCube2.mesh #SymmCube1.mesh #SuperCoarseSymmCube.mesh #cubeHolzapfel.mesh #CoarseSymmCube.mesh #cubeHolzapfel.mesh #cyl.mesh #StructuredCube4_test_structuralsolver.mesh #cyl.mesh
+order     	= P1
+
+
+[../miscellaneous]
+factor    	= 1
+verbose   	= 1
+
+
+[../newton]
+maxiter 	= 1
+reltol  	= 1.e-7
+abstol  	= 1.e-7
+
+
+[../solver]
+solver          = cg
+scaling         = none
+output          = all 			# none
+conv            = rhs
+max_iter        = 500
+reuse           = true
+max_iter_reuse  = 250
+kspace          = 800
+tol             = 1.e-10    		# AztecOO tolerance
+
+[../prec]
+prectype        = ML #Ifpack	 		# Ifpack or ML
+displayList     = true
+xmlName         = ParamList.xml #xmlParameters.xml
+
+[./ML] 
+
+    	default_parameter_list = NSSA  # Domain-decomposition
+	prec_type =  MGV               # Multigrid, single V-cycle
+	max_levels = 10
+    	inc_or_dec = increasing
+
+    		[./energy_minimization]
+		enable = true
+		type   = 3
+
+		[../repartition]
+		enable              = 1
+                max_min_ratio       = 1.3
+                min_per_proc        = 500
+                partitioner         = ParMETIS #Zoltan: to be implemented
+
+                [../aggregation]
+                threshold            = 0.01
+                nodes_per_aggregate = 32
+
+                [../coarse]
+                max_size            = 10
+                type                = 'self' 
+
+                [../smoother]
+                type        = 'symmetric Gauss-Seidel'           # Gauss-Seidel smoother
+                sweeps      = 1
+                pre_or_post = both
+                [../] #smoother
+
+        [../] # ML
+
+
+[../ifpack]
+overlap  	= 1
+
+            [./relaxation]
+            type                   = Jacobi
+            sweeps                 = 2
+            damping_factor         = 1.
+            min_diagonal_value     = 0
+            zero_starting_solution = true
+
+            [../partitioner]
+            type                   = metis
+            overlap                = 1
+            local_parts            = 1
+            root_node              = 0
+            use_symmetric_graph    = true
+
+            [../amesos]
+            solvertype             = Amesos_Superludist # Amesos_KLU or Amesos_Umfpack
+
+            [../fact]
+            level-of-fill          = 5
+            ilut_level-of-fill     = 5
+            absolute_threshold     = 0
+            relative_threshold     = 1
+            relax_value            = 0
+            drop_tolerance         = 1.e-10
+
+            [../schwarz]
+            combine_mode           = 0             # 0=Add, 1=Zero, 2=Insert, 3=Average, 4=AbsMax
+            compute_condest        = false
+            reordering_type        = none          #none, metis, rcm
+            filter_singletons      = true
+
+
+[../]
+[../]
+
+
+
+
+	# -*- getpot -*- (GetPot mode activation for emacs)
+#----------------------------------------------------------------
+#      Data file for heart test
+#----------------------------------------------------------------
+
+
+[electrophysiology]
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml
+[../]
+
+[activation]
+activation_xml_path = ./
+activation_xml_file = ParamList.xml
+[../]
