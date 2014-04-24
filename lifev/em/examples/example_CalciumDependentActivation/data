@@ -1,0 +1,129 @@
+[exporter]
+type       = hdf5
+multimesh  = false
+start      = 0
+save       = 1
+
+[solid]
+[./physics]
+density		= 0
+material_flag  	= 24 #29
+young     	= 1.47808e+5
+poisson   	= 0.49
+mu		= 0.496
+bulk		= 2.46e+4
+alpha 		= 2.684564e+7
+gamma		= 1
+gammaf		= -0.015 #-0.3
+##solidType 	= GAHO 
+solidType 	= neoHookeanActivated
+lawType     	= nonlinear
+
+[../time_discretization]
+initialtime 	= 0.
+endtime     	= 5
+timestep    	= 0.1
+theta       	= 0.35
+zeta        	= 0.75
+BDF_order   	= 2
+
+[../space_discretization]
+mesh_type = .mesh
+mesh_dir  	= /home/ruizbaier/Dropbox/myMeshes/cell_testMeshes/
+mesh_file 	= Cardiomyocyte-77031_flags.mesh #cylinder_coarse.mesh
+order     	= P1
+
+#cylinder mesh flags: Vol 29, left 19, right 17, patches 27, 25, 23, 21
+#cell mesh flags: Vol 24, left 29,
+
+[../miscellaneous]
+factor    	= 1
+verbose   	= 1
+
+
+[../boundary_conditions]
+    list = 'Left'
+    	 [./Left]
+         type		    = Essential
+         flag		    = 29 #19
+         mode    	    = Full
+         component  	    = 3
+	 function 	    = 0
+
+#         [../Base]
+#         type		    = Robin
+#         flag		    = 20
+#         mode           = Full
+#         component  = 3
+#	 functionSD = RobinWall
+#	 	    [./RobinAlpha]
+#		      function = ' 5.00 * 1000' # D
+#            	      [../RobinBeta]
+#            	      function = ' 5.00 * 1000' # D
+#	 [../]
+
+#	 [../EndocardiumFSI]
+#	  type       = Robin
+#          flag       = 21
+#          mode       = Full
+#          component  = 3
+#          functionSD = RobinWall
+#               	      [./RobinAlpha]
+#		      function = ' 5.00 * 100' # D
+#            	      [../RobinBeta]
+#            	      function = ' 5.00 * 1000' # D
+#	 [../]
+
+	 [../]
+
+
+
+[../newton]
+maxiter 	= 2
+reltol  	= 1.e-7
+abstol  	= 1.e-7
+
+
+[../solver]
+solver          = cg
+scaling         = none
+output          = all
+conv            = rhs
+max_iter        = 400
+reuse           = true
+max_iter_reuse  = 250
+kspace          = 100
+tol             = 1.e-7
+
+[../prec]
+prectype        = Ifpack
+displayList     = true
+xmlName         = ParamList.xml
+
+[./ifpack]
+overlap  	= 2
+
+[./fact]
+ilut_level-of-fill 	= 1
+drop_tolerance          = 1.e-5
+relax_value             = 0
+
+[../amesos]
+solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+
+[../partitioner]
+overlap 		= 2
+
+
+[../schwarz]
+reordering_type 	= none 			# metis, rcm, none
+filter_singletons 	= true
+
+[../]
+[../]
+
+# -*- getpot -*- (GetPot mode activation for emacs)
+
+[electrophysiology]
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml

@@ -1,0 +1,223 @@
+###################################################################################################
+#
+#                       This file is part of the LifeV Library
+#                Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
+#                Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
+#
+#      Author(s): Umberto Villa <uvilla@emory.edu>
+#                 Tiziano Passerini <tiziano@mathcs.emory.edu>
+#           Date: 10-12-2010
+#  License Terms: GNU LGPL
+#
+###################################################################################################
+### TESTSUITE: STRUCTURE MECHANICS ################################################################
+###################################################################################################
+#-------------------------------------------------
+#      Data file for Structure Solver
+#-------------------------------------------------
+
+
+[exporter]
+type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+multimesh  = false
+start      = 0
+save       = 1
+
+[solid]
+
+ 
+
+[./physics]
+density   	= 1.2
+material_flag   = 1000 #101 #1000
+young     	= 1478.08
+poisson   	= 0.49
+bulk		= 2.46e+4 #1.3333e+8
+alpha 		= 2.684564e+6
+gamma		= 1.0
+gammaf		= 0.0
+solidType 	= neoHookeanActivated		# linearVenantKirchhoff / nonLinearVenantKirchhoff / neoHookean / expoenential
+lawType     = nonlinear
+
+
+
+   [../boundary_conditions]
+    list = 'Top Bottom Front Back Left Right'
+#    list = 'Top InnerRing Epicardium'
+
+        [./Top]
+        type       = Natural
+        flag       = 300
+        mode       = Full
+        component  = 3
+	function  = '[0.0, 0.0, 0.0]'
+#        functionSD = RobinWall
+
+            [./RobinAlpha]
+            function = ' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = ' 5.00 * 1000' # D
+
+            [../]
+
+        [../Bottom]
+        type       = Essential
+        flag       = 500
+        mode       = Component
+        component  = 1
+	function  = '0.0'
+  #      functionSD = RobinWall
+
+            [./RobinAlpha]
+            function = ' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = ' 5.00 * 1000' # D
+
+            [../]
+        
+	[../Front]
+        type       = Natural
+        flag       = 200
+        mode       = Full
+        component  = 3
+	function  = '[0.0, 0.0, 0.0]'
+ #       functionSD = RobinWall
+
+            [./RobinAlpha]
+            function = ' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = ' 5.00 * 1000' # D
+
+            [../]
+
+        [../Back]
+        type       = Essential
+        flag       = 400
+        mode       = Component
+        component  = 2
+	function  = '0.0'
+ #       functionSD = RobinWall
+
+            [./RobinAlpha]
+            function = ' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = ' 5.00 * 1000' # D
+
+            [../]
+
+        [../Left]
+        type       = Natural
+        flag       = 100
+        mode       = Full
+        component  = 3
+	function  = '[0.0, 0.0, 0.0]'
+    #    functionSD = RobinWall
+
+            [./RobinAlpha]
+            function = ' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = ' 5.00 * 1000' # D
+
+            [../]
+
+        [../Right]
+        type       = Essential
+        flag       = 600
+        mode       = Component
+        component  = 0
+	function  = '0.0'
+ #       functionSD = RobinWall
+
+            [./RobinAlpha]
+            function = ' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = ' 5.00 * 1000' # D
+
+            [../]
+
+        [../]
+
+   # [../]
+
+[../time_discretization]
+initialtime 	= 0.
+endtime     	= 0.4
+timestep    	= 0.1
+theta       	= 0.35
+zeta        	= 0.75
+BDF_order   	= 2
+
+[../space_discretization]
+mesh_type = .mesh
+mesh_dir  	= /usr/scratch/srossi/meshes/ #./ #/usr/scratch/srossi/meshes/
+mesh_file 	= CoarseSymmCube.mesh #SymmCube2.mesh #SymmCube1.mesh #SuperCoarseSymmCube.mesh #cubeHolzapfel.mesh #CoarseSymmCube.mesh #cubeHolzapfel.mesh #cyl.mesh #StructuredCube4_test_structuralsolver.mesh #cyl.mesh
+order     	= P1
+
+
+[../miscellaneous]
+factor    	= 1
+verbose   	= 1
+
+
+[../newton]
+maxiter 	= 1
+reltol  	= 1.e-7
+abstol  	= 1.e-7
+
+
+[../solver]
+solver          = gmres
+scaling         = none
+output          = all 			# none
+conv            = rhs
+max_iter        = 500
+reuse           = true
+max_iter_reuse  = 250
+kspace          = 800
+tol             = 1.e-10    		# AztecOO tolerance
+
+[../prec]
+prectype        = Ifpack #Ifpack	 		# Ifpack or ML
+displayList     = true
+xmlName         = ParamList.xml #xmlParameters.xml
+
+[./ifpack]
+overlap  	= 3
+
+[./fact]
+ilut_level-of-fill 	= 1
+drop_tolerance          = 1.e-5
+relax_value             = 0
+
+[../amesos]
+solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+
+[../partitioner]
+overlap 		= 4
+
+
+[../schwarz]
+reordering_type 	= none 			# metis, rcm, none
+filter_singletons 	= true
+
+[../]
+[../]
+
+
+
+
+	# -*- getpot -*- (GetPot mode activation for emacs)
+#----------------------------------------------------------------
+#      Data file for heart test
+#----------------------------------------------------------------
+
+
+[electrophysiology]
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml
