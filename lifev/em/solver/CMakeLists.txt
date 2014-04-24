@@ -1,12 +1,17 @@
+ADD_SUBDIRECTORIES(
+	electrophysiology
+	Mechanics
+)
+
 SET(solver_HEADERS
-  solver/EMActiveStrainSolver.hpp
-  solver/EMEvaluate.hpp
+#  solver/EMActiveStrainSolver.hpp
+#  solver/EMEvaluate.hpp
   solver/EMSolver.hpp
-  solver/EMETAFunctors.hpp
-  solver/EMGeneralizedActiveHolzapfelOgdenMaterial.hpp
-  solver/EMActiveStructuralConstitutiveLaw.hpp
-  solver/EMNeoHookeanActivatedMaterial.hpp
-  solver/EMHolzapfelOgdenMaterial.hpp
+#  solver/EMETAFunctors.hpp
+#  solver/EMGeneralizedActiveHolzapfelOgdenMaterial.hpp
+#  solver/EMActiveStructuralConstitutiveLaw.hpp
+#  solver/EMNeoHookeanActivatedMaterial.hpp
+#  solver/EMHolzapfelOgdenMaterial.hpp
 CACHE INTERNAL "")
 
 SET(solver_SOURCES
