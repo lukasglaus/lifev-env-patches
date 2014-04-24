@@ -1398,8 +1398,6 @@ protected:
     std::string M_elementsOrder;
     //fiber field
     vectorPtr_Type M_fiberPtr;
-    //Create the identity matrix I
-    matrixSmall_Type M_identity;
     //using lumped mass matrix
     bool            M_lumpedMassMatrix;
     //verbosity
@@ -1482,8 +1480,7 @@ ElectroETAMonodomainSolver<Mesh, IonicModel>::ElectroETAMonodomainSolver (
     M_elementsOrder ( solver.M_elementsOrder),
     M_fiberPtr ( new vector_Type (* (solver.M_fiberPtr) ) ) ,
     M_lumpedMassMatrix (solver.M_lumpedMassMatrix),
-    M_verbose (solver.M_verbose),
-    M_identity (solver.M_identity)
+    M_verbose (solver.M_verbose)
 {
     setupGlobalSolution (M_ionicModelPtr->Size() );
     setGlobalSolution (solver.M_globalSolution);
@@ -2037,15 +2034,8 @@ void ElectroETAMonodomainSolver<Mesh, IonicModel>::computeRhsICI()
 template<typename Mesh, typename IonicModel>
 void ElectroETAMonodomainSolver<Mesh, IonicModel>::computeRhsICIWithFullMass ()
 {
-    if (M_fullMassMatrixPtr)
-    {
-        M_ionicModelPtr->superIonicModel::computePotentialRhsICI (M_globalSolution,
-                                                                  M_globalRhs, *M_fullMassMatrixPtr);
-    }
-    else
-    {
-        assert (0 && "fullMassMatrix Pointer was not set! Use the computeRhsICI() method!");
-    }
+    M_ionicModelPtr->superIonicModel::computePotentialRhsICI (M_globalSolution,
+                                                              M_globalRhs, *M_fullMassMatrixPtr);
     updateRhs();
 }
 
