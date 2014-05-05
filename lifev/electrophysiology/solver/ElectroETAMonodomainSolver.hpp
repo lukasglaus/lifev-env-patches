@@ -1350,7 +1350,7 @@ private:
     void init (ionicModelPtr_Type model);
 
 protected:
-    //surface to volume ration
+    //surface to volume ratio
     Real M_surfaceVolumeRatio;
     //ionic model
     ionicModelPtr_Type M_ionicModelPtr;
@@ -1398,6 +1398,8 @@ protected:
     std::string M_elementsOrder;
     //fiber field
     vectorPtr_Type M_fiberPtr;
+    //Create the identity matrix I
+    matrixSmall_Type M_identity;
     //using lumped mass matrix
     bool            M_lumpedMassMatrix;
     //verbosity
@@ -1480,7 +1482,8 @@ ElectroETAMonodomainSolver<Mesh, IonicModel>::ElectroETAMonodomainSolver (
     M_elementsOrder ( solver.M_elementsOrder),
     M_fiberPtr ( new vector_Type (* (solver.M_fiberPtr) ) ) ,
     M_lumpedMassMatrix (solver.M_lumpedMassMatrix),
-    M_verbose (solver.M_verbose)
+    M_verbose (solver.M_verbose),
+    M_identity(solver.M_identity)
 {
     setupGlobalSolution (M_ionicModelPtr->Size() );
     setGlobalSolution (solver.M_globalSolution);
