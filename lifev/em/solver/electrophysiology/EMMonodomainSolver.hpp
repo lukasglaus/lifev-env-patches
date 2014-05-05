@@ -138,7 +138,7 @@ public:
     typedef boost::shared_ptr<prec_Type> 								precPtr_Type;
 
     //! Ionic model
-    typedef IonicModel 													ionicModel_Type;
+    typedef EMIonicModel 													ionicModel_Type;
 
     //! Base class of the ionic model
     typedef ElectroIonicModel 											superIonicModel;
@@ -215,7 +215,7 @@ public:
     /*!
      * @param ElectroETAmonodomainSolver object
      */
-    EMMonodomainSolver<Mesh, IonicModel>& operator= ( const EMMonodomainSolver& solver);
+    EMMonodomainSolver<Mesh, EMIonicModel>& operator= ( const EMMonodomainSolver& solver);
 
     //! Destructor
     virtual ~EMMonodomainSolver() {}
@@ -320,13 +320,6 @@ public:
      */
     void updateMatrices();
 
-    //! update all the matrices of the system
-    /*!
-     * Computes all the matrices
-     * with the mechanical feedback (the displacement vector).
-     @param disp vector of the displacement of the domain (for electromechanical simulations)
-     */
-    void updateMatrices();
 //
 //
 //
@@ -404,9 +397,6 @@ private:
     //pointer to the displacement
     vectorPtr_Type M_displacementPtr;
 
-    //Create the identity for F
-    matrixSmall_Type M_identity;
-
     ETFESpaceVectorialPtr_Type M_displacementETFESpacePtr;
 
     //Defines if you want to consider the mechanical feedback
@@ -428,16 +418,6 @@ template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver() :
     super()
 {
-    M_identity (0, 0) = 1.0;
-    M_identity (0, 1) = 0.0;
-    M_identity (0, 2) = 0.0;
-    M_identity (1, 0) = 0.0;
-    M_identity (1, 1) = 1.0;
-    M_identity (1, 2) = 0.0;
-    M_identity (2, 0) = 0.0;
-    M_identity (2, 1) = 0.0;
-    M_identity (2, 2) = 1.0;
-
     M_oneWayCoupling(false);
     M_mechanicsModifiesConductivity(true);
 }
@@ -447,8 +427,7 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver() :
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (
     const EMMonodomainSolver& solver) :
-    super::ElectroETAMonodomainSolver(solver),
-    M_identity(solver.M_identity)
+    super::ElectroETAMonodomainSolver(solver)
 {
     if(solver.M_displacementPtr)
     {
@@ -463,11 +442,9 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (
 //! Assignment operator
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
-                           IonicModel >::operator= (const EMMonodomainSolver& solver) :
-                           super::operator =(solver)
+                           IonicModel >::operator= (const EMMonodomainSolver& solver)
 {
-	M_identity(solver.M_identity);
-
+	super::operator =(solver);
 	if(solver.M_displacementPtr)
     {
     	M_displacementPtr.reset(new vector_Type(*solver.M_displacementPtr));
@@ -488,17 +465,9 @@ void EMMonodomainSolver<Mesh, IonicModel>::setup (GetPot& dataFile,
 {
 	super::setup(dataFile, ionicSize);
 
-    M_identity (0, 0) = 1.0;
-    M_identity (0, 1) = 0.0;
-    M_identity (0, 2) = 0.0;
-    M_identity (1, 0) = 0.0;
-    M_identity (1, 1) = 1.0;
-    M_identity (1, 2) = 0.0;
-    M_identity (2, 0) = 0.0;
-    M_identity (2, 1) = 0.0;
-    M_identity (2, 2) = 1.0;
-
-    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (M_localMeshPtr, & (M_feSpacePtr -> refFE() ), M_commPtr) );
+    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
+    		                                                       & (this->M_feSpacePtr -> refFE() ),
+    		                                                       this -> M_commPtr) );
 
     M_oneWayCoupling(false);
     M_mechanicsModifiesConductivity = true;
@@ -518,7 +487,7 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrix()
 {
 	if(M_displacementPtr && !M_oneWayCoupling)
 	{
-	    if (M_lumpedMassMatrix)
+	    if (this->M_lumpedMassMatrix)
 	    {
 	    	setupLumpedMassMatrixWithMehcanicalFeedback ();
 	    }
@@ -534,28 +503,28 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrix()
 template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrixWithMehcanicalFeedback ()
 {
-    if (M_verbose && M_commPtr->MyPID() == 0)
+    if (this->M_verbose && this->M_commPtr->MyPID() == 0)
     {
         std::cout << "\nEM Monodomain Solver: Setting up mass matrix with coupling with mechanics ";
     }
 
-    *M_massMatrixPtr *= 0.0;
+    *this->M_massMatrixPtr *= 0.0;
     {
         using namespace ExpressionAssembly;
 
-        BOOST_AUTO_TPL (I, value (M_identity) );
-        BOOST_AUTO_TPL (Grad_u, grad (M_displacementETFESpacePtr, disp) );
+        BOOST_AUTO_TPL (I, value (this->M_identity) );
+        BOOST_AUTO_TPL (Grad_u, grad (M_displacementETFESpacePtr, *M_displacementPtr) );
         BOOST_AUTO_TPL (F, (Grad_u + I) );
         BOOST_AUTO_TPL (J, det (F) );
 
-        integrate (elements (M_localMeshPtr),
-        		   M_feSpacePtr->qr(),
-        		   M_ETFESpacePtr,
-                   M_ETFESpacePtr,
-                   J * phi_i * phi_j ) >> M_massMatrixPtr;
+        integrate (elements (this->M_localMeshPtr),
+        		   this->M_feSpacePtr->qr(),
+        		   this->M_ETFESpacePtr,
+        		   this->M_ETFESpacePtr,
+                   J * phi_i * phi_j ) >> this->M_massMatrixPtr;
 
     }
-    M_massMatrixPtr->globalAssemble();
+    this->M_massMatrixPtr->globalAssemble();
 }
 
 //setup lumped mass matrix with mechanical fedback
@@ -563,7 +532,7 @@ template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFeedback ()
 {
 
-    *M_massMatrixPtr *= 0.0;
+    *this->M_massMatrixPtr *= 0.0;
 
     vectorPtr_Type dUdx (new vector_Type (M_displacementPtr->map() ) );
     vectorPtr_Type dUdy (new vector_Type (M_displacementPtr->map() ) );
@@ -573,7 +542,7 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFe
     *dUdy = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 1);
     *dUdz = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 2);
 
-    vectorPtr_Type J (new vector_Type (M_potentialPtr->map() ) );
+    vectorPtr_Type J (new vector_Type (this->M_potentialPtr->map() ) );
     int n = J->epetraVector().MyLength();
     int i (0);
     int j (0);
@@ -599,7 +568,7 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFe
                    + F13 * ( F21 * F32 - F31 * F22 );
     }
 
-    if (M_verbose && M_localMeshPtr->comm()->MyPID() == 0)
+    if (this->M_verbose && this->M_localMeshPtr->comm()->MyPID() == 0)
     {
         std::cout << "\nEM Monodomain Solver: Setting up lumped mass matrix coupling with mechanics";
     }
@@ -607,15 +576,16 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFe
     {
         using namespace ExpressionAssembly;
 
-        integrate ( elements (M_localMeshPtr),
+        integrate ( elements (this->M_localMeshPtr),
         		    quadRuleTetra4ptNodal,
-                    M_ETFESpacePtr,
-                    M_ETFESpacePtr,
-                    value (M_ETFESpacePtr, *J) * phi_i * phi_j ) >> M_massMatrixPtr;
+        		    this->M_ETFESpacePtr,
+        		    this->M_ETFESpacePtr,
+                    value (this->M_ETFESpacePtr, *J) * phi_i * phi_j
+                    ) >> this->M_massMatrixPtr;
 
     }
 
-    M_massMatrixPtr->globalAssemble();
+    this->M_massMatrixPtr->globalAssemble();
 
 }
 
@@ -643,43 +613,43 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrix()
 template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrixWithMehcanicalFeedback ()
 {
-    if (M_verbose && M_localMeshPtr->comm()->MyPID() == 0)
+    if (this->M_verbose && this->M_localMeshPtr->comm()->MyPID() == 0)
     {
         std::cout
                 << "\nETA Monodomain Solver: Setting up stiffness matrix  coupling with mechanics";
     }
 
-    *M_stiffnessMatrixPtr *= 0.0;
-    Real sigmal = M_diffusionTensor[0];
-    Real sigmat = M_diffusionTensor[1];
+    *this->M_stiffnessMatrixPtr *= 0.0;
+    Real sigmal = this->M_diffusionTensor[0];
+    Real sigmat = this->M_diffusionTensor[1];
 
     {
         using namespace ExpressionAssembly;
 
-        BOOST_AUTO_TPL (I, value (M_identity) );
+        BOOST_AUTO_TPL (I, value (this->M_identity) );
         BOOST_AUTO_TPL (Grad_u, grad (M_displacementETFESpacePtr, *M_displacementPtr) );
         BOOST_AUTO_TPL (F, (Grad_u + I) );
         BOOST_AUTO_TPL (FmT, minusT (F) );
         BOOST_AUTO_TPL (Fm1, transpose (FmT) );
         BOOST_AUTO_TPL (J, det (F) );
         BOOST_AUTO_TPL (Jm23, pow (J, -2. / 3) );
-        BOOST_AUTO_TPL (f0, value (spaceVectorial, *M_fiberPtr) );
+        BOOST_AUTO_TPL (f0, value (M_displacementETFESpacePtr, *this->M_fiberPtr) );
         BOOST_AUTO_TPL (D,
                         value (sigmat) * I
                         + (value (sigmal) - value (sigmat) )
                         * outerProduct (f0, f0) );
 
-        integrate ( elements (M_localMeshPtr),
-        		    M_feSpacePtr->qr(),
-        		    M_ETFESpacePtr,
-                    M_ETFESpacePtr,
+        integrate ( elements (this->M_localMeshPtr),
+        		    this->M_feSpacePtr->qr(),
+        		    this->M_ETFESpacePtr,
+        		    this->M_ETFESpacePtr,
                     dot (J * Fm1 * D * FmT * grad (phi_i), grad (phi_j) )
                     )
-                    >> M_stiffnessMatrixPtr;
+                    >> this->M_stiffnessMatrixPtr;
 
     }
 
-    M_stiffnessMatrixPtr->globalAssemble();
+    this->M_stiffnessMatrixPtr->globalAssemble();
 
 }
 
@@ -790,13 +760,13 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    }
 //}
 //
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::computeRhsICI()
-{
-    M_ionicModelPtr->superIonicModel::computePotentialRhsICI (M_globalSolution,
-                                                              M_globalRhs, (*M_massMatrixPtr) );
-    updateRhs();
-}
+//template<typename Mesh, typename IonicModel>
+//void EMMonodomainSolver<Mesh, IonicModel>::computeRhsICI()
+//{
+//    M_ionicModelPtr->superIonicModel::computePotentialRhsICI (M_globalSolution,
+//                                                              M_globalRhs, (*M_massMatrixPtr) );
+//    updateRhs();
+//}
 
 //template<typename Mesh, typename IonicModel>
 //void EMMonodomainSolver<Mesh, IonicModel>::computeRhsICIWithFullMass ()
@@ -837,14 +807,14 @@ void EMMonodomainSolver<Mesh, IonicModel>::computeRhsICI()
 template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep()
 {
-	computeRhsICI();
 	updateMatrices();
-	if (M_displacementPtr)
+	if (M_displacementPtr  && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
 	{
-        M_linearSolverPtr->setOperator (M_globalMatrixPtr);
+        this->M_linearSolverPtr->setOperator (this->M_globalMatrixPtr);
     }
-    M_linearSolverPtr->setRightHandSide (M_rhsPtrUnique);
-    M_linearSolverPtr->solve (M_potentialPtr);
+	computeRhsICI();
+    this->M_linearSolverPtr->setRightHandSide (this->M_rhsPtrUnique);
+    this->M_linearSolverPtr->solve (this->M_potentialPtr);
 }
 //
 //template<typename Mesh, typename IonicModel>
