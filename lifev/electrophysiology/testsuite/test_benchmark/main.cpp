@@ -379,23 +379,55 @@ Int main ( Int argc, char** argv )
 
     if ( Comm->MyPID() == 0 )
     {
-        std::cout << "\nSetup operators:  " ;
+        std::cout << "\nSetup operators:  \n" ;
     }
 
-    bool lumpedMass = monodomainList.get ("LumpedMass", true);
-    matrixPtr_Type hlmass;
-    if( lumpedMass )
+    // Read if you are going to use a lumped mass matrix;
+    // This is set by the xml file when you create the monodomain
+    bool lumpedMass = solver -> lumpedMassMatrix();
+
+    //safe check! You should not do this error.
+    // If you are using L-ICI, you should set setLumperMassMatrix to false
+    // If you do not set anything in the xml is set to false by default
+    if(solutionMethod=="L-ICI" && !lumpedMass)
+	{
+    	std::cout << "===============================================\n";
+    	std::cout << "You are using L-ICI without lumping! You can't!\n";
+    	std::cout << "This time I'm fixing it for you ... be careful.\n";
+    	std::cout << "===============================================\n";
+    	solver -> setLumpedMassMatrix(true);
+	}
+
+    //We create a pointer to store a full mass matrix
+    matrixPtr_Type fullMass;
+
+    //if we are using ICI then we need to compute the fullMass matrix even
+    // if we are using lumping
+    if( lumpedMass && solutionMethod=="ICI")
     { 
         solver -> setLumpedMassMatrix(false);
 		solver -> setupMassMatrix();
-		hlmass.reset(new matrix_Type( *(solver -> massMatrixPtr() ) ) );
-		solver -> setFullMassMatrixPtr(hlmass);
+		fullMass.reset(new matrix_Type( *(solver -> massMatrixPtr() ) ) );
+		solver -> setFullMassMatrixPtr(fullMass);
 		solver -> setLumpedMassMatrix(lumpedMass);
     }
 
+    //Build the solver mass matrix
     solver -> setupMassMatrix();
+
+    //safety check!!! In this tesst ICI is solved using the solveOneICIStepWithFullMass()
+    //Therefore we need to set the fullMass pointer. If we are using lumping that we
+    // already set it before, but if you are not lumping (not recommended choice)
+    // then the full mass matrix is equal to the solver mass matrix.
+    if( !lumpedMass && solutionMethod=="ICI")
+	{
+    	solver -> setFullMassMatrixPtr(solver -> massMatrixPtr() );
+	}
+
+    //Building the stiffness matrix and the global matrix (stifness and mass)
     solver -> setupStiffnessMatrix ();
     solver -> setupGlobalMatrix();
+
     if ( Comm->MyPID() == 0 )
     {
     	std::cout << "Done!" ;
@@ -603,7 +635,6 @@ Int main ( Int argc, char** argv )
 
         else if( solutionMethod == "ICI" )
         {
-
         	// ---------------------------------------------------------------
             // We first solve the system of ODEs in the ionic model.
         	// For some models it is possible to solve them with the
