@@ -134,6 +134,7 @@ StructuralConstitutiveLawData::setup ( const GetPot& dataFile, const std::string
     // physics
     M_solidType = dataFile ( ( section + "/physics/solidType" ).data(), "NO_DEFAULT_SOLID_TYPE" );
     M_lawType = dataFile ( ( section + "/physics/lawType" ).data(), "NO_DEFAULT_LAW_TYPE" );
+    M_EMpassiveMaterialType = dataFile ( ( section + "/physics/EMPassiveMaterialType" ).data(), "NO_DEFAULT_PASSIVE_TYPE" );
 
     ASSERT ( M_lawType.compare ("NO_DEFAULT_LAW_TYPE"), "Set the type of law (linear or nonlinear) in [solid]/physics");
 

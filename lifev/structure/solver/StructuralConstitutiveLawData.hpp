@@ -351,6 +351,15 @@ public:
         return M_solidType;
     }
 
+    //! Get EM passive material name
+    /*!
+     * @return passive solid type
+     */
+    const std::string& passiveType()
+    {
+        return M_EMpassiveMaterialType;
+    }
+
     //! Get law type
     /*!
      * @return law type
@@ -379,9 +388,10 @@ public:
         return M_vectorMaterialFlags;
     }
 
+
     //@}
 
-private:
+protected:
 
     //! Data containers for time and mesh
     timePtr_Type           M_time;
@@ -410,6 +420,7 @@ private:
     UInt                   M_verbose; // temporal output verbose
 
     std::string            M_solidType;
+    std::string            M_EMpassiveMaterialType;
     std::string            M_lawType;
     bool                   M_useExactJacobian;
 
