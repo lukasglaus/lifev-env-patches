@@ -18,4 +18,5 @@ ADD_SUBDIRECTORIES(
 #  linearizedGHOrotation
 #  linearizedGHOventricle
 #  prestress
+	example_EMMaterial
 )
