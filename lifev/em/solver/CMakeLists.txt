@@ -1,6 +1,6 @@
 ADD_SUBDIRECTORIES(
 	electrophysiology
-	Mechanics
+	mechanics
 )
 
 SET(solver_HEADERS
@@ -27,6 +27,6 @@ ENDFOREACH()
 
 INSTALL(
   FILES ${LOCAL_HEADERS}
-  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/lifev/em/solver"
+  DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/lifev/em/solver/"
   COMPONENT ${PACKAGE_NAME}
 )

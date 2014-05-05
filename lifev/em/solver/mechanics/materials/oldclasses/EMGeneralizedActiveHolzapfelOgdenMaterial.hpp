@@ -757,11 +757,12 @@ protected:
     vectorPtr_Type                      M_stiff;
     vectorPtr_Type                      M_fiberVector;
     vectorPtr_Type                      M_sheetVector;
+    scalarETFESpacePtr_Type             M_activationSpace;
 
     vectorPtr_Type                      M_Gammaf;
     vectorPtr_Type                      M_Gammas;
     vectorPtr_Type                      M_Gamman;
-    scalarETFESpacePtr_Type             M_activationSpace;
+
 
 };
 

@@ -41,7 +41,7 @@
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-#include <lifev/em/solver/EMActiveStructuralConstitutiveLaw.hpp>
+#include <lifev/em/solver/mechanics/EMActiveStructuralConstitutiveLaw.hpp>
 #include <lifev/electrophysiology/util/HeartUtility.hpp>
 #include <lifev/eta/expression/Integrate.hpp>
 
@@ -50,8 +50,7 @@ namespace LifeV
 {
 
 template <typename MeshType>
-class EMNeoHookeanActivatedMaterial :
-    public EMActiveStructuralConstitutiveLaw<MeshType>
+class EMNeoHookeanActivatedMaterial : public EMActiveStructuralConstitutiveLaw<MeshType>
 {
     //!@name Type definitions
     //@{
@@ -118,11 +117,11 @@ public:
       \param monolithicMap: the MapEpetra
       \param offset: the offset parameter used assembling the matrices
     */
-    inline void setup ( const FESpacePtr_Type& dFESpace,
-                        const ETFESpacePtr_Type& dETFESpace,
-                        const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                        const UInt offset, const dataPtr_Type& dataMaterial,
-                        const displayerPtr_Type& displayer  );
+    void setup ( const FESpacePtr_Type& dFESpace,
+				 const ETFESpacePtr_Type& dETFESpace,
+				 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+				 const UInt offset, const dataPtr_Type& dataMaterial,
+				 const displayerPtr_Type& displayer  );
 
 
     void setup ( const FESpacePtr_Type& dFESpace,
@@ -264,11 +263,6 @@ public:
         return M_stiff;
     }
 
-    inline  vectorPtr_Type const fiberVector() const
-    {
-        return M_fiberVector;
-    }
-
     inline  vectorPtr_Type gammaf()
     {
         return M_Gammaf;
@@ -293,30 +287,12 @@ public:
         M_Gammaf.reset ( new vector_Type ( gammaf ) );
     }
 
-    inline void setFiberVector ( const vector_Type& fiberVector)
-    {
-        M_fiberVector.reset ( new vector_Type ( fiberVector ) );
-    }
 
     //@}
 
     //! @name Methods
     //@{
 
-    inline void setupFiberVector ( std::string& name, boost::shared_ptr< RegionMesh<LinearTetra> > mesh )
-    {
-        ElectrophysiologyUtility::importFibers ( M_fiberVector, name, mesh  );
-    }
-
-    inline void setupFiberVector ( std::string& name, std::string& path )
-    {
-        ElectrophysiologyUtility::importFibers ( M_fiberVector, name, path  );
-    }
-
-    void setupFiberVector ( Real& fx, Real& fy, Real& fz )
-    {
-        ElectrophysiologyUtility::setupFibers ( *M_fiberVector, fx, fy, fz  );
-    }
     //@}
 
 protected:
@@ -331,11 +307,9 @@ protected:
     //! Vector: stiffness non-linear
     vectorPtr_Type                      M_stiff;
     //Create the indentity for F
-    matrixSmall_Type                      M_identity;
+    matrixSmall_Type                    M_identity;
 
     vectorPtr_Type                      M_Gammaf;
-    scalarETFESpacePtr_Type                 M_activationSpace;
-    vectorPtr_Type                       M_fiberVector;
 
 };
 
@@ -344,9 +318,7 @@ EMNeoHookeanActivatedMaterial<MeshType>::EMNeoHookeanActivatedMaterial() :
     super           ( ),
     M_stiff         ( ),
     M_identity      ( ),
-    M_Gammaf        ( ),
-    M_fiberVector   ( ),
-    M_activationSpace( )
+    M_Gammaf        ( )
 {
 }
 
@@ -388,15 +360,11 @@ EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type& dFESpace
     this->M_displayer                   = displayer;
 
     M_stiff.reset                   ( new vector_Type (*this->M_localMap) );
-    M_fiberVector.reset             ( new vector_Type (*this->M_localMap) );
-    M_activationSpace.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
+    this->M_fiberVector.reset             ( new vector_Type (*this->M_localMap) );
+    this->M_activationSpace.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
                                                                  &feTetraP1,
                                                                  dFESpace->map().commPtr() )  );
     M_Gammaf.reset                  ( new vector_Type ( M_activationSpace -> map() ) );
-
-
-
-
 
     M_identity (0, 0) = 1.0;
     M_identity (0, 1) = 0.0;
@@ -438,9 +406,9 @@ EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type&         
     this->M_offset                      = offset;
     this->M_dataMaterial                = dataMaterial;
     this->M_displayer                   = displayer;
-    M_activationSpace               = activationSpace;
+    this->M_activationSpace               = activationSpace;
     M_stiff.reset                   ( new vector_Type (*this->M_localMap) );
-    M_fiberVector.reset             ( new vector_Type (*this->M_localMap) );
+    this->M_fiberVector.reset             ( new vector_Type (*this->M_localMap) );
     M_Gammaf.reset                  ( new vector_Type ( M_activationSpace -> map() ) );
 
     M_identity (0, 0) = 1.0;

@@ -33,37 +33,52 @@
  *  @author Simone Rossi <simone.rossi@epfl.ch>
  */
 
-#ifndef _EMACTIVESTRUCTURALCONSTITUTIVELAW_H_
-#define _EMACTIVESTRUCTURALCONSTITUTIVELAW_H_ 1
+#ifndef _EMSTRUCTURALCONSTITUTIVELAW_H_
+#define _EMSTRUCTURALCONSTITUTIVELAW_H_ 1
 
+#include <boost/typeof/typeof.hpp>
+#include <lifev/core/array/MatrixSmall.hpp>
 
+#include <lifev/core/filter/ExporterHDF5.hpp>
 #include <lifev/structure/solver/StructuralConstitutiveLaw.hpp>
+//#include <lifev/em/solver/mechanics/materials/EMMaterial.hpp>
+//#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
+#include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
+#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+//#include <lifev/em/solver/mechanics/materials/EMActiveStressMaterial.hpp>
+//#include <lifev/em/solver/mechanics/materials/EMActiveStrainMaterial.hpp>
+
+#include <lifev/em/util/EMUtility.hpp>
+#include <lifev/em/solver/mechanics/materials/passive_materials/PassiveMaterialsList.hpp>
+
+using namespace LifeV;
+
+
+
+
 
 namespace LifeV
 {
 /*!
-  \class StructuralConstitutiveLaw
+  \class EMStructuralConstitutiveLaw
   \brief
   This class is an abstract class to define different type of models for the arterial wall.
   This class has just pure virtual methods. They are implemented in the specific class for one material
 */
 
 template <typename MeshType>
-class EMActiveStructuralConstitutiveLaw : public StructuralConstitutiveLaw<MeshType>
+class EMStructuralConstitutiveLaw  : public StructuralConstitutiveLaw<MeshType>
 {
 public:
 
     //!@name Type definitions
     //@{
-    typedef StructuralConstitutiveLawData          data_Type;
-    typedef StructuralConstitutiveLaw<MeshType>    super;
+	typedef typename boost::shared_ptr<const Displayer>   displayerPtr_Type;
+	typedef StructuralConstitutiveLaw<MeshType> super;
     typedef MatrixEpetra<Real>            matrix_Type;
     typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
     typedef VectorEpetra           vector_Type;
     typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
-
-    typedef FactorySingleton<Factory<EMActiveStructuralConstitutiveLaw<MeshType>, std::string> >  StructureMaterialFactory;
-
 
     typedef ETFESpace<MeshType, MapEpetra, 3, 3 >         ETFESpace_Type;
     typedef boost::shared_ptr<ETFESpace_Type>             ETFESpacePtr_Type;
@@ -75,6 +90,29 @@ public:
     typedef ETFESpace< mesh_Type, MapEpetra, 3, 1 >                        scalarETFESpace_Type;
     typedef boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > >    scalarETFESpacePtr_Type;
 
+    typedef MapEpetra map_Type;
+    typedef boost::shared_ptr<map_Type>             mapPtr_Type;
+
+//    typedef EMMaterial<MeshType>								material_Type;
+
+    typedef StructuralConstitutiveLawData          data_Type;
+    typedef typename boost::shared_ptr<data_Type>  dataPtr_Type;
+
+//    typedef FactorySingleton<Factory<StructuralConstitutiveLaw<MeshType>, std::string> >  StructureMaterialFactory;
+
+    typedef std::vector< typename MeshType::element_Type* > vectorVolumes_Type;
+
+    typedef std::map< UInt, vectorVolumes_Type>           mapMarkerVolumes_Type;
+    typedef boost::shared_ptr<mapMarkerVolumes_Type>      mapMarkerVolumesPtr_Type;
+
+    typedef std::vector<UInt>                             vectorIndexes_Type;
+    typedef std::map< UInt, vectorIndexes_Type>           mapMarkerIndexes_Type;
+    typedef boost::shared_ptr<mapMarkerIndexes_Type>      mapMarkerIndexesPtr_Type;
+
+    typedef EMMaterialType<MeshType>                             material_Type;
+    typedef boost::shared_ptr<material_Type>        materialPtr_Type;
+
+
     //@}
 
 
@@ -82,138 +120,600 @@ public:
     //! @name Constructor &  Deconstructor
     //@{
 
-    EMActiveStructuralConstitutiveLaw() : super() {}
-
-    virtual ~EMActiveStructuralConstitutiveLaw() {}
+    //! Empty constructor
+    EMStructuralConstitutiveLaw();
+    //! Destructor
+    virtual ~EMStructuralConstitutiveLaw() {}
 
     //@}
+
+    //getters
 
 
     //SOME METHODS FOR ACTIVATED MATERIALS
     inline void setFiberVector ( const vector_Type& fiberVector)
     {
-        M_fiberVector.reset ( new vector_Type ( fiberVector ) );
-        ElectrophysiologyUtility::normalize (*M_fiberVector);
+        M_fiberVectorPtr.reset ( new vector_Type ( fiberVector ) );
+        ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
     }
 
     inline void setSheetVector ( const vector_Type& sheetVector)
     {
-        M_sheetVector.reset ( new vector_Type ( sheetVector ) );
-        ElectrophysiologyUtility::normalize (*M_sheetVector);
+        M_sheetVectorPtr.reset ( new vector_Type ( sheetVector ) );
+        ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
+    }
+
+    inline void setFiberVectorPtr ( const vectorPtr_Type fiberVectorPtr)
+    {
+        M_fiberVectorPtr = fiberVectorPtr;
+    }
+
+    inline void setSheetVectorPtr ( const vectorPtr_Type sheetVectorPtr)
+    {
+        M_sheetVectorPtr = sheetVectorPtr;
     }
 
 
 
     inline  vectorPtr_Type const fiberVectorPtr() const
     {
-        return M_fiberVector;
+        return M_fiberVectorPtr;
     }
 
     inline  vectorPtr_Type fiberVectorPtr()
     {
-        return M_fiberVector;
+        return M_fiberVectorPtr;
     }
 
     inline  vectorPtr_Type const sheetVectorPtr() const
     {
-        return M_sheetVector;
+        return M_sheetVectorPtr;
     }
 
     inline  vectorPtr_Type sheetVectorPtr()
     {
-        return M_sheetVector;
+        return M_sheetVectorPtr;
+    }
+
+    inline  scalarETFESpacePtr_Type scalarETFESpacePtr()
+    {
+        return M_scalarETFESpacePtr;
     }
 
 
     inline void setupFiberVector ( std::string& name, boost::shared_ptr<mesh_Type> mesh )
     {
-        ElectrophysiologyUtility::importFibers ( M_fiberVector, name, mesh  );
-        ElectrophysiologyUtility::normalize (*M_fiberVector);
+        ElectrophysiologyUtility::importFibers ( M_fiberVectorPtr, name, mesh  );
+        ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
     }
 
     inline void setupFiberVector ( std::string& name, std::string& path )
     {
-        ElectrophysiologyUtility::importFibers ( M_fiberVector, name, path  );
-        ElectrophysiologyUtility::normalize (*M_fiberVector);
+        ElectrophysiologyUtility::importFibers ( M_fiberVectorPtr, name, path  );
+        ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
     }
 
     void setupFiberVector ( Real& fx, Real& fy, Real& fz )
     {
-        ElectrophysiologyUtility::setupFibers ( *M_fiberVector, fx, fy, fz  );
-        ElectrophysiologyUtility::normalize (*M_fiberVector);
+        ElectrophysiologyUtility::setupFibers ( *M_fiberVectorPtr, fx, fy, fz  );
+        ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
     }
 
     inline void setupSheetVector ( std::string& name, boost::shared_ptr<mesh_Type> mesh )
     {
-        ElectrophysiologyUtility::importFibers ( M_sheetVector, name, mesh  );
-        ElectrophysiologyUtility::normalize (*M_sheetVector);
+        ElectrophysiologyUtility::importFibers ( M_sheetVectorPtr, name, mesh  );
+        ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
     }
 
     inline void setupSheetVector ( std::string& name, std::string& path )
     {
-        ElectrophysiologyUtility::importFibers ( M_sheetVector, name, path  );
-        ElectrophysiologyUtility::normalize (*M_sheetVector);
+        ElectrophysiologyUtility::importFibers ( M_sheetVectorPtr, name, path  );
+        ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
     }
 
     void setupSheetVector ( Real& sx, Real& sy, Real& sz )
     {
-        ElectrophysiologyUtility::setupFibers ( *M_sheetVector, sx, sy, sz);
-        ElectrophysiologyUtility::normalize (*M_sheetVector);
+        ElectrophysiologyUtility::setupFibers ( *M_sheetVectorPtr, sx, sy, sz);
+        ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
     }
-
-    inline  scalarETFESpacePtr_Type activationSpace()
-    {
-        return M_activationSpace;
-    }
-
-
-    inline virtual MatrixSmall<3, 3>& identity()
-    {
-        MatrixSmall<3, 3> I;
-        I (0, 0) = 1.0;
-        I (0, 1) = 0.0;
-        I (0, 2) = 0.0;
-        I (1, 0) = 0.0;
-        I (1, 1) = 1.0;
-        I (1, 2) = 0.0;
-        I (2, 0) = 0.0;
-        I (2, 1) = 0.0;
-        I (2, 2) = 1.0;
-        return I;
-    }
-
-
 
     inline virtual vectorPtr_Type gammaf()
     {
-        vectorPtr_Type k;
-        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
-        return k;
+//        vectorPtr_Type k;
+//        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
+//        return k;
     }
     inline virtual vectorPtr_Type gammas()
     {
-        vectorPtr_Type k;
-        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
-        return k;
+//        vectorPtr_Type k;
+//        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
+//        return k;
     }
     inline virtual vectorPtr_Type gamman()
     {
-        vectorPtr_Type k;
-        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
-        return k;
+//        vectorPtr_Type k;
+//        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
+//        return k;
     }
 
     inline virtual void setGammaf (const vector_Type& /*gammaf*/) {}
     inline virtual void setGammas (const vector_Type& /*gammas*/) {}
     inline virtual void setGamman (const vector_Type& /*gamman*/) {}
-    //@}
+
+    //Compute Jacobian
+//     virtual void computeJacobian(const vector_Type& disp);
+//     virtual void computeVolumetricJacobianTerms(const vector_Type& disp);
+//     virtual void computeI1JacobianTerms(const vector_Type& disp);
+//
+//     virtual void computeResidual(const vector_Type& disp);
+//     virtual void computeVolumetricResidualTerms(const vector_Type& disp);
+//     virtual void computeI1ResidualTerms(const vector_Type& disp);
+
+
+     //! Setup the created object of the class StructuralConstitutiveLaw
+     /*!
+       \param dFespace: the FiniteElement Space
+       \param monolithicMap: the MapEpetra
+       \param offset: the offset parameter used assembling the matrices
+     */
+     virtual void setup ( const FESpacePtr_Type& dFESpace,
+                          const ETFESpacePtr_Type& ETFESpace,
+                          const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                          const UInt offset, const dataPtr_Type& dataMaterial,
+                          const displayerPtr_Type& displayer  );
+
+
+     //! Computes the linear part of the stiffness matrix StructuralSolver::buildSystem
+     /*!
+       \param dataMaterial the class with Material properties data
+     */
+     virtual  void computeLinearStiff ( dataPtr_Type& dataMaterial,
+                                        const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
+                                        const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/ ) {}
+
+     //! Updates the Jacobian matrix in StructuralSolver::updateJacobian
+     /*!
+       \param disp: solution at the k-th iteration of NonLinearRichardson Method
+       \param dataMaterial: a pointer to the dataType member in StructuralSolver class to get the
+                            material coefficients (e.g. Young modulus, Poisson ratio..)
+       \param displayer: a pointer to the Dysplaier member in the StructuralSolver class
+     */
+     inline virtual  void updateJacobianMatrix ( const vector_Type& disp, const dataPtr_Type& dataMaterial,
+                                          const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                          const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                          const displayerPtr_Type& displayer );
+
+     //! Computes the new Stiffness matrix in StructuralSolver given a certain displacement field.
+     //! This function is used both in StructuralSolver::evalResidual and in
+     //! StructuralSolver::updateSystem since the matrix is the expression of the matrix is the same.
+     //!This is virtual and not pure virtual since in the linear St. Venant-Kirchhoff law it is not needed.
+     /*!
+       \param sol:  the solution vector
+       \param factor: scaling factor used in FSI
+       \param dataMaterial: a pointer to the dataType member in StructuralSolver class to get the
+                            material coefficients (e.g. Young modulus, Poisson ratio..)
+       \param displayer: a pointer to the Dysplaier member in the StructuralSolver class
+     */
+     inline virtual  void computeStiffness ( const vector_Type& disp, Real factor, const dataPtr_Type& dataMaterial,
+                                      const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                      const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                      const displayerPtr_Type& displayer );
+
+     //! Computes the deformation Gradient F, the cofactor of F Cof(F),
+     //! the determinant of F J = det(F), the trace of C Tr(C).
+     /*!
+       \param dk_loc: local displacement vector
+     */
+     inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ) {}
+
+
+     //! Output of the class
+     /*!
+        \param fileNamelinearStiff the filename where to apply the spy method for the linear part of the Stiffness matrix
+        \param fileNameStiff the filename where to apply the spy method for the Stiffness matrix
+     */
+     virtual void showMe ( std::string const& fileNameStiff, std::string const& fileNameJacobian ) {}
+
+
+     //! Compute the First Piola Kirchhoff Tensor
+     /*!
+        \param firstPiola Epetra_SerialDenseMatrix that has to be filled
+        \param tensorF Epetra_SerialDenseMatrix the deformation gradient
+        \param cofactorF Epetra_SerialDenseMatrix cofactor of F
+        \param invariants std::vector with the invariants of C and the detF
+        \param material UInt number to get the material parameteres form the VenantElasticData class
+     */
+     inline virtual void computeLocalFirstPiolaKirchhoffTensor ( Epetra_SerialDenseMatrix& firstPiola,
+                                                          const Epetra_SerialDenseMatrix& tensorF,
+                                                          const Epetra_SerialDenseMatrix& cofactorF,
+                                                          const std::vector<Real>& invariants,
+                                                          const UInt material) {}
+     //! Get the Stiffness matrix
+     matrixPtr_Type const stiffMatrix() const
+     {
+         return super::M_jacobian;
+     }
+
+     //! Get the stiffness vector
+     vectorPtr_Type const stiffVector() const
+     {
+         return M_residualVectorPtr;
+     }
+
+     virtual void apply ( const vector_Type& sol, vector_Type& res,
+                          const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                          const mapMarkerIndexesPtr_Type mapsMarkerIndexes) {};
+
+
+
+     inline vectorPtr_Type activationPtr()
+     {
+     	 return M_activationPtr;
+     }
+
+     inline void setActivationPtr(vectorPtr_Type activationPtr)
+     {
+     	M_activationPtr = activationPtr;
+     }
+     inline void setActivation(vector_Type& activation)
+     {
+     	*M_activationPtr = activation;
+     }
+
+     inline vectorPtr_Type activeStress()
+     {
+     	return activationPtr();
+     }
+     inline void setActiveStressPtr(vectorPtr_Type activationPtr)
+     {
+     	setActivationPtr(activationPtr);
+     }
+     inline void setActiveStress(vector_Type& activation)
+     {
+     	setActivation(activation);
+     }
+     //@}
 
 protected:
-    vectorPtr_Type                      M_fiberVector;
-    vectorPtr_Type                      M_sheetVector;
-    scalarETFESpacePtr_Type             M_activationSpace;
+     virtual void setupVectorsParameters ( void ) {}
+    //ET finite element space for scalar variables
+    scalarETFESpacePtr_Type                        M_scalarETFESpacePtr;
+
+    vectorPtr_Type                                 M_fiberVectorPtr;
+
+    vectorPtr_Type                                 M_sheetVectorPtr;
+
+    vectorPtr_Type                                 M_residualVectorPtr;
+
+//    MatrixSmall<3,3>                               M_identity;
+
+//    std::vector<materialPtr_Type>				   M_materialPtrs;
+    //materialPtr_Type                               M_materialPtr;
+//    Real										   M_bulkModulus;
+
+	materialPtr_Type                        M_passiveMaterialPtr;
+
+    vectorPtr_Type                      M_activationPtr;
+
+
 
 };
+
+template<typename MeshType>
+EMStructuralConstitutiveLaw<MeshType>::EMStructuralConstitutiveLaw():
+    super                           ( ),
+	M_scalarETFESpacePtr            ( ),
+	M_fiberVectorPtr                ( ),
+	M_sheetVectorPtr                ( ),
+	M_passiveMaterialPtr                   ( ),
+	M_residualVectorPtr             ( ),
+	M_activationPtr					( )
+{}
+
+template <typename MeshType>
+void
+EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
+                                               const ETFESpacePtr_Type&                    dETFESpace,
+                                               const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                               const UInt                                  offset,
+                                               const dataPtr_Type&                         dataMaterial,
+                                               const displayerPtr_Type&                    displayer)
+{
+    this->M_displayer = displayer;
+    this->M_dataMaterial  = dataMaterial;
+
+    //    std::cout<<"I am setting up the Material"<<std::endl;
+
+    this->M_dispFESpace                 = dFESpace;
+    this->M_dispETFESpace               = dETFESpace;
+    this->M_localMap                    = monolithicMap;
+    this->M_offset                      = offset;
+    this->M_dataMaterial                = dataMaterial;
+    this->M_displayer                   = displayer;
+
+    M_residualVectorPtr.reset( new vector_Type (*this->M_localMap) );
+ //   M_identity = EMUtility::identity();
+
+    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap) );
+    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap) );
+    M_scalarETFESpacePtr.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
+                                                                 &feTetraP1,
+                                                                 dFESpace->map().commPtr() ) );
+
+    M_activationPtr.reset(new vector_Type (M_scalarETFESpacePtr -> map() ) );
+
+    std::string passiveMaterialType(dataMaterial -> passiveType());
+//    M_materialPtr.reset(new EMMaterial<MeshType>(materialType));
+    M_passiveMaterialPtr.reset(material_Type::EMMaterialFactory::instance().createObject ( passiveMaterialType ));
+    M_passiveMaterialPtr-> showMe();
+//    // The 2 is because the law uses three parameters (mu, bulk).
+//    // another way would be to set up the number of constitutive parameters of the law
+//    // in the data file to get the right size. Note the comment below.
+//    this->M_vectorsParameters.reset ( new vectorsParameters_Type ( 2 ) );
+//
+//    this->setupVectorsParameters();
+}
+
+//template <typename MeshType>
+//void
+//EMStructuralConstitutiveLaw<MeshType>::computeJacobian(const vector_Type& disp)
+//{
+//	*(this->M_jacobian) *= 0.0;
+//    computeVolumetricJacobianTerms(disp);
+//    computeI1JacobianTerms(disp);
+//    this->M_jacobian->globalAssemble();
+//}
+
+
+//template <typename MeshType>
+//void
+//EMStructuralConstitutiveLaw<MeshType>::computeVolumetricJacobianTerms(const vector_Type& disp)
+//{
+//	{
+//		using namespace ExpressionAssembly;
+//
+//
+//		boost::shared_ptr<MaterialFunctions::Volumetric<MeshType> > Wvol( new MaterialFunctions::Volumetric<MeshType>);
+//		boost::shared_ptr<MaterialFunctions::dVolumetric<MeshType> > dWvol( new MaterialFunctions::dVolumetric<MeshType>);
+//
+////		auto tmpdP = eval(Wvol, _F(M_identity, this->M_dispETFESpace, disp, 0) ) * _d2JdF(M_identity, this->M_dispETFESpace, disp, 0);
+////		auto dP = tmpdP + eval( dWvol, _F(M_identity, this->M_dispETFESpace, disp, 0))
+////				         * _dJdF(M_identity, this->M_dispETFESpace, disp, 0) * _dJ(M_identity, this->M_dispETFESpace, disp, 0);
+//
+//        auto I = value(M_identity);
+//        auto GradU = grad(this->M_dispETFESpace, disp, 0);
+//        auto F = I + GradU;
+//        auto FmT = minusT(F);
+//        auto J = det(F);
+//        auto dJ = J * FmT;
+//        //auto W =  value(2000.0) * ( (J-1) + log(J) / J );
+//        auto dW =  value(2000.0) / J / J * ( 1 + J * J + log(J) );
+//        auto W = eval(Wvol, F) ;
+//        //auto dW = eval(dWvol, F);
+//        auto P = W * dJ;
+//
+//        auto dF = grad(phi_j);
+//	    auto FdF = dot(F, dF);
+//	    auto FmTdF = dot(FmT, dF);
+//	    auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
+//
+//	    auto dP1dF = W * J * ( FmTdF * I + FmT * dF ) * FmT;
+//	    auto dP2dF = dW * J * J * FmTdF * FmT;
+//
+//
+//        auto dP = dP1dF + dP2dF;
+//
+//
+//		integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
+//					this->M_dispFESpace->qr(),
+//					this->M_dispETFESpace,
+//					this->M_dispETFESpace,
+//					dot ( dP, grad (phi_i) )
+//				  ) >> this->M_jacobian;
+//
+//	}
+//}
+//
+//template <typename MeshType>
+//void
+//EMStructuralConstitutiveLaw<MeshType>::computeI1JacobianTerms(const vector_Type& disp)
+//{
+//	{
+//        using namespace ExpressionAssembly;
+//
+//		boost::shared_ptr<MaterialFunctions::NeoHookean<MeshType> > W1( new MaterialFunctions::NeoHookean<MeshType>);
+//
+//
+////        auto I = value(M_identity);
+////        auto GradU = grad(this->M_dispETFESpace, disp, 0);
+////        auto F = I + GradU;
+////        auto FmT = minusT(F);
+////        auto I1 = dot(F, F);
+////        auto J = det(F);
+////        auto Jm23 = pow(J, -2.0/3.0);
+////        auto dI1 = value(2.0) * F;
+////        auto WI = value(4960.0);
+////        //auto WI = eval(W1, F);
+////        auto P = WI * Jm23 * ( F - value(1.0/3.0) * I1 * FmT ) ;
+////        auto dF = grad(phi_j);
+////        auto FdF = dot(F, dF);
+////        auto FmTdF = dot(FmT, dF);
+////        auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
+////
+////
+////        auto dP1dF = value(-2.0 / 3.0) * P * FmTdF;
+////        auto dP2dF = WI * Jm23 * (dF - value(2.0/3.0) * FdF * FmT - value(1.0/3.0) * I1 * dFmTdF);
+//
+//        auto I = _I(M_identity);
+//        auto GradU = _Grad_u(this->M_dispETFESpace, disp, 0);
+//        auto F = _F(M_identity, this->M_dispETFESpace, disp, 0); //I + GradU;
+//        auto FmT = _FmT(M_identity, this->M_dispETFESpace, disp, 0);
+//        auto I1 = _I1(M_identity, this->M_dispETFESpace, disp, 0);
+//        auto J = det(F);
+//        auto Jm23 = pow(J, -2.0/3.0);
+//        auto dI1 = value(2.0) * F;
+//        //auto WI = value(4960.0);
+//        auto WI = eval(W1, F);
+//        auto P = WI * Jm23 * ( F - value(1.0/3.0) * I1 * FmT ) ;
+//        auto dF = grad(phi_j);
+//        auto FdF = dot(F, dF);
+//        auto FmTdF = dot(FmT, dF);
+//        auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
+//
+//
+//        auto dP1dF = value(-2.0 / 3.0) * P * FmTdF;
+//        auto dP2dF = WI * Jm23 * (dF - value(2.0/3.0) * FdF * FmT - value(1.0/3.0) * I1 * dFmTdF);
+//
+//
+//
+//
+//        auto dP = dP1dF + dP2dF;
+////		auto dP =   eval( W1, _F(M_identity, this->M_dispETFESpace, disp, 0)) * _d2I1bardF(M_identity, this->M_dispETFESpace, disp, 0) ;
+//		integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
+//					this->M_dispFESpace->qr(),
+//					this->M_dispETFESpace,
+//					this->M_dispETFESpace,
+//					dot ( dP, grad (phi_i) )
+//				  ) >> this->M_jacobian;
+//	}
+//}
+
+//template <typename MeshType>
+//void
+//EMStructuralConstitutiveLaw<MeshType>::computeResidual(const vector_Type& disp)
+//{
+//	*(M_residualVectorPtr) *= 0.0;
+//	computeVolumetricResidualTerms(disp);
+//	computeI1ResidualTerms(disp);
+//	this->M_residualVectorPtr->globalAssemble();
+//}
+//
+//template <typename MeshType>
+//void
+//EMStructuralConstitutiveLaw<MeshType>::computeVolumetricResidualTerms(const vector_Type& disp)
+//{
+//	{
+//	        using namespace ExpressionAssembly;
+//			boost::shared_ptr<MaterialFunctions::Volumetric<MeshType> > Wvol( new MaterialFunctions::Volumetric<MeshType>);
+//
+//	        //auto P  = eval(Wvol, _F(M_identity, this->M_dispETFESpace, disp, 0)) * _dJ(M_identity, this->M_dispETFESpace, disp, 0);
+//	        auto I = value(M_identity);
+//	        auto GradU = grad(this->M_dispETFESpace, disp, 0);
+//	        auto F = I + GradU;
+//	        auto FmT = minusT(F);
+//	        auto J = det(F);
+//	        auto dJ = J * FmT;
+//	        //auto W =  value(2000.0) * ( (J-1) + log(J) / J );
+//	        auto W = eval(Wvol, F) ;
+//	        auto P = W * dJ;
+//
+////#define _Grad_u(FESpace, disp, offset)      ( grad (FESpace, disp, offset) )
+////// F = deformation gradient tensor
+////#define _F(Id, FESpace, disp, offset)       ( _Grad_u(FESpace, disp, offset) + _I(Id) )
+////// F^-T = inverse transpose of F
+////#define _FmT(Id, FESpace, disp, offset)     ( minusT (_F(Id, FESpace, disp, offset)) )
+////// C = F^TF = Right Cauchy Green tensor
+////#define _C(Id, FESpace, disp, offset)       ( transpose(_F(Id, FESpace, disp, offset)) * _F(Id, FESpace, disp, offset) )
+//
+//// dF = \delta \nabla u = variation of F
+////matrix
+////#define _dF   ( grad (phi_j) )
+//    integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
+//                this->M_dispFESpace->qr(),
+//                this->M_dispETFESpace,
+//                dot ( P, grad (phi_i) )
+//              ) >> M_residualVectorPtr;
+//	}
+//}
+//
+//
+//template <typename MeshType>
+//void
+//EMStructuralConstitutiveLaw<MeshType>::computeI1ResidualTerms(const vector_Type& disp)
+//{
+//	{
+//	        using namespace ExpressionAssembly;
+//
+//			boost::shared_ptr<MaterialFunctions::NeoHookean<MeshType> > W1( new MaterialFunctions::NeoHookean<MeshType>);
+//
+//
+//	        auto I = value(M_identity);
+//	        auto GradU = grad(this->M_dispETFESpace, disp, 0);
+//	        auto F = I + GradU;
+//	        auto FmT = minusT(F);
+//	        auto I1 = dot(F, F);
+//	        auto J = det(F);
+//	        auto Jm23 = pow(J, -2.0/3.0);
+//	        auto dI1 = value(2.0) * F;
+//	        //auto WI = value(4960.0);
+//	        auto WI = eval(W1, F);
+//	        auto P = WI * Jm23 * ( F - value(1.0/3.0) * I1 * FmT ) ;
+//    integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
+//                this->M_dispFESpace->qr(),
+//                this->M_dispETFESpace,
+//                dot ( P, grad (phi_i) )
+//              ) >> M_residualVectorPtr;
+//	}
+//}
+//
+
+template <typename MeshType>
+void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
+																   const dataPtr_Type&      dataMaterial,
+																   const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+																   const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+																   const displayerPtr_Type& displayer )
+{
+    this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
+
+    displayer->leaderPrint (" \n*********************************\n  ");
+    displayer->leaderPrint (" Non-Linear S-  Computing the EM material  Jacobian"     );
+    displayer->leaderPrint (" \n*********************************\n  ");
+	*(this->M_jacobian) *= 0.0;
+
+	M_passiveMaterialPtr -> computeJacobian(disp,
+			                          this->M_dispETFESpace,
+			                          this->M_dispFESpace,
+			                          this->M_jacobian);
+
+
+//	computeJacobian(disp);
+
+    this->M_jacobian->globalAssemble();
+    displayer->leaderPrint (" \n*********************************\n  ");
+    std::cout << std::endl;
+}
+
+template <typename MeshType>
+void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type&       disp,
+                                                                           Real                     /*factor*/,
+                                                                           const dataPtr_Type&      dataMaterial,
+                                                                           const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                           const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                           const displayerPtr_Type& displayer )
+{
+    displayer->leaderPrint (" \n******************************************************************\n  ");
+    displayer->leaderPrint (" Non-Linear S-  Computing the EM material  residual vector"     );
+    displayer->leaderPrint (" \n******************************************************************\n  ");
+	*(M_residualVectorPtr) *= 0.0;
+	M_passiveMaterialPtr -> computeResidual(disp,
+   			                          this->M_dispETFESpace,
+   			                          this->M_dispFESpace,
+   			                          M_residualVectorPtr);
+//	computeResidual(disp);
+ 	this->M_residualVectorPtr->globalAssemble();
+}
+
+
+template <typename MeshType>
+inline StructuralConstitutiveLaw<MeshType>* createEMMaterial()
+{
+    return new EMStructuralConstitutiveLaw<MeshType>();
+}
+namespace
+{
+static bool registerEM = StructuralConstitutiveLaw<LifeV::RegionMesh<LinearTetra> >::StructureMaterialFactory::instance().registerProduct ( "EMMaterial", &createEMMaterial<LifeV::RegionMesh<LinearTetra> > );
+}
 
 
 }

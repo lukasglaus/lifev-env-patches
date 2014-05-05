@@ -42,7 +42,7 @@ along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _EMSTRUCTURALOPERATOR_H_
 #define _EMSTRUCTURALOPERATOR_H_ 1
 
-#include <lifev/em/solver/EMActiveStructuralConstitutiveLaw.hpp>
+#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
 #include <lifev/structure/solver/StructuralOperator.hpp>
 
 
@@ -69,7 +69,7 @@ public:
 
 	typedef boost::shared_ptr<structuralOperator_Type>  structuralOperatorPtr_Type;
 
-    typedef EMActiveStructuralConstitutiveLaw<Mesh>     material_Type;
+    typedef EMStructuralConstitutiveLaw<Mesh>     material_Type;
 
     typedef boost::shared_ptr<material_Type>			materialPtr_Type;
 
@@ -690,9 +690,9 @@ EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
                                  boost::shared_ptr<Epetra_Comm>&   comm)
 {
 
-	super::setup (data, dFESpace, dETFESpace, BCh, comm);
+	this->super::setup (data, dFESpace, dETFESpace, BCh, comm);
 //	M_structuralOperator->setup (data, dFESpace, dETFESpace, BCh, comm);
-   M_activeMaterial.reset(dynamic_cast<material_Type *>(M_structuralOperator -> material.get()));
+   M_activeMaterial.reset(dynamic_cast<material_Type *>(this -> material().get()));
 }
 
 
