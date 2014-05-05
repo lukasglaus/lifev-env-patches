@@ -82,6 +82,7 @@ SET( LifeV_PACKAGES_AND_DIRS_AND_CLASSIFICATIONS
   NavierStokes          lifev/navier_stokes               PS
   Structure             lifev/structure                   PS
   Electrophysiology     lifev/electrophysiology           PS
+  EM                    lifev/em                          EX
   Heart                 lifev/heart                       EX
   FSI                   lifev/fsi                         PS
   ZeroDimensional       lifev/zero_dimensional            PS
