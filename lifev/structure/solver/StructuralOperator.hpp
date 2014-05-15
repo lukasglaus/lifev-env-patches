@@ -224,12 +224,12 @@ public:
       \param BCh boundary conditions for the displacement
       \param comm the Epetra Comunicator
     */
-    void setup ( boost::shared_ptr<data_Type>  data,
+    virtual void setup ( boost::shared_ptr<data_Type>  data,
                  const FESpacePtr_Type&        dFESpace,
                  const ETFESpacePtr_Type&      dETFESpace,
                  bcHandler_Type&       BCh,
                  boost::shared_ptr<Epetra_Comm>&     comm
-               );
+                 );
 
     /*!
       \param data_file GetPot data file
