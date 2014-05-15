@@ -84,6 +84,7 @@ namespace MaterialFunctions
 
 
 template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
+template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
 template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
 typedef VectorEpetra           vector_Type;
@@ -97,7 +98,13 @@ class EMMaterialFunctions : public boost::enable_shared_from_this<EMMaterialFunc
 public:
     typedef Real return_Type;
     typedef boost::enable_shared_from_this<EMMaterialFunctions< Mesh > > boostShared_Type;
+
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
+    {
+    	return 0.0;
+    }
+
+    virtual return_Type operator() (const Real& H)
     {
     	return 0.0;
     }
@@ -114,14 +121,34 @@ public:
 
 	inline virtual void computeJacobian( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+									 const vector_Type& fibers,
+									 const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr) {}
+
+	inline virtual void	computeJacobian( const vector_Type& disp,
+			                             ETFESpacePtr_Type<Mesh>  dispETFESpace,
+                                         const vector_Type& fibers,
+                                         const vector_Type& sheets,
+										 const vector_Type& activation,
+										 scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+										 matrixPtr_Type           jacobianPtr) {}
+
 
 
 	inline virtual void computeResidual( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
-								  vectorPtr_Type           residualVectorPtr) {}
+								         ETFESpacePtr_Type<Mesh>  dispETFESpace,
+									     const vector_Type& fibers,
+									     const vector_Type& sheets,
+								         vectorPtr_Type           residualVectorPtr) {}
+
+	inline virtual void	computeResidual( const vector_Type& disp,
+			                             ETFESpacePtr_Type<Mesh>  dispETFESpace,
+                                         const vector_Type& fibers,
+                                         const vector_Type& sheets,
+										 const vector_Type& activation,
+										 scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+										 vectorPtr_Type           residualVectorPtr) {}
+
 };
 
 } //EMMaterialFunctions

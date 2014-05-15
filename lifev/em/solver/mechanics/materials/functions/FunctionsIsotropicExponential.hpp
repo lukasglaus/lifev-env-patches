@@ -57,19 +57,21 @@ public:
     virtual ~IsotropicExponential() {}
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
-								  matrixPtr_Type           jacobianPtr)
+								         ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								         const vector_Type& fibers,
+								         const vector_Type& sheets,
+								         matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeI1JacobianTerms(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeI1JacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
-								  vectorPtr_Type           residualVectorPtr)
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
+							         vectorPtr_Type           residualVectorPtr)
 	{
-		EMAssembler::computeI1ResidualTerms(disp,dispETFESpace,dispFESpace, residualVectorPtr, this->getMe());
+		EMAssembler::computeI1ResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
 	}
 
 private:
@@ -99,11 +101,12 @@ public:
 
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+		     ETFESpacePtr_Type<Mesh>  dispETFESpace,
+		     const vector_Type& fibers,
+		     const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeI1JacobianTermsSecondDerivative(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeI1JacobianTermsSecondDerivative(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 private:
     Real M_a;

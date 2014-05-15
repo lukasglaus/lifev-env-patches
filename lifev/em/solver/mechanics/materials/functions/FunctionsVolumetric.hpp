@@ -54,18 +54,20 @@ public:
 
 	inline virtual void computeJacobian( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeVolumetricJacobianTerms(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeVolumetricJacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
 								  vectorPtr_Type           residualVectorPtr)
 	{
-		EMAssembler::computeVolumetricResidualTerms(disp,dispETFESpace,dispFESpace, residualVectorPtr, this->getMe());
+		EMAssembler::computeVolumetricResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
 	}
 
 private:
@@ -89,10 +91,11 @@ public:
 
 	inline virtual void computeJacobian( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeVolumetricJacobianTermsSecondDerivative(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeVolumetricJacobianTermsSecondDerivative(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 
 private:

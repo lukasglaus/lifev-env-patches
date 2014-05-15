@@ -27,6 +27,7 @@ public:
 	typedef Mesh mesh_Type;
 	//template <class Mesh>
 	using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
+	using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
 	//template <class Mesh>
 	using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
@@ -53,18 +54,38 @@ public:
 
 	void
 	computeJacobian( const vector_Type& disp,
-					ETFESpacePtr_Type dispETFESpace,
-					FESpacePtr_Type    dispFESpace,
-					matrixPtr_Type           jacobianPtr);
+					 ETFESpacePtr_Type dispETFESpace,
+					 const vector_Type& fibers,
+					 const vector_Type& sheets,
+					 matrixPtr_Type     jacobianPtr);
+
+	void
+	computeJacobian( const vector_Type& disp,
+					 ETFESpacePtr_Type  dispETFESpace,
+					 const vector_Type& fibers,
+					 const vector_Type& sheets,
+					 const vector_Type& activation,
+			         scalarETFESpacePtr_Type  activationETFESpace,
+			         matrixPtr_Type     jacobianPtr);
 	//
 
 
 
 	void
 	computeResidual( const vector_Type& disp,
-					 ETFESpacePtr_Type dispETFESpace,
-					 FESpacePtr_Type   dispFESpace,
+		     ETFESpacePtr_Type  dispETFESpace,
+		     const vector_Type& fibers,
+		     const vector_Type& sheets,
 					 vectorPtr_Type           residualVectorPtr);
+
+	void
+	computeResidual( const vector_Type& disp,
+					 ETFESpacePtr_Type  dispETFESpace,
+					 const vector_Type& fibers,
+					 const vector_Type& sheets,
+					 const vector_Type& activation,
+			         scalarETFESpacePtr_Type  activationETFESpace,
+			         vectorPtr_Type     residualVectorPtr);
 
 	inline void showMe()
 	{
@@ -92,27 +113,71 @@ template<typename Mesh>
 void
 EMMaterialType<Mesh>::computeJacobian( const vector_Type& disp,
 									ETFESpacePtr_Type  dispETFESpace,
-									FESpacePtr_Type   dispFESpace,
+									 const vector_Type& fibers,
+									 const vector_Type& sheets,
 									matrixPtr_Type           jacobianPtr)
 {
 	int n = M_materialFunctionList.size();
 	for(int j(0); j < n; j++)
-		M_materialFunctionList[j]->computeJacobian(disp, dispETFESpace, dispFESpace, jacobianPtr);
+		M_materialFunctionList[j]->computeJacobian(disp, dispETFESpace, fibers, sheets, jacobianPtr);
+}
+
+
+template<typename Mesh>
+void
+EMMaterialType<Mesh>::computeJacobian( const vector_Type& disp,
+									   ETFESpacePtr_Type   dispETFESpace,
+									   const vector_Type& fibers,
+									   const vector_Type& sheets,
+									   const vector_Type& activation,
+									   scalarETFESpacePtr_Type   activationETFESpace,
+									   matrixPtr_Type           jacobianPtr)
+{
+	int n = M_materialFunctionList.size();
+	for(int j(0); j < n; j++)
+		M_materialFunctionList[j]->computeJacobian(disp,
+				                                   dispETFESpace,
+				                                   fibers,
+				                                   sheets,
+				                                   activation,
+				                                   activationETFESpace,
+				                                   jacobianPtr);
 }
 
 template <typename Mesh>
 void
 EMMaterialType<Mesh>::computeResidual( const vector_Type& disp,
 										 ETFESpacePtr_Type  dispETFESpace,
-										 FESpacePtr_Type    dispFESpace,
+										 const vector_Type& fibers,
+										 const vector_Type& sheets,
 										 vectorPtr_Type           residualVectorPtr)
 {
 	int n = M_materialFunctionList.size();
 	for(int j(0); j < n; j++)
-		M_materialFunctionList[j]->computeResidual(disp, dispETFESpace, dispFESpace, residualVectorPtr);
+		M_materialFunctionList[j]->computeResidual(disp, dispETFESpace, fibers, sheets, residualVectorPtr);
 }
 
 
+template <typename Mesh>
+void
+EMMaterialType<Mesh>::computeResidual( const vector_Type& disp,
+									   ETFESpacePtr_Type   dispETFESpace,
+									   const vector_Type& fibers,
+									   const vector_Type& sheets,
+									   const vector_Type& activation,
+									   scalarETFESpacePtr_Type   activationETFESpace,
+									   vectorPtr_Type           residualVectorPtr)
+{
+	int n = M_materialFunctionList.size();
+	for(int j(0); j < n; j++)
+		M_materialFunctionList[j]->computeResidual(disp,
+				                                   dispETFESpace,
+				                                   fibers,
+				                                   sheets,
+				                                   activation,
+				                                   activationETFESpace,
+				                                   residualVectorPtr);
+}
 
 }//LifeV
 #endif /* EMMATERIALDATA_HPP_ */
