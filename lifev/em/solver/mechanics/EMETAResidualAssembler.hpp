@@ -41,26 +41,27 @@ namespace EMAssembler
 {
 
 template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
+template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
+//template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
 
 template< typename Mesh, typename FunctorPtr >
 void
 computeLinearizedVolumetricResidualTerms( const vector_Type& disp,
 								ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								FESpacePtr_Type<Mesh>    dispFESpace,
 								vectorPtr_Type           residualVectorPtr,
 								FunctorPtr               W)
 {
 	using namespace ExpressionAssembly;
 	//
+	auto I = value(EMUtility::identity());
 	auto GradU = _Grad_u(dispETFESpace, disp, 0);
 	auto GradUT = transpose(GradU);
-	auto P = eval(W, value(IdMatrix)) * (GradU + GradUT) * value(1./2.);
+	auto P = eval(W, I) * (GradU + GradUT) * value(1./2.);
 
 	std::cout << "Computing linear volumetric residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-				dispFESpace->qr(),
+			quadRuleTetra4pt,
 				dispETFESpace,
 				dot ( P  , grad (phi_i) )
 				) >> residualVectorPtr;
@@ -70,19 +71,19 @@ template< typename Mesh, typename FunctorPtr >
 void
 computeLinearizedDeviatoricResidualTerms( const vector_Type& disp,
 								ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								FESpacePtr_Type<Mesh>    dispFESpace,
 								vectorPtr_Type           residualVectorPtr,
 								FunctorPtr               W)
 {
 	using namespace ExpressionAssembly;
 	//
+	auto I = value(EMUtility::identity());
 	auto GradU = _Grad_u(dispETFESpace, disp, 0);
 	auto GradUT = transpose(GradU);
-	auto P = eval(W, value(IdMatrix)) * trace(GradU + GradUT) * value(1./2.) * IdMatrix;
+	auto P = eval(W, I) * trace(GradU + GradUT) * value(1./2.) * I;
 
 	std::cout << "Computing linear deviatoric residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-				dispFESpace->qr(),
+			    quadRuleTetra4pt,
 				dispETFESpace,
 				dot ( P  , grad (phi_i) )
 				) >> residualVectorPtr;
@@ -92,7 +93,6 @@ template< typename Mesh, typename FunctorPtr >
 void
 computeI1ResidualTerms( const vector_Type& disp,
 		                ETFESpacePtr_Type<Mesh>  dispETFESpace,
-		                FESpacePtr_Type<Mesh>    dispFESpace,
 		                vectorPtr_Type           residualVectorPtr,
                         FunctorPtr                  W1)
 {
@@ -100,9 +100,9 @@ computeI1ResidualTerms( const vector_Type& disp,
 	//
 	std::cout << "Computing I1 residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-				dispFESpace->qr(),
+			quadRuleTetra4pt,
 				dispETFESpace,
-				dot ( eval (W1, _F(IdMatrix, dispETFESpace, disp, 0)) * _dI1bar(IdMatrix, dispETFESpace, disp, 0), grad (phi_i) )
+				dot ( eval (W1, _F(dispETFESpace, disp, 0)) * _dI1bar(dispETFESpace, disp, 0), grad (phi_i) )
 				) >> residualVectorPtr;
 }
 
@@ -111,7 +111,6 @@ template <typename Mesh, typename FunctorPtr >
 void
 computeVolumetricResidualTerms( const vector_Type& disp,
 								ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								FESpacePtr_Type<Mesh>    dispFESpace,
 								vectorPtr_Type           residualVectorPtr,
 								FunctorPtr                  Wvol)
 {
@@ -122,13 +121,48 @@ computeVolumetricResidualTerms( const vector_Type& disp,
 
 
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-			dispFESpace->qr(),
+			quadRuleTetra4pt,
 			dispETFESpace,
-			dot ( eval(Wvol, _F(IdMatrix, dispETFESpace, disp, 0)) * _dJ(IdMatrix, dispETFESpace, disp, 0), grad (phi_i) )
+			dot ( eval(Wvol, _F(dispETFESpace, disp, 0)) * _dJ(dispETFESpace, disp, 0), grad (phi_i) )
 		  ) >> residualVectorPtr;
 
 }
 
+
+template <typename Mesh, typename FunctorPtr >
+void
+computeFiberActiveStressResidualTerms( const vector_Type& disp,
+								ETFESpacePtr_Type<Mesh>  dispETFESpace,
+							  const vector_Type& fibers,
+						        const vector_Type& sheets,
+							  const vector_Type& activation,
+								scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+								vectorPtr_Type           residualVectorPtr,
+								FunctorPtr               W)
+{
+	//
+	std::cout << "Computing Fibers Active Stress residual terms ... \n";
+
+	using namespace ExpressionAssembly;
+
+    auto F = _F(dispETFESpace, disp, 0);
+	auto I = value(EMUtility::identity());
+
+    auto f0 = value(dispETFESpace, fibers);
+    auto f = F * f0;
+    auto fxf0 = outerProduct (f, f0);
+    auto H = value(activationETFESpace, activation);
+    auto Wa = eval(W, H);
+    auto Wm = eval(W, I);
+    auto P = Wa * Wm * fxf0;
+
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+			    dispETFESpace,
+			    dot ( P, grad (phi_i) )
+		      ) >> residualVectorPtr;
+
+}
 
 
 }//EMAssembler

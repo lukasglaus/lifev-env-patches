@@ -90,7 +90,10 @@ public:
 
     EMStructuralOperator();
 
-    virtual ~EMStructuralOperator() {};
+    virtual ~EMStructuralOperator()
+    {
+    	M_EMMaterial.reset();
+    };
 
 
     //!@name Type definitions
@@ -641,23 +644,23 @@ public:
     void setup ( boost::shared_ptr<data_Type>  data,
                  const FESpacePtr_Type&        dFESpace,
                  const ETFESpacePtr_Type&      dETFESpace,
-                 const bcHandler_Type&       BCh,
+                 bcHandler_Type&       BCh,
                  boost::shared_ptr<Epetra_Comm>&     comm
                );
 
     /*! Get the offset parameter. It is taken into account when the boundary conditions
       are applied and the matrices are assembled.
     */
-    const materialPtr_Type& material() const
+    const materialPtr_Type& EMMaterial() const
     {
-        return M_activeMaterial;
+        return M_EMMaterial;
     }
 
 
-    const materialPtr_Type& activeMaterial() const
-    {
-        return M_activeMaterial;
-    }
+//    const materialPtr_Type& EMMaterial() const
+//    {
+//        return M_EMMaterial;
+//    }
 
     //@}
 
@@ -665,7 +668,7 @@ protected:
 
     //! Material class
 //    structuralOperatorPtr_Type 			 M_structuralOperator;
-    materialPtr_Type                     M_activeMaterial;
+    materialPtr_Type                     M_EMMaterial;
 
 };
 
@@ -677,7 +680,7 @@ template <typename Mesh>
 EMStructuralOperator<Mesh>::EMStructuralOperator( ) :
 //    M_structuralOperator(),
 super(),
-M_activeMaterial()
+M_EMMaterial()
 {
 }
 
@@ -686,13 +689,12 @@ void
 EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
                                  const FESpacePtr_Type& dFESpace,
                                  const ETFESpacePtr_Type& dETFESpace,
-                                 const bcHandler_Type&                    BCh,
+                                 bcHandler_Type&                    BCh,
                                  boost::shared_ptr<Epetra_Comm>&   comm)
 {
 
 	this->super::setup (data, dFESpace, dETFESpace, BCh, comm);
-//	M_structuralOperator->setup (data, dFESpace, dETFESpace, BCh, comm);
-   M_activeMaterial.reset(dynamic_cast<material_Type *>(this -> material().get()));
+   M_EMMaterial = dynamic_pointer_cast<material_Type> (this -> material());
 }
 
 
