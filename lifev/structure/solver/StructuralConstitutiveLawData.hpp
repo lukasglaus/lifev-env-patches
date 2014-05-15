@@ -360,6 +360,15 @@ public:
         return M_EMpassiveMaterialType;
     }
 
+    //! Get EM passive material name
+    /*!
+     * @return passive solid type
+     */
+    const std::string& activeStressType()
+    {
+        return M_EMactiveStressMaterialType;
+    }
+
     //! Get law type
     /*!
      * @return law type
@@ -421,6 +430,7 @@ protected:
 
     std::string            M_solidType;
     std::string            M_EMpassiveMaterialType;
+    std::string            M_EMactiveStressMaterialType;
     std::string            M_lawType;
     bool                   M_useExactJacobian;
 
