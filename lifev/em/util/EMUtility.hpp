@@ -74,7 +74,7 @@ void EpetraSqrt ( VectorEpetra& vec)
 }
 
 
-MatrixSmall<3, 3>& identity()
+MatrixSmall<3, 3> identity()
 {
     MatrixSmall<3, 3> I;
     I (0, 0) = 1.0;
