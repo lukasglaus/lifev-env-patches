@@ -5,8 +5,8 @@
     <Parameter name="saveStep" type="double" value="1.0"  />
     <Parameter name="meth" type="double" value="1.0"  />
     <Parameter name="emdt" type="double" value="0.1"  />
-    <Parameter name="longitudinalDiffusion" type="double" value="0.10"  />
-    <Parameter name="transversalDiffusion" type="double" value="0.010"  />
+    <Parameter name="longitudinalDiffusion" type="double" value="3.10"  />
+    <Parameter name="transversalDiffusion" type="double" value="3.010"  />
     <Parameter name="elementsOrder" type="string" value="P1"  />
     <Parameter name="solid_mesh_name" type="string" value="cube4.mesh"  />
     <Parameter name="solid_mesh_path" type="string" value="/Users/srossi/LifeV/meshes/"  />
@@ -17,7 +17,7 @@
     <Parameter name="fiber_X" type="double" value="0.707106781187"  />
     <Parameter name="fiber_Y" type="double" value="0.707106781187"  />
     <Parameter name="fiber_Z" type="double" value="0.0"  />
-    <Parameter name="Reuse Preconditioner" type="bool" value="false"/>
+    <Parameter name="Reuse Preconditioner" type="bool" value="true"/>
     <Parameter name="Max Iterations For Reuse" type="int" value="80"/>
     <Parameter name="Quit On Failure" type="bool" value="false"/>
     <Parameter name="Silent" type="bool" value="false"/>
