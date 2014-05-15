@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORIES(
+	activation
 	electrophysiology
 	mechanics
 )
