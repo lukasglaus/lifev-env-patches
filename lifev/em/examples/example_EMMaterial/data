@@ -42,8 +42,8 @@ lawType     = nonlinear
 #PNH = Passive NeoHookean
 #PNHL = Passive NeoHookean Linearized
 #PIE = Passive Isoptropic Exponential
-EMPassiveMaterialType =  PIE
-
+EMPassiveMaterialType =  PNH
+EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
 
    [../boundary_conditions]
@@ -55,7 +55,7 @@ EMPassiveMaterialType =  PIE
         flag       = 400
         mode       = Full
         component  = 3
-	function  = '[0.0, -50.0, 0.0]'
+	function  = '[0.0, 0.0, -0.0]'
 #        functionSD = RobinWall
 
             [./RobinAlpha]
@@ -69,8 +69,8 @@ EMPassiveMaterialType =  PIE
         [../Bottom]
         type       = Essential
         flag       = 200
-        mode       = Full
-        component  = 3
+        mode       = Component
+        component  = 2
 	function  = '0.0'
   #      functionSD = RobinWall
 
@@ -100,7 +100,7 @@ EMPassiveMaterialType =  PIE
 
         [../Back]
         type       = Essential
-        flag       = 303
+        flag       = 300
         mode       = Component
         component  = 1
 	function  = '0.0'
@@ -132,7 +132,7 @@ EMPassiveMaterialType =  PIE
 
         [../Right]
         type       = Essential
-        flag       = 909
+        flag       = 900
         mode       = Component
         component  = 0
 	function  = '0.0'
