@@ -54,19 +54,21 @@ public:
     virtual ~LinearizedNeoHookeanVolumetric() {}
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
-								  matrixPtr_Type           jacobianPtr)
+									     ETFESpacePtr_Type<Mesh>  dispETFESpace,
+									     const vector_Type& fibers,
+									     const vector_Type& sheets,
+									     matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeLinearizedVolumetricJacobianTerms(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeLinearizedVolumetricJacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
 								  vectorPtr_Type           residualVectorPtr)
 	{
-		EMAssembler::computeLinearizedVolumetricResidualTerms(disp,dispETFESpace,dispFESpace, residualVectorPtr, this->getMe());
+		EMAssembler::computeLinearizedVolumetricResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
 	}
 
 private:
@@ -94,19 +96,21 @@ public:
     virtual ~LinearizedNeoHookeanDeviatoric() {}
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+		     ETFESpacePtr_Type<Mesh>  dispETFESpace,
+		     const vector_Type& fibers,
+		     const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeLinearizedDeviatoricJacobianTerms(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeLinearizedDeviatoricJacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+		     ETFESpacePtr_Type<Mesh>  dispETFESpace,
+		     const vector_Type& fibers,
+		     const vector_Type& sheets,
 								  vectorPtr_Type           residualVectorPtr)
 	{
-		EMAssembler::computeLinearizedDeviatoricResidualTerms(disp,dispETFESpace,dispFESpace, residualVectorPtr, this->getMe());
+		EMAssembler::computeLinearizedDeviatoricResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
 	}
 
 private:

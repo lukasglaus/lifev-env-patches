@@ -12,6 +12,7 @@
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsVolumetric.hpp>
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsNeoHookean.hpp>
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsLinearizedNeoHookean.hpp>
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsSimpleActiveStress.hpp>
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsIsotropicExponential.hpp>
 
 

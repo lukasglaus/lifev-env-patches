@@ -57,18 +57,20 @@ public:
 
 	inline virtual void computeJacobian( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeI1JacobianTerms(disp,dispETFESpace,dispFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeI1JacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
 								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								  FESpacePtr_Type<Mesh>    dispFESpace,
+							         const vector_Type& fibers,
+							         const vector_Type& sheets,
 								  vectorPtr_Type           residualVectorPtr)
 	{
-		EMAssembler::computeI1ResidualTerms(disp,dispETFESpace,dispFESpace, residualVectorPtr, this->getMe());
+		EMAssembler::computeI1ResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
 	}
 
 private:
