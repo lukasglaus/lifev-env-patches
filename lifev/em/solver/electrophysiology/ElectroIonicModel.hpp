@@ -67,24 +67,13 @@
  */
 
 
-#ifndef _ELECTROIONICMODEL_H_
-#define _ELECTROIONICMODEL_H_
+#ifndef _EMEMElectroIonicModel_H_
+#define _EMEMElectroIonicModel_H_
 
-#include <lifev/core/array/MatrixSmall.hpp>
-#include <lifev/core/array/VectorSmall.hpp>
-#include <lifev/core/array/VectorEpetra.hpp>
-#include <lifev/core/array/MatrixEpetra.hpp>
-#include <lifev/core/array/VectorElemental.hpp>
-#include <lifev/core/fem/FESpace.hpp>
-#include <lifev/core/array/MapEpetra.hpp>
-#include <lifev/electrophysiology/stimulus/ElectroStimulus.hpp>
-
-#include <boost/bind.hpp>
-#include <boost/ref.hpp>
 
 namespace LifeV
 {
-class ElectroIonicModel
+class EMEMElectroIonicModel : public virtual EMElectroIonicModel
 {
 
 public:
@@ -110,32 +99,32 @@ public:
     //! Empty Constructor
     /*!
      */
-    ElectroIonicModel();
+    EMElectroIonicModel();
 
     //! Constructor
     /*!
      * @param n number of equations in the ionic model
      */
-    ElectroIonicModel ( int n );
+    EMElectroIonicModel ( int n );
 
     //! Constructor
     /*!
-     *  If the number of gating variables is unknown use the method ElectroIonicModel ( int n );
+     *  If the number of gating variables is unknown use the method EMElectroIonicModel ( int n );
      */
     /*!
      * @param n number of equations in the ionic model
      * @param g number of gating variables in the ionic model
      */
-    ElectroIonicModel ( int n, int g );
+    EMElectroIonicModel ( int n, int g );
 
     //! Copy Constructor
     /*!
      * @param Ionic an ionic model
      */
-    ElectroIonicModel ( const ElectroIonicModel& Ionic );
+    EMElectroIonicModel ( const EMElectroIonicModel& Ionic );
 
     //! Destructor
-    virtual ~ElectroIonicModel() {};
+    virtual ~EMElectroIonicModel() {};
 
     //@}
 
@@ -443,7 +432,7 @@ public:
 	/*!
 	 * @param Ionic ionic model
 	 */
-    ElectroIonicModel& operator= ( const ElectroIonicModel& Ionic );
+    EMElectroIonicModel& operator= ( const EMElectroIonicModel& Ionic );
 
     //@}
 
@@ -517,19 +506,6 @@ protected:
 
     //Number of equations in the model
     short int  M_numberOfEquations;
-    //Number of gating variables in the model
-    short int  M_numberOfGatingVariables;
-    //Resting conditions or default initial conditions of the ionic model
-    std::vector<Real> M_restingConditions;
-    //Value of the membrane capacitance in the ionic model
-    Real M_membraneCapacitance;
-    //Applied current in the 0D version and applied current in a point in the 3D version
-    Real M_appliedCurrent;
-    //Pointer to the applied current FE vector for 3D simulations
-    vectorPtr_Type M_appliedCurrentPtr;
-    //Function describing the pacing protocol of the model - NEEDS TO BE CONFIRMED
-    function_Type M_pacingProtocol;
-
 
 };
 

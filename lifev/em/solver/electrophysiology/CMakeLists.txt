@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY(IonicModels)
+
 SET( solver_electrophysiology_HEADERS
 	solver/electrophysiology/EMMonodomainSolver.hpp
 CACHE INTERNAL "")
