@@ -25,13 +25,28 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 ADD_SUBDIRECTORY(solver)
-SET(HEADERS ${HEADERS} ${solver_HEADERS} ${solver_electrophysiology_HEADERS} ${solver_mechanics_HEADERS} ${solver_mechanics_materials_HEADERS})
+SET(HEADERS ${HEADERS} 
+            ${solver_HEADERS} 
+            ${solver_electrophysiology_HEADERS}  
+            ${solver_electrophysiology_ionicModels_HEADERS}
+            ${solver_mechanics_HEADERS} 
+            ${solver_mechanics_materials_HEADERS}
+            ${solver_mechanics_materials_passive_HEADERS}
+            ${solver_mechanics_materials_activeStress_HEADERS}
+            ${solver_activation_HEADERS}
+            ${solver_activation_activeStressModels_HEADERS})
             
 SET(SOURCES ${SOURCES} 
             ${solver_SOURCES} 
             ${solver_electrophysiology_SOURCES} 
+            ${solver_electrophysiology_ionicModels_SOURCES}
             ${solver_mechanics_SOURCES}
-            ${solver_mechanics_materials_SOURCES})
+            ${solver_mechanics_materials_SOURCES}
+            ${solver_mechanics_materials_passive_SOURCES}
+            ${solver_mechanics_materials_activeStress_SOURCES}
+            ${solver_activation_SOURCES}
+            ${solver_activation_activeStressModels_SOURCES}
+            )
 
 ADD_SUBDIRECTORY(util)
 SET(HEADERS ${HEADERS} ${util_HEADERS})
