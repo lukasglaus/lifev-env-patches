@@ -83,7 +83,7 @@ Int main ( Int argc, char** argv )
     boost::shared_ptr<Epetra_Comm>  Comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
     if ( Comm->MyPID() == 0 )
     {
-        cout << "% using MPI" << endl;
+        std::cout << "% using MPI" << std::endl;
     }
 
     //*********************************************//
@@ -134,7 +134,7 @@ Int main ( Int argc, char** argv )
     Teuchos::ParameterList monodomainList = * ( Teuchos::getParametersFromXmlFile ( "MonodomainSolverParamList.xml" ) );
     if ( Comm->MyPID() == 0 )
     {
-        std::cout << " Done!" << endl;
+        std::cout << " Done!" << std::endl;
     }
 
     //********************************************//
@@ -150,7 +150,7 @@ Int main ( Int argc, char** argv )
     boost::shared_ptr<IonicAlievPanfilov>  model ( new IonicAlievPanfilov() );
     if ( Comm->MyPID() == 0 )
     {
-        std::cout << " Done!" << endl;
+        std::cout << " Done!" << std::endl;
     }
 
 
@@ -186,12 +186,13 @@ Int main ( Int argc, char** argv )
     // We transform the mesh to get a larger      //
     // domain.                                    //
     //********************************************//
-    std::vector<Real> scale(3,1.0);
-    scale[2] = 5.0; scale[1] = 5.0;
-    std::vector<Real> rotate(3,0.0);
-    std::vector<Real> translate(3,0.0);
-    MeshUtility::MeshTransformer<mesh_Type> transformer(*(monodomain -> localMeshPtr()) );
-    transformer.transformMesh(scale,rotate,translate);
+    std::vector<Real> scale (3, 1.0);
+    scale[2] = 5.0;
+    scale[1] = 5.0;
+    std::vector<Real> rotate (3, 0.0);
+    std::vector<Real> translate (3, 0.0);
+    MeshUtility::MeshTransformer<mesh_Type> transformer (* (monodomain -> localMeshPtr() ) );
+    transformer.transformMesh (scale, rotate, translate);
 
 
     //********************************************//
@@ -200,7 +201,7 @@ Int main ( Int argc, char** argv )
     //********************************************//
     std::string prefix = monodomainList.get ("importPrefix", "ciccia");
     std::string dir = monodomainList.get ("importDir", "./");
-    monodomain -> importSolution(prefix, dir, 100.0);
+    monodomain -> importSolution (prefix, dir, 100.0);
     Real solutionNorm = monodomain -> potentialPtr() -> norm2();
 
     //********************************************//
@@ -210,15 +211,15 @@ Int main ( Int argc, char** argv )
 
     if ( Comm->MyPID() == 0 )
     {
-        cout << "\nInitializing potential:  " ;
+        std::cout << "\nInitializing potential:  " ;
     }
 
     Real initialTime = monodomainList.get ("importTime", 0.0);
-    monodomain -> importSolution(prefix, dir, initialTime);
+    monodomain -> importSolution (prefix, dir, initialTime);
 
     if ( Comm->MyPID() == 0 )
     {
-        cout << "Done! \n" ;
+        std::cout << "Done! \n" ;
     }
 
     //********************************************//
@@ -233,7 +234,7 @@ Int main ( Int argc, char** argv )
 
     if ( Comm->MyPID() == 0 )
     {
-        cout << "\nImporting fibers:  " ;
+        std::cout << "\nImporting fibers:  " ;
     }
 
     VectorSmall<3> fibers;
@@ -241,17 +242,17 @@ Int main ( Int argc, char** argv )
     fibers[1] = monodomainList.get ("fibers_Y", 0.0);
     fibers[2] = monodomainList.get ("fibers_Z", 1.0);
 
-    monodomain -> setupFibers(fibers);
+    monodomain -> setupFibers (fibers);
     if ( Comm->MyPID() == 0 )
     {
-        cout << "Done! \n" ;
+        std::cout << "Done! \n" ;
     }
 
     //********************************************//
     // Saving Fiber direction to file             //
     //********************************************//
 
-    monodomain -> exportFiberDirection(problemFolder);
+    monodomain -> exportFiberDirection (problemFolder);
 
     //********************************************//
     // Create the global matrix: mass + stiffness //
@@ -259,14 +260,14 @@ Int main ( Int argc, char** argv )
 
     if ( Comm->MyPID() == 0 )
     {
-        cout << "\nSetup operators:  " ;
+        std::cout << "\nSetup operators:  " ;
     }
     monodomain -> setupLumpedMassMatrix();
     monodomain -> setupStiffnessMatrix();
     monodomain -> setupGlobalMatrix();
     if ( Comm->MyPID() == 0 )
     {
-        cout << "Done! \n" ;
+        std::cout << "Done! \n" ;
     }
 
     //********************************************//
@@ -297,40 +298,43 @@ Int main ( Int argc, char** argv )
     //********************************************//
     // Defining the cut for generating the spiral //
     //********************************************//
-	vectorPtr_Type spiral( new vector_Type( ( monodomain -> globalSolution().at(0) ) -> map() ) );
-	function_Type f = &cut;
-	monodomain -> feSpacePtr() -> interpolate(
-			static_cast<FESpace<RegionMesh<LinearTetra>, MapEpetra>::function_Type>(f),
-			*spiral, 0.0);
+    vectorPtr_Type spiral ( new vector_Type ( ( monodomain -> globalSolution().at (0) ) -> map() ) );
+    function_Type f = &cut;
+    monodomain -> feSpacePtr() -> interpolate (
+        static_cast<FESpace<RegionMesh<LinearTetra>, MapEpetra>::function_Type> (f),
+        *spiral, 0.0);
 
 
     //********************************************//
     // Loop over time solving with L-ICI          //
     //********************************************//
-	int loop = 0;
-	for (Real t = initialTime; t < (TF-dt*1e-4);)// the -dt*1e-4 is needed or you do an additional iteration
+    int loop = 0;
+    for (Real t = initialTime; t < (TF - dt * 1e-4);) // the -dt*1e-4 is needed or you do an additional iteration
     {
-		loop++;
+        loop++;
         t += dt;
 
-        if(t>=cutTime && t<=cutTime + dt)
+        if (t >= cutTime && t <= cutTime + dt)
         {
-    	    *(monodomain -> potentialPtr() ) *= *spiral;
+            * (monodomain -> potentialPtr() ) *= *spiral;
         }
         monodomain -> solveOneStepGatingVariablesFE();
         monodomain -> solveOneICIStep();
-        if(loop % iter == 0 ) exporter.postProcess (t);
+        if (loop % iter == 0 )
+        {
+            exporter.postProcess (t);
+        }
     }
     //********************************************//
-	// Close the exporter                         //
-	//********************************************//
+    // Close the exporter                         //
+    //********************************************//
 
     exporter.closeFile();
 
 
     //********************************************//
-	// Check if the test failed                   //
-	//********************************************//
+    // Check if the test failed                   //
+    //********************************************//
 
     Real newSolutionNorm = monodomain -> potentialPtr() -> norm2();
 
@@ -338,12 +342,12 @@ Int main ( Int argc, char** argv )
     MPI_Barrier (MPI_COMM_WORLD);
     MPI_Finalize();
 
-    Real err = std::abs (newSolutionNorm - solutionNorm) / std::abs(solutionNorm);
-	std::cout << std::setprecision(20) << "\nError: " <<  err << "\nSolution Norm: " <<  newSolutionNorm << "\n";
-	std::cout << std::setprecision(20) << "\nImported solution Norm: " <<  solutionNorm << "\n";
+    Real err = std::abs (newSolutionNorm - solutionNorm) / std::abs (solutionNorm);
+    std::cout << std::setprecision (20) << "\nError: " <<  err << "\nSolution Norm: " <<  newSolutionNorm << "\n";
+    std::cout << std::setprecision (20) << "\nImported solution Norm: " <<  solutionNorm << "\n";
     if ( err > 1e-8 )
     {
-    	std::cout << "\nTest Failed: " <<  err <<"\n" << "\nSolution Norm: " <<  newSolutionNorm << "\n";
+        std::cout << "\nTest Failed: " <<  err << "\n" << "\nSolution Norm: " <<  newSolutionNorm << "\n";
         return EXIT_FAILURE; // Norm of solution did not match
     }
     else

@@ -62,7 +62,7 @@ Int main ()
 
     std::cout << "Importing parameters list...";
     Teuchos::ParameterList APParameterList = * ( Teuchos::getParametersFromXmlFile ( "AlievPanfilovParameters.xml" ) );
-    std::cout << " Done!" << endl;
+    std::cout << " Done!" << std::endl;
 
 
     //********************************************//
@@ -73,7 +73,7 @@ Int main ()
     //********************************************//
     std::cout << "Building Constructor for AlievPanfilov Model with parameters ... ";
     IonicAlievPanfilov  model ( APParameterList );
-    std::cout << " Done!" << endl;
+    std::cout << " Done!" << std::endl;
 
 
     //********************************************//
@@ -93,7 +93,7 @@ Int main ()
     //********************************************//
     std::cout << "Initializing solution vector...";
     std::vector<Real> unknowns (model.Size(), 0);
-    std::cout << " Done!" << endl;
+    std::cout << " Done!" << std::endl;
 
     //********************************************//
     // Initialize the rhs to 0. The rhs is the    //
@@ -104,7 +104,7 @@ Int main ()
     //********************************************//
     std::cout << "Initializing rhs..." ;
     std::vector<Real> rhs (model.Size(), 0);
-    std::cout << " Done! "  << endl;
+    std::cout << " Done! "  << std::endl;
 
     //********************************************//
     // The model needs as external informations   //
@@ -112,7 +112,7 @@ Int main ()
     //********************************************//
     Real Iapp (0.0);
 
-   //********************************************//
+    //********************************************//
     // Simulation starts on t=0 and ends on t=TF. //
     // The timestep is given by dt                //
     //********************************************//
@@ -123,7 +123,7 @@ Int main ()
     // Open the file "output.txt" to save the     //
     // solution.                                  //
     //********************************************//
-    string filename = "output.txt";
+    std::string filename = "output.txt";
     std::ofstream output ("output.txt");
 
     //********************************************//
@@ -141,7 +141,7 @@ Int main ()
 
         //********************************************//
         // Compute the applied current. This is a     //
-    	// simple switch.                             //
+        // simple switch.                             //
         //********************************************//
         if ( t > 0.1 && t < 0.2 )
         {
@@ -162,7 +162,7 @@ Int main ()
         // Compute the rhs using the model equations  //
         //********************************************//
         model.computeRhs ( unknowns, rhs);
-        model.addAppliedCurrent(rhs);
+        model.addAppliedCurrent (rhs);
 
         //********************************************//
         // Use forward Euler method to advance the    //
@@ -195,8 +195,8 @@ Int main ()
     output.close();
 
     Real returnValue;
-    Real err = std::abs (SolutionTestNorm - SolutionNorm) / std::abs(SolutionTestNorm);
-    std::cout << std::setprecision(20) << "\nError: " << err << "\nSolution norm: " << SolutionNorm << "\n";
+    Real err = std::abs (SolutionTestNorm - SolutionNorm) / std::abs (SolutionTestNorm);
+    std::cout << std::setprecision (20) << "\nError: " << err << "\nSolution norm: " << SolutionNorm << "\n";
     if ( err > 1e-12 )
     {
         returnValue = EXIT_FAILURE; // Norm of solution did not match

@@ -79,7 +79,7 @@ Int main ( Int argc, char** argv )
     Epetra_MpiComm Comm (MPI_COMM_WORLD);
     if ( Comm.MyPID() == 0 )
     {
-    	std::cout << "% using MPI" << std::endl;
+        std::cout << "% using MPI" << std::endl;
     }
 
 
@@ -118,7 +118,7 @@ Int main ( Int argc, char** argv )
 
     //********************************************//
     // Initialize the solution with the default   //
-    // values									  //
+    // values                                     //
     //********************************************//
     std::cout << "Initializing solution vector...";
     std::vector<Real> states (ionicModel.Size(), 0);
@@ -165,7 +165,7 @@ Int main ( Int argc, char** argv )
     // Open the file "output.txt" to save the     //
     // solution.                                  //
     //********************************************//
-    string filename = "output.txt";
+    std::string filename = "output.txt";
     std::ofstream output ("output.txt");
 
     std::cout << "Potential: " << states[0] << std::endl;
@@ -178,7 +178,7 @@ Int main ( Int argc, char** argv )
 
         //********************************************//
         // Compute the applied current. This is a     //
-    	// simple switch.                             //
+        // simple switch.                             //
         //********************************************//
         if ( t >= 10 && t <= 12 )
         {
@@ -240,11 +240,11 @@ Int main ( Int argc, char** argv )
     MPI_Finalize();
     Real returnValue;
 
-    Real err = std::abs (SolutionTestNorm - SolutionNorm) / std::abs(SolutionTestNorm);
-    std::cout << std::setprecision(20) << "\nError: " << err << "\nSolution norm: " << SolutionNorm << "\n";
+    Real err = std::abs (SolutionTestNorm - SolutionNorm) / std::abs (SolutionTestNorm);
+    std::cout << std::setprecision (20) << "\nError: " << err << "\nSolution norm: " << SolutionNorm << "\n";
     if ( err > 1e-12 )
     {
-    	std::cout << "\nTest Failed!\n";
+        std::cout << "\nTest Failed!\n";
         returnValue = EXIT_FAILURE; // Norm of solution did not match
     }
     else

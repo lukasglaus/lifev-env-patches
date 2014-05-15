@@ -89,7 +89,7 @@ Int main ( Int argc, char** argv )
     boost::shared_ptr<Epetra_Comm>  Comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
     if ( Comm->MyPID() == 0 )
     {
-        cout << "% using MPI" << endl;
+        std::cout << "% using MPI" << std::endl;
     }
 
     //*********************************************//
@@ -139,7 +139,7 @@ Int main ( Int argc, char** argv )
     Teuchos::ParameterList monodomainList = * ( Teuchos::getParametersFromXmlFile ( "MonodomainSolverParamList.xml" ) );
     if ( Comm->MyPID() == 0 )
     {
-        std::cout << " Done!" << endl;
+        std::cout << " Done!" << std::endl;
     }
 
     //********************************************//
@@ -155,7 +155,7 @@ Int main ( Int argc, char** argv )
     boost::shared_ptr<IonicAlievPanfilov>  model ( new IonicAlievPanfilov() );
     if ( Comm->MyPID() == 0 )
     {
-        std::cout << " Done!" << endl;
+        std::cout << " Done!" << std::endl;
     }
 
 
@@ -192,12 +192,13 @@ Int main ( Int argc, char** argv )
     // We transform the mesh to get a larger      //
     // domain.                                    //
     //********************************************//
-    std::vector<Real> scale(3,1.0);
-    scale[2] = 5.0; scale[1] = 5.0;
-    std::vector<Real> rotate(3,0.0);
-    std::vector<Real> translate(3,0.0);
-    MeshUtility::MeshTransformer<mesh_Type> transformer(*(monodomain -> localMeshPtr()) );
-    transformer.transformMesh(scale,rotate,translate);
+    std::vector<Real> scale (3, 1.0);
+    scale[2] = 5.0;
+    scale[1] = 5.0;
+    std::vector<Real> rotate (3, 0.0);
+    std::vector<Real> translate (3, 0.0);
+    MeshUtility::MeshTransformer<mesh_Type> transformer (* (monodomain -> localMeshPtr() ) );
+    transformer.transformMesh (scale, rotate, translate);
 
 
     //********************************************//
@@ -215,7 +216,7 @@ Int main ( Int argc, char** argv )
     //********************************************//
     if ( Comm->MyPID() == 0 )
     {
-        cout << "\nSetting fibers:  " ;
+        std::cout << "\nSetting fibers:  " ;
     }
     // This is used only to initialize the pointer in the solver
     // could be replaced with a method "initialize fibers"
@@ -225,44 +226,44 @@ Int main ( Int argc, char** argv )
     // and the signal may propagate.
     monodomain -> setupFibers();
     function_Type fibreFunction = &fiberDistribution;
-    ElectrophysiologyUtility::setFibersFromFunction(monodomain -> fiberPtr(), monodomain -> localMeshPtr(), fibreFunction);
-    ElectrophysiologyUtility::normalize(*(monodomain -> fiberPtr()));
+    ElectrophysiologyUtility::setFibersFromFunction (monodomain -> fiberPtr(), monodomain -> localMeshPtr(), fibreFunction);
+    ElectrophysiologyUtility::normalize (* (monodomain -> fiberPtr() ) );
 
     //********************************************//
     // Set some noise in the fiber.               //
-	// Set to false by default.                   //
+    // Set to false by default.                   //
     //********************************************//
     bool randomNoise = monodomainList.get ("noise", false);
-    if(randomNoise)
+    if (randomNoise)
     {
-    	std::vector<bool> component(3,false);
-    	component[0]=true;
-    	Real magnitude = monodomainList.get ("noise_magnitude", 1e-3);
-    	ElectrophysiologyUtility::addNoiseToFibers(*(monodomain -> fiberPtr()), magnitude, component );
+        std::vector<bool> component (3, false);
+        component[0] = true;
+        Real magnitude = monodomainList.get ("noise_magnitude", 1e-3);
+        ElectrophysiologyUtility::addNoiseToFibers (* (monodomain -> fiberPtr() ), magnitude, component );
     }
     if ( Comm->MyPID() == 0 )
     {
-        cout << "Done! \n" ;
+        std::cout << "Done! \n" ;
     }
 
     //********************************************//
     // Saving Fiber direction to file             //
     //********************************************//
-    monodomain -> exportFiberDirection(problemFolder);
+    monodomain -> exportFiberDirection (problemFolder);
 
     //********************************************//
     // Create the global matrix: mass + stiffness //
     //********************************************//
     if ( Comm->MyPID() == 0 )
     {
-        cout << "\nSetup operators:  " ;
+        std::cout << "\nSetup operators:  " ;
     }
     monodomain -> setupLumpedMassMatrix();
     monodomain -> setupStiffnessMatrix();
     monodomain -> setupGlobalMatrix();
     if ( Comm->MyPID() == 0 )
     {
-        cout << "Done! \n" ;
+        std::cout << "Done! \n" ;
     }
 
     //********************************************//
@@ -289,7 +290,7 @@ Int main ( Int argc, char** argv )
     //********************************************//
     // Define the pacing protocol                 //
     //********************************************//
-	StimulusPacingProtocol pacing;
+    StimulusPacingProtocol pacing;
 
     //********************************************//
     // Import parameters for the pacing protocol  //
@@ -303,56 +304,56 @@ Int main ( Int argc, char** argv )
     Teuchos::ParameterList pacingList = * ( Teuchos::getParametersFromXmlFile ( pacingListFileName ) );
     if ( Comm->MyPID() == 0 )
     {
-        std::cout << " Done!" << endl;
+        std::cout << " Done!" << std::endl;
     }
 
-    pacing.setParameters(pacingList);
-    pacing.setTimeStep( monodomain -> timeStep() );
+    pacing.setParameters (pacingList);
+    pacing.setTimeStep ( monodomain -> timeStep() );
 
     //********************************************//
     // Loop over time solving with L-ICI          //
     //********************************************//
-	int loop = 0;
-	for (Real t = monodomain -> initialTime(); t < TF;)
+    int loop = 0;
+    for (Real t = monodomain -> initialTime(); t < TF;)
     {
-	    //********************************************//
-	    // Set the applied current from the pacing    //
-		// protocol                                   //
-	    //********************************************//
-	    monodomain -> setAppliedCurrentFromElectroStimulus ( pacing, t);
-		loop++;
+        //********************************************//
+        // Set the applied current from the pacing    //
+        // protocol                                   //
+        //********************************************//
+        monodomain -> setAppliedCurrentFromElectroStimulus ( pacing, t);
+        loop++;
         t += dt;
 
-	    //********************************************//
-	    // Solve the monodomain equations.            //
-	    //********************************************//
+        //********************************************//
+        // Solve the monodomain equations.            //
+        //********************************************//
 
         monodomain -> solveOneStepGatingVariablesFE();
         monodomain -> solveOneICIStep();
 
         //********************************************//
-		// Exporting the solution.                    //
-		//********************************************//
-        if(loop % iter == 0 )
-		{
-			if ( Comm->MyPID() == 0 )
-			{
-				std::cout << "\ntime = " << t;
-			}
-			exporter.postProcess (t);
-		}
+        // Exporting the solution.                    //
+        //********************************************//
+        if (loop % iter == 0 )
+        {
+            if ( Comm->MyPID() == 0 )
+            {
+                std::cout << "\ntime = " << t;
+            }
+            exporter.postProcess (t);
+        }
     }
 
     //********************************************//
-	// Close the exporter                         //
-	//********************************************//
+    // Close the exporter                         //
+    //********************************************//
 
     exporter.closeFile();
 
 
     //********************************************//
-	// Check if the test failed                   //
-	//********************************************//
+    // Check if the test failed                   //
+    //********************************************//
     Real newSolutionNorm = monodomain -> potentialPtr() -> norm2();
 
     monodomain.reset();
@@ -360,10 +361,10 @@ Int main ( Int argc, char** argv )
     MPI_Finalize();
 
 
-    Real err = std::abs (newSolutionNorm - solutionNorm) / std::abs(solutionNorm);
+    Real err = std::abs (newSolutionNorm - solutionNorm) / std::abs (solutionNorm);
     if ( err > 1e-8 )
     {
-    	std::cout << "\nTest Failed: " <<  err <<"\n" << "\nSolution Norm: " <<  newSolutionNorm << "\n";
+        std::cout << "\nTest Failed: " <<  err << "\n" << "\nSolution Norm: " <<  newSolutionNorm << "\n";
         return EXIT_FAILURE; // Norm of solution did not match
     }
     else
@@ -377,21 +378,33 @@ Int main ( Int argc, char** argv )
 //Definition of the fiber direction
 Real fiberDistribution ( const Real& /*t*/, const Real& /*x*/, const Real& y, const Real& z, const ID&   id)
 {
-	Real y0 = 2.5;
-	Real z0 = 2.5;
-	Real r = std::sqrt((y-y0)*(y-y0)+(z-z0)*(z-z0));
+    Real y0 = 2.5;
+    Real z0 = 2.5;
+    Real r = std::sqrt ( (y - y0) * (y - y0) + (z - z0) * (z - z0) );
 
-	switch( id )
-	{
-		case 0:
-			return 0.0;
-		case 1:
-			if(r>1e-16)  return (z-z0)/r;
-			else return 0.0;
-		case 2:
-			if(r>1e-16)  return (y0-y)/r;
-			else return 1.0;
-		default:
-			return 0.0;
-	}
+    switch ( id )
+    {
+        case 0:
+            return 0.0;
+        case 1:
+            if (r > 1e-16)
+            {
+                return (z - z0) / r;
+            }
+            else
+            {
+                return 0.0;
+            }
+        case 2:
+            if (r > 1e-16)
+            {
+                return (y0 - y) / r;
+            }
+            else
+            {
+                return 1.0;
+            }
+        default:
+            return 0.0;
+    }
 }

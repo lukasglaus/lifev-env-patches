@@ -61,8 +61,6 @@
 #include <Teuchos_ParameterList.hpp>
 #include "Teuchos_XMLParameterListHelpers.hpp"
 
-using std::cout;
-using std::endl;
 using namespace LifeV;
 
 //This is the norm of the precomputed solution
@@ -76,7 +74,7 @@ Int main ( Int argc, char** argv )
     Epetra_MpiComm Comm (MPI_COMM_WORLD);
     if ( Comm.MyPID() == 0 )
     {
-        cout << "% using MPI" << endl;
+        std::cout << "% using MPI" << std::endl;
     }
 
     //********************************************//
@@ -85,9 +83,9 @@ Int main ( Int argc, char** argv )
     // in the execution directory.                //
     //********************************************//
 
-    cout << "Importing parameters list...";
+    std::cout << "Importing parameters list...";
     Teuchos::ParameterList parameterList = * ( Teuchos::getParametersFromXmlFile ( "FoxParameters.xml" ) );
-    cout << " Done!" << endl;
+    std::cout << " Done!" << std::endl;
 
     //********************************************//
     // Creates a new model object representing the//
@@ -95,9 +93,9 @@ Int main ( Int argc, char** argv )
     // model input are the parameters. Pass  the  //
     // parameter list in the constructor          //
     //********************************************//
-    cout << "Building Constructor for Fox Model with parameters ... ";
+    std::cout << "Building Constructor for Fox Model with parameters ... ";
     IonicFox  model;
-    cout << " Done!" << endl;
+    std::cout << " Done!" << std::endl;
 
     //********************************************//
     // Show the parameters of the model as well as//
@@ -107,12 +105,12 @@ Int main ( Int argc, char** argv )
 
     //********************************************//
     // Initialize the solution with the default   //
-    // values									  //
+    // values                                     //
     //********************************************//
-    cout << "Initializing solution vector...";
+    std::cout << "Initializing solution vector...";
     std::vector<Real> unknowns (model.Size(), 0 );
-    model.initialize(unknowns);
-    cout << " Done!" << endl;
+    model.initialize (unknowns);
+    std::cout << " Done!" << std::endl;
 
     //********************************************//
     // Initialize the rhs to 0. The rhs is the    //
@@ -121,9 +119,9 @@ Int main ( Int argc, char** argv )
     // variables, that is, the right hand side of //
     // the differential equation.                 //
     //********************************************//
-    cout << "Initializing rhs..." ;
+    std::cout << "Initializing rhs..." ;
     std::vector<Real> rhs (model.Size() + 1, 0);
-    cout << " Done! "  << endl;
+    std::cout << " Done! "  << std::endl;
 
     //********************************************//
     // The model needs as external informations   //
@@ -145,14 +143,14 @@ Int main ( Int argc, char** argv )
     // Open the file "output.txt" to save the     //
     // solution.                                  //
     //********************************************//
-    string filename = "output.txt";
+    std::string filename = "output.txt";
     std::ofstream output  ("output.txt");
 
 
     //********************************************//
     // Time loop starts.                          //
     //********************************************//
-    cout << "Time loop starts...\n";
+    std::cout << "Time loop starts...\n";
 
 
     int iter (0);
@@ -169,7 +167,7 @@ Int main ( Int argc, char** argv )
 
         //********************************************//
         // Compute the applied current. This is a     //
-    	// simple switch.                             //
+        // simple switch.                             //
         //********************************************//
         if ( t >= timeSt && t <= timeSt + 1.0 )
         {
@@ -184,14 +182,14 @@ Int main ( Int argc, char** argv )
             Iapp = 0.;
         }
 
-        cout << "\r " << t << " ms.       " << std::flush;
+        std::cout << "\r " << t << " ms.       " << std::flush;
 
         //********************************************//
         // Compute the rhs using the model equations  //
         //********************************************//
         model.setAppliedCurrent (Iapp);
         model.computeRhs ( unknowns, rhs );
-        model.addAppliedCurrent(rhs);
+        model.addAppliedCurrent (rhs);
 
 
         //********************************************//
@@ -227,8 +225,8 @@ Int main ( Int argc, char** argv )
         t = t + dt;
     }
 
-    cout << "\n...Time loop ends.\n";
-    cout << "Solution written on file: " << filename << "\n";
+    std::cout << "\n...Time loop ends.\n";
+    std::cout << "Solution written on file: " << filename << "\n";
 
     //********************************************//
     // Close exported file.                       //
@@ -239,12 +237,12 @@ Int main ( Int argc, char** argv )
     //! Finalizing Epetra communicator
     MPI_Finalize();
     Real returnValue;
-    Real err = std::abs (SolutionTestNorm - SolutionNorm) / std::abs(SolutionTestNorm);
-    std::cout << std::setprecision(20) << "\nError: " << err << "\nSolution norm: " << SolutionNorm << "\n";
+    Real err = std::abs (SolutionTestNorm - SolutionNorm) / std::abs (SolutionTestNorm);
+    std::cout << std::setprecision (20) << "\nError: " << err << "\nSolution norm: " << SolutionNorm << "\n";
     if ( err > 1e-12 )
 
     {
-    	std::cout << "\nTest Failed!\n";
+        std::cout << "\nTest Failed!\n";
         returnValue = EXIT_FAILURE; // Norm of solution did not match
     }
     else
