@@ -37,6 +37,7 @@
 #ifndef EMMECHANICALEXPRESSIONS_HPP_
 #define EMMECHANICALEXPRESSIONS_HPP_
 
+#include <lifev/em/util/EMUtility.hpp>
 
 //w = w
 //x = identity matrix
@@ -50,26 +51,26 @@
 ///////////////////////////////////////////////////////////////////////////
 // I = identity matrix
 //matrix
-#define _I(x)                 ( value (x) )
+#define _I                 ( value (EMUtility::identity()) )
 // \nabla u = gradient of the zlacement
 //matrix
 #define _Grad_u(y, z, w)      ( grad (y, z, w) )
 // F = deformation gradient tensor
 //matrix
-#define _F(x, y, z, w)        ( _Grad_u(y, z, w) + _I(x) )
+#define _F(y, z, w)        ( _Grad_u(y, z, w) + _I )
 // F^-T = inverse transpose of F
 //matrix
-#define _FmT(x, y, z, w)      ( minusT (_F(x, y, z, w)) )
+#define _FmT(y, z, w)      ( minusT (_F(y, z, w)) )
 // C = F^TF = Right Cauchy Green tensor
 //matrix
-#define _C(x, y, z, w)        ( transpose(_F(x, y, z, w)) * _F(x, y, z, w) )
+#define _C(y, z, w)        ( transpose(_F(y, z, w)) * _F(y, z, w) )
 
 // dF = \delta \nabla u = variation of F
 //matrix
 #define _dF   ( grad (phi_j) )
 // dFmTdF = dFmT : dF = Derivative of FmT with respect to F in direction dF
 //matrix
-#define _dFmTdF(x, y, z, w)  ( value (-1.0) * _FmT(x, y, z, w) * transpose (_dF) * _FmT(x, y, z, w) )
+#define _dFmTdF(y, z, w)  ( value (-1.0) * _FmT(y, z, w) * transpose (_dF) * _FmT(y, z, w) )
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -77,30 +78,30 @@
 ///////////////////////////////////////////////////////////////////////////
 // J = determinant of F
 //scalar
-#define _J(x, y, z, w)      ( det (_F(x, y, z, w)) )// J^{-2/3}
+#define _J(y, z, w)      ( det (_F(y, z, w)) )// J^{-2/3}
 // Jm23 = J^{-2/3}
 //scalar
-#define _Jm23(x, y, z, w)   ( pow (_J(x, y, z, w), -2. / 3) )
+#define _Jm23(y, z, w)   ( pow (_J(y, z, w), -2. / 3) )
 // dJ = Derivative of J with respect to F = J F^{-T}
 //matrix
-#define _dJ(x, y, z, w)     ( _J(x, y, z, w) * _FmT(x, y, z, w) )
+#define _dJ(y, z, w)     ( _J(y, z, w) * _FmT(y, z, w) )
 // dJdF = dJ : dF = Derivative of J in direction dF
 //scalar
-#define _dJdF(x, y, z, w)   ( dot( _dJ(x, y, z, w), _dF) )
+#define _dJdF(y, z, w)   ( dot( _dJ(y, z, w), _dF) )
 // d2JdF = d2J : dF = Second derivative of J in direction dF
 //matrix
-#define _d2JdF(x, y, z, w)  ( _dJdF(x, y, z, w) * _FmT(x, y, z, w) \
-		                                   + _J(x, y, z, w) * _dFmTdF(x, y, z, w) )
+#define _d2JdF(y, z, w)  ( _dJdF(y, z, w) * _FmT(y, z, w) \
+		                                   + _J(y, z, w) * _dFmTdF(y, z, w) )
 // dJm23 = Derivative of J^{-2/3}
 //matrix
-#define _dJm23(x, y, z, w)  ( value(-2.0/3.0) * _Jm23(x, y, z, w) * _FmT(x, y, z, w) )
+#define _dJm23(y, z, w)  ( value(-2.0/3.0) * _Jm23(y, z, w) * _FmT(y, z, w) )
 // dJm23dF = dJm23 : dF = Derivative of Jm23 with respect to F in direction dF
 //scalar
-#define _dJm23dF(x, y, z, w)  ( dot( _dJm23(x, y, z, w), _dF)  )
+#define _dJm23dF(y, z, w)  ( dot( _dJm23(y, z, w), _dF)  )
 // d2Jm23dF = d2Jm23 : dF = Second derivative of Jm23 with respect to F in direction dF
 //matrix
-#define _d2Jm23dF(x, y, z, w)  ( value(-2.0/3.0) * _Jm23(x, y, z, w) * ( _dFmTdF(x, y, z, w) \
-		                                      + _dJm23dF(x, y, z, w) * _FmT(x, y, z, w) ) )
+#define _d2Jm23dF(y, z, w)  ( value(-2.0/3.0) * _Jm23(y, z, w) * ( _dFmTdF(y, z, w) \
+		                                      + _dJm23dF(y, z, w) * _FmT(y, z, w) ) )
 
 ///////////////////////////////////////////////////////////////////////////
 // VOLUMETRIC PART
@@ -124,24 +125,24 @@
 // ISOTROPIC TERMS DEPENDING ON I1
 ///////////////////////////////////////////////////////////////////////////
 // I_1 = first invariant of C
-#define _I1(x, y, z, w)           ( dot( _F(x, y, z, w), _F(x, y, z, w)) )
+#define _I1(y, z, w)           ( dot( _F(y, z, w), _F(y, z, w)) )
 // dI1 = Derivative of I_1 with respect of F = 2 F
 //matrix
-#define _dI1(x, y, z, w)          ( value(2.0) * _F(x, y, z, w) )
+#define _dI1(y, z, w)          ( value(2.0) * _F(y, z, w) )
 
 // \bar{I}_1 = modified invariant of C
-#define _I1bar(x, y, z, w)        ( _Jm23(x, y, z, w) * _I1(x, y, z, w) )
+#define _I1bar(y, z, w)        ( _Jm23(y, z, w) * _I1(y, z, w) )
 // dI1bar = Derivative of \bar{I}_1 with respect to F
 //matrix
-#define _dI1bar(x, y, z, w)       ( _Jm23(x, y, z, w) * _dI1(x, y, z, w) + _I1(x, y, z, w) * _dJm23(x, y, z, w) )
+#define _dI1bar(y, z, w)       ( _Jm23(y, z, w) * _dI1(y, z, w) + _I1(y, z, w) * _dJm23(y, z, w) )
 
 
 // dI1dF = dI1 : dF = Derivative of I_1 with respect to F in direction dF
 //scalar
-#define _dI1dF(x, y, z, w)        ( dot( _dI1(x, y, z, w), _dF ) )
+#define _dI1dF(y, z, w)        ( dot( _dI1(y, z, w), _dF ) )
 // dI1bardF = dI1bar : dF = Derivative of \bar{I}_1 with respect to F in direction dF
 //scalar
-#define _dI1bardF(x, y, z, w)     ( dot( _dI1bar(x, y, z, w), _dF ) )
+#define _dI1bardF(y, z, w)     ( dot( _dI1bar(y, z, w), _dF ) )
 
 // d2I1dF = d2I1 : dF = Second derivative of I_1 with respect to F in direction dF
 //matrix
@@ -149,10 +150,10 @@
 
 // d2I1bardF = d2I1bar : dF = Second derivative of I1bar with respect to F in direction dF
 //matrix
-#define _d2I1bardF(x, y, z, w)    ( _dJm23dF(x, y, z, w) * _dI1(x, y, z, w) \
-		                                         + _Jm23(x, y, z, w) * _d2I1dF                            \
-		                                         + _I1(x, y, z, w) * _d2Jm23dF(x, y, z, w) \
-		                                         + _dI1dF(x, y, z, w) * _dJm23(x, y, z, w) )
+#define _d2I1bardF(y, z, w)    ( _dJm23dF(y, z, w) * _dI1(y, z, w) \
+		                                         + _Jm23(y, z, w) * _d2I1dF                            \
+		                                         + _I1(y, z, w) * _d2Jm23dF(y, z, w) \
+		                                         + _dI1dF(y, z, w) * _dJm23(y, z, w) )
 
 // WI = Derivative of the energy W with respect to I1bar
 //scalar
@@ -170,7 +171,10 @@
 #define _dP1          ( _dW1 * _dI1bardF * _dI1bar + _W1 * _d2I1bardF )
 
 
-
-
+///////////////////////////////////////////////////////////////////////////
+// ISOTROPIC TERMS DEPENDING ON I4
+///////////////////////////////////////////////////////////////////////////
+//f fiber vector
+//_
 
 #endif /* EMMECHANICALEXPRESSIONS_HPP_ */

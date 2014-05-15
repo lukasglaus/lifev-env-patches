@@ -49,7 +49,7 @@
 //#include <lifev/em/solver/mechanics/materials/EMActiveStrainMaterial.hpp>
 
 #include <lifev/em/util/EMUtility.hpp>
-#include <lifev/em/solver/mechanics/materials/passive_materials/PassiveMaterialsList.hpp>
+#include <lifev/em/solver/mechanics/materials/MaterialsList.hpp>
 
 using namespace LifeV;
 
@@ -193,7 +193,7 @@ public:
         ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
     }
 
-    void setupFiberVector ( Real& fx, Real& fy, Real& fz )
+    void setupFiberVector ( Real fx, Real fy, Real fz )
     {
         ElectrophysiologyUtility::setupFibers ( *M_fiberVectorPtr, fx, fy, fz  );
         ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
@@ -211,7 +211,7 @@ public:
         ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
     }
 
-    void setupSheetVector ( Real& sx, Real& sy, Real& sz )
+    void setupSheetVector ( Real sx, Real sy, Real sz )
     {
         ElectrophysiologyUtility::setupFibers ( *M_sheetVectorPtr, sx, sy, sz);
         ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
@@ -391,9 +391,10 @@ protected:
     //materialPtr_Type                               M_materialPtr;
 //    Real										   M_bulkModulus;
 
-	materialPtr_Type                        M_passiveMaterialPtr;
+	materialPtr_Type                               M_passiveMaterialPtr;
+	materialPtr_Type                               M_activeStressMaterialPtr;
 
-    vectorPtr_Type                      M_activationPtr;
+    vectorPtr_Type                                 M_activationPtr;
 
 
 
@@ -405,7 +406,8 @@ EMStructuralConstitutiveLaw<MeshType>::EMStructuralConstitutiveLaw():
 	M_scalarETFESpacePtr            ( ),
 	M_fiberVectorPtr                ( ),
 	M_sheetVectorPtr                ( ),
-	M_passiveMaterialPtr                   ( ),
+	M_passiveMaterialPtr            ( ),
+	M_activeStressMaterialPtr       ( ),
 	M_residualVectorPtr             ( ),
 	M_activationPtr					( )
 {}
@@ -443,10 +445,23 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_activationPtr.reset(new vector_Type (M_scalarETFESpacePtr -> map() ) );
 
     std::string passiveMaterialType(dataMaterial -> passiveType());
+    std::string activeStressMaterialType(dataMaterial -> activeStressType());
+    std::cout << "\n===========================";
+    std::cout << "\nPassive Type: " << passiveMaterialType;
+    std::cout << "\nActive Stress Type: " << activeStressMaterialType;
+    std::cout << "\n===========================\n";
+
+    M_activeStressMaterialPtr.reset(material_Type::EMMaterialFactory::instance().createObject ( activeStressMaterialType ));
+    std::cout << "\nCreated Active Stress Material!\n";
+    M_activeStressMaterialPtr-> showMe();
+    std::cout << "\nShowed Active Stress Material!\n";
 //    M_materialPtr.reset(new EMMaterial<MeshType>(materialType));
     M_passiveMaterialPtr.reset(material_Type::EMMaterialFactory::instance().createObject ( passiveMaterialType ));
     M_passiveMaterialPtr-> showMe();
-//    // The 2 is because the law uses three parameters (mu, bulk).
+    std::cout << "\nCreated Passive Material!\n";
+
+
+    //    // The 2 is because the law uses three parameters (mu, bulk).
 //    // another way would be to set up the number of constitutive parameters of the law
 //    // in the data file to get the right size. Note the comment below.
 //    this->M_vectorsParameters.reset ( new vectorsParameters_Type ( 2 ) );
@@ -454,208 +469,6 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 //    this->setupVectorsParameters();
 }
 
-//template <typename MeshType>
-//void
-//EMStructuralConstitutiveLaw<MeshType>::computeJacobian(const vector_Type& disp)
-//{
-//	*(this->M_jacobian) *= 0.0;
-//    computeVolumetricJacobianTerms(disp);
-//    computeI1JacobianTerms(disp);
-//    this->M_jacobian->globalAssemble();
-//}
-
-
-//template <typename MeshType>
-//void
-//EMStructuralConstitutiveLaw<MeshType>::computeVolumetricJacobianTerms(const vector_Type& disp)
-//{
-//	{
-//		using namespace ExpressionAssembly;
-//
-//
-//		boost::shared_ptr<MaterialFunctions::Volumetric<MeshType> > Wvol( new MaterialFunctions::Volumetric<MeshType>);
-//		boost::shared_ptr<MaterialFunctions::dVolumetric<MeshType> > dWvol( new MaterialFunctions::dVolumetric<MeshType>);
-//
-////		auto tmpdP = eval(Wvol, _F(M_identity, this->M_dispETFESpace, disp, 0) ) * _d2JdF(M_identity, this->M_dispETFESpace, disp, 0);
-////		auto dP = tmpdP + eval( dWvol, _F(M_identity, this->M_dispETFESpace, disp, 0))
-////				         * _dJdF(M_identity, this->M_dispETFESpace, disp, 0) * _dJ(M_identity, this->M_dispETFESpace, disp, 0);
-//
-//        auto I = value(M_identity);
-//        auto GradU = grad(this->M_dispETFESpace, disp, 0);
-//        auto F = I + GradU;
-//        auto FmT = minusT(F);
-//        auto J = det(F);
-//        auto dJ = J * FmT;
-//        //auto W =  value(2000.0) * ( (J-1) + log(J) / J );
-//        auto dW =  value(2000.0) / J / J * ( 1 + J * J + log(J) );
-//        auto W = eval(Wvol, F) ;
-//        //auto dW = eval(dWvol, F);
-//        auto P = W * dJ;
-//
-//        auto dF = grad(phi_j);
-//	    auto FdF = dot(F, dF);
-//	    auto FmTdF = dot(FmT, dF);
-//	    auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
-//
-//	    auto dP1dF = W * J * ( FmTdF * I + FmT * dF ) * FmT;
-//	    auto dP2dF = dW * J * J * FmTdF * FmT;
-//
-//
-//        auto dP = dP1dF + dP2dF;
-//
-//
-//		integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
-//					this->M_dispFESpace->qr(),
-//					this->M_dispETFESpace,
-//					this->M_dispETFESpace,
-//					dot ( dP, grad (phi_i) )
-//				  ) >> this->M_jacobian;
-//
-//	}
-//}
-//
-//template <typename MeshType>
-//void
-//EMStructuralConstitutiveLaw<MeshType>::computeI1JacobianTerms(const vector_Type& disp)
-//{
-//	{
-//        using namespace ExpressionAssembly;
-//
-//		boost::shared_ptr<MaterialFunctions::NeoHookean<MeshType> > W1( new MaterialFunctions::NeoHookean<MeshType>);
-//
-//
-////        auto I = value(M_identity);
-////        auto GradU = grad(this->M_dispETFESpace, disp, 0);
-////        auto F = I + GradU;
-////        auto FmT = minusT(F);
-////        auto I1 = dot(F, F);
-////        auto J = det(F);
-////        auto Jm23 = pow(J, -2.0/3.0);
-////        auto dI1 = value(2.0) * F;
-////        auto WI = value(4960.0);
-////        //auto WI = eval(W1, F);
-////        auto P = WI * Jm23 * ( F - value(1.0/3.0) * I1 * FmT ) ;
-////        auto dF = grad(phi_j);
-////        auto FdF = dot(F, dF);
-////        auto FmTdF = dot(FmT, dF);
-////        auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
-////
-////
-////        auto dP1dF = value(-2.0 / 3.0) * P * FmTdF;
-////        auto dP2dF = WI * Jm23 * (dF - value(2.0/3.0) * FdF * FmT - value(1.0/3.0) * I1 * dFmTdF);
-//
-//        auto I = _I(M_identity);
-//        auto GradU = _Grad_u(this->M_dispETFESpace, disp, 0);
-//        auto F = _F(M_identity, this->M_dispETFESpace, disp, 0); //I + GradU;
-//        auto FmT = _FmT(M_identity, this->M_dispETFESpace, disp, 0);
-//        auto I1 = _I1(M_identity, this->M_dispETFESpace, disp, 0);
-//        auto J = det(F);
-//        auto Jm23 = pow(J, -2.0/3.0);
-//        auto dI1 = value(2.0) * F;
-//        //auto WI = value(4960.0);
-//        auto WI = eval(W1, F);
-//        auto P = WI * Jm23 * ( F - value(1.0/3.0) * I1 * FmT ) ;
-//        auto dF = grad(phi_j);
-//        auto FdF = dot(F, dF);
-//        auto FmTdF = dot(FmT, dF);
-//        auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
-//
-//
-//        auto dP1dF = value(-2.0 / 3.0) * P * FmTdF;
-//        auto dP2dF = WI * Jm23 * (dF - value(2.0/3.0) * FdF * FmT - value(1.0/3.0) * I1 * dFmTdF);
-//
-//
-//
-//
-//        auto dP = dP1dF + dP2dF;
-////		auto dP =   eval( W1, _F(M_identity, this->M_dispETFESpace, disp, 0)) * _d2I1bardF(M_identity, this->M_dispETFESpace, disp, 0) ;
-//		integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
-//					this->M_dispFESpace->qr(),
-//					this->M_dispETFESpace,
-//					this->M_dispETFESpace,
-//					dot ( dP, grad (phi_i) )
-//				  ) >> this->M_jacobian;
-//	}
-//}
-
-//template <typename MeshType>
-//void
-//EMStructuralConstitutiveLaw<MeshType>::computeResidual(const vector_Type& disp)
-//{
-//	*(M_residualVectorPtr) *= 0.0;
-//	computeVolumetricResidualTerms(disp);
-//	computeI1ResidualTerms(disp);
-//	this->M_residualVectorPtr->globalAssemble();
-//}
-//
-//template <typename MeshType>
-//void
-//EMStructuralConstitutiveLaw<MeshType>::computeVolumetricResidualTerms(const vector_Type& disp)
-//{
-//	{
-//	        using namespace ExpressionAssembly;
-//			boost::shared_ptr<MaterialFunctions::Volumetric<MeshType> > Wvol( new MaterialFunctions::Volumetric<MeshType>);
-//
-//	        //auto P  = eval(Wvol, _F(M_identity, this->M_dispETFESpace, disp, 0)) * _dJ(M_identity, this->M_dispETFESpace, disp, 0);
-//	        auto I = value(M_identity);
-//	        auto GradU = grad(this->M_dispETFESpace, disp, 0);
-//	        auto F = I + GradU;
-//	        auto FmT = minusT(F);
-//	        auto J = det(F);
-//	        auto dJ = J * FmT;
-//	        //auto W =  value(2000.0) * ( (J-1) + log(J) / J );
-//	        auto W = eval(Wvol, F) ;
-//	        auto P = W * dJ;
-//
-////#define _Grad_u(FESpace, disp, offset)      ( grad (FESpace, disp, offset) )
-////// F = deformation gradient tensor
-////#define _F(Id, FESpace, disp, offset)       ( _Grad_u(FESpace, disp, offset) + _I(Id) )
-////// F^-T = inverse transpose of F
-////#define _FmT(Id, FESpace, disp, offset)     ( minusT (_F(Id, FESpace, disp, offset)) )
-////// C = F^TF = Right Cauchy Green tensor
-////#define _C(Id, FESpace, disp, offset)       ( transpose(_F(Id, FESpace, disp, offset)) * _F(Id, FESpace, disp, offset) )
-//
-//// dF = \delta \nabla u = variation of F
-////matrix
-////#define _dF   ( grad (phi_j) )
-//    integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
-//                this->M_dispFESpace->qr(),
-//                this->M_dispETFESpace,
-//                dot ( P, grad (phi_i) )
-//              ) >> M_residualVectorPtr;
-//	}
-//}
-//
-//
-//template <typename MeshType>
-//void
-//EMStructuralConstitutiveLaw<MeshType>::computeI1ResidualTerms(const vector_Type& disp)
-//{
-//	{
-//	        using namespace ExpressionAssembly;
-//
-//			boost::shared_ptr<MaterialFunctions::NeoHookean<MeshType> > W1( new MaterialFunctions::NeoHookean<MeshType>);
-//
-//
-//	        auto I = value(M_identity);
-//	        auto GradU = grad(this->M_dispETFESpace, disp, 0);
-//	        auto F = I + GradU;
-//	        auto FmT = minusT(F);
-//	        auto I1 = dot(F, F);
-//	        auto J = det(F);
-//	        auto Jm23 = pow(J, -2.0/3.0);
-//	        auto dI1 = value(2.0) * F;
-//	        //auto WI = value(4960.0);
-//	        auto WI = eval(W1, F);
-//	        auto P = WI * Jm23 * ( F - value(1.0/3.0) * I1 * FmT ) ;
-//    integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
-//                this->M_dispFESpace->qr(),
-//                this->M_dispETFESpace,
-//                dot ( P, grad (phi_i) )
-//              ) >> M_residualVectorPtr;
-//	}
-//}
-//
 
 template <typename MeshType>
 void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
@@ -672,9 +485,17 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 	*(this->M_jacobian) *= 0.0;
 
 	M_passiveMaterialPtr -> computeJacobian(disp,
-			                          this->M_dispETFESpace,
-			                          this->M_dispFESpace,
-			                          this->M_jacobian);
+			                                this->M_dispETFESpace,
+	   			                            *M_fiberVectorPtr,
+	   			                            *M_fiberVectorPtr,
+			                                this->M_jacobian);
+	M_activeStressMaterialPtr -> computeJacobian( disp,
+												  super::M_dispETFESpace,
+												  *M_fiberVectorPtr,
+												  *M_sheetVectorPtr,
+												  *M_activationPtr,
+												  M_scalarETFESpacePtr,
+												  super::M_jacobian);
 
 
 //	computeJacobian(disp);
@@ -697,9 +518,18 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     displayer->leaderPrint (" \n******************************************************************\n  ");
 	*(M_residualVectorPtr) *= 0.0;
 	M_passiveMaterialPtr -> computeResidual(disp,
-   			                          this->M_dispETFESpace,
-   			                          this->M_dispFESpace,
-   			                          M_residualVectorPtr);
+   			                               this->M_dispETFESpace,
+   			                               *M_fiberVectorPtr,
+   			                               *M_fiberVectorPtr,
+   			                               M_residualVectorPtr);
+	M_activeStressMaterialPtr -> computeResidual( disp,
+												  super::M_dispETFESpace,
+												  *M_fiberVectorPtr,
+												  *M_sheetVectorPtr,
+												  *M_activationPtr,
+												  M_scalarETFESpacePtr,
+												  M_residualVectorPtr);
+
 //	computeResidual(disp);
  	this->M_residualVectorPtr->globalAssemble();
 }
