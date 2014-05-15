@@ -39,7 +39,7 @@
 #ifndef _IONICMINIMALMODEL_H_
 #define _IONICMINIMALMODEL_H_
 
-#include <lifev/electrophysiology/solver/IonicModels/ElectroIonicModel.hpp>
+#include <lifev/electrophysiology/solver/IonicModels/IonicMinimalModel.hpp>
 
 #include <Teuchos_RCP.hpp>
 #include <Teuchos_ParameterList.hpp>
@@ -49,7 +49,7 @@ namespace LifeV
 {
 //! IonicModel - This class implements an ionic model.
 
-class IonicMinimalModel : public virtual ElectroIonicModel
+class EMIonicMinimalModel : public virtual IonicMinimalModel
 {
 
 public:
