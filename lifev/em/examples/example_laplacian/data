@@ -28,30 +28,31 @@ save       = 1
  
 
    [./boundary_conditions]
-    list = 'Top Endo Epi'
+#    list = 'Top Endo Epi'
 #    list = 'Top InnerRing Epicardium'
+    list = 'Endo Epi'
 
         [./Top]
         type       = Natural
         flag       = 300
         mode       = Full
-        component  = 1
-		function  = '0.0'
+        component  = 3
+		function  = '[0.0, 0.0, 0.0]'
 
         [../Endo]
         type       = Essential
-        flag       = 5
+        flag       = 400
         mode       = Full
-        component  = 1
-		function  = '0.0'
+        component  = 3
+		function  = '[1.0, 2.0, 3.0]'
         
 
         [../Epi]
         type       = Essential
-        flag       = 10
+        flag       = 600
         mode       = Full
-        component  = 1
-		function  = '1.0'
+        component  = 3
+		function  = '[1.0, 2.0, 3.0]'
     
         [../]
 [../]
