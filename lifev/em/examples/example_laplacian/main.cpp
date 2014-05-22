@@ -94,6 +94,8 @@
 
 #include <lifev/eta/expression/Integrate.hpp>
 
+#include <lifev/structure/solver/StructuralConstitutiveLaw.hpp>
+#include <lifev/structure/solver/StructuralOperator.hpp>
 
 // ---------------------------------------------------------------
 // Finally, we include shared pointer from boost since we use
@@ -134,7 +136,7 @@ typedef VectorEpetra vector_Type;
 typedef boost::shared_ptr< vector_Type > vectorPtr_Type;
 typedef BCHandler                                          bc_Type;
 typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
-typedef  EMStructuralOperator< RegionMesh<LinearTetra> >      physicalSolver_Type;
+typedef StructuralOperator< RegionMesh<LinearTetra> >      physicalSolver_Type;
 typedef BCInterface3D< bc_Type, physicalSolver_Type >              bcInterface_Type;
 typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
 
@@ -210,7 +212,7 @@ int main ( int argc, char** argv )
     std::string meshPath = parameterList.get ("mesh_path", "./");
 
     meshPtr_Type meshPart (new mesh_Type ( Comm ) );
-    MeshUtility::fillWithMesh (meshPart, meshName, meshPath);
+    MeshUtility::loadMesh(meshPart, meshName, meshPath);
 
     if (verbose)
     {
@@ -236,10 +238,10 @@ int main ( int argc, char** argv )
         std::cout << " -- Building ETFESpaces ... " << std::flush;
     }
 
-    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace
-    ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 3 > > uSpace
+    ( new ETFESpace< mesh_Type, MapEpetra, 3, 3 > (meshPart, &feTetraP1, Comm) );
     boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > uFESpace
-    ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P1", 1, Comm) );
+    ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P1", 3, Comm) );
 
     if (verbose)
     {
@@ -261,15 +263,10 @@ int main ( int argc, char** argv )
     }
 
     boost::shared_ptr<matrix_Type> systemMatrix (new matrix_Type ( uSpace->map() ) );
+    boost::shared_ptr<matrix_Type> massMatrix (new matrix_Type ( uSpace->map() ) );
 
     *systemMatrix *= 0.0;
-
-    if (verbose)
-    {
-        std::cout << " done! " << std::endl;
-    }
-
-    *systemMatrix *= 0.0;
+    *massMatrix *= 0.0;
 
     if (verbose)
     {
@@ -336,6 +333,14 @@ int main ( int argc, char** argv )
                      dot ( grad (phi_i) , grad (phi_j) )
                   )
                 >> systemMatrix;
+
+        integrate (  elements (uSpace->mesh() ),
+                     quadRuleTetra4pt,
+                     uSpace,
+                     uSpace,
+                     dot ( phi_i , phi_j )
+                  )
+                >> massMatrix;
     }
 
     if (verbose)
@@ -358,6 +363,7 @@ int main ( int argc, char** argv )
     }
 
     systemMatrix->globalAssemble();
+    massMatrix->globalAssemble();
 
     if (verbose)
     {
@@ -417,7 +423,7 @@ int main ( int argc, char** argv )
     }
     //Create right hand side
     vectorPtr_Type rhs (new vector_Type ( uSpace -> map() ) );
-    *rhs *= 0.0;
+    *rhs = 1.0;
     rhs -> globalAssemble();
 
 
@@ -441,10 +447,13 @@ int main ( int argc, char** argv )
     ExporterHDF5< RegionMesh <LinearTetra> > exporter;
     exporter.setMeshProcId ( meshPart, Comm->MyPID() );
     exporter.setPrefix ("rescalingGammaf");
-    exporter.addVariable ( ExporterData<mesh_Type>::ScalarField,  "rescalingGammaf", uFESpace,
+    exporter.setPostDir("./");
+//    exporter.addVariable ( ExporterData<mesh_Type>::ScalarField,  "rescalingGammaf", uFESpace,
+//                           solution, UInt (0) );
+    exporter.addVariable ( ExporterData<mesh_Type>::VectorField,  "rescalingGammaf", uFESpace,
                            solution, UInt (0) );
 
-    //   exporter.postProcess ( 0 );
+      exporter.postProcess ( 0 );
 
     if ( Comm->MyPID() == 0 )
     {
@@ -452,53 +461,53 @@ int main ( int argc, char** argv )
     }
     linearSolver.setRightHandSide (rhs);
     linearSolver.solve (solution);
-    //  exporter.postProcess ( 1 );
+      exporter.postProcess ( 1 );
 
 
-    if ( Comm->MyPID() == 0 )
-    {
-        std::cout << "Transforming...\n";
-    }
-    Real p0 = 3.9981022451448112e-01;
-    Real p1 = -1.7249368443147499e+00;
-    Real p2 = 6.4695359113991486e+00;
-    Real p3 = -1.9192450904013128e+01;
-    Real p4 = 4.1297847160139170e+01;
-    Real p5 = -5.9665612469298118e+01;
-    Real p6 = 5.4040368339225651e+01;
-    Real p7 = -2.7524476381745629e+01;
-    Real p8 = 5.9999955063690678e+00;
-
-    vector_Type tmp (solution -> map() );
-    exporter.postProcess ( 0 );
-    tmp *= 0.0;
-    tmp += p0;
-    tmp += ( p1 * *solution);
-    tmp += ( p2 * *solution * *solution);
-    tmp += ( p3 * *solution * *solution * *solution);
-    tmp += ( p4 * *solution * *solution * *solution * *solution);
-    tmp += ( p5 * *solution * *solution * *solution * *solution * *solution);
-    tmp += ( p6 * *solution * *solution * *solution * *solution * *solution * *solution);
-    tmp += ( p7 * *solution * *solution * *solution * *solution * *solution * *solution * *solution);
-    tmp += ( p8 * *solution * *solution * *solution * *solution * *solution * *solution * *solution * *solution);
-
-    *solution = tmp;
-    exporter.postProcess ( 1 );
+//    if ( Comm->MyPID() == 0 )
+//    {
+//        std::cout << "Transforming...\n";
+//    }
+//    Real p0 = 3.9981022451448112e-01;
+//    Real p1 = -1.7249368443147499e+00;
+//    Real p2 = 6.4695359113991486e+00;
+//    Real p3 = -1.9192450904013128e+01;
+//    Real p4 = 4.1297847160139170e+01;
+//    Real p5 = -5.9665612469298118e+01;
+//    Real p6 = 5.4040368339225651e+01;
+//    Real p7 = -2.7524476381745629e+01;
+//    Real p8 = 5.9999955063690678e+00;
+//
+//    vector_Type tmp (solution -> map() );
+//    exporter.postProcess ( 0 );
+//    tmp *= 0.0;
+//    tmp += p0;
+//    tmp += ( p1 * *solution);
+//    tmp += ( p2 * *solution * *solution);
+//    tmp += ( p3 * *solution * *solution * *solution);
+//    tmp += ( p4 * *solution * *solution * *solution * *solution);
+//    tmp += ( p5 * *solution * *solution * *solution * *solution * *solution);
+//    tmp += ( p6 * *solution * *solution * *solution * *solution * *solution * *solution);
+//    tmp += ( p7 * *solution * *solution * *solution * *solution * *solution * *solution * *solution);
+//    tmp += ( p8 * *solution * *solution * *solution * *solution * *solution * *solution * *solution * *solution);
+//
+//    *solution = tmp;
+//    exporter.postProcess ( 1 );
     exporter.closeFile();
-
-    vectorPtr_Type importedSolution ( new vector_Type ( solution -> map() ) );
-
-    std::string filename = parameterList.get ("filename", "rescalingGammaf");
-    std::string fieldname = parameterList.get ("fieldname", "rescalingGammaf");
-    ElectrophysiologyUtility::importScalarField (importedSolution, filename, fieldname, meshPart);
-
-    ExporterHDF5< RegionMesh <LinearTetra> > exporter2;
-    exporter2.setMeshProcId ( meshPart, Comm->MyPID() );
-    exporter2.setPrefix ("rescalingGammaf_refined1");
-    exporter2.addVariable ( ExporterData<mesh_Type>::ScalarField,  "rescalingGammaf", uFESpace,
-                            importedSolution, UInt (0) );
-    exporter2.postProcess ( 0 );
-    exporter2.closeFile();
+//
+//    vectorPtr_Type importedSolution ( new vector_Type ( solution -> map() ) );
+//
+//    std::string filename = parameterList.get ("filename", "rescalingGammaf");
+//    std::string fieldname = parameterList.get ("fieldname", "rescalingGammaf");
+//    ElectrophysiologyUtility::importScalarField (importedSolution, filename, fieldname, meshPart);
+//
+//    ExporterHDF5< RegionMesh <LinearTetra> > exporter2;
+//    exporter2.setMeshProcId ( meshPart, Comm->MyPID() );
+//    exporter2.setPrefix ("rescalingGammaf_refined1");
+//    exporter2.addVariable ( ExporterData<mesh_Type>::ScalarField,  "rescalingGammaf", uFESpace,
+//                            importedSolution, UInt (0) );
+//    exporter2.postProcess ( 0 );
+//    exporter2.closeFile();
     // ---------------------------------------------------------------
     // We finalize the MPI session if MPI was used
     // ---------------------------------------------------------------
