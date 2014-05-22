@@ -41,8 +41,8 @@
  -State Variable interpolation (at this point only forward Euler).
  */
 
-#ifndef _EMSOLVER_H_
-#define _EMSOLVER_H_
+#ifndef _EMSOLVERf_H_
+#define _EMSOLVERf_H_
 
 
 #include <lifev/em/solver/electrophysiology/EMMonodomainSolver.hpp>
