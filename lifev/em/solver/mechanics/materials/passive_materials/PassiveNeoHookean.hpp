@@ -39,9 +39,9 @@ template<typename Mesh>
 PassiveNeoHookean<Mesh>::PassiveNeoHookean() :
 		super("Passive Neo-Hookean", 3)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh>(100000.0)  );
-	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(100000.0) );
-	this -> M_materialFunctionList[2].reset(new MaterialFunctions::NeoHookean<Mesh>()  );
+	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh> (500000.0)  );
+	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(500000.0) );
+	this -> M_materialFunctionList[2].reset(new MaterialFunctions::NeoHookean<Mesh> ()  );
 }
 
 
