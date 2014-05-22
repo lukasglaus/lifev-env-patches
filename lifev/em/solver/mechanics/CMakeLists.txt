@@ -2,7 +2,7 @@ ADD_SUBDIRECTORY(materials)
 
 SET( solver_mechanics_HEADERS
  solver/mechanics/EMStructuralConstitutiveLaw.hpp
- solver/mechanics/EMstructuralOperator.hpp
+ solver/mechanics/EMStructuralOperator.hpp
  solver/mechanics/EMMechanicalExpressions.hpp
  solver/mechanics/EMElasticityFunctions.hpp
  solver/mechanics/EMETAJacobianAssembler.hpp
