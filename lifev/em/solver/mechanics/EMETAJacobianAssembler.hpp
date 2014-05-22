@@ -202,7 +202,7 @@ computeFiberActiveStressJacobianTerms( const vector_Type& disp,
 
     auto F = _F(dispETFESpace, disp, 0);
     auto f0 = value(dispETFESpace, fibers);
-    auto df = grad(phi_i) * f0;//dot( grad(phi_j) * outerProduct( fiber0, fiber0 ), grad(phi_i) ) )
+    auto df = dF * f0;//dot( grad(phi_j) * outerProduct( fiber0, fiber0 ), grad(phi_i) ) )
     auto dfxf0 = outerProduct (df, f0);
     auto H = value(activationETFESpace, activation);
     auto Wa = eval(W, H);

@@ -98,10 +98,19 @@ computeI1ResidualTerms( const vector_Type& disp,
 {
 	using namespace ExpressionAssembly;
 	//
-	std::cout << "Computing I1 residual terms ... \n";
+//	auto I = value(EMUtility::identity());
+//	//auto u = value(dispETFESpace, disp, 0);
+//	auto F = I + grad(dispETFESpace, disp, 0);
+//	auto J = det(F);
+//	auto Jm23 = pow(J, -2.0/3);
+//	auto I1 = dot(F, F);
+//	auto FinvT = minusT(F);
+//	auto P = 4960 * Jm23 * (F - I1 * value(1.0/3.0) * FinvT);
+//	std::cout << "Computing I1 residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
 			quadRuleTetra4pt,
 				dispETFESpace,
+		//		dot(P, grad (phi_i) )
 				dot ( eval (W1, _F(dispETFESpace, disp, 0)) * _dI1bar(dispETFESpace, disp, 0), grad (phi_i) )
 				) >> residualVectorPtr;
 }
@@ -154,14 +163,43 @@ computeFiberActiveStressResidualTerms( const vector_Type& disp,
     auto H = value(activationETFESpace, activation);
     auto Wa = eval(W, H);
     auto Wm = eval(W, I);
-    auto P = Wa * Wm * fxf0;
+    auto P = Wa /* Wm */ *  fxf0;
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
 			    quadRuleTetra4pt,
 			    dispETFESpace,
-			    dot ( P, grad (phi_i) )
+				dot ( Wa* F * outerProduct(f0, f0), grad (phi_i) )
+			    //			    dot ( P, grad (phi_i) )
 		      ) >> residualVectorPtr;
 
+}
+
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI4ResidualTerms( const vector_Type& disp,
+						ETFESpacePtr_Type<Mesh>  dispETFESpace,
+					    const vector_Type& fibers,
+						vectorPtr_Type     residualVectorPtr,
+						FunctorPtr         W4)
+{
+	using namespace ExpressionAssembly;
+	//
+    auto F = _F(dispETFESpace, disp, 0);
+
+    auto f0 = value(dispETFESpace, fibers);
+    auto f = F * f0;
+    auto fxf0 = value(2.0) * outerProduct (f, f0);
+//    auto H = value(activationETFESpace, activation);
+//    auto Wa = eval(W, H);
+//    auto W4 = eval(W4, I);
+  //  auto P = Wa /* Wm */ *  fxf0;
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			quadRuleTetra4pt,
+				dispETFESpace,
+		//		dot(P, grad (phi_i) )
+				dot ( eval (W4, F) * fxf0 , grad (phi_i) )
+				) >> residualVectorPtr;
 }
 
 

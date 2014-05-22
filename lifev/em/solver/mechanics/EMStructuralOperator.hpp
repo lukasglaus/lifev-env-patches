@@ -663,7 +663,10 @@ public:
 //    }
 
     //@}
-
+    FESpacePtr_Type dispFESpacePtr()
+    {
+    	return super::M_dispFESpace;
+    }
 protected:
 
     //! Material class

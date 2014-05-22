@@ -451,15 +451,21 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     std::cout << "\nActive Stress Type: " << activeStressMaterialType;
     std::cout << "\n===========================\n";
 
+    if(activeStressMaterialType != "NO_DEFAULT_ACTIVESTRESS_TYPE")
+    {
     M_activeStressMaterialPtr.reset(material_Type::EMMaterialFactory::instance().createObject ( activeStressMaterialType ));
     std::cout << "\nCreated Active Stress Material!\n";
     M_activeStressMaterialPtr-> showMe();
     std::cout << "\nShowed Active Stress Material!\n";
+    }
+
+    if(passiveMaterialType != "NO_DEFAULT_PASSIVE_TYPE")
+    {
 //    M_materialPtr.reset(new EMMaterial<MeshType>(materialType));
     M_passiveMaterialPtr.reset(material_Type::EMMaterialFactory::instance().createObject ( passiveMaterialType ));
     M_passiveMaterialPtr-> showMe();
     std::cout << "\nCreated Passive Material!\n";
-
+    }
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
 //    // another way would be to set up the number of constitutive parameters of the law
@@ -483,12 +489,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     displayer->leaderPrint (" Non-Linear S-  Computing the EM material  Jacobian"     );
     displayer->leaderPrint (" \n*********************************\n  ");
 	*(this->M_jacobian) *= 0.0;
-
+	if(M_passiveMaterialPtr)
 	M_passiveMaterialPtr -> computeJacobian(disp,
 			                                this->M_dispETFESpace,
 	   			                            *M_fiberVectorPtr,
 	   			                            *M_fiberVectorPtr,
 			                                this->M_jacobian);
+	if(M_activeStressMaterialPtr)
 	M_activeStressMaterialPtr -> computeJacobian( disp,
 												  super::M_dispETFESpace,
 												  *M_fiberVectorPtr,
@@ -517,11 +524,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     displayer->leaderPrint (" Non-Linear S-  Computing the EM material  residual vector"     );
     displayer->leaderPrint (" \n******************************************************************\n  ");
 	*(M_residualVectorPtr) *= 0.0;
+	if(M_passiveMaterialPtr)
 	M_passiveMaterialPtr -> computeResidual(disp,
    			                               this->M_dispETFESpace,
    			                               *M_fiberVectorPtr,
    			                               *M_fiberVectorPtr,
    			                               M_residualVectorPtr);
+	if(M_activeStressMaterialPtr)
 	M_activeStressMaterialPtr -> computeResidual( disp,
 												  super::M_dispETFESpace,
 												  *M_fiberVectorPtr,
