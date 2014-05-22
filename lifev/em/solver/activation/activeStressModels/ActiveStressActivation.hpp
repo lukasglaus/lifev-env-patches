@@ -21,29 +21,47 @@ public:
 
     typedef boost::shared_ptr<VectorEpetra> 							vectorPtr_Type;
 
-	ActiveStressActivation(MapEpetra& map) : M_activation(map){}
-	ActiveStressActivation(const MapEpetra& map) : M_activation(map){}
+	ActiveStressActivation(MapEpetra& map) : M_activationPtr( new vector_Type(map) ){}
+	ActiveStressActivation(const MapEpetra& map) : M_activationPtr( new vector_Type(map) ){}
+
+	ActiveStressActivation(ActiveStressActivation& activation) : M_activationPtr( new vector_Type(activation.activation()) ){}
+
+	inline ActiveStressActivation& operator=(ActiveStressActivation& activation)
+	{
+		M_activationPtr.reset( new vector_Type(activation.activation()) );
+		return *this;
+	}
+
 	virtual ~ActiveStressActivation() {}
 
 	inline VectorEpetra& activation()
 	{
-		return M_activation;
+		return *M_activationPtr;
+	}
+
+	inline vectorPtr_Type activationPtr()
+	{
+		return M_activationPtr;
 	}
 
 	inline void setActivation(VectorEpetra& activation)
 	{
-		M_activation = activation;
+		*M_activationPtr = activation;
 	}
 
-	inline void setActivation(vectorPtr_Type activationPtr)
+	inline void setActivationPtr(vectorPtr_Type activationPtr)
 	{
-		M_activation = *activationPtr;
+		M_activationPtr = activationPtr;
 	}
+
+	virtual void solveModel() {}
 
 protected:
-	VectorEpetra M_activation;
+	vectorPtr_Type M_activationPtr;
 
 };
+
+
 
 
 } /* namespace LifeV */
