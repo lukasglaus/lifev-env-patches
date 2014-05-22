@@ -39,6 +39,16 @@
 
 using namespace LifeV;
 
+Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
+{
+	Real r = 0.1;
+	Real t0 = 2;
+	if(X < r && Y < r && Z < r && t < t0)
+	{
+		return 5.0;
+	}
+	else return 0.0;
+}
 
 
 int main (int argc, char** argv)
