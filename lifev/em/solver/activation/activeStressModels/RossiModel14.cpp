@@ -33,9 +33,9 @@ void RossiModel14::solveModel(VectorEpetra& potential, Real timeStep)
     rhs = potential;
     rhs *= rhs.operator >(0.0);
     rhs *= M_coefficientBeta;
-    rhs -= 2.0 * super::M_activation;
+    rhs -= 2.0 * *super::M_activationPtr;
     rhs *= (timeStep*M_maximumActiveTenstion/M_coefficientMu);
-    super::M_activation += rhs;
+    *super::M_activationPtr += rhs;
 }
 
 } /* namespace LifeV */

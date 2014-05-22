@@ -41,10 +41,10 @@ void NashPanfilovModel04::solveModel(VectorEpetra& potential, Real timeStep)
     VectorEpetra rhs( potential.map() );
     rhs = potential;
     rhs *= M_kTa;
-    rhs -= super::M_activation;
+    rhs -= *super::M_activationPtr;
     multiplyByEpsilon(potential,rhs);
     rhs *= (timeStep);
-    super::M_activation += rhs;
+    *super::M_activationPtr += rhs;
 }
 
 } /* namespace LifeV */
