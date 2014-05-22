@@ -14,6 +14,7 @@
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveIsotropicExponential.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveLinearizedNeoHookean.hpp>
 #include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
+#include <lifev/em/solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicExponential.hpp>
 
 
 #endif /* PASSIVEMATERIALSLIST_HPP_ */

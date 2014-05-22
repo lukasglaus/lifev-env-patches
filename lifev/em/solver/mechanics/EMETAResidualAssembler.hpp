@@ -59,7 +59,7 @@ computeLinearizedVolumetricResidualTerms( const vector_Type& disp,
 	auto GradUT = transpose(GradU);
 	auto P = eval(W, I) * (GradU + GradUT) * value(1./2.);
 
-	std::cout << "Computing linear volumetric residual terms ... \n";
+	std::cout << "EMETA - Computing linear volumetric residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
 			quadRuleTetra4pt,
 				dispETFESpace,
@@ -81,7 +81,7 @@ computeLinearizedDeviatoricResidualTerms( const vector_Type& disp,
 	auto GradUT = transpose(GradU);
 	auto P = eval(W, I) * trace(GradU + GradUT) * value(1./2.) * I;
 
-	std::cout << "Computing linear deviatoric residual terms ... \n";
+	std::cout << "EMETA - Computing linear deviatoric residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
 			    quadRuleTetra4pt,
 				dispETFESpace,
@@ -106,9 +106,9 @@ computeI1ResidualTerms( const vector_Type& disp,
 //	auto I1 = dot(F, F);
 //	auto FinvT = minusT(F);
 //	auto P = 4960 * Jm23 * (F - I1 * value(1.0/3.0) * FinvT);
-//	std::cout << "Computing I1 residual terms ... \n";
+	std::cout << "EMETA - Computing I1 residual terms ... \n";
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-			quadRuleTetra4pt,
+			    quadRuleTetra4pt,
 				dispETFESpace,
 		//		dot(P, grad (phi_i) )
 				dot ( eval (W1, _F(dispETFESpace, disp, 0)) * _dI1bar(dispETFESpace, disp, 0), grad (phi_i) )
@@ -124,7 +124,7 @@ computeVolumetricResidualTerms( const vector_Type& disp,
 								FunctorPtr                  Wvol)
 {
 	//
-	std::cout << "Computing Volumetric residual terms ... \n";
+	std::cout << "EMETA - Computing Volumetric residual terms ... \n";
 
 	using namespace ExpressionAssembly;
 
@@ -150,7 +150,7 @@ computeFiberActiveStressResidualTerms( const vector_Type& disp,
 								FunctorPtr               W)
 {
 	//
-	std::cout << "Computing Fibers Active Stress residual terms ... \n";
+	std::cout << "EMETA - Computing Fibers Active Stress residual terms ... \n";
 
 	using namespace ExpressionAssembly;
 
@@ -185,20 +185,22 @@ computeI4ResidualTerms( const vector_Type& disp,
 {
 	using namespace ExpressionAssembly;
 	//
+	std::cout << "EMETA - Computing I4 residual terms ... \n";
+
     auto F = _F(dispETFESpace, disp, 0);
 
     auto f0 = value(dispETFESpace, fibers);
     auto f = F * f0;
-    auto fxf0 = value(2.0) * outerProduct (f, f0);
+    auto fxf0 = outerProduct (f, f0);
 //    auto H = value(activationETFESpace, activation);
 //    auto Wa = eval(W, H);
-//    auto W4 = eval(W4, I);
-  //  auto P = Wa /* Wm */ *  fxf0;
+    auto W4f = eval(W4, f);
+    auto P = value(2.0) * W4f *  fxf0;
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-			quadRuleTetra4pt,
+			    quadRuleTetra4pt,
 				dispETFESpace,
 		//		dot(P, grad (phi_i) )
-				dot ( eval (W4, F) * fxf0 , grad (phi_i) )
+				dot ( eval (W4, f) * fxf0 , grad (phi_i) )
 				) >> residualVectorPtr;
 }
 

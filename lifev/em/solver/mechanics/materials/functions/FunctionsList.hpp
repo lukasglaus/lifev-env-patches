@@ -14,6 +14,7 @@
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsLinearizedNeoHookean.hpp>
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsSimpleActiveStress.hpp>
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsIsotropicExponential.hpp>
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsAnisotropicExponential.hpp>
 
 
 #endif /* FUNCTIONSLIST_HPP_ */
