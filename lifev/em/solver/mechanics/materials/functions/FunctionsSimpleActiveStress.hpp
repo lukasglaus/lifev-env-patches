@@ -22,11 +22,6 @@ namespace LifeV
 namespace MaterialFunctions
 {
 
-
-template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
-template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
-
 typedef VectorEpetra           vector_Type;
 typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 
@@ -61,11 +56,11 @@ public:
     virtual ~SimpleActiveStress() {}
 
 	inline void	computeJacobian( const vector_Type& disp,
-			                             ETFESpacePtr_Type<Mesh>  dispETFESpace,
+			                             boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                          const vector_Type& fibers,
                                          const vector_Type& sheets,
 										 const vector_Type& activation,
-										 scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+										 boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
 										 matrixPtr_Type           jacobianPtr)
 	{
 //		EMAssembler::computeFiberActiveStressJacobianTerms(disp, dispETFESpace, fibers, sheets, activation, activationETFESpace,jacobianPtr, this->getMe() );
@@ -80,11 +75,11 @@ public:
 	}
 
 	inline virtual void	computeResidual( const vector_Type& disp,
-			                             ETFESpacePtr_Type<Mesh>  dispETFESpace,
+			                             boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                          const vector_Type& fibers,
                                          const vector_Type& sheets,
 										 const vector_Type& activation,
-										 scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+										 boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
 										 vectorPtr_Type           residualVectorPtr)
 	{
 		EMAssembler::computeFiberActiveStressResidualTerms(disp,

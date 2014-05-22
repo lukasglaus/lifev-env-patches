@@ -40,17 +40,17 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 namespace EMAssembler
 {
 
-template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
+//template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
+//template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
 //template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
 
 template< typename Mesh, typename FunctorPtr >
 void
 computeLinearizedVolumetricResidualTerms( const vector_Type& disp,
-								ETFESpacePtr_Type<Mesh>  dispETFESpace,
-								vectorPtr_Type           residualVectorPtr,
-								FunctorPtr               W)
+					  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+					  vectorPtr_Type           residualVectorPtr,
+					  FunctorPtr               W)
 {
 	using namespace ExpressionAssembly;
 	//
@@ -70,7 +70,7 @@ computeLinearizedVolumetricResidualTerms( const vector_Type& disp,
 template< typename Mesh, typename FunctorPtr >
 void
 computeLinearizedDeviatoricResidualTerms( const vector_Type& disp,
-								ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 								vectorPtr_Type           residualVectorPtr,
 								FunctorPtr               W)
 {
@@ -92,7 +92,7 @@ computeLinearizedDeviatoricResidualTerms( const vector_Type& disp,
 template< typename Mesh, typename FunctorPtr >
 void
 computeI1ResidualTerms( const vector_Type& disp,
-		                ETFESpacePtr_Type<Mesh>  dispETFESpace,
+		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 		                vectorPtr_Type           residualVectorPtr,
                         FunctorPtr                  W1)
 {
@@ -119,7 +119,7 @@ computeI1ResidualTerms( const vector_Type& disp,
 template <typename Mesh, typename FunctorPtr >
 void
 computeVolumetricResidualTerms( const vector_Type& disp,
-								ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 								vectorPtr_Type           residualVectorPtr,
 								FunctorPtr                  Wvol)
 {
@@ -141,11 +141,11 @@ computeVolumetricResidualTerms( const vector_Type& disp,
 template <typename Mesh, typename FunctorPtr >
 void
 computeFiberActiveStressResidualTerms( const vector_Type& disp,
-								ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 							  const vector_Type& fibers,
 						        const vector_Type& sheets,
 							  const vector_Type& activation,
-								scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+								boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
 								vectorPtr_Type           residualVectorPtr,
 								FunctorPtr               W)
 {

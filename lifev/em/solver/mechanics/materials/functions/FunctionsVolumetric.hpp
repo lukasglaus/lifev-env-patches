@@ -24,9 +24,6 @@ namespace MaterialFunctions
 {
 
 
-template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
-
 typedef VectorEpetra           vector_Type;
 typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 
@@ -53,7 +50,7 @@ public:
     virtual ~Volumetric() {}
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 							         const vector_Type& fibers,
 							         const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
@@ -62,7 +59,7 @@ public:
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 							         const vector_Type& fibers,
 							         const vector_Type& sheets,
 								  vectorPtr_Type           residualVectorPtr)
@@ -90,7 +87,7 @@ public:
     virtual ~dVolumetric() {}
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
 							         const vector_Type& fibers,
 							         const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr)
