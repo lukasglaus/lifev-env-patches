@@ -36,7 +36,7 @@
 #ifndef EMMATERIALFUNCTIONS_HPP_
 #define EMMATERIALFUNCTIONS_HPP_
 
-#include "/Users/srossi/LifeV/boost/include/boost/smart_ptr/enable_shared_from_this.hpp"
+#include <boost/smart_ptr/enable_shared_from_this.hpp>
 #include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
 
 #include <lifev/em/solver/mechanics/EMETAJacobianAssembler.hpp>
