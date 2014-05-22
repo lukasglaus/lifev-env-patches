@@ -8,6 +8,10 @@
 #ifndef EMMATERIALTYPE_HPP_
 #define EMMATERIALTYPE_HPP_
 
+#include <lifev/core/util/Factory.hpp>
+#include <lifev/core/util/FactorySingleton.hpp>
+
+
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
 
 namespace LifeV

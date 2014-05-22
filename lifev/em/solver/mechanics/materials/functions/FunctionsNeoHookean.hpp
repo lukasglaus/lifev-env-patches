@@ -44,11 +44,11 @@ public:
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
-    	return M_mu;
+    	return 0.5 * M_mu;
     }
 
-    NeoHookean() : M_mu(4960) {} // 0.496 KPa
-    NeoHookean(Real mu) : M_mu(mu) {} // 0.496 KPa
+//    NeoHookean() : M_mu(4960) {} // 0.496 KPa
+    NeoHookean(Real mu = 4960) : M_mu(mu) {} // 0.496 KPa
     NeoHookean (const NeoHookean& neoHookean)
     {
     	M_mu = neoHookean.M_mu;

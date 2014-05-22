@@ -39,7 +39,7 @@ template<typename Mesh>
 SimpleFibersActiveStress<Mesh>::SimpleFibersActiveStress() :
 		super("Simple Fibers Active Stress", 1)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::SimpleActiveStress<Mesh>(10000.0)  );
+	this -> M_materialFunctionList[0].reset(new MaterialFunctions::SimpleActiveStress<Mesh>(47900.0)  );
 }
 
 
