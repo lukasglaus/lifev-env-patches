@@ -104,10 +104,10 @@ public:
     	return 0.0;
     }
 
-//    virtual return_Type operator() (const VectorSmall<3, 3>& f)
-//    {
-//    	return 0.0;
-//    }
+    virtual return_Type operator() (const VectorSmall<3>& f)
+    {
+    	return 0.0;
+    }
 
     virtual return_Type operator() (const Real& H)
     {
