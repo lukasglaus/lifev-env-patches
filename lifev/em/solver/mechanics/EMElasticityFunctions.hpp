@@ -39,7 +39,23 @@ Real I1bar(const LifeV::MatrixSmall<3, 3>& F)
 	return std::pow(J(F), -2.0/3.0) * I1(F);
 }
 
+Real I4(const LifeV::MatrixSmall<3, 3>& F, const LifeV::VectorSmall<3>& f0)
+{
+	auto f = F * f0;
+	return f.dot(f);
 }
+
+Real I4(const LifeV::VectorSmall<3>& f)
+{
+	return f.dot(f);
+}
+
+Real RegularizedHeaviside(const LifeV::Real x)
+{
+	return 0.5 * ( 1 + std::tanh(100.0 * x) );
+}
+
+}// Elasticity
 
 }//LifeV
 
