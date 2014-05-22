@@ -372,6 +372,8 @@ public:
      * where $\mathbf{I}$ is the vector of the ionic currents $I_j = I_{ion}(V_j^n)$
      */
     void solveOneICIStep();
+
+    virtual void setup( GetPot& dataFile, short int ionicModelSize);
 //
 //    //! solves using ionic current interpolation
 //    /*!
@@ -434,13 +436,17 @@ private:
 //!Empty constructor
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver() :
-    super()
+    super(),
+    M_displacementETFESpacePtr(),
+    M_oneWayCoupling(false),
+    M_mechanicsModifiesConductivity(true)
 {
-    M_oneWayCoupling = false;
-    M_mechanicsModifiesConductivity = true;
-    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-    		                                                       & (this->M_feSpacePtr -> refFE() ),
-    		                                                       this -> M_commPtr) );}
+//    M_oneWayCoupling = false;
+//    M_mechanicsModifiesConductivity = true;
+//    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
+//    		                                                       & (this->M_feSpacePtr -> refFE() ),
+//    		                                                       this -> M_commPtr) );
+}
 
 
 template<typename Mesh, typename IonicModel>
@@ -546,6 +552,14 @@ EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
 ///////////////////////////////////////////////////////////
 //                MATRICES SETUP
 ///////////////////////////////////////////////////////////
+template<typename Mesh, typename IonicModel>
+void EMMonodomainSolver<Mesh, IonicModel>::setup( GetPot& dataFile, short int ionicModelSize)
+{
+    super::setup(dataFile, ionicModelSize);
+    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
+    		                                                       & (this->M_feSpacePtr -> refFE() ),
+    		                                                       this -> M_commPtr) );
+}
 
 ///////////////////////////////////////////////////////////
 //                MASS MATRIX
