@@ -13,6 +13,8 @@
 #include <lifev/em/solver/mechanics/EMStructuralOperator.hpp>
 #include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
 #include <lifev/em/solver/EMETAFunctors.hpp>
+#include <lifev/em/solver/EMSolver.hpp>
+#include <lifev/em/util/EMUtility.hpp>
 
 
 #include <lifev/em/solver/electrophysiology/EMMonodomainSolver.hpp>
@@ -38,79 +40,6 @@
 using namespace LifeV;
 
 
-Real bcZero (const Real& /*t*/, const Real&  /*X*/, const Real& /*Y*/, const Real& /*Z*/, const ID& /*i*/)
-{
-    return  0.;
-}
-
-Real bcTraction (const Real& /*t*/, const Real&  /*X*/, const Real& /*Y*/, const Real& /*Z*/, const ID& /*i*/)
-{
-    return  50.;
-}
-
-Real d0 (const Real& /*t*/, const Real&  /*X*/, const Real& /*Y*/, const Real& /*Z*/, const ID& /*i*/)
-{
-    return  0.;
-}
-
-Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-{
-	Real r = 0.1;
-	Real t0 = 2;
-	if(X < r && Y < r && Z < r && t < t0)
-	{
-		return 5.0;
-	}
-	else return 0.0;
-}
-
-Real initialV0left (const Real& /*t*/, const Real&  X, const Real& /*Y*/, const Real& /*Z*/, const ID& /*i*/)
-{
-    if ( X == 0 )
-    {
-        return 1.0;
-    }
-    else
-    {
-        return  0.;
-    }
-}
-
-Real fiberRotation (const Real& /*t*/, const Real&  X, const Real& Y, const Real& /*Z*/, const ID& i)
-{
-    Real R = std::sqrt ( X * X + Y * Y);
-    //Real teta = std::atan( Y / X );
- //   Real fz = 0.0;
-    Real fx =  Y / R;
-    Real fy = - X / R;
-    Real sx = X / R;
-    Real sy = Y / R;
-    Real m = -1.9040;
-    Real q = 3.5224;
-    Real theta = m * R + q;
-
-    //  f01a f001*cos(teta)+f001*s01^2*(1-cos(teta))+s01*s02*f002*(1-cos(teta))
-    //  f02a s01*s02*f001*(1-cos(teta))+f002*cos(teta)+f002*s02^2*(1-cos(teta))
-    //  f03a s01*f002*sin(teta)-s02*f001*sin(teta)
-
-    switch (i)
-    {
-        case 0:
-            return  fx * std::cos (theta) + fx * sx * sx * ( 1.0  - std::cos (theta) ) + sx * sy * fy * ( 1.0  - std::cos (theta) );
-            break;
-        case 1:
-            return sx * sy * fy *  ( 1.0  - std::cos (theta) ) + fy * std::cos (theta) + fy * sy * sy * ( 1.0  - std::cos (theta) ) ;
-            break;
-        case 2:
-            return sx * fy * std::sin (theta) - sy * fx * std::sin (theta);
-            break;
-        default:
-            ERROR_MSG ("This entry is not allowed: ud_functions.hpp");
-            return 0.;
-            break;
-    }
-
-}
 
 int main (int argc, char** argv)
 {
@@ -139,12 +68,15 @@ int main (int argc, char** argv)
     typedef BCInterface3D< bc_Type, physicalSolver_Type >              bcInterface_Type;
     typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
 
+    typedef ElectroIonicModel ionicModel_Type;
+    typedef boost::shared_ptr<ionicModel_Type> ionicModelPtr_Type;
+
+    typedef EMMonodomainSolver<mesh_Type, ionicModel_Type>  monodomain_Type;
 
 
 #ifdef HAVE_MPI
     MPI_Init ( &argc, &argv );
 #endif
-
 
 
     //===========================================================
@@ -158,6 +90,8 @@ int main (int argc, char** argv)
     {
         cout << "% using MPI" << endl;
     }
+
+    EMSolver<mesh_Type, monodomain_Type, RossiModel14> solver;
 
     //********************************************//
     // Import parameters from an xml list. Use    //
@@ -188,9 +122,11 @@ int main (int argc, char** argv)
     std::string meshName = parameterList.get ("mesh_name", "lid16.mesh");
     std::string meshPath = parameterList.get ("mesh_path", "./");
 
-    meshPtr_Type localSolidMesh ( new mesh_Type ( comm ) );
-    meshPtr_Type fullSolidMesh ( new mesh_Type ( comm ) );
-    MeshUtility::loadMesh (localSolidMesh, fullSolidMesh, meshName, meshPath);
+    solver.loadMesh(meshName, meshPath);
+
+//    meshPtr_Type localSolidMesh ( new mesh_Type ( comm ) );
+//    meshPtr_Type fullSolidMesh ( new mesh_Type ( comm ) );
+//    MeshUtility::loadMesh (localSolidMesh, fullSolidMesh, meshName, meshPath);
     if ( comm->MyPID() == 0 )
     {
         std::cout << " Done!" << endl;
@@ -201,21 +137,30 @@ int main (int argc, char** argv)
     // the preconditioner.                        //
     //********************************************//
     GetPot command_line (argc, argv);
-    std::string problemFolder = command_line.follow ( "Output", 2, "-o", "--output" );
-    // Create the problem folder
-    if ( problemFolder.compare ("./") )
-    {
-        problemFolder += "/";
 
-        if ( comm->MyPID() == 0 )
-        {
-            mkdir ( problemFolder.c_str(), 0777 );
-        }
-    }
+    std::string problemFolder = EMUtility::createOutputFolder(command_line,*comm);
 
-    const string data_file_name = command_line.follow ("data", 2, "-f", "--file");
+//    std::string problemFolder = command_line.follow ( "Output", 2, "-o", "--output" );
+//    // Create the problem folder
+//    if ( problemFolder.compare ("./") )
+//    {
+//        problemFolder += "/";
+//
+//        if ( comm->MyPID() == 0 )
+//        {
+//            mkdir ( problemFolder.c_str(), 0777 );
+//        }
+//    }
+
+
+
+    const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
     GetPot dataFile (data_file_name);
-
+//    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
+//    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
+//    std::cout << "read dataFile name: " <<  data_file_name << ", GetPot: " << dataFile.get(0,"data000000");
+//    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
+//    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
 
     //===========================================================
     //===========================================================
@@ -225,10 +170,10 @@ int main (int argc, char** argv)
 
 
 
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "monodomain: passed!" << std::endl;
-    }
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "monodomain: passed!" << std::endl;
+//    }
 
     typedef FESpace< RegionMesh<LinearTetra>, MapEpetra >               solidFESpace_Type;
     typedef boost::shared_ptr<solidFESpace_Type>                        solidFESpacePtr_Type;
@@ -237,17 +182,17 @@ int main (int argc, char** argv)
     typedef boost::shared_ptr<scalarETFESpace_Type>                      scalarETFESpacePtr_Type;
     typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 3 >       solidETFESpace_Type;
     typedef boost::shared_ptr<solidETFESpace_Type>                      solidETFESpacePtr_Type;
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "\n\ninitialization bc handler" << std::endl;
-    }
-
-
-
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "\nparameters" << std::endl;
-    }
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "\n\ninitialization bc handler" << std::endl;
+//    }
+//
+//
+//
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "\nparameters" << std::endl;
+//    }
 
 //    Real rho, poisson, young, bulk, alpha, gamma, mu;
 //    rho     = dataFile ( "solid/physics/density", 1. );
@@ -269,53 +214,64 @@ int main (int argc, char** argv)
 //                  << "gamma   = " << gamma   << std::endl;
 //    }
 
-
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "\ninitialization constitutive law" << std::endl;
-    }
-
-    boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
-    dataStructure->setup (dataFile);
-
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "setup spaces" << std::endl;
-    }
-
-    std::string dOrder =  dataFile ( "solid/space_discretization/order", "P1");
-    solidFESpacePtr_Type dFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 3, comm) );
-    solidETFESpacePtr_Type dETFESpace ( new solidETFESpace_Type (localSolidMesh, & (dFESpace->refFE() ), & (dFESpace->fe().geoMap() ), comm) );
-
-
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "\nsetup boundary conditions" << std::endl;
-    }
+//
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "\ninitialization constitutive law" << std::endl;
+//    }
+//
+////    boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
+////    dataStructure->setup (dataFile);
+//
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "setup spaces" << std::endl;
+//    }
+//
+////    std::string dOrder =  dataFile ( "solid/space_discretization/order", "P1");
+////    solidFESpacePtr_Type dFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 3, comm) );
+////    solidETFESpacePtr_Type dETFESpace ( new solidETFESpace_Type (localSolidMesh, & (dFESpace->refFE() ), & (dFESpace->fe().geoMap() ), comm) );
+////
+//
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "\nCreating Ionic Model" << std::endl;
+//    }
 
     //! #################################################################################
     //! BOUNDARY CONDITIONS
     //! #################################################################################
-    bcInterfacePtr_Type                     solidBC ( new bcInterface_Type() );
-    solidBC->createHandler();
-    solidBC->fillHandler ( data_file_name, "solid" );
-    solidBC->handler()->bcUpdate( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
+//    bcInterfacePtr_Type                     solidBC ( new bcInterface_Type() );
+//    solidBC->createHandler();
+//    solidBC->fillHandler ( data_file_name, "solid" );
+//    solidBC->handler()->bcUpdate( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
 
+    //solver.setupMechanicalBC(data_file_name, "solid",  dFESpace);
+    ionicModelPtr_Type ionicModel(new IonicAlievPanfilov() );
+    std::string ionicModelType = parameterList.get ("ionic_model", "");
 
     if ( comm->MyPID() == 0 )
     {
-        std::cout << "\nsetup structural operator" << std::endl;
+        std::cout << "\nsetup EM solver" << std::endl;
     }
+    solver.setup(dataFile, parameterList, ionicModelType, comm);
+//    if ( comm->MyPID() == 0 )
+//    {
+//        std::cout << "\nsetup structural operator" << std::endl;
+//    }
     //! 1. Constructor of the structuralSolver
-    typedef EMStructuralOperator< RegionMesh<LinearTetra> > solid_Type;
-    typedef boost::shared_ptr<solid_Type>                 solidPtr_Type;
-    solid_Type solid;
+//    typedef EMStructuralOperator< RegionMesh<LinearTetra> > solid_Type;
+//    typedef boost::shared_ptr<solid_Type>                 solidPtr_Type;
+//    solid_Type solid;
+
 //    solid.setup(dataStructure,dFESpace, dETFESpace, solidBC -> handler(), comm);
-    boost::shared_ptr<BCHandler> BCh (  solidBC -> handler() );
-    solidBC -> handler() -> showMe();
-    solid.setup(dataStructure,dFESpace, dETFESpace, solidBC -> handler(),  comm);
-    BCh -> showMe();
-    solid.EMMaterial() -> setupFiberVector(1, 0, 0);
+//    boost::shared_ptr<BCHandler> BCh (  solidBC -> handler() );
+ //   solidBC -> handler() -> showMe();
+ //   solid.setup(dataStructure,dFESpace, dETFESpace, solver.bcInterfacePtr()->handler(),  comm);
+//    BCh -> showMe();
+
+    solver.setupFiberVector(1, 0, 0);
+//    solid.EMMaterial() -> setupFiberVector(1, 0, 0);
 
 
 //    solid.setup(dataStructure,dFESpace, dETFESpace, solidBC -> handler(),  comm);
@@ -329,7 +285,7 @@ int main (int argc, char** argv)
 //        std::cout << "\ninitial guess" << std::endl;
 //    }
 
-    solid.setDataFromGetPot (dataFile);
+//    solid.setDataFromGetPot (dataFile);
 
 //    //    function_Type fibersDirection = &fiberRotation;
 //    //  vectorPtr_Type fibersRotated( new vector_Type( dFESpace -> map() ) );
@@ -452,12 +408,15 @@ int main (int argc, char** argv)
 //
 
 
-    solid.buildSystem (1.0);
-    vectorPtr_Type rhs (new vector_Type (solid.displacement(), Unique) );
-    vectorPtr_Type disp (new vector_Type (solid.displacement(), Unique) );
-    vectorPtr_Type initialDisplacement (new vector_Type (solid.displacement(), Unique) );
-    solid.initialize ( initialDisplacement );
-//
+    solver.buildSystem();
+//    solid.buildSystem (1.0);
+//    vectorPtr_Type rhs (new vector_Type (solid.displacement(), Unique) );
+//    vectorPtr_Type disp (new vector_Type (solid.displacement(), Unique) );
+//    vectorPtr_Type initialDisplacement (new vector_Type (solid.displacement(), Unique) );
+//    solid.initialize ( initialDisplacement );
+    solver.initialize();
+
+    //
 //
 //    MPI_Barrier (MPI_COMM_WORLD);
 //
@@ -466,18 +425,17 @@ int main (int argc, char** argv)
 //        std::cout << "\nsetup solid exporter" << std::endl;
 //    }
 //
-    boost::shared_ptr< Exporter<RegionMesh<LinearTetra> > > exporter;
-    exporter.reset ( new ExporterHDF5<RegionMesh<LinearTetra> > ( dataFile, "structure" ) );
-
-    exporter->setPostDir ( problemFolder );
-    exporter->setMeshProcId ( localSolidMesh, comm->MyPID() );
-
-//    vectorPtr_Type solidDisp ( new vector_Type (solid.displacement(), exporter->mapType() ) );
-    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
-
-    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "Fibers", dFESpace, solid.EMMaterial() -> fiberVectorPtr(), UInt (0) );
-
-
+//    boost::shared_ptr< Exporter<RegionMesh<LinearTetra> > > exporter;
+//    exporter.reset ( new ExporterHDF5<RegionMesh<LinearTetra> > ( dataFile, "structure" ) );
+//
+//    exporter->setPostDir ( problemFolder );
+//    exporter->setMeshProcId ( localSolidMesh, comm->MyPID() );
+//
+////    vectorPtr_Type solidDisp ( new vector_Type (solid.displacement(), exporter->mapType() ) );
+//    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
+//
+//    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "Fibers", dFESpace, solid.EMMaterial() -> fiberVectorPtr(), UInt (0) );
+//
 //
 //
 //
@@ -758,43 +716,39 @@ int main (int argc, char** argv)
 //    }
 //
 
-    typedef ElectroIonicModel ionicModel_Type;
-    typedef boost::shared_ptr<ionicModel_Type> ionicModelPtr_Type;
 
-    ionicModelPtr_Type ionicModel(new IonicAlievPanfilov() );
 
 //    typedef ElectroETAMonodomainSolver<mesh_Type, ionicModel_Type>  monodomain_Type;
-    typedef EMMonodomainSolver<mesh_Type, ionicModel_Type>  monodomain_Type;
-    monodomain_Type monodomain( meshName, meshPath, dataFile , ionicModel );
-    std::cout << "Monodomain 1 Done!\n";
-
-    monodomain.setDisplacementPtr( solid.displacementPtr() );
-    std::cout << "Displacement set!\n";
-
-    monodomain.setMechanicsModifiesConductivity(false);
-    std::cout << "Conductivity set!\n";
-
-    monodomain.setInitialConditions();
-    std::cout << "Initial Conditions set!\n";
-    monodomain.setParameters ( parameterList );
-    std::cout << "Parameters set!\n";
-
-    monodomain.setFiberPtr( solid.EMMaterial()->fiberVectorPtr() );
-    std::cout << "Fiber vector set!\n";
-
-    monodomain.setupMatrices();
-    std::cout << "Matrices set!\n";
-
-    std::cout << "\nSetting up the exporter ... " ;
-    ExporterHDF5< RegionMesh <LinearTetra> > exporter2;
-    monodomain.setupExporter ( exporter2, "ElectroSolution" , problemFolder);
-	std::cout << " exporting initial solution ... \n" ;
- //   monodomain.exportSolution ( exporter2, 0);
-
-    ExporterHDF5< RegionMesh <LinearTetra> > exporter3;
-    monodomain.setupExporter ( exporter3, "ElectroSolution2" , problemFolder);
-	std::cout << " exporting initial solution ... \n" ;
-  //  monodomain.exportSolution ( exporter3, 0);
+//    monodomain_Type monodomain( meshName, meshPath, dataFile , ionicModel );
+//    std::cout << "Monodomain 1 Done!\n";
+//
+//    monodomain.setDisplacementPtr( solid.displacementPtr() );
+//    std::cout << "Displacement set!\n";
+//
+//    monodomain.setMechanicsModifiesConductivity(false);
+//    std::cout << "Conductivity set!\n";
+//
+//    monodomain.setInitialConditions();
+//    std::cout << "Initial Conditions set!\n";
+//    monodomain.setParameters ( parameterList );
+//    std::cout << "Parameters set!\n";
+//
+//    monodomain.setFiberPtr( solid.EMMaterial()->fiberVectorPtr() );
+//    std::cout << "Fiber vector set!\n";
+//
+//    monodomain.setupMatrices();
+//    std::cout << "Matrices set!\n";
+//
+//    std::cout << "\nSetting up the exporter ... " ;
+//    ExporterHDF5< RegionMesh <LinearTetra> > exporter2;
+//    monodomain.setupExporter ( exporter2, "ElectroSolution" , problemFolder);
+//	std::cout << " exporting initial solution ... \n" ;
+// //   monodomain.exportSolution ( exporter2, 0);
+//
+//    ExporterHDF5< RegionMesh <LinearTetra> > exporter3;
+//    monodomain.setupExporter ( exporter3, "ElectroSolution2" , problemFolder);
+//	std::cout << " exporting initial solution ... \n" ;
+//  //  monodomain.exportSolution ( exporter3, 0);
 
     function_Type stim=&Iapp;
 
@@ -803,66 +757,77 @@ int main (int argc, char** argv)
     Real t = 0;
 
 //    RossiModel14 activationModel(monodomain.potentialPtr()->map());
-    NashPanfilovModel04 activationModel(monodomain.potentialPtr()->map());
-    std::cout << "Activation Model set!\n";
+//    NashPanfilovModel04 activationModel(monodomain.potentialPtr()->map());
+//    std::cout << "Activation Model set!\n";
+//
+//    vectorPtr_Type activationPtr(&activationModel.activation());
+//
+//    solid.EMMaterial()->setActivationPtr(activationPtr);
 
-    vectorPtr_Type activationPtr(&activationModel.activation());
+      solver.oneWayCoupling();
+//    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
+//    exporter2.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
+//    exporter3.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
+//
 
-    solid.EMMaterial()->setActivationPtr(activationPtr);
+    solver.setupExporters(problemFolder);
 
-    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
-    exporter2.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
-    exporter3.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
-
-    for(int k(0); k <= 2000; k++)
+    for(int k(0); k <= 3500; k++)
     {
     	std::cout << "\n*********************";
     	std::cout << "\nTIME = " << t;
     	std::cout << "\n*********************\n";
     	if(k%25 ==0)
 		{
-        	solid.iterate ( solidBC -> handler() );
-            exporter->postProcess ( t );
-            monodomain.exportSolution ( exporter2, t);
+        	solver.solveMechanics();
+    		solver.saveSolution(t);
+//    		solid.iterate ( solver.bcInterfacePtr()->handler() );
+//            exporter->postProcess ( t );
+//            monodomain.exportSolution ( exporter2, t);
 		}
 
-    	monodomain.setAppliedCurrentFromFunction ( stim, t );
-        monodomain.solveOneStepGatingVariablesFE();
-    	monodomain.solveOneICIStep();
+//    	monodomain.setAppliedCurrentFromFunction ( stim, t );
+//        monodomain.solveOneStepGatingVariablesFE();
+//    	monodomain.solveOneICIStep();
 
-    	activationModel.solveModel(*(monodomain.potentialPtr()), dt);
+    	solver.solveElectrophysiology(stim, t);
+
+    	solver.solveActivation(0,dt);
+//    	activationModel.solveModel(*(monodomain.potentialPtr()), dt);
     	t += dt;
 
     }
 
-    exporter2.closeFile();
-    monodomain.setupMatrices();
-    monodomain.setInitialConditions();
-    activationModel.activation() *= 0.0;
-    monodomain.setMechanicsModifiesConductivity(true);
+//    exporter2.closeFile();
+//    monodomain.setupMatrices();
+//    monodomain.setInitialConditions();
+//    activationModel.activation() *= 0.0;
+//    monodomain.setMechanicsModifiesConductivity(true);
+//
+//    t=0;
+//    for(int k(0); k <= 2000; k++)
+//    {
+//    	if(k%50 ==0)
+//		{
+//    		monodomain.exportSolution ( exporter3, t);
+//		}
+//
+//    	monodomain.setAppliedCurrentFromFunction ( stim, t );
+//        monodomain.solveOneStepGatingVariablesFE();
+//    	monodomain.solveOneICIStep();
+//
+//    	activationModel.solveModel(*(monodomain.potentialPtr()), dt);
+//    	t += dt;
+//
+//    }
 
-    t=0;
-    for(int k(0); k <= 2000; k++)
-    {
-    	if(k%50 ==0)
-		{
-    		monodomain.exportSolution ( exporter3, t);
-		}
 
-    	monodomain.setAppliedCurrentFromFunction ( stim, t );
-        monodomain.solveOneStepGatingVariablesFE();
-    	monodomain.solveOneICIStep();
+//    exporter3.closeFile();
 
-    	activationModel.solveModel(*(monodomain.potentialPtr()), dt);
-    	t += dt;
+//    exporter -> closeFile();
+//    ionicModel.reset();
 
-    }
-
-
-    exporter3.closeFile();
-
-    exporter -> closeFile();
-    ionicModel.reset();
+    solver.closeExporters();
 
 #ifdef HAVE_MPI
     MPI_Finalize();

@@ -1,17 +1,18 @@
 <ParameterList>
 	<!-- LinearSolver parameters -->
     <Parameter name="timeStep" type="double" value="0.02"  />
-    <Parameter name="endTime" type="double" value="0.06"  />
+    <Parameter name="endTime" type="double" value="1.0"  />
     <Parameter name="saveStep" type="double" value="1.0"  />
     <Parameter name="meth" type="double" value="1.0"  />
     <Parameter name="emdt" type="double" value="0.1"  />
     <Parameter name="longitudinalDiffusion" type="double" value="3.10"  />
     <Parameter name="transversalDiffusion" type="double" value="3.010"  />
     <Parameter name="elementsOrder" type="string" value="P1"  />
-    <Parameter name="solid_mesh_name" type="string" value="cube4.mesh"  />
+    <Parameter name="ionic_model" type="string" value="AlievPanfilov"  />
+    <Parameter name="solid_mesh_name" type="string" value="cube8.mesh"  />
     <Parameter name="solid_mesh_path" type="string" value="/Users/srossi/LifeV/meshes/"  />
     <Parameter name="solid_fiber_file" type="string" value="idealHeart_structure_fiber"  />
-    <Parameter name="mesh_name" type="string" value="cube4.mesh"  />
+    <Parameter name="mesh_name" type="string" value="cube8.mesh"  />
     <Parameter name="mesh_path" type="string" value="/Users/srossi/LifeV/meshes/"  />
     <Parameter name="fiber_file" type="string" value="idealHeart_electro_fiber"  />
     <Parameter name="fiber_X" type="double" value="0.707106781187"  />
