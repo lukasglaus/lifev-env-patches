@@ -42,7 +42,8 @@ lawType     = nonlinear
 #PNH = Passive NeoHookean
 #PNHL = Passive NeoHookean Linearized
 #PIE = Passive Isoptropic Exponential
-EMPassiveMaterialType =  PNH
+#PTIE = Passive Transversely Isoptropic Exponential
+EMPassiveMaterialType =  PTIE
 EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
 
@@ -177,7 +178,7 @@ abstol  	= 1.e-7
 
 
 [../solver]
-solver          = gmres
+solver          = cg #gmres
 scaling         = none
 output          = all 			# none
 conv            = rhs
