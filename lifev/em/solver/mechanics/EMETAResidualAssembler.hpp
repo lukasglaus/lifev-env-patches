@@ -21,6 +21,7 @@
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
 #include <lifev/em/util/EMUtility.hpp>
+#include <lifev/em/solver/EMETAFunctors.hpp>
 //#include <boost/typeof/typeof.hpp>
 
 namespace LifeV
@@ -187,22 +188,79 @@ computeI4ResidualTerms( const vector_Type& disp,
 	//
 	std::cout << "EMETA - Computing I4 residual terms ... \n";
 
+
     auto F = _F(dispETFESpace, disp, 0);
+	auto I = value(EMUtility::identity());
 
     auto f0 = value(dispETFESpace, fibers);
     auto f = F * f0;
     auto fxf0 = outerProduct (f, f0);
 //    auto H = value(activationETFESpace, activation);
+    auto Wa = eval(W4, f);
+    auto Wm = eval(W4, f);
+    auto P = value(2.0) * Wa /* Wm */ *  fxf0;
+//    auto F = _F(dispETFESpace, disp, 0);
+//    auto J = det(F);
+//    auto Jm23 = pow(J, -2.0/3.0);
+//    auto f0 = value(dispETFESpace, fibers);
+//    auto f = F * f0;
+//    auto fxf0 = F *  outerProduct (f0, f0);
+//    auto I4 = dot(f, f);
+//    auto FinvT = minusT(F);
+//    auto H = value(activationETFESpace, activation);
 //    auto Wa = eval(W, H);
     auto W4f = eval(W4, f);
-    auto P = value(2.0) * W4f *  fxf0;
+    //auto P = value(2.0) * W4f *  fxf0;//( fxf0 - value(1.0/3.0) * I4 * FinvT ) ;
 	integrate ( elements ( dispETFESpace->mesh() ) ,
 			    quadRuleTetra4pt,
 				dispETFESpace,
 		//		dot(P, grad (phi_i) )
-				dot ( eval (W4, f) * fxf0 , grad (phi_i) )
+				dot ( value(2.0) * Wm * F * outerProduct(f0, f0) , grad (phi_i) )
 				) >> residualVectorPtr;
 }
+
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI8ResidualTerms( const vector_Type& disp,
+		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+					    const vector_Type& fibers,
+					    const vector_Type& sheets,
+		                vectorPtr_Type           residualVectorPtr,
+                        FunctorPtr                  W8)
+{
+	using namespace ExpressionAssembly;
+//    auto F = _F(dispETFESpace, disp, 0);
+//    auto J = det(F);
+//    auto Jm23 = pow(J, -2.0/3.0 );
+//
+//    auto FinvT = minusT(F);
+//
+//    auto f0 = value(dispETFESpace, fibers);
+//    auto s0 = value(dispETFESpace, sheets);
+//
+//    auto f = F * f0;
+//    auto s = F * s0;
+
+    boost::shared_ptr<ShowValue> sv( new ShowValue() );
+
+//    auto I8 = dot(f, s);
+//    auto I8bar = Jm23 * I8;
+    auto I8bar = _I8fsbar(dispETFESpace, disp, 0, fibers, sheets);
+    auto P = eval (W8, I8bar )
+    	   * _dI8fsbar(dispETFESpace, disp, 0, fibers, sheets);
+
+//	dot ( eval (W1, _F(dispETFESpace, disp, 0)) * _dI1bar(dispETFESpace, disp, 0), grad (phi_i) )
+
+    std::cout << "EMETA - Computing I8 residual terms ... \n";
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+				dispETFESpace,
+		//		dot(P, grad (phi_i) )
+				dot (  P , grad (phi_i) )
+				) >> residualVectorPtr;
+}
+
 
 
 }//EMAssembler
