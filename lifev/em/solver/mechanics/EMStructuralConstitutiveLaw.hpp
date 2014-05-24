@@ -493,7 +493,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 	M_passiveMaterialPtr -> computeJacobian(disp,
 			                                this->M_dispETFESpace,
 	   			                            *M_fiberVectorPtr,
-	   			                            *M_fiberVectorPtr,
+	   			                            *M_sheetVectorPtr,
 			                                this->M_jacobian);
 	if(M_activeStressMaterialPtr)
 	M_activeStressMaterialPtr -> computeJacobian( disp,
@@ -525,11 +525,18 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     displayer->leaderPrint (" \n******************************************************************\n  ");
 	*(M_residualVectorPtr) *= 0.0;
 	if(M_passiveMaterialPtr)
-	M_passiveMaterialPtr -> computeResidual(disp,
-   			                               this->M_dispETFESpace,
-   			                               *M_fiberVectorPtr,
-   			                               *M_fiberVectorPtr,
-   			                               M_residualVectorPtr);
+	{
+		std::cout << "Checking: \n";
+		if(M_fiberVectorPtr) std::cout << "EM Structural Law: I have fibers!\n";
+		if(M_sheetVectorPtr) std::cout << "EM Structural Law: I have sheets!\n";
+		if(M_residualVectorPtr) std::cout << "EM Structural Law: I have residual!\n";
+		std::cout << "Checking Done \n";
+		M_passiveMaterialPtr -> computeResidual(disp,
+											   this->M_dispETFESpace,
+											   *M_fiberVectorPtr,
+											   *M_sheetVectorPtr,
+											   M_residualVectorPtr);
+	}
 	if(M_activeStressMaterialPtr)
 	M_activeStressMaterialPtr -> computeResidual( disp,
 												  super::M_dispETFESpace,

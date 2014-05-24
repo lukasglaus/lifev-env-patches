@@ -150,10 +150,10 @@
 
 // d2I1bardF = d2I1bar : dF = Second derivative of I1bar with respect to F in direction dF
 //matrix
-#define _d2I1bardF(y, z, w)    ( _dJm23dF(y, z, w) * _dI1(y, z, w) \
-		                                         + _Jm23(y, z, w) * _d2I1dF                            \
-		                                         + _I1(y, z, w) * _d2Jm23dF(y, z, w) \
-		                                         + _dI1dF(y, z, w) * _dJm23(y, z, w) )
+#define _d2I1bardF(y, z, w)    ( ( _dJm23dF(y, z, w) * _dI1(y, z, w) ) \
+							   + ( _Jm23(y, z, w) * _d2I1dF          ) \
+							   + ( _I1(y, z, w) * _d2Jm23dF(y, z, w) ) \
+							   + ( _dI1dF(y, z, w) * _dJm23(y, z, w) ) )
 
 // WI = Derivative of the energy W with respect to I1bar
 //scalar
@@ -176,5 +176,61 @@
 ///////////////////////////////////////////////////////////////////////////
 //f fiber vector
 //_
+
+///////////////////////////////////////////////////////////////////////////
+// ISOTROPIC TERMS DEPENDING ON I8fs
+///////////////////////////////////////////////////////////////////////////
+//w = w
+//x = identity matrix
+//y = y
+//z = z
+
+//fibers
+//vector
+#define _f0(y, a)            ( value(y, a) )
+
+#define _f(y, z, w, a)   ( _F(y, z, w) * _f0(y, a) )
+
+#define _df(y, a)   ( _dF * _f0(y, a) )
+
+//sheets
+//vector
+#define _s0(y, b)            ( value(y, b) )
+
+#define _s(y, z, w, b)   ( _F(y, z, w) * _s0(y, b) )
+
+#define _ds(y, b)   ( _dF * _s0(y, b) )
+
+#define _I8fs(y, z, w, a, b)   ( dot ( _F(y, z, w) * _f0(y, a), _F(y, z, w) * _s0(y, b) ) )
+
+#define _dI8fs(y, z, w, a, b)   ( outerProduct( _f(y, z, w, a), _s0(y, b) ) + outerProduct( _s(y, z, w, b), _f0(y, a) ) )
+//#define _dI8fs(y, z, w, a, b)   ( _F(y, z, w) )* ( outerProduct( _f0(y, a), _s0(y, b) ) + outerProduct( _s0(y, b), _f0(y, a) ) )
+
+#define _I8fsbar(y, z, w, a, b)            ( _Jm23(y, z, w) * _I8fs(y, z, w, a, b) )
+
+// dI1bar = Derivative of \bar{I}_1 with respect to F
+//matrix
+#define _dI8fsbar(y, z, w, a, b)       ( _Jm23(y, z, w) * _dI8fs(y, z, w, a, b) + _I8fs(y, z, w, a, b) * _dJm23(y, z, w) )
+
+#define _dI8fsdF(y, z, w, a, b)   ( dot( _dI8fs(y, z, w, a, b), _dF  ) )
+#define _dI8fsbardF(y, z, w, a, b)   ( dot( _dI8fsbar(y, z, w, a, b), _dF  ) )
+
+#define _d2I8fsdF(y, a, b)   ( outerProduct( _df(y, a), _s0(y, b) ) + outerProduct( _ds(y, b), _f0(y, a) ) )
+
+#define _d2I8fsbardF(y, z, w, a, b)   ( ( _Jm23(y, z, w) * _d2I8fsdF(y, a, b) )        \
+		                              + ( _dJm23dF(y, z, w) * _dI8fs(y, z, w, a, b)  ) \
+                                      + ( _dI8fsdF(y, z, w, a, b) * _dJm23(y, z, w)  ) \
+                                      + ( _I8fs(y, z, w, a, b)    * _d2Jm23dF(y, z, w) ) )
+
+//#define _d2I8fsbardF(y, z, w, a, b)   ( ( _dJm23dF(y, z, w) * dI8fs(y, z, w, a, b) )       \
+//                                      + ( _Jm23(y, z, w)    * d2I8fsdF(y, a, b)    )       \
+//                                      + ( _dI8fsdF(y, z, w, a, b) * _dJm23(y, z, w) )      \
+//                                      + ( _I8fs(y, z, w, a, b)    * _d2Jm23dF(y, z, w) ) )
+
+
+//( _dJm23dF(y, z, w) * _dI1(y, z, w) \
+//		                                         + _Jm23(y, z, w) * _d2I1dF                            \
+//		                                         + _I1(y, z, w) * _d2Jm23dF(y, z, w) \
+//		                                         + _dI1dF(y, z, w) * _dJm23(y, z, w) )
 
 #endif /* EMMECHANICALEXPRESSIONS_HPP_ */

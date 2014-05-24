@@ -121,7 +121,7 @@ computeI1JacobianTerms( const vector_Type& disp,
 	//
 	std::cout << "Computing I1 jacobian terms  ... \n";
 
-	auto dP = eval(W1, _F(dispETFESpace, disp, 0)) * (_d2I1bardF(dispETFESpace, disp, 0));
+	auto dP = eval(W1, _F(dispETFESpace, disp, 0)) * (_d2I1bardF(dispETFESpace, disp, 0) );
 	integrate ( elements ( dispETFESpace->mesh() ) ,
 			quadRuleTetra4pt,
 				dispETFESpace,
@@ -218,6 +218,152 @@ computeFiberActiveStressJacobianTerms( const vector_Type& disp,
 
 }
 
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI4JacobianTerms( const vector_Type& disp,
+						ETFESpacePtr_Type<Mesh>  dispETFESpace,
+					    const vector_Type& fibers,
+					    matrixPtr_Type     jacobianPtr,
+						FunctorPtr         W4)
+{
+	using namespace ExpressionAssembly;
+	//
+	std::cout << "EMETA - Computing I4 jacobian terms ... \n";
+
+    auto F = _F(dispETFESpace, disp, 0);
+
+    auto f0 = value(dispETFESpace, fibers);
+	auto dF = _dF;
+    auto f = F * f0;
+//    auto fxf0 = outerProduct (f, f0);
+    auto df = dF * f0;
+    auto dfxf0 = dF * outerProduct (f0, f0);
+//    auto H = value(activationETFESpace, activation);
+//    auto Wa = eval(W, H);
+    auto W4f = eval(W4, f);
+    auto dP = value(2.0) * W4f *  dfxf0;
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+				dispETFESpace,
+				dispETFESpace,
+				dot ( dP , grad (phi_i) )
+				) >> jacobianPtr;
+}
+
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
+						ETFESpacePtr_Type<Mesh>  dispETFESpace,
+					    const vector_Type& fibers,
+					    matrixPtr_Type     jacobianPtr,
+						FunctorPtr         W4)
+{
+	using namespace ExpressionAssembly;
+	//
+	std::cout << "EMETA - Computing I4 jacobian terms second derivative ... \n";
+
+    auto F = _F(dispETFESpace, disp, 0);
+
+    auto f0 = value(dispETFESpace, fibers);
+	auto dF = _dF;
+    auto f = F * f0;
+    auto fxf0 = outerProduct (f, f0);
+    auto df = dF * f0;
+    auto dfxf0 = outerProduct (df, f0);
+//    auto H = value(activationETFESpace, activation);
+//    auto Wa = eval(W, H);
+    auto W4f = eval(W4, f);
+    auto dP = value(2.0) * W4f * dot( fxf0, dF ) * fxf0;
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+				dispETFESpace,
+				dispETFESpace,
+				dot ( dP , grad (phi_i) )
+				) >> jacobianPtr;
+}
+
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI8JacobianTerms( const vector_Type& disp,
+		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+					    const vector_Type& fibers,
+					    const vector_Type& sheets,
+					    matrixPtr_Type     jacobianPtr,
+					    FunctorPtr         W8)
+{
+	using namespace ExpressionAssembly;
+//    auto F = _F(dispETFESpace, disp, 0);
+//    auto dF = _dF;
+//    auto f0 = value(dispETFESpace, fibers);
+//    auto f = F * f0;
+//    auto s0 = value(dispETFESpace, sheets);
+//    auto s = F * s0;
+//    auto df = dF * f0;
+//    auto ds = dF * s0;
+    auto I8bar = _I8fsbar(dispETFESpace, disp, 0, fibers, sheets);
+
+    auto P = eval (W8, I8bar )
+    	   * _dI8fsbardF(dispETFESpace, disp, 0, fibers, sheets);
+
+//    auto fxs = _dI8fsbardF(dispETFESpace, disp, 0, fibers, sheets);
+//    auto fxs = _dI8fsdF(dispETFESpace, disp, 0, fibers, sheets);
+    auto W = eval (W8, I8bar );
+
+	std::cout << "EMETA - Computing I8 jacobian terms ... \n";
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+				dispETFESpace,
+				dispETFESpace,
+				dot ( W * _d2I8fsbardF(dispETFESpace, disp, 0, fibers, sheets) , grad (phi_i) )
+				) >> jacobianPtr;
+}
+
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
+										boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+										const vector_Type& fibers,
+										const vector_Type& sheets,
+										matrixPtr_Type     jacobianPtr,
+										FunctorPtr         dW8)
+{
+	using namespace ExpressionAssembly;
+//    auto F = _F(dispETFESpace, disp, 0);
+//    auto dF = _dF;
+//    auto f0 = value(dispETFESpace, fibers);
+//    auto f = F * f0;
+//    auto s0 = value(dispETFESpace, sheets);
+//    auto s = F * s0;
+//    auto df = dF * f0;
+//    auto ds = dF * s0;
+//    auto dfxs = dot( dF, ( outerProduct(f, s0) + outerProduct(s, f0) ) );
+//    auto W = eval(W8, f, s);
+//
+//    auto FmT = minusT(F);
+//    auto dFmT = value(-1.0) * FmT * transpose(dF) * FmT;
+//    auto I8 = dot(f, s);
+//    auto dFdev8fs = (outerProduct (dF * s0, f0) + outerProduct (dF * f0, s0) )
+//                    - value (2. / 3) * ( (dot (F * s0, dF * f0) + dot (F * f0, dF * s0) ) *FmT + I8 * dFmT);
+
+//    auto d2I8fseiso = value (2.0) * Jm23 * (dFdev8fs - value (2. / 3) *dot (FmT, dF) *Fdev8fs) );
+
+    auto I8bar = _I8fsbar(dispETFESpace, disp, 0, fibers, sheets);
+
+	auto dP = eval (dW8, I8bar)
+			* (_dI8fsbardF(dispETFESpace, disp, 0, fibers, sheets) ) * (_dI8fsbar(dispETFESpace, disp, 0, fibers, sheets) );
+
+    std::cout << "EMETA - Computing I8 jacobian terms second derivative ... \n";
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+				dispETFESpace,
+				dispETFESpace,
+				dot (  dP, grad (phi_i) )
+				) >> jacobianPtr;
+}
 
 
 }//EMAssembler

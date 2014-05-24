@@ -52,8 +52,15 @@ Real I4(const LifeV::VectorSmall<3>& f)
 
 Real RegularizedHeaviside(const LifeV::Real x)
 {
-	return 0.5 * ( 1 + std::tanh(100.0 * x) );
+	return 0.5 * ( 1 + std::tanh(1000.0 * x) );
 }
+
+Real Heaviside(const LifeV::Real x)
+{
+	if(x>0) return 1.0;
+	else return 0;
+}
+
 
 }// Elasticity
 
