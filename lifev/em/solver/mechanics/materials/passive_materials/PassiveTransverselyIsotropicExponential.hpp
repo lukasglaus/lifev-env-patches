@@ -37,13 +37,14 @@ public:
 
 template<typename Mesh>
 PassiveTransverselyIsotropicExponential<Mesh>::PassiveTransverselyIsotropicExponential() :
-		super("Passive Isotropic Exponential", 5)
+		super("Passive Transversely Isotropic Exponential", 6)
 {
 	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh>(100000.0)  );
 	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(100000.0) );
 	this -> M_materialFunctionList[2].reset(new MaterialFunctions::IsotropicExponential<Mesh>()  );
 	this -> M_materialFunctionList[3].reset(new MaterialFunctions::dIsotropicExponential<Mesh>()  );
 	this -> M_materialFunctionList[4].reset(new MaterialFunctions::AnisotropicExponential<Mesh>()  );
+	this -> M_materialFunctionList[5].reset(new MaterialFunctions::AnisotropicExponential<Mesh>()  );
 }
 
 

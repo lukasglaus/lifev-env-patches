@@ -30,8 +30,8 @@ public:
 
 	typedef Mesh mesh_Type;
 	//template <class Mesh>
-	using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-	using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
+	typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
+	typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
 	//template <class Mesh>
 	using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
@@ -156,6 +156,8 @@ EMMaterialType<Mesh>::computeResidual( const vector_Type& disp,
 										 const vector_Type& sheets,
 										 vectorPtr_Type           residualVectorPtr)
 {
+	if(residualVectorPtr) std::cout << "EM Material Type: ResidualVectorPtr available\n";
+	if(dispETFESpace) std::cout << "EM Material Type: dispETFESpace available\n";
 	int n = M_materialFunctionList.size();
 	for(int j(0); j < n; j++)
 		M_materialFunctionList[j]->computeResidual(disp, dispETFESpace, fibers, sheets, residualVectorPtr);

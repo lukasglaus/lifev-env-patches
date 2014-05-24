@@ -5,6 +5,8 @@ SET( solver_mechanics_materials_functions_HEADERS
  solver/mechanics/materials/functions/FunctionsLinearizedNeoHookean.hpp
  solver/mechanics/materials/functions/FunctionsList.hpp
  solver/mechanics/materials/functions/FunctionsNeoHookean.hpp
+ solver/mechanics/materials/functions/FunctionsShearExponential.hpp
+ solver/mechanics/materials/functions/FunctionsSimpleActiveStress.hpp
  solver/mechanics/materials/functions/FunctionsVolumetric.hpp
  CACHE INTERNAL "")
 

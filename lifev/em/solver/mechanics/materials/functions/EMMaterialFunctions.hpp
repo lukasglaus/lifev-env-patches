@@ -83,9 +83,9 @@ namespace MaterialFunctions
 {
 
 
-template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
-template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
+//template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
+//template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
+//template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
 typedef VectorEpetra           vector_Type;
 typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
@@ -96,6 +96,9 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 template <class Mesh>
 class EMMaterialFunctions : public boost::enable_shared_from_this<EMMaterialFunctions<Mesh> >{
 public:
+
+	typedef  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
+	typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
     typedef Real return_Type;
     typedef boost::enable_shared_from_this<EMMaterialFunctions< Mesh > > boostShared_Type;
 
@@ -105,6 +108,11 @@ public:
     }
 
     virtual return_Type operator() (const VectorSmall<3>& f)
+    {
+    	return 0.0;
+    }
+
+    virtual return_Type operator() (const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
     	return 0.0;
     }
@@ -125,33 +133,33 @@ public:
     }
 
 	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								  ETFESpacePtr_Type  dispETFESpace,
 									 const vector_Type& fibers,
 									 const vector_Type& sheets,
 								  matrixPtr_Type           jacobianPtr) {}
 
 	inline virtual void	computeJacobian( const vector_Type& disp,
-			                             ETFESpacePtr_Type<Mesh>  dispETFESpace,
+			                             ETFESpacePtr_Type  dispETFESpace,
                                          const vector_Type& fibers,
                                          const vector_Type& sheets,
 										 const vector_Type& activation,
-										 scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
-										 matrixPtr_Type           jacobianPtr) {}
+										 scalarETFESpacePtr_Type activationETFESpace,
+										 matrixPtr_Type     jacobianPtr) {}
 
 
 
 	inline virtual void computeResidual( const vector_Type& disp,
-								         ETFESpacePtr_Type<Mesh>  dispETFESpace,
+								         ETFESpacePtr_Type dispETFESpace,
 									     const vector_Type& fibers,
 									     const vector_Type& sheets,
 								         vectorPtr_Type           residualVectorPtr) {}
 
 	inline virtual void	computeResidual( const vector_Type& disp,
-			                             ETFESpacePtr_Type<Mesh>  dispETFESpace,
+			                             ETFESpacePtr_Type dispETFESpace,
                                          const vector_Type& fibers,
                                          const vector_Type& sheets,
 										 const vector_Type& activation,
-										 scalarETFESpacePtr_Type<Mesh>  activationETFESpace,
+										 scalarETFESpacePtr_Type  activationETFESpace,
 										 vectorPtr_Type           residualVectorPtr) {}
 
 };
