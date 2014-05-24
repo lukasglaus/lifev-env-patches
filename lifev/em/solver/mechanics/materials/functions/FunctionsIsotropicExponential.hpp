@@ -29,7 +29,7 @@ typedef MatrixEpetra<Real>           matrix_Type;
 typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
 ////////////////////////////////////////////////////////////////////////
-//  ISOTROPIC EXPONENTIAL FUNCTIONS
+//  FIBER EXPONENTIAL FUNCTIONS
 ////////////////////////////////////////////////////////////////////////
 
 template <class Mesh>

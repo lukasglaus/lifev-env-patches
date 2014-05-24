@@ -5,8 +5,8 @@
  *      Author: srossi
  */
 
-#ifndef FUNCTIONSANAnisotropicExponential_HPP_
-#define FUNCTIONSANAnisotropicExponential_HPP_
+#ifndef FUNCTIONSAnisotropicExponential_HPP_
+#define FUNCTIONSAnisotropicExponential_HPP_
 
 #include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
 
@@ -41,12 +41,12 @@ public:
     virtual return_Type operator() (const VectorSmall<3>& f)
     {
     	using namespace ExpressionAssembly;
-    	auto I4 = Elasticity::I4(f);
-
-    	return M_a / 2.0 * ( I4 - 1 ) * std::exp( M_b * ( I4 - 1 ) * ( I4 - 1 ) ) * Elasticity::RegularizedHeaviside(I4-1);
+    	LifeV::Real I4 = f.dot(f);
+    	return M_a * ( I4 - 1.0 ) * Elasticity::Heaviside(I4-1);
+//    	return M_a * ( I4 - 1.0 ) * std::exp( M_b * ( I4 - 1 ) * ( I4 - 1 ) ); // * Elasticity::RegularizedHeaviside(I4-1);
     }
 
-    AnisotropicExponential(Real a = 185350, Real b = 15.972, bool useFibers = true) : M_a(a),
+    AnisotropicExponential(Real a = 1853.50, Real b = 15.972, bool useFibers = true) : M_a(a),
     		                                                                          M_b(b),
     		                                                                          M_useFibers(useFibers) {} // 0.33 KPa
     AnisotropicExponential(const AnisotropicExponential& AnisotropicExponential)
@@ -63,7 +63,7 @@ public:
 								         const vector_Type& sheets,
 								         matrixPtr_Type     jacobianPtr)
 	{
-	//	EMAssembler::computeI1JacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeI4JacobianTerms(disp,dispETFESpace, fibers, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
@@ -87,18 +87,23 @@ class dAnisotropicExponential : public virtual EMMaterialFunctions<Mesh> {
 public:
 	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
-    virtual return_Type operator() (const MatrixSmall<3, 3>& F)
+    virtual return_Type operator() (const VectorSmall<3>& f)
     {
-    	auto I1bar = Elasticity::I1bar(F);
-    	return M_a * M_b / 2.0 * std::exp( M_b * ( I1bar - 3 ) );
+    	using namespace ExpressionAssembly;
+    	LifeV::Real I4 = f.dot(f);
+    	return M_a * Elasticity::Heaviside(I4-1);
+  //  	return 2.0 * M_a * M_b * ( I4 - 1.0 ) * ( I4 - 1.0 ) * std::exp( M_b * ( I4 - 1 ) * ( I4 - 1 ) ); // * Elasticity::RegularizedHeaviside(I4-1);
     }
 
-    dAnisotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    dAnisotropicExponential(Real a, Real b) : M_a(a), M_b(b) {} // 0.33 KPa
+//    dAnisotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
+    dAnisotropicExponential(Real a = 1853.50, Real b = 15.972, bool useFibers = true) : M_a(a),
+    		                                                                           M_b(b),
+    		                                                                           M_useFibers(useFibers) {} // 0.33 KPa
     dAnisotropicExponential(const dAnisotropicExponential& dAnisotropicExponential)
     {
     	M_a = dAnisotropicExponential.M_a;
     	M_b = dAnisotropicExponential.M_b;
+    	M_useFibers = dAnisotropicExponential.M_useFibers;
     }
     virtual ~dAnisotropicExponential() {}
 
@@ -107,13 +112,15 @@ public:
 			boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
 		     const vector_Type& fibers,
 		     const vector_Type& sheets,
-								  matrixPtr_Type           jacobianPtr)
+			 matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeI1JacobianTermsSecondDerivative(disp,dispETFESpace, jacobianPtr, this->getMe());
+		EMAssembler::computeI4JacobianTermsSecondDerivative(disp,dispETFESpace, fibers, jacobianPtr, this->getMe());
 	}
+
 private:
     Real M_a;
     Real M_b;
+    bool M_useFibers;
 };
 
 
