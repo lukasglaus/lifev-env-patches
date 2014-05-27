@@ -50,9 +50,7 @@
 
 #include <lifev/em/util/EMUtility.hpp>
 #include <lifev/em/solver/mechanics/materials/MaterialsList.hpp>
-
-using namespace LifeV;
-
+//#include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
 
 
 
@@ -372,6 +370,9 @@ public:
      {
      	setActivation(activation);
      }
+
+     void setParametersFromGetPot(GetPot& data);
+
      //@}
 
 protected:
@@ -484,17 +485,20 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 																   const displayerPtr_Type& displayer )
 {
     this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
+//    matrixPtr_Type jac(new matrix_Type(*this->M_localMap));
 
     displayer->leaderPrint (" \n*********************************\n  ");
     displayer->leaderPrint (" Non-Linear S-  Computing the EM material  Jacobian"     );
     displayer->leaderPrint (" \n*********************************\n  ");
 	*(this->M_jacobian) *= 0.0;
 	if(M_passiveMaterialPtr)
+	{
 	M_passiveMaterialPtr -> computeJacobian(disp,
 			                                this->M_dispETFESpace,
 	   			                            *M_fiberVectorPtr,
 	   			                            *M_sheetVectorPtr,
 			                                this->M_jacobian);
+	}
 	if(M_activeStressMaterialPtr)
 	M_activeStressMaterialPtr -> computeJacobian( disp,
 												  super::M_dispETFESpace,
@@ -524,18 +528,15 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     displayer->leaderPrint (" Non-Linear S-  Computing the EM material  residual vector"     );
     displayer->leaderPrint (" \n******************************************************************\n  ");
 	*(M_residualVectorPtr) *= 0.0;
+	vectorPtr_Type vec(new vector_Type( M_residualVectorPtr -> map() ) );
 	if(M_passiveMaterialPtr)
 	{
-		std::cout << "Checking: \n";
-		if(M_fiberVectorPtr) std::cout << "EM Structural Law: I have fibers!\n";
-		if(M_sheetVectorPtr) std::cout << "EM Structural Law: I have sheets!\n";
-		if(M_residualVectorPtr) std::cout << "EM Structural Law: I have residual!\n";
-		std::cout << "Checking Done \n";
-		M_passiveMaterialPtr -> computeResidual(disp,
+        M_passiveMaterialPtr -> computeResidual(disp,
 											   this->M_dispETFESpace,
 											   *M_fiberVectorPtr,
 											   *M_sheetVectorPtr,
 											   M_residualVectorPtr);
+
 	}
 	if(M_activeStressMaterialPtr)
 	M_activeStressMaterialPtr -> computeResidual( disp,
@@ -549,6 +550,14 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 //	computeResidual(disp);
  	this->M_residualVectorPtr->globalAssemble();
 }
+
+template <typename MeshType>
+void EMStructuralConstitutiveLaw<MeshType>::setParametersFromGetPot(GetPot& data)
+{
+
+}
+
+
 
 
 template <typename MeshType>

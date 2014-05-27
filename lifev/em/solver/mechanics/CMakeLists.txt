@@ -6,7 +6,9 @@ SET( solver_mechanics_HEADERS
  solver/mechanics/EMMechanicalExpressions.hpp
  solver/mechanics/EMElasticityFunctions.hpp
  solver/mechanics/EMETAJacobianAssembler.hpp
+ solver/mechanics/EMETAJacobianIsotropicAssembler.hpp
  solver/mechanics/EMETAResidualAssembler.hpp
+ solver/mechanics/EMETAResidualIsotropicAssembler.hpp
  CACHE INTERNAL "")
 
 
