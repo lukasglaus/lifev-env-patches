@@ -9,4 +9,5 @@ ADD_SUBDIRECTORIES(
 	test_passiveEMMaterial
 	test_OneWayCoupling
 	test_fixedMonodomain
+	test_benchmarkBar	
 )
