@@ -1,9 +1,12 @@
 SET( solver_mechanics_materials_passive_HEADERS
+ solver/mechanics/materials/passive_materials/PassiveHolzapfelOgden.hpp
  solver/mechanics/materials/passive_materials/PassiveIsotropicExponential.hpp
  solver/mechanics/materials/passive_materials/PassiveIsotropicExponentialWithShear.hpp
  solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicExponential.hpp
  solver/mechanics/materials/passive_materials/PassiveLinearizedNeoHookean.hpp
  solver/mechanics/materials/passive_materials/PassiveNeoHookean.hpp
+ solver/mechanics/materials/passive_materials/PassiveOrthotropicFung.hpp
+# solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicFung.hpp
  CACHE INTERNAL "")
 
 SET( solver_mechanics_materials_passive_SOURCES
