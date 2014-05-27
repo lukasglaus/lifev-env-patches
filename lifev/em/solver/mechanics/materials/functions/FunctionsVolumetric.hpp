@@ -79,7 +79,7 @@ public:
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         Real J = Elasticity::J(F);
-    	return M_bulk  / J / J * ( 1 + J * J + std::log(J)) ;
+    	return M_bulk  / J / J * ( 1 + J * J - std::log(J)) ;
     }
 
     dVolumetric(Real bulk = 2000.0) : M_bulk(bulk) {}

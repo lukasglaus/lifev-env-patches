@@ -41,6 +41,8 @@
 
 #include <lifev/em/solver/mechanics/EMETAJacobianAssembler.hpp>
 #include <lifev/em/solver/mechanics/EMETAResidualAssembler.hpp>
+#include <lifev/em/solver/mechanics/EMETAJacobianIsotropicAssembler.hpp>
+#include <lifev/em/solver/mechanics/EMETAResidualIsotropicAssembler.hpp>
 
 //namespace MaterialFunctions
 namespace LifeV
@@ -82,11 +84,6 @@ namespace LifeV
 namespace MaterialFunctions
 {
 
-
-//template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-//template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
-//template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
-
 typedef VectorEpetra           vector_Type;
 typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 
@@ -108,6 +105,11 @@ public:
     }
 
     virtual return_Type operator() (const VectorSmall<3>& f)
+    {
+    	return 0.0;
+    }
+
+    virtual return_Type operator() (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
     	return 0.0;
     }
@@ -161,6 +163,11 @@ public:
 										 const vector_Type& activation,
 										 scalarETFESpacePtr_Type  activationETFESpace,
 										 vectorPtr_Type           residualVectorPtr) {}
+
+
+	virtual void showMe() {}
+
+	virtual void setParametersFromGetPot(GetPot& data) {}
 
 };
 

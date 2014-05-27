@@ -8,7 +8,7 @@
 #ifndef FUNCTIONSSHEAREXPONENTIAL_HPP_
 #define FUNCTIONSSHEAREXPONENTIAL_HPP_
 
-#include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
+#include <lifev/em/util/EMUtility.hpp>
 
 //#include <lifev/em/solver/mechanics/EMETAAssembler.hpp>
 #include <lifev/em/solver/mechanics/materials/functions/EMMaterialFunctions.hpp>
@@ -74,6 +74,13 @@ public:
 		EMAssembler::computeI8ResidualTerms(disp,dispETFESpace, fibers, sheets, residualVectorPtr, this->getMe());
 	}
 
+	void showMe()
+	{
+		std::cout << "Shear Exponential Function\n";
+		std::cout << "Coefficient a: " << M_a;
+		std::cout << ", coefficient b: " << M_b << "\n";
+	}
+
 private:
     Real M_a;
     Real M_b;
@@ -111,8 +118,16 @@ public:
 								 const vector_Type& sheets,
 								 matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeI8JacobianTerms(disp,dispETFESpace, fibers, sheets, jacobianPtr, this->getMe());
+		EMAssembler::computeI8JacobianTermsSecondDerivative(disp,dispETFESpace, fibers, sheets, jacobianPtr, this->getMe());
 	}
+
+	void showMe()
+	{
+		std::cout << "Derivative Shear Exponential Function\n";
+		std::cout << "Coefficient a: " << M_a;
+		std::cout << ", coefficient b: " << M_b << "\n";
+	}
+
 
 private:
     Real M_a;

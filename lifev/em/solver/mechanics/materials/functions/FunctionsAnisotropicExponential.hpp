@@ -40,13 +40,19 @@ public:
 
     virtual return_Type operator() (const VectorSmall<3>& f)
     {
-    	using namespace ExpressionAssembly;
     	LifeV::Real I4 = f.dot(f);
-    	return M_a * ( I4 - 1.0 ) * Elasticity::Heaviside(I4-1);
-//    	return M_a * ( I4 - 1.0 ) * std::exp( M_b * ( I4 - 1 ) * ( I4 - 1 ) ); // * Elasticity::RegularizedHeaviside(I4-1);
+    	LifeV::Real I4m1 = I4 - 1.0;
+    	return M_a * I4m1 * std::exp(M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside(I4m1);
     }
 
-    AnisotropicExponential(Real a = 1853.50, Real b = 15.972, bool useFibers = true) : M_a(a),
+    virtual return_Type operator() (const LifeV::Real& I4)
+    {
+    	LifeV::Real I4m1 = I4 - 1.0;
+    	return M_a * I4m1 * std::exp(M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside(I4m1);
+    }
+
+
+    AnisotropicExponential(Real a = 185350, Real b = 15.972, bool useFibers = true) : M_a(a),
     		                                                                          M_b(b),
     		                                                                          M_useFibers(useFibers) {} // 0.33 KPa
     AnisotropicExponential(const AnisotropicExponential& AnisotropicExponential)
@@ -63,7 +69,8 @@ public:
 								         const vector_Type& sheets,
 								         matrixPtr_Type     jacobianPtr)
 	{
-		EMAssembler::computeI4JacobianTerms(disp,dispETFESpace, fibers, jacobianPtr, this->getMe());
+		if(M_useFibers) EMAssembler::computeI4JacobianTerms(disp,dispETFESpace, fibers, jacobianPtr, this->getMe());
+		else EMAssembler::computeI4JacobianTerms(disp,dispETFESpace, fibers,  sheets, jacobianPtr, this->getMe());
 	}
 
 	inline virtual void computeResidual( const vector_Type& disp,
@@ -72,7 +79,23 @@ public:
 							         const vector_Type& sheets,
 							         vectorPtr_Type     residualVectorPtr)
 	{
-		EMAssembler::computeI4ResidualTerms(disp,dispETFESpace, fibers, residualVectorPtr, this->getMe());
+		if(M_useFibers)	EMAssembler::computeI4ResidualTerms(disp,dispETFESpace, fibers, residualVectorPtr, this->getMe());
+		else	EMAssembler::computeI4ResidualTerms(disp,dispETFESpace, fibers, sheets, residualVectorPtr, this->getMe());
+	}
+
+	void showMe()
+	{
+		std::cout << "Anisotropic Exponential Function\n";
+		std::cout << "Coefficient a: " << M_a;
+		std::cout << ", coefficient b: " << M_b;
+		std::cout << ". Use Fibers? "  << M_useFibers << "\n";
+	}
+
+	void setParametersFromGetPot(GetPot& data)
+	{
+		M_a = data( "solid/physics/af", 185350);
+		M_b = data( "solid/physics/bf", 15.972);
+		M_useFibers = data( "solid/physics/fibers", true);
 	}
 
 private:
@@ -89,14 +112,23 @@ public:
 
     virtual return_Type operator() (const VectorSmall<3>& f)
     {
-    	using namespace ExpressionAssembly;
     	LifeV::Real I4 = f.dot(f);
-    	return M_a * Elasticity::Heaviside(I4-1);
-  //  	return 2.0 * M_a * M_b * ( I4 - 1.0 ) * ( I4 - 1.0 ) * std::exp( M_b * ( I4 - 1 ) * ( I4 - 1 ) ); // * Elasticity::RegularizedHeaviside(I4-1);
+    	LifeV::Real I4m1 = I4 - 1.0;
+        return M_a * std::exp( M_b * I4m1 * I4m1 )
+                   * ( 1.0 + 2.0 * M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside(I4m1)
+              + M_a * I4m1 * std::exp(M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside(I4m1);
+    }
+
+    virtual return_Type operator() (const LifeV::Real& I4)
+    {
+    	LifeV::Real I4m1 = I4 - 1.0;
+        return M_a * std::exp( M_b * I4m1 * I4m1 )
+                   * ( 1.0 + 2.0 * M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside(I4m1) // * Elasticity::RegularizedHeaviside(I4-1);
+        + M_a * I4m1 * std::exp(M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside(I4m1);
     }
 
 //    dAnisotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    dAnisotropicExponential(Real a = 1853.50, Real b = 15.972, bool useFibers = true) : M_a(a),
+    dAnisotropicExponential(Real a = 185350, Real b = 15.972, bool useFibers = true) : M_a(a),
     		                                                                           M_b(b),
     		                                                                           M_useFibers(useFibers) {} // 0.33 KPa
     dAnisotropicExponential(const dAnisotropicExponential& dAnisotropicExponential)
@@ -114,7 +146,16 @@ public:
 		     const vector_Type& sheets,
 			 matrixPtr_Type           jacobianPtr)
 	{
-		EMAssembler::computeI4JacobianTermsSecondDerivative(disp,dispETFESpace, fibers, jacobianPtr, this->getMe());
+		if(M_useFibers) EMAssembler::computeI4JacobianTermsSecondDerivative(disp,dispETFESpace, fibers, jacobianPtr, this->getMe());
+		else EMAssembler::computeI4JacobianTermsSecondDerivative(disp,dispETFESpace, fibers, sheets, jacobianPtr, this->getMe());
+	}
+
+	void showMe()
+	{
+		std::cout << "Derivative Anisotropic Exponential Function\n";
+		std::cout << "Coefficient a: " << M_a;
+		std::cout << ", coefficient b: " << M_b;
+		std::cout << ". Use Fibers? "  << M_useFibers << "\n";
 	}
 
 private:
