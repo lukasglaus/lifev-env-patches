@@ -241,31 +241,6 @@ int main (int argc, char** argv)
 
 
 
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "\nparameters" << std::endl;
-    }
-
-//    Real rho, poisson, young, bulk, alpha, gamma, mu;
-//    rho     = dataFile ( "solid/physics/density", 1. );
-//    young   = dataFile ( "solid/physics/young",   1. );
-//    poisson = dataFile ( "solid/physics/poisson", 1. );
-//    bulk    = dataFile ( "solid/physics/bulk",    1. );
-//    alpha   = dataFile ( "solid/physics/alpha",   1. );
-//    gamma   = dataFile ( "solid/physics/gamma",   1. );
-//    mu   = dataFile ( "solid/physics/mu",   1. );
-//    //  M_gammaf  = dataFile ( "solid/physics/gammaf",  0. );
-//
-//    if ( comm->MyPID() == 0 )
-//    {
-//        std::cout << "density = " << rho     << std::endl
-//                  << "young   = " << young   << std::endl
-//                  << "poisson = " << poisson << std::endl
-//                  << "bulk    = " << bulk    << std::endl
-//                  << "alpha   = " << alpha   << std::endl
-//                  << "gamma   = " << gamma   << std::endl;
-//    }
-
 
     if ( comm->MyPID() == 0 )
     {
@@ -313,6 +288,7 @@ int main (int argc, char** argv)
     solid.setup(dataStructure,dFESpace, dETFESpace, solidBC -> handler(),  comm);
     BCh -> showMe();
     solid.EMMaterial() -> setupFiberVector(1, 0, 0);
+    solid.EMMaterial() -> setupSheetVector(0, 1, 0);
 
 
 //    solid.setup(dataStructure,dFESpace, dETFESpace, solidBC -> handler(),  comm);
