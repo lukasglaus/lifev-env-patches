@@ -370,6 +370,185 @@ eval (boost::shared_ptr<FunctorType> fct, const ArgumentType1& arg1, const Argum
     return ExpressionFunctor2<FunctorType, ArgumentType1, ArgumentType2> (fct, arg1, arg2);
 }
 
+
+
+///
+///
+///  3 ARGUMENTS
+///
+///
+
+//! class ExpressionFunctor3  Class representing a functor with 3 expressions as arguement.
+/*!
+  @author Simone Rossi <simone.rossi@epfl.ch>
+
+  See the documentation of the class LifeV::ExpressionFunctor1
+
+  <b> Template parameters </b>
+
+  <i>FunctorType</i>: The type of the functor
+
+  <i>ArgumentType1</i>: The type of the first argument, that is an expression
+  (it is usually different from the input type expected by the functor)
+
+  <i>ArgumentType2</i>: The type of the second argument, that is an expression
+  (it is usually different from the input type expected by the functor)
+
+  <i>ArgumentType3</i>: The type of the third argument, that is an expression
+  (it is usually different from the input type expected by the functor)
+
+  <b> Template requirements </b>
+
+  <i>FunctorType</i>: None
+
+  <i>ArgumentType1</i>: Copiable, has a static method for display
+
+  <i>ArgumentType2</i>: Copiable, has a static method for display
+
+  <i>ArgumentType3</i>: Copiable, has a static method for display
+*/
+
+template< typename FunctorType, typename ArgumentType1, typename ArgumentType2, typename ArgumentType3 >
+class ExpressionFunctor3 : public ExpressionBase<ExpressionFunctor3<FunctorType, ArgumentType1, ArgumentType2, ArgumentType3> >
+{
+public:
+
+    //! @name Public Types
+    //@{
+
+    // Base class, typedef usefull to make the code cleaner
+    typedef ExpressionBase<ExpressionFunctor3<FunctorType, ArgumentType1, ArgumentType2, ArgumentType3> > base_Type;
+
+    //@}
+
+
+    //! @name Constructors & Destructor
+    //@{
+
+    //! Argument with the required data in argument
+    ExpressionFunctor3 (boost::shared_ptr<FunctorType> fct, const ArgumentType1& arg1, const ArgumentType2& arg2, const ArgumentType3& arg3)
+        : base_Type(),
+          M_functor (fct),
+          M_argument1 (arg1),
+          M_argument2 (arg2),
+          M_argument3 (arg3)
+    {}
+
+    //! Copy constructor
+    ExpressionFunctor3 (const ExpressionFunctor3<FunctorType, ArgumentType1, ArgumentType2, ArgumentType3>& expr)
+        : base_Type(),
+          M_functor (expr.M_functor),
+          M_argument1 (expr.M_argument1),
+          M_argument2 (expr.M_argument2),
+          M_argument3 (expr.M_argument3)
+    {}
+
+    //! Destructor
+    ~ExpressionFunctor3() {}
+
+    //@}
+
+
+    //! @name Methods
+    //@{
+
+    //! Display method
+    static void display (std::ostream& out = std::cout)
+    {
+        out << "fct( ";
+        ArgumentType1::display (out);
+        out << " , " << ArgumentType2::display (out);
+        out << " , " << ArgumentType3::display (out);
+        out << " )";
+    }
+
+    //@}
+
+
+    //! @name Get Methods
+    //@{
+
+    //! Getter for the functor
+    boost::shared_ptr<FunctorType> functor() const
+    {
+        return M_functor;
+    }
+
+    //! Getter for the expression to be placed as first argument
+    const ArgumentType1& argument1() const
+    {
+        return M_argument1;
+    }
+
+    //! Getter for the expression to be placed as second argument
+    const ArgumentType2& argument2() const
+    {
+        return M_argument2;
+    }
+
+    //! Getter for the expression to be placed as third argument
+	const ArgumentType3& argument3() const
+	{
+		return M_argument3;
+	}
+    //@}
+
+private:
+
+    //! @name Private Methods
+    //@{
+
+    //! No empty constructor
+    ExpressionFunctor3();
+
+    //@}
+
+    // Storage for the functor
+    boost::shared_ptr<FunctorType> M_functor;
+
+    // Storage for the arguments
+    ArgumentType1 M_argument1;
+    ArgumentType2 M_argument2;
+    ArgumentType3 M_argument3;
+};
+
+//! Simple function to be used in the construction of an expression
+/*!
+  @author Simone Rossi <simone.rossi@epfl.ch>
+
+  This helper function builds the expression associated with the
+  action of a functor on an expression.
+
+  <b> Template parameters </b>
+
+  <i>FunctorType</i>: The type of the functor
+
+  <i>ArgumentType1</i>: The type of the first argument, that is an expression
+  (it is usually different from the input type expected by the functor)
+
+  <i>ArgumentType2</i>: The type of the second argument, that is an expression
+  (it is usually different from the input type expected by the functor)
+
+  <b> Template requirements </b>
+
+  <i>FunctorType</i>: Same as LifeV::ExpressionFunctor2
+
+  <i>ArgumentType1</i>: Same as LifeV::ExpressionFunctor2
+
+  <i>ArgumentType2</i>: Same as LifeV::ExpressionFunctor2
+
+  <i>ArgumentType3</i>: Same as LifeV::ExpressionFunctor2
+*/
+
+template< typename FunctorType, typename ArgumentType1, typename ArgumentType2, typename ArgumentType3>
+inline ExpressionFunctor3<FunctorType, ArgumentType1, ArgumentType2, ArgumentType3>
+eval (boost::shared_ptr<FunctorType> fct, const ArgumentType1& arg1, const ArgumentType2& arg2, const ArgumentType3& arg3)
+{
+    return ExpressionFunctor3<FunctorType, ArgumentType1, ArgumentType2, ArgumentType3> (fct, arg1, arg2, arg3);
+}
+
+
+
 } // Namespace ExpressionAssembly
 
 } // Namespace LifeV
