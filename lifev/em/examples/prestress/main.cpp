@@ -322,7 +322,7 @@ int main (int argc, char** argv)
         std::cout << "\nsolid iterations: " << solidIter;
         std::cout << "\nSolving coupled problem: " << coupling;
     }
-//    Int k (0);
+    //    Int k (0);
 
     ////    Real timeReac = 0.0;
     ////    Real timeDiff = 0.0;
@@ -409,7 +409,7 @@ int main (int argc, char** argv)
     expc->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "disp", emSolverPtr -> activationPtr() -> FESpacePtrSolid(), emSolverPtr -> solidPtr() -> displacementPtr(), UInt (0) );
 
 
-//    UInt ntotalDof = emSolverPtr -> solidPtr() -> dispFESpace().dof().numTotalDof();
+    //    UInt ntotalDof = emSolverPtr -> solidPtr() -> dispFESpace().dof().numTotalDof();
     UInt nLocalDof = emSolverPtr -> solidPtr() -> displacement().epetraVector().MyLength();
     UInt dim = nLocalDof / 3;
 
@@ -467,104 +467,104 @@ int main (int argc, char** argv)
             std::cout << "\n/////////////////////////////////////////////////////";
             std::cout << "\n Time " << t;
             std::cout << "\n/////////////////////////////////////////////////////";
-                  }
+        }
 
-                      if ( comm->MyPID() == 0 )
-                  {
-          output << "\nnormres" << ", " << "normdisp" << ", time: " << t ;
-                  }
+        if ( comm->MyPID() == 0 )
+        {
+            output << "\nnormres" << ", " << "normdisp" << ", time: " << t ;
+        }
 
-                      Real normres = 2.0;
-                      Real normdisp = 2.0;
-                      iterk = 0;
-                      while (normres > tol)
-                  {
-                      iterk++;
-                      emSolverPtr -> solidPtr() -> displacement() = *Xoriginal;
-                      emSolverPtr -> solidPtr() -> displacement() -= *Xk;
+        Real normres = 2.0;
+        Real normdisp = 2.0;
+        iterk = 0;
+        while (normres > tol)
+        {
+            iterk++;
+            emSolverPtr -> solidPtr() -> displacement() = *Xoriginal;
+            emSolverPtr -> solidPtr() -> displacement() -= *Xk;
 
-                      emSolverPtr -> solveSolid();
-                      emSolverPtr -> exportSolution (t + 0.01 * iterk);
+            emSolverPtr -> solveSolid();
+            emSolverPtr -> exportSolution (t + 0.01 * iterk);
 
-                      *res = *Xk;
-                      *res += emSolverPtr -> solidPtr() -> displacement();
-                      *res -= *Xoriginal;
+            *res = *Xk;
+            *res += emSolverPtr -> solidPtr() -> displacement();
+            *res -= *Xoriginal;
 
-                      normres =  res -> normInf();
-                      normdisp =  emSolverPtr -> solidPtr() -> displacement().normInf();
-                      //
-                      if ( comm->MyPID() == 0 )
-                  {
-          std::cout << "\n RESIDUAL : " << normres << ", Norm disp: " << normdisp ;
-                      output << "\n" << normres << ", " << normdisp;
-                  }
+            normres =  res -> normInf();
+            normdisp =  emSolverPtr -> solidPtr() -> displacement().normInf();
+            //
+            if ( comm->MyPID() == 0 )
+            {
+                std::cout << "\n RESIDUAL : " << normres << ", Norm disp: " << normdisp ;
+                output << "\n" << normres << ", " << normdisp;
+            }
 
-                      *Xk *= 0.0;
-                      *Xk += *Xoriginal;
-                      *Xk -= emSolverPtr -> solidPtr() -> displacement();
-
-
-                      emSolverPtr -> solidPtr() -> mesh() -> meshTransformer().moveMesh ( *Xk, dim, 1);
-                      *Xkp1 = emSolverPtr -> solidPtr() -> displacement();
-                      //emSolverPtr -> solidPtr() -> mesh() -> meshTransformer().moveMesh( -emSolverPtr -> solidPtr() -> displacement(), dim, 0);
-
-                      expc -> postProcess (t + 0.01 * iterk);
-
-                      if (iterk > 15)
-                  {
-                      break;
-                  }
-                  }
-                  }
-
-                      output.close();
-                      //      //
-
-                      //                if ( comm->MyPID() == 0 )
-                      //                {
-                      //                    cout << "\n---------------------------";
-                      //                    cout << "\nInterpolating displacement ";
-                      //                    cout << "\n---------------------------";
-                      //                }
-                      //                emSolverPtr -> updateMonodomain();
-                      //          }
-                      //
-                      //
-                      //        }
-                      //      emSolverPtr -> registerActivationTime(t, 0.8);
-                      //      matrixPtr_Type broydenMatrix( emSolverPtr -> solidPtr() -> );
-                      //        if( k % iter == 0 )
-                      //        {
-                      //            if ( comm->MyPID() == 0 )
-                      //            {
-                      //                cout << "\nExporting solutions";
-                      //            }
+            *Xk *= 0.0;
+            *Xk += *Xoriginal;
+            *Xk -= emSolverPtr -> solidPtr() -> displacement();
 
 
-                      //emSolverPtr -> solidPtr() -> mesh() -> meshTransformer().moveMesh( -( emSolverPtr -> solidPtr() -> displacement()), 3);
-                      //emSolverPtr -> exportSolution(2.0);
+            emSolverPtr -> solidPtr() -> mesh() -> meshTransformer().moveMesh ( *Xk, dim, 1);
+            *Xkp1 = emSolverPtr -> solidPtr() -> displacement();
+            //emSolverPtr -> solidPtr() -> mesh() -> meshTransformer().moveMesh( -emSolverPtr -> solidPtr() -> displacement(), dim, 0);
 
-                      //        }
-                      //
-                      //    }
-                      //
-                      //    if ( comm->MyPID() == 0 )
-                      //    {
-                      //        cout << "\nExporting Activation Time";
-                      //    }
-                      iterk++;
-                      emSolverPtr -> exportSolution (iterk);
-                      emSolverPtr -> closeExporters();
-                      expc -> closeFile();
+            expc -> postProcess (t + 0.01 * iterk);
+
+            if (iterk > 15)
+            {
+                break;
+            }
+        }
+    }
+
+    output.close();
+    //      //
+
+    //                if ( comm->MyPID() == 0 )
+    //                {
+    //                    cout << "\n---------------------------";
+    //                    cout << "\nInterpolating displacement ";
+    //                    cout << "\n---------------------------";
+    //                }
+    //                emSolverPtr -> updateMonodomain();
+    //          }
+    //
+    //
+    //        }
+    //      emSolverPtr -> registerActivationTime(t, 0.8);
+    //      matrixPtr_Type broydenMatrix( emSolverPtr -> solidPtr() -> );
+    //        if( k % iter == 0 )
+    //        {
+    //            if ( comm->MyPID() == 0 )
+    //            {
+    //                cout << "\nExporting solutions";
+    //            }
+
+
+    //emSolverPtr -> solidPtr() -> mesh() -> meshTransformer().moveMesh( -( emSolverPtr -> solidPtr() -> displacement()), 3);
+    //emSolverPtr -> exportSolution(2.0);
+
+    //        }
+    //
+    //    }
+    //
+    //    if ( comm->MyPID() == 0 )
+    //    {
+    //        cout << "\nExporting Activation Time";
+    //    }
+    iterk++;
+    emSolverPtr -> exportSolution (iterk);
+    emSolverPtr -> closeExporters();
+    expc -> closeFile();
 
 
 
 
-          std::cout << "\n\nThank you for using EMSolver.\nI hope to meet you again soon!\n All the best for your simulation :P\n  " ;
-                          //   }
+    std::cout << "\n\nThank you for using EMSolver.\nI hope to meet you again soon!\n All the best for your simulation :P\n  " ;
+    //   }
 
 #ifdef HAVE_MPI
-                          MPI_Finalize();
+    MPI_Finalize();
 #endif
-                          return 0;
-                      }
+    return 0;
+}

@@ -118,10 +118,10 @@ public:
       \param offset: the offset parameter used assembling the matrices
     */
     void setup ( const FESpacePtr_Type& dFESpace,
-				 const ETFESpacePtr_Type& dETFESpace,
-				 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-				 const UInt offset, const dataPtr_Type& dataMaterial,
-				 const displayerPtr_Type& displayer  );
+                 const ETFESpacePtr_Type& dETFESpace,
+                 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                 const UInt offset, const dataPtr_Type& dataMaterial,
+                 const displayerPtr_Type& displayer  );
 
 
     void setup ( const FESpacePtr_Type& dFESpace,
@@ -334,10 +334,10 @@ EMNeoHookeanActivatedMaterial<MeshType>::~EMNeoHookeanActivatedMaterial()
 template <typename MeshType>
 void
 EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type& dFESpace,
-                                               const ETFESpacePtr_Type& dETFESpace,
-                                               const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                               const UInt offset, const dataPtr_Type& dataMaterial,
-                                               const displayerPtr_Type& displayer  )
+                                                 const ETFESpacePtr_Type& dETFESpace,
+                                                 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                 const UInt offset, const dataPtr_Type& dataMaterial,
+                                                 const displayerPtr_Type& displayer  )
 {
 
     //#ifdef HAVE_MPI
@@ -362,8 +362,8 @@ EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type& dFESpace
     M_stiff.reset                   ( new vector_Type (*this->M_localMap) );
     this->M_fiberVector.reset             ( new vector_Type (*this->M_localMap) );
     this->M_activationSpace.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
-                                                                 &feTetraP1,
-                                                                 dFESpace->map().commPtr() )  );
+                                                                       &feTetraP1,
+                                                                       dFESpace->map().commPtr() )  );
     M_Gammaf.reset                  ( new vector_Type ( M_activationSpace -> map() ) );
 
     M_identity (0, 0) = 1.0;
@@ -388,12 +388,12 @@ EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type& dFESpace
 template <typename MeshType>
 void
 EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                               const ETFESpacePtr_Type&                    dETFESpace,
-                                               const ETFESpacePtr_Type& activationSpace,
-                                               const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                               const UInt                                  offset,
-                                               const dataPtr_Type&                         dataMaterial,
-                                               const displayerPtr_Type&                    displayer)
+                                                 const ETFESpacePtr_Type&                    dETFESpace,
+                                                 const ETFESpacePtr_Type& activationSpace,
+                                                 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                 const UInt                                  offset,
+                                                 const dataPtr_Type&                         dataMaterial,
+                                                 const displayerPtr_Type&                    displayer)
 {
     this->M_displayer = displayer;
     this->M_dataMaterial  = dataMaterial;
@@ -433,13 +433,13 @@ EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type&         
 template <typename MeshType>
 void
 EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                               const ETFESpacePtr_Type&                    dETFESpace,
-                                               const ETFESpacePtr_Type& activationSpace,
-                                               const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                               const UInt                                  offset,
-                                               const dataPtr_Type&                         dataMaterial,
-                                               const displayerPtr_Type&                    displayer,
-                                               const vector_Type&                           gammaf   )
+                                                 const ETFESpacePtr_Type&                    dETFESpace,
+                                                 const ETFESpacePtr_Type& activationSpace,
+                                                 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                 const UInt                                  offset,
+                                                 const dataPtr_Type&                         dataMaterial,
+                                                 const displayerPtr_Type&                    displayer,
+                                                 const vector_Type&                           gammaf   )
 {
     setup ( dFESpace, dETFESpace, activationSpace, monolithicMap, offset, dataMaterial, displayer);
     M_Gammaf = gammaf;
@@ -448,14 +448,14 @@ EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type&         
 template <typename MeshType>
 void
 EMNeoHookeanActivatedMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                               const ETFESpacePtr_Type&                    dETFESpace,
-                                               const ETFESpacePtr_Type& activationSpace,
-                                               const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                               const UInt                                  offset,
-                                               const dataPtr_Type&                         dataMaterial,
-                                               const displayerPtr_Type&                    displayer,
-                                               const vector_Type&                           gammaf,
-                                               const vector_Type&                           fiberVector )
+                                                 const ETFESpacePtr_Type&                    dETFESpace,
+                                                 const ETFESpacePtr_Type& activationSpace,
+                                                 const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                 const UInt                                  offset,
+                                                 const dataPtr_Type&                         dataMaterial,
+                                                 const displayerPtr_Type&                    displayer,
+                                                 const vector_Type&                           gammaf,
+                                                 const vector_Type&                           fiberVector )
 {
     setup ( dFESpace, dETFESpace, activationSpace, monolithicMap, offset, dataMaterial, displayer, gammaf );
     M_fiberVector = fiberVector;
@@ -497,8 +497,8 @@ EMNeoHookeanActivatedMaterial<MeshType>::setupVectorsParameters ( void )
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::computeLinearStiff (dataPtr_Type& /*dataMaterial*/,
-                                                                const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
-                                                                const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/)
+                                                                  const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
+                                                                  const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/)
 {
     //! Empty method for neo-hookean material
 }
@@ -506,10 +506,10 @@ void EMNeoHookeanActivatedMaterial<MeshType>::computeLinearStiff (dataPtr_Type& 
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
-                                                                   const dataPtr_Type&      dataMaterial,
-                                                                   const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                                   const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                                   const displayerPtr_Type& displayer )
+                                                                     const dataPtr_Type&      dataMaterial,
+                                                                     const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                     const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                     const displayerPtr_Type& displayer )
 {
     this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
 
@@ -523,11 +523,11 @@ void EMNeoHookeanActivatedMaterial<MeshType>::updateJacobianMatrix ( const vecto
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::updateNonLinearJacobianTerms ( matrixPtr_Type&       jacobian,
-                                                                           const vector_Type&    disp,
-                                                                           const dataPtr_Type&   dataMaterial,
-                                                                           const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                                           const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                                           const displayerPtr_Type&  displayer )
+                                                                             const vector_Type&    disp,
+                                                                             const dataPtr_Type&   dataMaterial,
+                                                                             const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                             const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                             const displayerPtr_Type&  displayer )
 {
     {
         using namespace ExpressionAssembly;
@@ -686,8 +686,8 @@ void EMNeoHookeanActivatedMaterial<MeshType>::updateNonLinearJacobianTerms ( mat
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::apply ( const vector_Type& sol, vector_Type& res,
-                                                    const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                    const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
+                                                      const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                      const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
 {
     computeStiffness (sol, 0., this->M_dataMaterial, mapsMarkerVolumes, mapsMarkerIndexes, this->M_displayer);
     res += *M_stiff;
@@ -696,7 +696,7 @@ void EMNeoHookeanActivatedMaterial<MeshType>::apply ( const vector_Type& sol, ve
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::computeRes ( vectorPtr_Type& res, const vector_Type&       disp,
-                                                         const displayerPtr_Type& displayer )
+                                                           const displayerPtr_Type& displayer )
 {
     using namespace ExpressionAssembly;
 
@@ -731,11 +731,11 @@ void EMNeoHookeanActivatedMaterial<MeshType>::computeRes ( vectorPtr_Type& res, 
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::computeStiffness ( const vector_Type&       disp,
-                                                               Real                     /*factor*/,
-                                                               const dataPtr_Type&      dataMaterial,
-                                                               const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                               const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                               const displayerPtr_Type& displayer )
+                                                                 Real                     /*factor*/,
+                                                                 const dataPtr_Type&      dataMaterial,
+                                                                 const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                 const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                 const displayerPtr_Type& displayer )
 {
     using namespace ExpressionAssembly;
 
@@ -794,7 +794,7 @@ void EMNeoHookeanActivatedMaterial<MeshType>::computeStiffness ( const vector_Ty
 
 template <typename MeshType>
 void EMNeoHookeanActivatedMaterial<MeshType>::showMe ( std::string const& fileNameStiff,
-                                                     std::string const& fileNameJacobian)
+                                                       std::string const& fileNameJacobian)
 {
     this->M_stiff->spy (fileNameStiff);
     this->M_jacobian->spy (fileNameJacobian);

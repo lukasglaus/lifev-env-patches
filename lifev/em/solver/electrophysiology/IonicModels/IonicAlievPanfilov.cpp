@@ -109,7 +109,7 @@ EMIonicAlievPanfilov& EMIonicAlievPanfilov::operator= ( const EMIonicAlievPanfil
 // ===================================================
 //Only gating variables
 void EMIonicAlievPanfilov::computeGatingRhs (    const   std::vector<Real>&  v,
-                                               std::vector<Real>& rhs )
+                                                 std::vector<Real>& rhs )
 {
 
     Real dr = - ( M_epsilon + M_mu1 * v[1] / ( M_mu2 + v[0] ) ) * ( v[1] + M_k * v[0] * ( v[0] - M_a  - 1.0 ) );
@@ -120,7 +120,7 @@ void EMIonicAlievPanfilov::computeGatingRhs (    const   std::vector<Real>&  v,
 
 //Potential and gating variables
 void EMIonicAlievPanfilov::computeRhs (    const   std::vector<Real>&  v,
-                                         std::vector<Real>& rhs )
+                                           std::vector<Real>& rhs )
 {
 
     Real dr = - ( M_epsilon + M_mu1 * v[1] / ( M_mu2 + v[0] ) ) * ( v[1] + M_k * v[0] * ( v[0] - M_a  - 1.0 ) );

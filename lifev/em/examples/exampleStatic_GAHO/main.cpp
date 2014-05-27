@@ -530,16 +530,16 @@ int main (int argc, char** argv)
 
     vectorPtr_Type solidFibers ( new vector_Type ( dFESpace -> map() ) );
     ElectrophysiologyUtility::importFibers ( solidFibers,
-                                 solid_fiber_file,
-                                 localSolidMesh );
+                                             solid_fiber_file,
+                                             localSolidMesh );
     solid.material() -> setFiberVector ( *solidFibers );
 
 
     vectorPtr_Type solidSheet (new vector_Type ( dFESpace -> map() ) );
     ElectrophysiologyUtility::importVectorField (solidSheet,
-                                     solid_sheet_file,
-                                     solid_sheet_field,
-                                     localSolidMesh );
+                                                 solid_sheet_file,
+                                                 solid_sheet_field,
+                                                 localSolidMesh );
     solid.material() -> setSheetVector (*solidSheet);
 
 

@@ -12,52 +12,54 @@
 #include <lifev/core/array/MapEpetra.hpp>
 
 
-namespace LifeV {
+namespace LifeV
+{
 
-class ActiveStressActivation {
+class ActiveStressActivation
+{
 public:
     //! Distributed vector // For parallel usage
-    typedef VectorEpetra 												vector_Type;
+    typedef VectorEpetra                                                vector_Type;
 
-    typedef boost::shared_ptr<VectorEpetra> 							vectorPtr_Type;
+    typedef boost::shared_ptr<VectorEpetra>                             vectorPtr_Type;
 
-	ActiveStressActivation(MapEpetra& map) : M_activationPtr( new vector_Type(map) ){}
-	ActiveStressActivation(const MapEpetra& map) : M_activationPtr( new vector_Type(map) ){}
+    ActiveStressActivation (MapEpetra& map) : M_activationPtr ( new vector_Type (map) ) {}
+    ActiveStressActivation (const MapEpetra& map) : M_activationPtr ( new vector_Type (map) ) {}
 
-	ActiveStressActivation(ActiveStressActivation& activation) : M_activationPtr( new vector_Type(activation.activation()) ){}
+    ActiveStressActivation (ActiveStressActivation& activation) : M_activationPtr ( new vector_Type (activation.activation() ) ) {}
 
-	inline ActiveStressActivation& operator=(ActiveStressActivation& activation)
-	{
-		M_activationPtr.reset( new vector_Type(activation.activation()) );
-		return *this;
-	}
+    inline ActiveStressActivation& operator= (ActiveStressActivation& activation)
+    {
+        M_activationPtr.reset ( new vector_Type (activation.activation() ) );
+        return *this;
+    }
 
-	virtual ~ActiveStressActivation() {}
+    virtual ~ActiveStressActivation() {}
 
-	inline VectorEpetra& activation()
-	{
-		return *M_activationPtr;
-	}
+    inline VectorEpetra& activation()
+    {
+        return *M_activationPtr;
+    }
 
-	inline vectorPtr_Type activationPtr()
-	{
-		return M_activationPtr;
-	}
+    inline vectorPtr_Type activationPtr()
+    {
+        return M_activationPtr;
+    }
 
-	inline void setActivation(VectorEpetra& activation)
-	{
-		*M_activationPtr = activation;
-	}
+    inline void setActivation (VectorEpetra& activation)
+    {
+        *M_activationPtr = activation;
+    }
 
-	inline void setActivationPtr(vectorPtr_Type activationPtr)
-	{
-		M_activationPtr = activationPtr;
-	}
+    inline void setActivationPtr (vectorPtr_Type activationPtr)
+    {
+        M_activationPtr = activationPtr;
+    }
 
-	virtual void solveModel() {}
+    virtual void solveModel() {}
 
 protected:
-	vectorPtr_Type M_activationPtr;
+    vectorPtr_Type M_activationPtr;
 
 };
 

@@ -487,10 +487,10 @@ public:
     }
 
     //! Getter for the expression to be placed as third argument
-	const ArgumentType3& argument3() const
-	{
-		return M_argument3;
-	}
+    const ArgumentType3& argument3() const
+    {
+        return M_argument3;
+    }
     //@}
 
 private:

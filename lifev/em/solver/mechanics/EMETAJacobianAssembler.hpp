@@ -40,186 +40,186 @@ namespace EMAssembler
 
 template <typename Mesh, typename FunctorPtr >
 void
-computeFiberActiveStressJacobianTerms( const vector_Type& disp,
-		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
-						        const vector_Type& fibers,
-						        const vector_Type& sheets,
-                          const vector_Type& activation,
-                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > activationETFESpace,
-								matrixPtr_Type           jacobianPtr,
-								FunctorPtr               W)
+computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
+                                        boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
+                                        const vector_Type& fibers,
+                                        const vector_Type& sheets,
+                                        const vector_Type& activation,
+                                        boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > activationETFESpace,
+                                        matrixPtr_Type           jacobianPtr,
+                                        FunctorPtr               W)
 {
-	//
-	std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
+    //
+    std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
 
-	using namespace ExpressionAssembly;
+    using namespace ExpressionAssembly;
 
-	auto dF = _dF;
-	auto I = value(EMUtility::identity());
+    auto dF = _dF;
+    auto I = value (EMUtility::identity() );
 
-    auto F = _F(dispETFESpace, disp, 0);
-    auto f0 = value(dispETFESpace, fibers);
+    auto F = _F (dispETFESpace, disp, 0);
+    auto f0 = value (dispETFESpace, fibers);
     auto df = dF * f0;//dot( grad(phi_j) * outerProduct( fiber0, fiber0 ), grad(phi_i) ) )
     auto dfxf0 = outerProduct (df, f0);
-    auto H = value(activationETFESpace, activation);
-    auto Wa = eval(W, H);
-    auto Wm = eval(W, I);
-//    auto dP = Wa * Wm * dfxf0;
+    auto H = value (activationETFESpace, activation);
+    auto Wa = eval (W, H);
+    auto Wm = eval (W, I);
+    //    auto dP = Wa * Wm * dfxf0;
     auto dP = Wa * Wm * dfxf0;
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			quadRuleTetra4pt,
-			dispETFESpace,
-			dispETFESpace,
-			dot ( dP, grad (phi_i) )
-		  ) >> jacobianPtr;
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP, grad (phi_i) )
+              ) >> jacobianPtr;
 
 }
 
 
 template< typename Mesh, typename FunctorPtr >
 void
-computeI4JacobianTerms( const vector_Type& disp,
-		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-					    const vector_Type& fibers,
-					    matrixPtr_Type     jacobianPtr,
-						FunctorPtr         W4)
+computeI4JacobianTerms ( const vector_Type& disp,
+                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                         const vector_Type& fibers,
+                         matrixPtr_Type     jacobianPtr,
+                         FunctorPtr         W4)
 {
-	using namespace ExpressionAssembly;
+    using namespace ExpressionAssembly;
 
-	auto f_0 = _v0(dispETFESpace, fibers);
+    auto f_0 = _v0 (dispETFESpace, fibers);
 
-	boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-	auto f0 = eval(normalize0, f_0);
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
 
-	auto dP = eval (W4, _I4( dispETFESpace, disp, 0, f0 ) )
-		   *  _d2I4dF(dispETFESpace, f0 );
+    auto dP = eval (W4, _I4 ( dispETFESpace, disp, 0, f0 ) )
+              *  _d2I4dF (dispETFESpace, f0 );
 
-	std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-				quadRuleTetra4pt,
-				dispETFESpace,
-				dispETFESpace,
-				dot (  dP, grad (phi_i) )
-				) >> jacobianPtr;
+    std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot (  dP, grad (phi_i) )
+              ) >> jacobianPtr;
 }
 
 
 template< typename Mesh, typename FunctorPtr >
 void
-computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
-		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-					    const vector_Type& fibers,
-					    matrixPtr_Type     jacobianPtr,
-						FunctorPtr         dW4)
+computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
+                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                         const vector_Type& fibers,
+                                         matrixPtr_Type     jacobianPtr,
+                                         FunctorPtr         dW4)
 {
-	using namespace ExpressionAssembly;
-	//
-	std::cout << "EMETA - Computing I4 f jacobian terms second derivative ... \n";
+    using namespace ExpressionAssembly;
+    //
+    std::cout << "EMETA - Computing I4 f jacobian terms second derivative ... \n";
 
-	auto f_0 = _v0(dispETFESpace, fibers);
+    auto f_0 = _v0 (dispETFESpace, fibers);
 
-	boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-	auto f0 = eval(normalize0, f_0);
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
 
-	auto dP = eval (dW4, _I4( dispETFESpace, disp, 0, f0 ) )
-		   *  _dI4dF( dispETFESpace, disp, 0, f0 )
-		   *  _dI4( dispETFESpace, disp, 0, f0 );
+    auto dP = eval (dW4, _I4 ( dispETFESpace, disp, 0, f0 ) )
+              *  _dI4dF ( dispETFESpace, disp, 0, f0 )
+              *  _dI4 ( dispETFESpace, disp, 0, f0 );
 
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			    quadRuleTetra4pt,
-				dispETFESpace,
-				dispETFESpace,
-				dot ( dP , grad (phi_i) )
-				) >> jacobianPtr;
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> jacobianPtr;
 }
 
 
 template< typename Mesh, typename FunctorPtr >
 void
-computeI4JacobianTerms( const vector_Type& disp,
-		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-					    const vector_Type& fibers,
-					    const vector_Type& sheets,
-					    matrixPtr_Type     jacobianPtr,
-						FunctorPtr         W4)
+computeI4JacobianTerms ( const vector_Type& disp,
+                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                         const vector_Type& fibers,
+                         const vector_Type& sheets,
+                         matrixPtr_Type     jacobianPtr,
+                         FunctorPtr         W4)
 {
-	using namespace ExpressionAssembly;
+    using namespace ExpressionAssembly;
 
-	auto f_0 = _v0(dispETFESpace, fibers);
-    auto s_0 = _v0(dispETFESpace, sheets);
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    auto s_0 = _v0 (dispETFESpace, sheets);
 
-    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-    auto f0 = eval(normalize0, f_0);
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+    auto f0 = eval (normalize0, f_0);
 
-    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+    auto s_00 = s_0 - dot (f0, s_0) * s_0;
 
-    auto s0 = eval(normalize1, s_00);
+    auto s0 = eval (normalize1, s_00);
 
-	auto dP = eval (W4, _I4( dispETFESpace, disp, 0, s0 ) )
-		   *  _d2I4dF(dispETFESpace, s0 );
+    auto dP = eval (W4, _I4 ( dispETFESpace, disp, 0, s0 ) )
+              *  _d2I4dF (dispETFESpace, s0 );
 
-	std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-				quadRuleTetra4pt,
-				dispETFESpace,
-				dispETFESpace,
-				dot (  dP, grad (phi_i) )
-				) >> jacobianPtr;
+    std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot (  dP, grad (phi_i) )
+              ) >> jacobianPtr;
 }
 
 
 template< typename Mesh, typename FunctorPtr >
 void
-computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
-		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-					    const vector_Type& fibers,
-					    const vector_Type& sheets,
-					    matrixPtr_Type     jacobianPtr,
-						FunctorPtr         dW4)
+computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
+                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                         const vector_Type& fibers,
+                                         const vector_Type& sheets,
+                                         matrixPtr_Type     jacobianPtr,
+                                         FunctorPtr         dW4)
 {
-	using namespace ExpressionAssembly;
-	//
-	std::cout << "EMETA - Computing I4 s jacobian terms second derivative ... \n";
+    using namespace ExpressionAssembly;
+    //
+    std::cout << "EMETA - Computing I4 s jacobian terms second derivative ... \n";
 
-	auto f_0 = _v0(dispETFESpace, fibers);
-    auto s_0 = _v0(dispETFESpace, sheets);
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    auto s_0 = _v0 (dispETFESpace, sheets);
 
-    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-    auto f0 = eval(normalize0, f_0);
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+    auto f0 = eval (normalize0, f_0);
 
-    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+    auto s_00 = s_0 - dot (f0, s_0) * s_0;
 
-    auto s0 = eval(normalize1, s_00);
+    auto s0 = eval (normalize1, s_00);
 
 
-	auto dP = eval (dW4, _I4( dispETFESpace, disp, 0, s0 ) )
-		   *  _dI4dF( dispETFESpace, disp, 0, s0 )
-		   *  _dI4( dispETFESpace, disp, 0, s0 );
+    auto dP = eval (dW4, _I4 ( dispETFESpace, disp, 0, s0 ) )
+              *  _dI4dF ( dispETFESpace, disp, 0, s0 )
+              *  _dI4 ( dispETFESpace, disp, 0, s0 );
 
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			    quadRuleTetra4pt,
-				dispETFESpace,
-				dispETFESpace,
-				dot ( dP , grad (phi_i) )
-				) >> jacobianPtr;
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> jacobianPtr;
 }
 
 
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI4JacobianTermsFung( const vector_Type& disp,
-//		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//					    const vector_Type& fibers,
-//					    const vector_Type& sheets,
-//					    matrixPtr_Type     jacobianPtr,
-//						FunctorPtr         W4,
-//						Int Case = 0)
+//      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                      const vector_Type& fibers,
+//                      const vector_Type& sheets,
+//                      matrixPtr_Type     jacobianPtr,
+//                      FunctorPtr         W4,
+//                      Int Case = 0)
 //{
-//	using namespace ExpressionAssembly;
+//  using namespace ExpressionAssembly;
 //
-//	auto f_0 = _v0(dispETFESpace, fibers);
+//  auto f_0 = _v0(dispETFESpace, fibers);
 //    auto s_0 = _v0(dispETFESpace, sheets);
 //
 //    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
@@ -232,46 +232,46 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 //
 //    if(Case = 0)
 //    {
-//	auto dP = eval (W4, _F( dispETFESpace, disp, 0), f0, s0 )
-//		   *  _d2I4dF(dispETFESpace, f0 );
+//  auto dP = eval (W4, _F( dispETFESpace, disp, 0), f0, s0 )
+//         *  _d2I4dF(dispETFESpace, f0 );
 //
-//	std::cout << "EMETA - Computing I4 f jacobian terms (Fung)... \n";
-//	integrate ( elements ( dispETFESpace->mesh() ) ,
-//				quadRuleTetra4pt,
-//				dispETFESpace,
-//				dispETFESpace,
-//				dot (  dP, grad (phi_i) )
-//				) >> jacobianPtr;
+//  std::cout << "EMETA - Computing I4 f jacobian terms (Fung)... \n";
+//  integrate ( elements ( dispETFESpace->mesh() ) ,
+//              quadRuleTetra4pt,
+//              dispETFESpace,
+//              dispETFESpace,
+//              dot (  dP, grad (phi_i) )
+//              ) >> jacobianPtr;
 //    }
 //    else
 //    {
-//	auto dP = eval (W4, _F( dispETFESpace, disp, 0), f0, s0 )
-//		   *  _d2I4dF(dispETFESpace, s0 );
+//  auto dP = eval (W4, _F( dispETFESpace, disp, 0), f0, s0 )
+//         *  _d2I4dF(dispETFESpace, s0 );
 //
-//	std::cout << "EMETA - Computing I4 s jacobian terms (Fung)... \n";
-//	integrate ( elements ( dispETFESpace->mesh() ) ,
-//				quadRuleTetra4pt,
-//				dispETFESpace,
-//				dispETFESpace,
-//				dot (  dP, grad (phi_i) )
-//				) >> jacobianPtr;
+//  std::cout << "EMETA - Computing I4 s jacobian terms (Fung)... \n";
+//  integrate ( elements ( dispETFESpace->mesh() ) ,
+//              quadRuleTetra4pt,
+//              dispETFESpace,
+//              dispETFESpace,
+//              dot (  dP, grad (phi_i) )
+//              ) >> jacobianPtr;
 //    }
 //}
 
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI4JacobianTermsFungSecondDerivative( const vector_Type& disp,
-//		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//					    const vector_Type& fibers,
-//					    const vector_Type& sheets,
-//					    matrixPtr_Type     jacobianPtr,
-//						FunctorPtr         dW4,
-//						Int Case = 0)
+//      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                      const vector_Type& fibers,
+//                      const vector_Type& sheets,
+//                      matrixPtr_Type     jacobianPtr,
+//                      FunctorPtr         dW4,
+//                      Int Case = 0)
 //{
-//	using namespace ExpressionAssembly;
-//	//
+//  using namespace ExpressionAssembly;
+//  //
 //
-//	auto f_0 = _v0(dispETFESpace, fibers);
+//  auto f_0 = _v0(dispETFESpace, fibers);
 //    auto s_0 = _v0(dispETFESpace, sheets);
 //
 //    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
@@ -284,33 +284,33 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 //
 //    if(Case == 0)
 //    {
-//		std::cout << "EMETA - Computing I4 f jacobian terms second derivative (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 f jacobian terms second derivative (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI4dF( dispETFESpace, disp, 0, f0 )
-//			   *  _dI4( dispETFESpace, disp, 0, f0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI4dF( dispETFESpace, disp, 0, f0 )
+//             *  _dI4( dispETFESpace, disp, 0, f0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //    }
 //    else
 //    {
-//		std::cout << "EMETA - Computing I4 s jacobian terms second derivative (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 s jacobian terms second derivative (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0), f0, s0 )
-//			   *  _dI4dF( dispETFESpace, disp, 0, s0 )
-//			   *  _dI4( dispETFESpace, disp, 0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0), f0, s0 )
+//             *  _dI4dF( dispETFESpace, disp, 0, s0 )
+//             *  _dI4( dispETFESpace, disp, 0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //    }
 //
 //}
@@ -319,17 +319,17 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI4JacobianTermsMixedFungSecondDerivative( const vector_Type& disp,
-//		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//					    const vector_Type& fibers,
-//					    const vector_Type& sheets,
-//					    matrixPtr_Type     jacobianPtr,
-//						FunctorPtr         dW4,
-//						Int Case = 0)
+//      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                      const vector_Type& fibers,
+//                      const vector_Type& sheets,
+//                      matrixPtr_Type     jacobianPtr,
+//                      FunctorPtr         dW4,
+//                      Int Case = 0)
 //{
-//	using namespace ExpressionAssembly;
-//	//
+//  using namespace ExpressionAssembly;
+//  //
 //
-//	auto f_0 = _v0(dispETFESpace, fibers);
+//  auto f_0 = _v0(dispETFESpace, fibers);
 //    auto s_0 = _v0(dispETFESpace, sheets);
 //
 //    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
@@ -342,33 +342,33 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 //
 //    if(Case == 0)
 //    {
-//		std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI1 (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI1 (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI1bardF( dispETFESpace, disp, 0 )
-//			   *  _dI4( dispETFESpace, disp, 0, f0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI1bardF( dispETFESpace, disp, 0 )
+//             *  _dI4( dispETFESpace, disp, 0, f0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //    }
 //    else
 //    {
-//		std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI1 (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI1 (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _dI1bardF( dispETFESpace, disp, 0 )
-//			   *  _dI4( dispETFESpace, disp, 0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _dI1bardF( dispETFESpace, disp, 0 )
+//             *  _dI4( dispETFESpace, disp, 0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //    }
 //
 //}
@@ -378,18 +378,18 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI4JacobianTermsMixedFungSecondDerivative( const vector_Type& disp,
-//		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//					    const vector_Type& fibers,
-//					    const vector_Type& sheets,
-//					    matrixPtr_Type     jacobianPtr,
-//						FunctorPtr         dW4,
-//						Int Case,
-//						Int ShearCase)
+//      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                      const vector_Type& fibers,
+//                      const vector_Type& sheets,
+//                      matrixPtr_Type     jacobianPtr,
+//                      FunctorPtr         dW4,
+//                      Int Case,
+//                      Int ShearCase)
 //{
-//	using namespace ExpressionAssembly;
-//	//
+//  using namespace ExpressionAssembly;
+//  //
 //
-//	auto f_0 = _v0(dispETFESpace, fibers);
+//  auto f_0 = _v0(dispETFESpace, fibers);
 //    auto s_0 = _v0(dispETFESpace, sheets);
 //
 //    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
@@ -399,103 +399,103 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 //    auto s_00 = s_0 - dot(f0, s_0) * s_0;
 //
 //    auto s0 = eval(normalize1, s_00);
-//	boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//	auto n0 = eval( wedge, f0, s0);
+//  boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//  auto n0 = eval( wedge, f0, s0);
 //
 //    if(Case == 0)
 //    {
 //        if(ShearCase == 0)
 //        {
-//		std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI8 fs (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI8 fs (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
-//			   *  _dI4( dispETFESpace, disp, 0, f0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
+//             *  _dI4( dispETFESpace, disp, 0, f0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //        else if(ShearCase == 1)
 //        {
-//		std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI8 fn (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI8 fn (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
-//			   *  _dI4( dispETFESpace, disp, 0, f0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
+//             *  _dI4( dispETFESpace, disp, 0, f0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //        else
 //        {
-//		std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI8 sn (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 f jacobian mixed terms second derivative dI8 sn (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
-//			   *  _dI4( dispETFESpace, disp, 0, f0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
+//             *  _dI4( dispETFESpace, disp, 0, f0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //    }
 //    else
 //    {
 //        if(ShearCase == 0)
 //        {
-//		std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI8 fs (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI8 fs (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
-//			   *  _dI4( dispETFESpace, disp, 0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
+//             *  _dI4( dispETFESpace, disp, 0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //        else if(ShearCase == 1)
 //        {
-//		std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI8 fn (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI8 fn (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
-//			   *  _dI4( dispETFESpace, disp, 0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
+//             *  _dI4( dispETFESpace, disp, 0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //        else
 //        {
-//		std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI8 sn (Fung) ... \n";
+//      std::cout << "EMETA - Computing I4 s jacobian mixed terms second derivative dI8 sn (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
-//			   *  _dI4( dispETFESpace, disp, 0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
+//             *  _dI4( dispETFESpace, disp, 0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //    }
 //
@@ -505,129 +505,129 @@ computeI4JacobianTermsSecondDerivative( const vector_Type& disp,
 
 template< typename Mesh, typename FunctorPtr >
 void
-computeI8JacobianTerms( const vector_Type& disp,
-		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-					    const vector_Type& fibers,
-					    const vector_Type& sheets,
-					    matrixPtr_Type     jacobianPtr,
-					    FunctorPtr         W8,
-					    bool orthonormalize = true)
+computeI8JacobianTerms ( const vector_Type& disp,
+                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                         const vector_Type& fibers,
+                         const vector_Type& sheets,
+                         matrixPtr_Type     jacobianPtr,
+                         FunctorPtr         W8,
+                         bool orthonormalize = true)
 {
-	using namespace ExpressionAssembly;
+    using namespace ExpressionAssembly;
 
-	if(orthonormalize)
-	{
-		auto f_0 = _v0(dispETFESpace, fibers);
-	    auto s_0 = _v0(dispETFESpace, sheets);
+    if (orthonormalize)
+    {
+        auto f_0 = _v0 (dispETFESpace, fibers);
+        auto s_0 = _v0 (dispETFESpace, sheets);
 
-		boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-		boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-		auto f0 = eval(normalize0, f_0);
+        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto f0 = eval (normalize0, f_0);
 
-		auto s_00 = s_0 - dot(f0, s_0) * s_0;
+        auto s_00 = s_0 - dot (f0, s_0) * s_0;
 
-		auto s0 = eval(normalize1, s_00);
+        auto s0 = eval (normalize1, s_00);
 
-		auto dP = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
-			   *  _d2I8dF(dispETFESpace, f0, s0 );
+        auto dP = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
+                  *  _d2I8dF (dispETFESpace, f0, s0 );
 
-		std::cout << "EMETA - Computing I8 jacobian terms orthonormalizing ... \n";
-		integrate ( elements ( dispETFESpace->mesh() ) ,
-					quadRuleTetra4pt,
-					dispETFESpace,
-					dispETFESpace,
-					dot ( dP, grad (phi_i) )
-					) >> jacobianPtr;
-	}
-	else
-	{
-		auto f_0 = _v0(dispETFESpace, fibers);
-	    auto s_0 = _v0(dispETFESpace, sheets);
+        std::cout << "EMETA - Computing I8 jacobian terms orthonormalizing ... \n";
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dispETFESpace,
+                    dot ( dP, grad (phi_i) )
+                  ) >> jacobianPtr;
+    }
+    else
+    {
+        auto f_0 = _v0 (dispETFESpace, fibers);
+        auto s_0 = _v0 (dispETFESpace, sheets);
 
-	    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-	    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
 
-	    auto f0 = eval(normalize0, f_0);
-	    auto s0 = eval(normalize1, s_0);
-
-
-		auto dP = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
-			   *  _d2I8dF(dispETFESpace, f0, s0 );
+        auto f0 = eval (normalize0, f_0);
+        auto s0 = eval (normalize1, s_0);
 
 
-		std::cout << "EMETA - Computing I8 jacobian terms ... \n";
-		integrate ( elements ( dispETFESpace->mesh() ) ,
-				    quadRuleTetra4pt,
-					dispETFESpace,
-					dispETFESpace,
-					dot ( dP, grad (phi_i) )
-					) >> jacobianPtr;
-	}
+        auto dP = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
+                  *  _d2I8dF (dispETFESpace, f0, s0 );
+
+
+        std::cout << "EMETA - Computing I8 jacobian terms ... \n";
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dispETFESpace,
+                    dot ( dP, grad (phi_i) )
+                  ) >> jacobianPtr;
+    }
 
 }
 
 
 template< typename Mesh, typename FunctorPtr >
 void
-computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
-										boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-										const vector_Type& fibers,
-										const vector_Type& sheets,
-										matrixPtr_Type     jacobianPtr,
-										FunctorPtr         dW8,
-										bool orthonormalize = true)
+computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
+                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                         const vector_Type& fibers,
+                                         const vector_Type& sheets,
+                                         matrixPtr_Type     jacobianPtr,
+                                         FunctorPtr         dW8,
+                                         bool orthonormalize = true)
 {
-	using namespace ExpressionAssembly;
+    using namespace ExpressionAssembly;
 
-	if(orthonormalize)
-	{
-		auto f_0 = _v0(dispETFESpace, fibers);
-	    auto s_0 = _v0(dispETFESpace, sheets);
+    if (orthonormalize)
+    {
+        auto f_0 = _v0 (dispETFESpace, fibers);
+        auto s_0 = _v0 (dispETFESpace, sheets);
 
-		boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-		boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-		auto f0 = eval(normalize0, f_0);
+        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto f0 = eval (normalize0, f_0);
 
-		auto s_00 = s_0 - dot(f0, s_0) * s_0;
+        auto s_00 = s_0 - dot (f0, s_0) * s_0;
 
-		auto s0 = eval(normalize1, s_00);
+        auto s0 = eval (normalize1, s_00);
 
-		auto dP = eval (dW8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
-			   *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
-			   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+        auto dP = eval (dW8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
+                  *  _dI8dF ( dispETFESpace, disp, 0, f0, s0 )
+                  *  _dI8 ( dispETFESpace, disp, 0, f0, s0 );
 
-		std::cout << "EMETA - Computing I8 jacobian terms second derivative orthonormalizing ... \n";
-		integrate ( elements ( dispETFESpace->mesh() ) ,
-					quadRuleTetra4pt,
-					dispETFESpace,
-					dispETFESpace,
-					dot (  dP, grad (phi_i) )
-					) >> jacobianPtr;
-	}
-	else
-	{
-		auto f_0 = _v0(dispETFESpace, fibers);
-	    auto s_0 = _v0(dispETFESpace, sheets);
+        std::cout << "EMETA - Computing I8 jacobian terms second derivative orthonormalizing ... \n";
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dispETFESpace,
+                    dot (  dP, grad (phi_i) )
+                  ) >> jacobianPtr;
+    }
+    else
+    {
+        auto f_0 = _v0 (dispETFESpace, fibers);
+        auto s_0 = _v0 (dispETFESpace, sheets);
 
-	    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-	    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
 
-	    auto f0 = eval(normalize0, f_0);
-	    auto s0 = eval(normalize1, s_0);
+        auto f0 = eval (normalize0, f_0);
+        auto s0 = eval (normalize1, s_0);
 
 
-		auto dP = eval (dW8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
-			   *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
-			   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+        auto dP = eval (dW8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
+                  *  _dI8dF ( dispETFESpace, disp, 0, f0, s0 )
+                  *  _dI8 ( dispETFESpace, disp, 0, f0, s0 );
 
-	    std::cout << "EMETA - Computing I8 jacobian terms second derivative ... \n";
-		integrate ( elements ( dispETFESpace->mesh() ) ,
-				    quadRuleTetra4pt,
-					dispETFESpace,
-					dispETFESpace,
-					dot (  dP, grad (phi_i) )
-					) >> jacobianPtr;
-	}
+        std::cout << "EMETA - Computing I8 jacobian terms second derivative ... \n";
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dispETFESpace,
+                    dot (  dP, grad (phi_i) )
+                  ) >> jacobianPtr;
+    }
 
 
 }
@@ -637,142 +637,142 @@ computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI8JacobianTermsFung( const vector_Type& disp,
-//		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//					    const vector_Type& fibers,
-//					    const vector_Type& sheets,
-//					    matrixPtr_Type     jacobianPtr,
-//					    FunctorPtr         W8,
-//					    Int Case = 0,
-//					    bool orthonormalize = true)
+//                      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                      const vector_Type& fibers,
+//                      const vector_Type& sheets,
+//                      matrixPtr_Type     jacobianPtr,
+//                      FunctorPtr         W8,
+//                      Int Case = 0,
+//                      bool orthonormalize = true)
 //{
-//	using namespace ExpressionAssembly;
+//  using namespace ExpressionAssembly;
 //
-//	if(orthonormalize)
-//	{
-//		auto f_0 = _v0(dispETFESpace, fibers);
-//	    auto s_0 = _v0(dispETFESpace, sheets);
+//  if(orthonormalize)
+//  {
+//      auto f_0 = _v0(dispETFESpace, fibers);
+//      auto s_0 = _v0(dispETFESpace, sheets);
 //
-//		boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-//		boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-//		auto f0 = eval(normalize0, f_0);
+//      boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+//      boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+//      auto f0 = eval(normalize0, f_0);
 //
-//		auto s_00 = s_0 - dot(f0, s_0) * s_0;
+//      auto s_00 = s_0 - dot(f0, s_0) * s_0;
 //
-//		auto s0 = eval(normalize1, s_00);
+//      auto s0 = eval(normalize1, s_00);
 //
-//		if(Case == 0)
-//		{
-//			auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
-//				   *  _d2I8dF(dispETFESpace, f0, s0 );
+//      if(Case == 0)
+//      {
+//          auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                 *  _d2I8dF(dispETFESpace, f0, s0 );
 //
-//			std::cout << "EMETA - Computing I8 fs jacobian terms Fung orthonormalizing ... \n";
+//          std::cout << "EMETA - Computing I8 fs jacobian terms Fung orthonormalizing ... \n";
 //
-//			integrate ( elements ( dispETFESpace->mesh() ) ,
-//						quadRuleTetra4pt,
-//						dispETFESpace,
-//						dispETFESpace,
-//						dot ( dP, grad (phi_i) )
-//						) >> jacobianPtr;
-//		}
-//		else
-//		{
-//			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//			auto n0 = eval( wedge, f0, s0);
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot ( dP, grad (phi_i) )
+//                      ) >> jacobianPtr;
+//      }
+//      else
+//      {
+//          boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//          auto n0 = eval( wedge, f0, s0);
 //
-//			if(Case == 1)
-//			{
-//				auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _d2I8dF(dispETFESpace, f0, n0 );
+//          if(Case == 1)
+//          {
+//              auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _d2I8dF(dispETFESpace, f0, n0 );
 //
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot ( dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//			else
-//			{
-//				auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _d2I8dF(dispETFESpace, s0, n0 );
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot ( dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//          else
+//          {
+//              auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _d2I8dF(dispETFESpace, s0, n0 );
 //
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot ( dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//		}
-//	}
-//	else
-//	{
-//		auto f_0 = _v0(dispETFESpace, fibers);
-//	    auto s_0 = _v0(dispETFESpace, sheets);
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot ( dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//      }
+//  }
+//  else
+//  {
+//      auto f_0 = _v0(dispETFESpace, fibers);
+//      auto s_0 = _v0(dispETFESpace, sheets);
 //
-//	    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-//	    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-//	    boost::shared_ptr<orthonormalizeFibers> normalize2(new orthonormalizeFibers(2));
-//
-//
-//	    auto f0 = eval(normalize0, f_0);
-//	    auto s0 = eval(normalize1, s_0);
-//
-//		if(Case == 0)
-//		{
-//			auto dP = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
-//				   *  _d2I8dF(dispETFESpace, f0, s0 );
+//      boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+//      boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+//      boost::shared_ptr<orthonormalizeFibers> normalize2(new orthonormalizeFibers(2));
 //
 //
-//			std::cout << "EMETA - Computing I8 jacobian terms ... \n";
-//			integrate ( elements ( dispETFESpace->mesh() ) ,
-//					    quadRuleTetra4pt,
-//						dispETFESpace,
-//						dispETFESpace,
-//						dot ( dP, grad (phi_i) )
-//						) >> jacobianPtr;
-//		}
-//		else
-//		{
-//			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//			auto n_0 = eval( wedge, f0, s0);
-//		    auto n0 = eval(normalize2, n_0);
+//      auto f0 = eval(normalize0, f_0);
+//      auto s0 = eval(normalize1, s_0);
 //
-//			if(Case == 1)
-//			{
-//				auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _d2I8dF(dispETFESpace, f0, n0 );
+//      if(Case == 0)
+//      {
+//          auto dP = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
+//                 *  _d2I8dF(dispETFESpace, f0, s0 );
 //
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot ( dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//			else
-//			{
-//				auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _d2I8dF(dispETFESpace, s0, n0 );
+//          std::cout << "EMETA - Computing I8 jacobian terms ... \n";
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot ( dP, grad (phi_i) )
+//                      ) >> jacobianPtr;
+//      }
+//      else
+//      {
+//          boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//          auto n_0 = eval( wedge, f0, s0);
+//          auto n0 = eval(normalize2, n_0);
 //
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
+//          if(Case == 1)
+//          {
+//              auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _d2I8dF(dispETFESpace, f0, n0 );
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot ( dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//		}
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
 //
-//	}
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot ( dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//          else
+//          {
+//              auto dP = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _d2I8dF(dispETFESpace, s0, n0 );
+//
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung orthonormalizing ... \n";
+//
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot ( dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//      }
+//
+//  }
 //
 //}
 
@@ -780,151 +780,151 @@ computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI8JacobianTermsFungSecondDerivative( const vector_Type& disp,
-//										boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//										const vector_Type& fibers,
-//										const vector_Type& sheets,
-//										matrixPtr_Type     jacobianPtr,
-//										FunctorPtr         dW8,
-//										Int Case = 0,
-//										bool orthonormalize = true)
+//                                      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                                      const vector_Type& fibers,
+//                                      const vector_Type& sheets,
+//                                      matrixPtr_Type     jacobianPtr,
+//                                      FunctorPtr         dW8,
+//                                      Int Case = 0,
+//                                      bool orthonormalize = true)
 //{
-//	using namespace ExpressionAssembly;
+//  using namespace ExpressionAssembly;
 //
-//	if(orthonormalize)
-//	{
-//		auto f_0 = _v0(dispETFESpace, fibers);
-//	    auto s_0 = _v0(dispETFESpace, sheets);
+//  if(orthonormalize)
+//  {
+//      auto f_0 = _v0(dispETFESpace, fibers);
+//      auto s_0 = _v0(dispETFESpace, sheets);
 //
-//		boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-//		boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+//      boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+//      boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
 //
-//		auto f0 = eval(normalize0, f_0);
+//      auto f0 = eval(normalize0, f_0);
 //
-//		auto s_00 = s_0 - dot(f0, s_0) * s_0;
+//      auto s_00 = s_0 - dot(f0, s_0) * s_0;
 //
-//		auto s0 = eval(normalize1, s_00);
-//
-//
-//		if(Case == 0)
-//		{
-//			auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//				   *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
-//				   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
-//
-//			std::cout << "EMETA - Computing I8 fs jacobian terms Fung second derivative orthonormalizing ... \n";
-//
-//			integrate ( elements ( dispETFESpace->mesh() ) ,
-//						quadRuleTetra4pt,
-//						dispETFESpace,
-//						dispETFESpace,
-//						dot (  dP, grad (phi_i) )
-//						) >> jacobianPtr;
-//		}
-//		else
-//		{
-//			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//			auto n0 = eval( wedge, f0, s0);
-//
-//			if(Case == 1)
-//			{
-//				auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
-//					   *  _dI8( dispETFESpace, disp, 0, f0, n0 );
-//
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung second derivative orthonormalizing ... \n";
-//
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot (  dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//			else
-//			{
-//				auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
-//					   *  _dI8( dispETFESpace, disp, 0, s0, n0 );
-//
-//				std::cout << "EMETA - Computing I8 sn jacobian terms second derivative orthonormalizing ... \n";
-//
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot (  dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//		}
-//
-//	}
-//	else
-//	{
-//		auto f_0 = _v0(dispETFESpace, fibers);
-//	    auto s_0 = _v0(dispETFESpace, sheets);
-//
-//	    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-//	    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
-//	    boost::shared_ptr<orthonormalizeFibers> normalize2(new orthonormalizeFibers(2));
-//
-//	    auto f0 = eval(normalize0, f_0);
-//	    auto s0 = eval(normalize1, s_0);
+//      auto s0 = eval(normalize1, s_00);
 //
 //
-//		if(Case == 0)
-//		{
-//			auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//				   *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
-//				   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+//      if(Case == 0)
+//      {
+//          auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                 *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
+//                 *  _dI8( dispETFESpace, disp, 0, f0, s0 );
 //
-//			std::cout << "EMETA - Computing I8 jacobian terms Fung second derivative  ... \n";
+//          std::cout << "EMETA - Computing I8 fs jacobian terms Fung second derivative orthonormalizing ... \n";
 //
-//			integrate ( elements ( dispETFESpace->mesh() ) ,
-//						quadRuleTetra4pt,
-//						dispETFESpace,
-//						dispETFESpace,
-//						dot (  dP, grad (phi_i) )
-//						) >> jacobianPtr;
-//		}
-//		else
-//		{
-//			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//			auto n_0 = eval( wedge, f0, s0);
-//		    auto n0 = eval(normalize2, n_0);
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot (  dP, grad (phi_i) )
+//                      ) >> jacobianPtr;
+//      }
+//      else
+//      {
+//          boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//          auto n0 = eval( wedge, f0, s0);
 //
-//			if(Case == 1)
-//			{
-//				auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
-//					   *  _dI8( dispETFESpace, disp, 0, f0, n0 );
+//          if(Case == 1)
+//          {
+//              auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
+//                     *  _dI8( dispETFESpace, disp, 0, f0, n0 );
 //
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung second derivative ... \n";
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung second derivative orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot (  dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//			else
-//			{
-//				auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//					   *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
-//					   *  _dI8( dispETFESpace, disp, 0, s0, n0 );
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot (  dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//          else
+//          {
+//              auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
+//                     *  _dI8( dispETFESpace, disp, 0, s0, n0 );
 //
-//				std::cout << "EMETA - Computing I8 sn jacobian terms second derivative... \n";
+//              std::cout << "EMETA - Computing I8 sn jacobian terms second derivative orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot (  dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot (  dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//      }
 //
-//		}
-//	}
+//  }
+//  else
+//  {
+//      auto f_0 = _v0(dispETFESpace, fibers);
+//      auto s_0 = _v0(dispETFESpace, sheets);
+//
+//      boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+//      boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+//      boost::shared_ptr<orthonormalizeFibers> normalize2(new orthonormalizeFibers(2));
+//
+//      auto f0 = eval(normalize0, f_0);
+//      auto s0 = eval(normalize1, s_0);
+//
+//
+//      if(Case == 0)
+//      {
+//          auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                 *  _dI8dF( dispETFESpace, disp, 0, f0, s0 )
+//                 *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+//
+//          std::cout << "EMETA - Computing I8 jacobian terms Fung second derivative  ... \n";
+//
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot (  dP, grad (phi_i) )
+//                      ) >> jacobianPtr;
+//      }
+//      else
+//      {
+//          boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//          auto n_0 = eval( wedge, f0, s0);
+//          auto n0 = eval(normalize2, n_0);
+//
+//          if(Case == 1)
+//          {
+//              auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _dI8dF( dispETFESpace, disp, 0, f0, n0 )
+//                     *  _dI8( dispETFESpace, disp, 0, f0, n0 );
+//
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung second derivative ... \n";
+//
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot (  dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//          else
+//          {
+//              auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                     *  _dI8dF( dispETFESpace, disp, 0, s0, n0 )
+//                     *  _dI8( dispETFESpace, disp, 0, s0, n0 );
+//
+//              std::cout << "EMETA - Computing I8 sn jacobian terms second derivative... \n";
+//
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot (  dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//
+//      }
+//  }
 //
 //
 //}
@@ -934,84 +934,84 @@ computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI8JacobianMixedTermsFungSecondDerivative( const vector_Type& disp,
-//										boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//										const vector_Type& fibers,
-//										const vector_Type& sheets,
-//										matrixPtr_Type     jacobianPtr,
-//										FunctorPtr         dW8,
-//										Int Case = 0,
-//										bool orthonormalize = true)
+//                                      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                                      const vector_Type& fibers,
+//                                      const vector_Type& sheets,
+//                                      matrixPtr_Type     jacobianPtr,
+//                                      FunctorPtr         dW8,
+//                                      Int Case = 0,
+//                                      bool orthonormalize = true)
 //{
-//	using namespace ExpressionAssembly;
+//  using namespace ExpressionAssembly;
 //
-//	if(orthonormalize)
-//	{
-//		auto f_0 = _v0(dispETFESpace, fibers);
-//	    auto s_0 = _v0(dispETFESpace, sheets);
+//  if(orthonormalize)
+//  {
+//      auto f_0 = _v0(dispETFESpace, fibers);
+//      auto s_0 = _v0(dispETFESpace, sheets);
 //
-//		boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
-//		boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+//      boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+//      boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
 //
-//		auto f0 = eval(normalize0, f_0);
+//      auto f0 = eval(normalize0, f_0);
 //
-//		auto s_00 = s_0 - dot(f0, s_0) * s_0;
+//      auto s_00 = s_0 - dot(f0, s_0) * s_0;
 //
-//		auto s0 = eval(normalize1, s_00);
+//      auto s0 = eval(normalize1, s_00);
 //
 //
-//		if(Case == 0)
-//		{
-//			auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//				   *  _dI1bardF( dispETFESpace, disp, 0 )
-//				   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+//      if(Case == 0)
+//      {
+//          auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                 *  _dI1bardF( dispETFESpace, disp, 0 )
+//                 *  _dI8( dispETFESpace, disp, 0, f0, s0 );
 //
-//			std::cout << "EMETA - Computing I8 fs jacobian terms Fung second derivative dI1 orthonormalizing ... \n";
+//          std::cout << "EMETA - Computing I8 fs jacobian terms Fung second derivative dI1 orthonormalizing ... \n";
 //
-//			integrate ( elements ( dispETFESpace->mesh() ) ,
-//						quadRuleTetra4pt,
-//						dispETFESpace,
-//						dispETFESpace,
-//						dot (  dP, grad (phi_i) )
-//						) >> jacobianPtr;
-//		}
-//		else
-//		{
-//			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//			auto n0 = eval( wedge, f0, s0);
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot (  dP, grad (phi_i) )
+//                      ) >> jacobianPtr;
+//      }
+//      else
+//      {
+//          boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//          auto n0 = eval( wedge, f0, s0);
 //
-//			if(Case == 1)
-//			{
-//				auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//						   *  _dI1bardF( dispETFESpace, disp, 0 )
-//					   *  _dI8( dispETFESpace, disp, 0, f0, n0 );
+//          if(Case == 1)
+//          {
+//              auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                         *  _dI1bardF( dispETFESpace, disp, 0 )
+//                     *  _dI8( dispETFESpace, disp, 0, f0, n0 );
 //
-//				std::cout << "EMETA - Computing I8 fn jacobian terms Fung second derivative dI1 orthonormalizing ... \n";
+//              std::cout << "EMETA - Computing I8 fn jacobian terms Fung second derivative dI1 orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot (  dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//			else
-//			{
-//				auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
-//						   *  _dI1bardF( dispETFESpace, disp, 0 )
-//					   *  _dI8( dispETFESpace, disp, 0, s0, n0 );
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot (  dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//          else
+//          {
+//              auto dP = eval (dW8, _F( dispETFESpace, disp, 0), f0, s0 )
+//                         *  _dI1bardF( dispETFESpace, disp, 0 )
+//                     *  _dI8( dispETFESpace, disp, 0, s0, n0 );
 //
-//				std::cout << "EMETA - Computing I8 sn jacobian terms second derivative dI1 orthonormalizing ... \n";
+//              std::cout << "EMETA - Computing I8 sn jacobian terms second derivative dI1 orthonormalizing ... \n";
 //
-//				integrate ( elements ( dispETFESpace->mesh() ) ,
-//							quadRuleTetra4pt,
-//							dispETFESpace,
-//							dispETFESpace,
-//							dot (  dP, grad (phi_i) )
-//							) >> jacobianPtr;
-//			}
-//		}
+//              integrate ( elements ( dispETFESpace->mesh() ) ,
+//                          quadRuleTetra4pt,
+//                          dispETFESpace,
+//                          dispETFESpace,
+//                          dot (  dP, grad (phi_i) )
+//                          ) >> jacobianPtr;
+//          }
+//      }
 //
-//	}
+//  }
 //
 //}
 
@@ -1021,18 +1021,18 @@ computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
 //template< typename Mesh, typename FunctorPtr >
 //void
 //computeI8JacobianTermsMixedFungSecondDerivative( const vector_Type& disp,
-//		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//					    const vector_Type& fibers,
-//					    const vector_Type& sheets,
-//					    matrixPtr_Type     jacobianPtr,
-//						FunctorPtr         dW4,
-//						Int Case,
-//						Int ShearCase)
+//      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                      const vector_Type& fibers,
+//                      const vector_Type& sheets,
+//                      matrixPtr_Type     jacobianPtr,
+//                      FunctorPtr         dW4,
+//                      Int Case,
+//                      Int ShearCase)
 //{
-//	using namespace ExpressionAssembly;
-//	//
+//  using namespace ExpressionAssembly;
+//  //
 //
-//	auto f_0 = _v0(dispETFESpace, fibers);
+//  auto f_0 = _v0(dispETFESpace, fibers);
 //    auto s_0 = _v0(dispETFESpace, sheets);
 //
 //    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
@@ -1042,103 +1042,103 @@ computeI8JacobianTermsSecondDerivative( const vector_Type& disp,
 //    auto s_00 = s_0 - dot(f0, s_0) * s_0;
 //
 //    auto s0 = eval(normalize1, s_00);
-//	boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
-//	auto n0 = eval( wedge, f0, s0);
+//  boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+//  auto n0 = eval( wedge, f0, s0);
 //
 //    if(Case == 0)
 //    {
 //        if(ShearCase == 0)
 //        {
-//		std::cout << "EMETA - Computing I8 fs jacobian mixed terms second derivative dI4 f (Fung) ... \n";
+//      std::cout << "EMETA - Computing I8 fs jacobian mixed terms second derivative dI4 f (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI4dF( dispETFESpace, disp, 0, f0 )
-//			   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI4dF( dispETFESpace, disp, 0, f0 )
+//             *  _dI8( dispETFESpace, disp, 0, f0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //        else if(ShearCase == 1)
 //        {
-//    		std::cout << "EMETA - Computing I8 fn jacobian mixed terms second derivative dI4 f (Fung) ... \n";
+//          std::cout << "EMETA - Computing I8 fn jacobian mixed terms second derivative dI4 f (Fung) ... \n";
 //
-//    		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//    			   *  _dI4dF( dispETFESpace, disp, 0, f0 )
-//    			   *  _dI8( dispETFESpace, disp, 0, f0, n0 );
+//          auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//                 *  _dI4dF( dispETFESpace, disp, 0, f0 )
+//                 *  _dI8( dispETFESpace, disp, 0, f0, n0 );
 //
-//    		integrate ( elements ( dispETFESpace->mesh() ) ,
-//    					quadRuleTetra4pt,
-//    					dispETFESpace,
-//    					dispETFESpace,
-//    					dot ( dP , grad (phi_i) )
-//    					) >> jacobianPtr;
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot ( dP , grad (phi_i) )
+//                      ) >> jacobianPtr;
 //        }
 //        else
 //        {
-//    		std::cout << "EMETA - Computing I8 sn jacobian mixed terms second derivative dI4 f (Fung) ... \n";
+//          std::cout << "EMETA - Computing I8 sn jacobian mixed terms second derivative dI4 f (Fung) ... \n";
 //
-//    		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//    			   *  _dI4dF( dispETFESpace, disp, 0, f0 )
-//    			   *  _dI8( dispETFESpace, disp, 0, s0, n0 );
+//          auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//                 *  _dI4dF( dispETFESpace, disp, 0, f0 )
+//                 *  _dI8( dispETFESpace, disp, 0, s0, n0 );
 //
-//    		integrate ( elements ( dispETFESpace->mesh() ) ,
-//    					quadRuleTetra4pt,
-//    					dispETFESpace,
-//    					dispETFESpace,
-//    					dot ( dP , grad (phi_i) )
-//    					) >> jacobianPtr;
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot ( dP , grad (phi_i) )
+//                      ) >> jacobianPtr;
 //        }
 //    }
 //    else
 //    {
 //        if(ShearCase == 0)
 //        {
-//		std::cout << "EMETA - Computing I8 fs jacobian mixed terms second derivative dI4 s (Fung) ... \n";
+//      std::cout << "EMETA - Computing I8 fs jacobian mixed terms second derivative dI4 s (Fung) ... \n";
 //
-//		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//			   *  _dI4dF( dispETFESpace, disp, 0, s0 )
-//			   *  _dI8( dispETFESpace, disp, 0, f0, s0 );
+//      auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//             *  _dI4dF( dispETFESpace, disp, 0, s0 )
+//             *  _dI8( dispETFESpace, disp, 0, f0, s0 );
 //
-//		integrate ( elements ( dispETFESpace->mesh() ) ,
-//					quadRuleTetra4pt,
-//					dispETFESpace,
-//					dispETFESpace,
-//					dot ( dP , grad (phi_i) )
-//					) >> jacobianPtr;
+//      integrate ( elements ( dispETFESpace->mesh() ) ,
+//                  quadRuleTetra4pt,
+//                  dispETFESpace,
+//                  dispETFESpace,
+//                  dot ( dP , grad (phi_i) )
+//                  ) >> jacobianPtr;
 //        }
 //        else if(ShearCase == 1)
 //        {
-//    		std::cout << "EMETA - Computing I8 fn jacobian mixed terms second derivative dI4 s (Fung) ... \n";
+//          std::cout << "EMETA - Computing I8 fn jacobian mixed terms second derivative dI4 s (Fung) ... \n";
 //
-//    		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//    			   *  _dI4dF( dispETFESpace, disp, 0, s0 )
-//    			   *  _dI8( dispETFESpace, disp, 0, f0, n0 );
+//          auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//                 *  _dI4dF( dispETFESpace, disp, 0, s0 )
+//                 *  _dI8( dispETFESpace, disp, 0, f0, n0 );
 //
-//    		integrate ( elements ( dispETFESpace->mesh() ) ,
-//    					quadRuleTetra4pt,
-//    					dispETFESpace,
-//    					dispETFESpace,
-//    					dot ( dP , grad (phi_i) )
-//    					) >> jacobianPtr;
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot ( dP , grad (phi_i) )
+//                      ) >> jacobianPtr;
 //        }
 //        else
 //        {
-//    		std::cout << "EMETA - Computing I8 sn jacobian mixed terms second derivative dI4 s (Fung) ... \n";
+//          std::cout << "EMETA - Computing I8 sn jacobian mixed terms second derivative dI4 s (Fung) ... \n";
 //
-//    		auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
-//    			   *  _dI4dF( dispETFESpace, disp, 0, s0 )
-//    			   *  _dI8( dispETFESpace, disp, 0, s0, n0 );
+//          auto dP = eval (dW4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+//                 *  _dI4dF( dispETFESpace, disp, 0, s0 )
+//                 *  _dI8( dispETFESpace, disp, 0, s0, n0 );
 //
-//    		integrate ( elements ( dispETFESpace->mesh() ) ,
-//    					quadRuleTetra4pt,
-//    					dispETFESpace,
-//    					dispETFESpace,
-//    					dot ( dP , grad (phi_i) )
-//    					) >> jacobianPtr;
+//          integrate ( elements ( dispETFESpace->mesh() ) ,
+//                      quadRuleTetra4pt,
+//                      dispETFESpace,
+//                      dispETFESpace,
+//                      dot ( dP , grad (phi_i) )
+//                      ) >> jacobianPtr;
 //        }
 //    }
 //}

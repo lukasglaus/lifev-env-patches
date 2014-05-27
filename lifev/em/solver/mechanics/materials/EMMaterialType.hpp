@@ -22,100 +22,105 @@ class EMMaterialType
 {
 public:
 
-	typedef typename boost::shared_ptr<MaterialFunctions::EMMaterialFunctions<Mesh> >    materialFunctionsPtr_Type;
-	typedef std::vector<materialFunctionsPtr_Type>  vectorMaterialsPtr_Type;
+    typedef typename boost::shared_ptr<MaterialFunctions::EMMaterialFunctions<Mesh> >    materialFunctionsPtr_Type;
+    typedef std::vector<materialFunctionsPtr_Type>  vectorMaterialsPtr_Type;
 
     typedef FactorySingleton<Factory<EMMaterialType<Mesh>, std::string> >  EMMaterialFactory;
 
 
-	typedef Mesh mesh_Type;
-	//template <class Mesh>
-	typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
-	typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
-	//template <class Mesh>
-	using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
+    typedef Mesh mesh_Type;
+    //template <class Mesh>
+    typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
+    typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
+    //template <class Mesh>
+    using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
 
-	typedef VectorEpetra           vector_Type;
-	typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
+    typedef VectorEpetra           vector_Type;
+    typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 
-	typedef MatrixEpetra<Real>           matrix_Type;
-	typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
-
-
-	EMMaterialType(std::string materialName = "None", UInt n = 0);
-	virtual ~EMMaterialType()	{}
+    typedef MatrixEpetra<Real>           matrix_Type;
+    typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
 
-	inline std::string& materialName()
-	{
-		return M_materialName;
-	}
-
-	inline vectorMaterialsPtr_Type materialFunctionList()
-	{
-		return M_materialFunctionList;
-	}
-
-	void
-	computeJacobian( const vector_Type& disp,
-					 ETFESpacePtr_Type dispETFESpace,
-					 const vector_Type& fibers,
-					 const vector_Type& sheets,
-					 matrixPtr_Type     jacobianPtr);
-
-	void
-	computeJacobian( const vector_Type& disp,
-					 ETFESpacePtr_Type  dispETFESpace,
-					 const vector_Type& fibers,
-					 const vector_Type& sheets,
-					 const vector_Type& activation,
-			         scalarETFESpacePtr_Type  activationETFESpace,
-			         matrixPtr_Type     jacobianPtr);
-	//
+    EMMaterialType (std::string materialName = "None", UInt n = 0);
+    virtual ~EMMaterialType()   {}
 
 
+    inline std::string& materialName()
+    {
+        return M_materialName;
+    }
 
-	void
-	computeResidual( const vector_Type& disp,
-		     ETFESpacePtr_Type  dispETFESpace,
-		     const vector_Type& fibers,
-		     const vector_Type& sheets,
-					 vectorPtr_Type           residualVectorPtr);
+    inline vectorMaterialsPtr_Type materialFunctionList()
+    {
+        return M_materialFunctionList;
+    }
 
-	void
-	computeResidual( const vector_Type& disp,
-					 ETFESpacePtr_Type  dispETFESpace,
-					 const vector_Type& fibers,
-					 const vector_Type& sheets,
-					 const vector_Type& activation,
-			         scalarETFESpacePtr_Type  activationETFESpace,
-			         vectorPtr_Type     residualVectorPtr);
+    void
+    computeJacobian ( const vector_Type& disp,
+                      ETFESpacePtr_Type dispETFESpace,
+                      const vector_Type& fibers,
+                      const vector_Type& sheets,
+                      matrixPtr_Type     jacobianPtr);
 
-	inline void showMe()
-	{
-		std::cout << "Material Type: " << M_materialName << "\n";
-		int n = M_materialFunctionList.size();
-			for(int j(0); j < n; j++)
-				M_materialFunctionList[j]->showMe();
-	}
+    void
+    computeJacobian ( const vector_Type& disp,
+                      ETFESpacePtr_Type  dispETFESpace,
+                      const vector_Type& fibers,
+                      const vector_Type& sheets,
+                      const vector_Type& activation,
+                      scalarETFESpacePtr_Type  activationETFESpace,
+                      matrixPtr_Type     jacobianPtr);
+    //
 
-	void setParametersFromGetPot(GetPot& data) {
-		int n = M_materialFunctionList.size();
-			for(int j(0); j < n; j++)
-				M_materialFunctionList[j]->setParametersFromGetPot(data);
-	}
+
+
+    void
+    computeResidual ( const vector_Type& disp,
+                      ETFESpacePtr_Type  dispETFESpace,
+                      const vector_Type& fibers,
+                      const vector_Type& sheets,
+                      vectorPtr_Type           residualVectorPtr);
+
+    void
+    computeResidual ( const vector_Type& disp,
+                      ETFESpacePtr_Type  dispETFESpace,
+                      const vector_Type& fibers,
+                      const vector_Type& sheets,
+                      const vector_Type& activation,
+                      scalarETFESpacePtr_Type  activationETFESpace,
+                      vectorPtr_Type     residualVectorPtr);
+
+    inline void showMe()
+    {
+        std::cout << "Material Type: " << M_materialName << "\n";
+        int n = M_materialFunctionList.size();
+        for (int j (0); j < n; j++)
+        {
+            M_materialFunctionList[j]->showMe();
+        }
+    }
+
+    void setParametersFromGetPot (GetPot& data)
+    {
+        int n = M_materialFunctionList.size();
+        for (int j (0); j < n; j++)
+        {
+            M_materialFunctionList[j]->setParametersFromGetPot (data);
+        }
+    }
 
 protected:
-	std::string M_materialName;
-	vectorMaterialsPtr_Type M_materialFunctionList;
+    std::string M_materialName;
+    vectorMaterialsPtr_Type M_materialFunctionList;
 
 };
 
 
 template<typename Mesh>
-EMMaterialType<Mesh>::EMMaterialType(std::string materialName, UInt n ) :
-		M_materialName(materialName),
-		M_materialFunctionList(n)
+EMMaterialType<Mesh>::EMMaterialType (std::string materialName, UInt n ) :
+    M_materialName (materialName),
+    M_materialFunctionList (n)
 {
 
 }
@@ -124,74 +129,84 @@ EMMaterialType<Mesh>::EMMaterialType(std::string materialName, UInt n ) :
 
 template<typename Mesh>
 void
-EMMaterialType<Mesh>::computeJacobian( const vector_Type& disp,
-									ETFESpacePtr_Type  dispETFESpace,
-									 const vector_Type& fibers,
-									 const vector_Type& sheets,
-									matrixPtr_Type           jacobianPtr)
+EMMaterialType<Mesh>::computeJacobian ( const vector_Type& disp,
+                                        ETFESpacePtr_Type  dispETFESpace,
+                                        const vector_Type& fibers,
+                                        const vector_Type& sheets,
+                                        matrixPtr_Type           jacobianPtr)
 {
-	int n = M_materialFunctionList.size();
-	for(int j(0); j < n; j++)
-		M_materialFunctionList[j]->computeJacobian(disp, dispETFESpace, fibers, sheets, jacobianPtr);
+    int n = M_materialFunctionList.size();
+    for (int j (0); j < n; j++)
+    {
+        M_materialFunctionList[j]->computeJacobian (disp, dispETFESpace, fibers, sheets, jacobianPtr);
+    }
 }
 
 
 template<typename Mesh>
 void
-EMMaterialType<Mesh>::computeJacobian( const vector_Type& disp,
-									   ETFESpacePtr_Type   dispETFESpace,
-									   const vector_Type& fibers,
-									   const vector_Type& sheets,
-									   const vector_Type& activation,
-									   scalarETFESpacePtr_Type   activationETFESpace,
-									   matrixPtr_Type           jacobianPtr)
+EMMaterialType<Mesh>::computeJacobian ( const vector_Type& disp,
+                                        ETFESpacePtr_Type   dispETFESpace,
+                                        const vector_Type& fibers,
+                                        const vector_Type& sheets,
+                                        const vector_Type& activation,
+                                        scalarETFESpacePtr_Type   activationETFESpace,
+                                        matrixPtr_Type           jacobianPtr)
 {
-	int n = M_materialFunctionList.size();
-	for(int j(0); j < n; j++)
-		M_materialFunctionList[j]->computeJacobian(disp,
-				                                   dispETFESpace,
-				                                   fibers,
-				                                   sheets,
-				                                   activation,
-				                                   activationETFESpace,
-				                                   jacobianPtr);
+    int n = M_materialFunctionList.size();
+    for (int j (0); j < n; j++)
+        M_materialFunctionList[j]->computeJacobian (disp,
+                                                    dispETFESpace,
+                                                    fibers,
+                                                    sheets,
+                                                    activation,
+                                                    activationETFESpace,
+                                                    jacobianPtr);
 }
 
 template <typename Mesh>
 void
-EMMaterialType<Mesh>::computeResidual( const vector_Type& disp,
-										 ETFESpacePtr_Type  dispETFESpace,
-										 const vector_Type& fibers,
-										 const vector_Type& sheets,
-										 vectorPtr_Type           residualVectorPtr)
+EMMaterialType<Mesh>::computeResidual ( const vector_Type& disp,
+                                        ETFESpacePtr_Type  dispETFESpace,
+                                        const vector_Type& fibers,
+                                        const vector_Type& sheets,
+                                        vectorPtr_Type           residualVectorPtr)
 {
-	if(residualVectorPtr) std::cout << "EM Material Type: ResidualVectorPtr available\n";
-	if(dispETFESpace) std::cout << "EM Material Type: dispETFESpace available\n";
-	int n = M_materialFunctionList.size();
-	for(int j(0); j < n; j++)
-		M_materialFunctionList[j]->computeResidual(disp, dispETFESpace, fibers, sheets, residualVectorPtr);
+    if (residualVectorPtr)
+    {
+        std::cout << "EM Material Type: ResidualVectorPtr available\n";
+    }
+    if (dispETFESpace)
+    {
+        std::cout << "EM Material Type: dispETFESpace available\n";
+    }
+    int n = M_materialFunctionList.size();
+    for (int j (0); j < n; j++)
+    {
+        M_materialFunctionList[j]->computeResidual (disp, dispETFESpace, fibers, sheets, residualVectorPtr);
+    }
 }
 
 
 template <typename Mesh>
 void
-EMMaterialType<Mesh>::computeResidual( const vector_Type& disp,
-									   ETFESpacePtr_Type   dispETFESpace,
-									   const vector_Type& fibers,
-									   const vector_Type& sheets,
-									   const vector_Type& activation,
-									   scalarETFESpacePtr_Type   activationETFESpace,
-									   vectorPtr_Type           residualVectorPtr)
+EMMaterialType<Mesh>::computeResidual ( const vector_Type& disp,
+                                        ETFESpacePtr_Type   dispETFESpace,
+                                        const vector_Type& fibers,
+                                        const vector_Type& sheets,
+                                        const vector_Type& activation,
+                                        scalarETFESpacePtr_Type   activationETFESpace,
+                                        vectorPtr_Type           residualVectorPtr)
 {
-	int n = M_materialFunctionList.size();
-	for(int j(0); j < n; j++)
-		M_materialFunctionList[j]->computeResidual(disp,
-				                                   dispETFESpace,
-				                                   fibers,
-				                                   sheets,
-				                                   activation,
-				                                   activationETFESpace,
-				                                   residualVectorPtr);
+    int n = M_materialFunctionList.size();
+    for (int j (0); j < n; j++)
+        M_materialFunctionList[j]->computeResidual (disp,
+                                                    dispETFESpace,
+                                                    fibers,
+                                                    sheets,
+                                                    activation,
+                                                    activationETFESpace,
+                                                    residualVectorPtr);
 }
 
 }//LifeV

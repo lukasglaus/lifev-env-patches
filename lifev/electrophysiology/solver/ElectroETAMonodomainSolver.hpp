@@ -860,7 +860,7 @@ public:
      @param ionicSize number of equation in the ionic model
      */
     virtual void setup (std::string meshName, std::string meshPath, GetPot& dataFile,
-                short int ionicSize);
+                        short int ionicSize);
 
     //! create mass matrix
     /*!
@@ -1741,7 +1741,7 @@ void ElectroETAMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrix (
     {
         using namespace ExpressionAssembly;
 
-        auto I = value(M_identity);
+        auto I = value (M_identity);
         auto f0 = value (spaceVectorial, *M_fiberPtr);
         auto D = value (sigmat) * I + (value (sigmal) - value (sigmat) ) * outerProduct (f0, f0);
 

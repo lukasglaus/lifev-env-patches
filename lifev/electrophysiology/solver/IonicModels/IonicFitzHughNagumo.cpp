@@ -61,7 +61,7 @@ IonicFitzHughNagumo::IonicFitzHughNagumo()    :
 IonicFitzHughNagumo::IonicFitzHughNagumo ( Teuchos::ParameterList& parameterList   )   :
     super       ( 2 )
 {
-	setup ( parameterList );
+    setup ( parameterList );
 
     M_restingConditions.at (0) = 1e-8;
     M_restingConditions.at (1) = 0.3;

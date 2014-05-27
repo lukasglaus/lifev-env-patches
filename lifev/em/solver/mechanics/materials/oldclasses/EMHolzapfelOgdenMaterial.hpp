@@ -594,10 +594,10 @@ EMHolzapfelOgdenMaterial<MeshType>::~EMHolzapfelOgdenMaterial()
 template <typename MeshType>
 void
 EMHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type& dFESpace,
-                                          const ETFESpacePtr_Type& dETFESpace,
-                                          const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                          const UInt offset, const dataPtr_Type& dataMaterial,
-                                          const displayerPtr_Type& displayer  )
+                                            const ETFESpacePtr_Type& dETFESpace,
+                                            const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                            const UInt offset, const dataPtr_Type& dataMaterial,
+                                            const displayerPtr_Type& displayer  )
 {
 
     this->M_displayer = displayer;
@@ -653,12 +653,12 @@ void EMHolzapfelOgdenMaterial<MeshType>::setDefaultParams()
 template <typename MeshType>
 void
 EMHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                          const ETFESpacePtr_Type&                    dETFESpace,
-                                          const ETFESpacePtr_Type& activationSpace,
-                                          const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                          const UInt                                  offset,
-                                          const dataPtr_Type&                         dataMaterial,
-                                          const displayerPtr_Type&                    displayer)
+                                            const ETFESpacePtr_Type&                    dETFESpace,
+                                            const ETFESpacePtr_Type& activationSpace,
+                                            const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                            const UInt                                  offset,
+                                            const dataPtr_Type&                         dataMaterial,
+                                            const displayerPtr_Type&                    displayer)
 {
     this->M_displayer = displayer;
     this->M_dataMaterial  = dataMaterial;
@@ -690,13 +690,13 @@ EMHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&              
 template <typename MeshType>
 void
 EMHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                          const ETFESpacePtr_Type&                    dETFESpace,
-                                          const ETFESpacePtr_Type& activationSpace,
-                                          const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                          const UInt                                  offset,
-                                          const dataPtr_Type&                         dataMaterial,
-                                          const displayerPtr_Type&                    displayer,
-                                          const vector_Type&                           gammaf   )
+                                            const ETFESpacePtr_Type&                    dETFESpace,
+                                            const ETFESpacePtr_Type& activationSpace,
+                                            const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                            const UInt                                  offset,
+                                            const dataPtr_Type&                         dataMaterial,
+                                            const displayerPtr_Type&                    displayer,
+                                            const vector_Type&                           gammaf   )
 {
     setup ( dFESpace, dETFESpace, activationSpace, monolithicMap, offset, dataMaterial, displayer);
     M_Gammaf = gammaf;
@@ -705,14 +705,14 @@ EMHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&              
 template <typename MeshType>
 void
 EMHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                          const ETFESpacePtr_Type&                    dETFESpace,
-                                          const ETFESpacePtr_Type& activationSpace,
-                                          const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                          const UInt                                  offset,
-                                          const dataPtr_Type&                         dataMaterial,
-                                          const displayerPtr_Type&                    displayer,
-                                          const vector_Type&                           gammaf,
-                                          const vector_Type&                           fiberVector)
+                                            const ETFESpacePtr_Type&                    dETFESpace,
+                                            const ETFESpacePtr_Type& activationSpace,
+                                            const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                            const UInt                                  offset,
+                                            const dataPtr_Type&                         dataMaterial,
+                                            const displayerPtr_Type&                    displayer,
+                                            const vector_Type&                           gammaf,
+                                            const vector_Type&                           fiberVector)
 {
     setup ( dFESpace, dETFESpace, activationSpace, monolithicMap, offset, dataMaterial, displayer, gammaf );
     M_fiberVector = fiberVector;
@@ -761,8 +761,8 @@ EMHolzapfelOgdenMaterial<MeshType>::setupVectorsParameters ( void )
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::computeLinearStiff (dataPtr_Type& /*dataMaterial*/,
-                                                           const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
-                                                           const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/)
+                                                             const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
+                                                             const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/)
 {
     //! Empty method for neo-hookean material
 }
@@ -770,10 +770,10 @@ void EMHolzapfelOgdenMaterial<MeshType>::computeLinearStiff (dataPtr_Type& /*dat
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
-                                                              const dataPtr_Type&      dataMaterial,
-                                                              const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                              const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                              const displayerPtr_Type& displayer )
+                                                                const dataPtr_Type&      dataMaterial,
+                                                                const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                const displayerPtr_Type& displayer )
 {
     this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
 
@@ -787,11 +787,11 @@ void EMHolzapfelOgdenMaterial<MeshType>::updateJacobianMatrix ( const vector_Typ
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::updateNonLinearJacobianTerms ( matrixPtr_Type&       jacobian,
-                                                                      const vector_Type&    disp,
-                                                                      const dataPtr_Type&   dataMaterial,
-                                                                      const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                                      const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                                      const displayerPtr_Type&  displayer )
+                                                                        const vector_Type&    disp,
+                                                                        const dataPtr_Type&   dataMaterial,
+                                                                        const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                        const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                        const displayerPtr_Type&  displayer )
 {
     {
         using namespace ExpressionAssembly;
@@ -958,8 +958,8 @@ void EMHolzapfelOgdenMaterial<MeshType>::updateNonLinearJacobianTerms ( matrixPt
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::apply ( const vector_Type& sol, vector_Type& res,
-                                               const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                               const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
+                                                 const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                 const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
 {
     computeStiffness (sol, 0., this->M_dataMaterial, mapsMarkerVolumes, mapsMarkerIndexes, this->M_displayer);
     res += *M_stiff;
@@ -967,11 +967,11 @@ void EMHolzapfelOgdenMaterial<MeshType>::apply ( const vector_Type& sol, vector_
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::computeStiffness ( const vector_Type&       disp,
-                                                          Real                     /*factor*/,
-                                                          const dataPtr_Type&      dataMaterial,
-                                                          const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                          const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                          const displayerPtr_Type& displayer )
+                                                            Real                     /*factor*/,
+                                                            const dataPtr_Type&      dataMaterial,
+                                                            const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                            const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                            const displayerPtr_Type& displayer )
 {
     using namespace ExpressionAssembly;
 
@@ -1137,7 +1137,7 @@ void EMHolzapfelOgdenMaterial<MeshType>::computeStiffness ( const vector_Type&  
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::showMe ( std::string const& fileNameStiff,
-                                                std::string const& fileNameJacobian)
+                                                  std::string const& fileNameJacobian)
 {
     this->M_stiff->spy (fileNameStiff);
     this->M_jacobian->spy (fileNameJacobian);
@@ -1145,10 +1145,10 @@ void EMHolzapfelOgdenMaterial<MeshType>::showMe ( std::string const& fileNameSti
 
 template <typename MeshType>
 void EMHolzapfelOgdenMaterial<MeshType>::computeLocalFirstPiolaKirchhoffTensor ( Epetra_SerialDenseMatrix& /*firstPiola*/,
-                                                                               const Epetra_SerialDenseMatrix& /*tensorF*/,
-                                                                               const Epetra_SerialDenseMatrix& /*cofactorF*/,
-                                                                               const std::vector<Real>& /*invariants*/,
-                                                                               const UInt /*marker*/)
+        const Epetra_SerialDenseMatrix& /*tensorF*/,
+        const Epetra_SerialDenseMatrix& /*cofactorF*/,
+        const std::vector<Real>& /*invariants*/,
+        const UInt /*marker*/)
 {
     assert ("Not implemented yet for Holzapfel-Ogden material!");
 }

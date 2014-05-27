@@ -35,65 +35,73 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 //  VOLUMETRIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////
 template <class Mesh>
-class Volumetric : public virtual MaterialFunctions::EMMaterialFunctions<Mesh> {
+class Volumetric : public virtual MaterialFunctions::EMMaterialFunctions<Mesh>
+{
 public:
-	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
-        Real J = Elasticity::J(F);
-        return M_bulk * ( (J-1) + std::log(J) / J );
+        Real J = Elasticity::J (F);
+        return M_bulk * ( (J - 1) + std::log (J) / J );
     }
 
-    Volumetric(Real bulk = 2000.0) : M_bulk(bulk) {}
-    Volumetric (const Volumetric& v) { M_bulk = v.M_bulk; }
+    Volumetric (Real bulk = 2000.0) : M_bulk (bulk) {}
+    Volumetric (const Volumetric& v)
+    {
+        M_bulk = v.M_bulk;
+    }
     virtual ~Volumetric() {}
 
-	inline virtual void computeJacobian( const vector_Type& disp,
-								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-							         const vector_Type& fibers,
-							         const vector_Type& sheets,
-								  matrixPtr_Type           jacobianPtr)
-	{
-		EMAssembler::computeVolumetricJacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
-	}
+    inline virtual void computeJacobian ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          matrixPtr_Type           jacobianPtr)
+    {
+        EMAssembler::computeVolumetricJacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
+    }
 
-	inline virtual void computeResidual( const vector_Type& disp,
-								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-							         const vector_Type& fibers,
-							         const vector_Type& sheets,
-								  vectorPtr_Type           residualVectorPtr)
-	{
-		EMAssembler::computeVolumetricResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
-	}
+    inline virtual void computeResidual ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          vectorPtr_Type           residualVectorPtr)
+    {
+        EMAssembler::computeVolumetricResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
+    }
 
 private:
     Real M_bulk;
 };
 
 template <class Mesh>
-class dVolumetric : public virtual EMMaterialFunctions<Mesh> {
+class dVolumetric : public virtual EMMaterialFunctions<Mesh>
+{
 public:
-	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
-        Real J = Elasticity::J(F);
-    	return M_bulk  / J / J * ( 1 + J * J - std::log(J)) ;
+        Real J = Elasticity::J (F);
+        return M_bulk  / J / J * ( 1 + J * J - std::log (J) ) ;
     }
 
-    dVolumetric(Real bulk = 2000.0) : M_bulk(bulk) {}
-    dVolumetric (const dVolumetric& v) { M_bulk = v.M_bulk; }
+    dVolumetric (Real bulk = 2000.0) : M_bulk (bulk) {}
+    dVolumetric (const dVolumetric& v)
+    {
+        M_bulk = v.M_bulk;
+    }
     virtual ~dVolumetric() {}
 
-	inline virtual void computeJacobian( const vector_Type& disp,
-								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-							         const vector_Type& fibers,
-							         const vector_Type& sheets,
-								  matrixPtr_Type           jacobianPtr)
-	{
-		EMAssembler::computeVolumetricJacobianTermsSecondDerivative(disp,dispETFESpace, jacobianPtr, this->getMe());
-	}
+    inline virtual void computeJacobian ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          matrixPtr_Type           jacobianPtr)
+    {
+        EMAssembler::computeVolumetricJacobianTermsSecondDerivative (disp, dispETFESpace, jacobianPtr, this->getMe() );
+    }
 
 private:
     Real M_bulk;

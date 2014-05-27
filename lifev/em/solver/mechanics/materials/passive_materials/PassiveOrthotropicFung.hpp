@@ -18,8 +18,8 @@
 //class EMPassiveNeoHookean : public virtual EMPassiveMaterial
 //{
 //public:
-//	EMPassiveNeoHookean();
-//	virtual ~EMPassiveNeoHookean() {}
+//  EMPassiveNeoHookean();
+//  virtual ~EMPassiveNeoHookean() {}
 //};
 
 namespace LifeV
@@ -29,19 +29,19 @@ template<typename Mesh>
 class PassiveOrthotropicFung : public virtual EMMaterialType<Mesh>
 {
 public:
-	typedef EMMaterialType<Mesh> super;
+    typedef EMMaterialType<Mesh> super;
 
-	PassiveOrthotropicFung();
-	virtual ~PassiveOrthotropicFung() {}
+    PassiveOrthotropicFung();
+    virtual ~PassiveOrthotropicFung() {}
 };
 
 template<typename Mesh>
 PassiveOrthotropicFung<Mesh>::PassiveOrthotropicFung() :
-		super("Passive Orthotropic Fung", 3)
+    super ("Passive Orthotropic Fung", 3)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh>(350000.0)  );
-	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(350000.0) );
-	this -> M_materialFunctionList[2].reset(new MaterialFunctions::OrthotropicFung<Mesh>() );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (350000.0)  );
+    this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh> (350000.0) );
+    this -> M_materialFunctionList[2].reset (new MaterialFunctions::OrthotropicFung<Mesh>() );
 }
 
 

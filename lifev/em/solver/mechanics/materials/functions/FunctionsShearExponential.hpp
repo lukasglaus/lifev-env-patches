@@ -33,53 +33,54 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 ////////////////////////////////////////////////////////////////////////
 
 template <class Mesh>
-class ShearExponential : public virtual EMMaterialFunctions<Mesh> {
+class ShearExponential : public virtual EMMaterialFunctions<Mesh>
+{
 public:
-	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
     return_Type operator() (const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
-    	LifeV::Real I8fs = f.dot(s);
-    	return M_a * I8fs * std::exp( M_b * I8fs * I8fs );
+        LifeV::Real I8fs = f.dot (s);
+        return M_a * I8fs * std::exp ( M_b * I8fs * I8fs );
     }
 
     return_Type operator() (const Real& I8)
     {
-    	return M_a * I8 * std::exp( M_b * I8 * I8 );
+        return M_a * I8 * std::exp ( M_b * I8 * I8 );
     }
-//    ShearExponential() : M_a(4170), M_b(11.602) {} // 0.33 KPa
-    ShearExponential(Real a = 4170, Real b = 11.602) : M_a(a), M_b(b) {} // 0.33 KPa
-    ShearExponential(const ShearExponential& ShearExponential)
+    //    ShearExponential() : M_a(4170), M_b(11.602) {} // 0.33 KPa
+    ShearExponential (Real a = 4170, Real b = 11.602) : M_a (a), M_b (b) {} // 0.33 KPa
+    ShearExponential (const ShearExponential& ShearExponential)
     {
-    	M_a = ShearExponential.M_a;
-    	M_b = ShearExponential.M_b;
+        M_a = ShearExponential.M_a;
+        M_b = ShearExponential.M_b;
     }
     virtual ~ShearExponential() {}
 
-	inline void computeJacobian( const vector_Type& disp,
-								 boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-								 const vector_Type& fibers,
-								 const vector_Type& sheets,
-								 matrixPtr_Type           jacobianPtr)
-	{
-		EMAssembler::computeI8JacobianTerms(disp,dispETFESpace, fibers, sheets, jacobianPtr, this->getMe());
-	}
+    inline void computeJacobian ( const vector_Type& disp,
+                                  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                  const vector_Type& fibers,
+                                  const vector_Type& sheets,
+                                  matrixPtr_Type           jacobianPtr)
+    {
+        EMAssembler::computeI8JacobianTerms (disp, dispETFESpace, fibers, sheets, jacobianPtr, this->getMe() );
+    }
 
-	inline void computeResidual( const vector_Type& disp,
-								 boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-								 const vector_Type& fibers,
-								 const vector_Type& sheets,
-								 vectorPtr_Type           residualVectorPtr)
-	{
-		EMAssembler::computeI8ResidualTerms(disp,dispETFESpace, fibers, sheets, residualVectorPtr, this->getMe());
-	}
+    inline void computeResidual ( const vector_Type& disp,
+                                  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                  const vector_Type& fibers,
+                                  const vector_Type& sheets,
+                                  vectorPtr_Type           residualVectorPtr)
+    {
+        EMAssembler::computeI8ResidualTerms (disp, dispETFESpace, fibers, sheets, residualVectorPtr, this->getMe() );
+    }
 
-	void showMe()
-	{
-		std::cout << "Shear Exponential Function\n";
-		std::cout << "Coefficient a: " << M_a;
-		std::cout << ", coefficient b: " << M_b << "\n";
-	}
+    void showMe()
+    {
+        std::cout << "Shear Exponential Function\n";
+        std::cout << "Coefficient a: " << M_a;
+        std::cout << ", coefficient b: " << M_b << "\n";
+    }
 
 private:
     Real M_a;
@@ -89,44 +90,45 @@ private:
 
 
 template <class Mesh>
-class dShearExponential : public virtual EMMaterialFunctions<Mesh> {
+class dShearExponential : public virtual EMMaterialFunctions<Mesh>
+{
 public:
-	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
     return_Type operator() (const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
-    	LifeV::Real I8 = f.dot(s);
-    	return M_a * std::exp( M_b * I8 * I8 ) * ( 2.0 * M_b * I8 * I8 + 1.0 );
+        LifeV::Real I8 = f.dot (s);
+        return M_a * std::exp ( M_b * I8 * I8 ) * ( 2.0 * M_b * I8 * I8 + 1.0 );
     }
 
     return_Type operator() (const Real& I8)
     {
-    	return M_a * std::exp( M_b * I8 * I8 ) * ( 2.0 * M_b * I8 * I8 + 1.0 );
+        return M_a * std::exp ( M_b * I8 * I8 ) * ( 2.0 * M_b * I8 * I8 + 1.0 );
     }
-//    ShearExponential() : M_a(4170), M_b(11.602) {} // 0.33 KPa
-    dShearExponential(Real a = 4170, Real b = 11.602) : M_a(a), M_b(b) {} // 0.33 KPa
-    dShearExponential(const dShearExponential& dShearExponential)
+    //    ShearExponential() : M_a(4170), M_b(11.602) {} // 0.33 KPa
+    dShearExponential (Real a = 4170, Real b = 11.602) : M_a (a), M_b (b) {} // 0.33 KPa
+    dShearExponential (const dShearExponential& dShearExponential)
     {
-    	M_a = dShearExponential.M_a;
-    	M_b = dShearExponential.M_b;
+        M_a = dShearExponential.M_a;
+        M_b = dShearExponential.M_b;
     }
     virtual ~dShearExponential() {}
 
-	inline void computeJacobian( const vector_Type& disp,
-								 boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-								 const vector_Type& fibers,
-								 const vector_Type& sheets,
-								 matrixPtr_Type           jacobianPtr)
-	{
-		EMAssembler::computeI8JacobianTermsSecondDerivative(disp,dispETFESpace, fibers, sheets, jacobianPtr, this->getMe());
-	}
+    inline void computeJacobian ( const vector_Type& disp,
+                                  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                  const vector_Type& fibers,
+                                  const vector_Type& sheets,
+                                  matrixPtr_Type           jacobianPtr)
+    {
+        EMAssembler::computeI8JacobianTermsSecondDerivative (disp, dispETFESpace, fibers, sheets, jacobianPtr, this->getMe() );
+    }
 
-	void showMe()
-	{
-		std::cout << "Derivative Shear Exponential Function\n";
-		std::cout << "Coefficient a: " << M_a;
-		std::cout << ", coefficient b: " << M_b << "\n";
-	}
+    void showMe()
+    {
+        std::cout << "Derivative Shear Exponential Function\n";
+        std::cout << "Coefficient a: " << M_a;
+        std::cout << ", coefficient b: " << M_b << "\n";
+    }
 
 
 private:

@@ -287,31 +287,31 @@ class orthonormalizeFibers
 public:
     typedef LifeV::VectorSmall<3> return_Type;
 
-//    return_Type operator() (const LifeV::VectorSmall<3>& v)
-//    {
-//    	auto a(v);
-//    	EMUtility::normalize(a);
-//    	return a;
-//    }
+    //    return_Type operator() (const LifeV::VectorSmall<3>& v)
+    //    {
+    //      auto a(v);
+    //      EMUtility::normalize(a);
+    //      return a;
+    //    }
 
     return_Type operator() (const LifeV::VectorSmall<3>& v)
     {
-    	auto a(v);
-    	EMUtility::normalize(a, M_component);
-    	return a;
+        auto a (v);
+        EMUtility::normalize (a, M_component);
+        return a;
     }
 
     return_Type operator() (const LifeV::VectorSmall<3>& v, const LifeV::VectorSmall<3>& w )
     {
-    	auto a(v);
-    	auto b(w);
-    	EMUtility::normalize(a);
-    	EMUtility::orthonormalize(b, a);
-    	return b;
+        auto a (v);
+        auto b (w);
+        EMUtility::normalize (a);
+        EMUtility::orthonormalize (b, a);
+        return b;
     }
 
-    orthonormalizeFibers(LifeV::Int component = 0) : M_component(component) {}
-    ~orthonormalizeFibers(){}
+    orthonormalizeFibers (LifeV::Int component = 0) : M_component (component) {}
+    ~orthonormalizeFibers() {}
 
     LifeV::Int M_component;
 };
@@ -322,13 +322,13 @@ class CrossProduct
 public:
     typedef LifeV::VectorSmall<3> return_Type;
 
-    return_Type operator()(const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
-	{
-    	return Elasticity::crossProduct(v1, v2);
-	}
+    return_Type operator() (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
+    {
+        return Elasticity::crossProduct (v1, v2);
+    }
 
-	CrossProduct() {}
-	~CrossProduct() {}
+    CrossProduct() {}
+    ~CrossProduct() {}
 };
 
 

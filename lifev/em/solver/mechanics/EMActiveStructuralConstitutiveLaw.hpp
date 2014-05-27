@@ -75,10 +75,10 @@ public:
     typedef ETFESpace< mesh_Type, MapEpetra, 3, 1 >                        scalarETFESpace_Type;
     typedef boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > >    scalarETFESpacePtr_Type;
 
-//	typedef Mesh mesh_Type;
-	typedef boost::shared_ptr<EMPassiveMaterial < mesh_Type> > passiveMaterialPtr_Type;
-	typedef boost::shared_ptr<EMActiveStrainMaterial> activeStrainPtr_Type;
-	typedef boost::shared_ptr<EMActiveStressMaterial> activeStressPtr_Type;
+    //  typedef Mesh mesh_Type;
+    typedef boost::shared_ptr<EMPassiveMaterial < mesh_Type> > passiveMaterialPtr_Type;
+    typedef boost::shared_ptr<EMActiveStrainMaterial> activeStrainPtr_Type;
+    typedef boost::shared_ptr<EMActiveStressMaterial> activeStressPtr_Type;
 
     //@}
 
@@ -210,29 +210,29 @@ public:
 
     inline vectorPtr_Type activationPtr()
     {
-    	 return M_activationPtr;
+        return M_activationPtr;
     }
 
-    inline void setActivationPtr(vectorPtr_Type activationPtr)
+    inline void setActivationPtr (vectorPtr_Type activationPtr)
     {
-    	M_activationPtr = activationPtr;
+        M_activationPtr = activationPtr;
     }
-    inline void setActivation(vector_Type& activation)
+    inline void setActivation (vector_Type& activation)
     {
-    	*M_activationPtr = activation;
+        *M_activationPtr = activation;
     }
 
     inline vectorPtr_Type activeStress()
     {
-    	return activationPtr();
+        return activationPtr();
     }
-    inline void setActiveStressPtr(vectorPtr_Type activationPtr)
+    inline void setActiveStressPtr (vectorPtr_Type activationPtr)
     {
-    	setActivationPtr(activationPtr);
+        setActivationPtr (activationPtr);
     }
-    inline void setActiveStress(vector_Type& activation)
+    inline void setActiveStress (vector_Type& activation)
     {
-    	setActivation(activation);
+        setActivation (activation);
     }
 
 

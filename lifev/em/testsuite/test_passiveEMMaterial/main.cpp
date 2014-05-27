@@ -54,7 +54,7 @@ int main (int argc, char** argv)
     GetPot dataFile (data_file_name);
 
     //When launching the executable use the flag:  -o OutputFolderName
-    std::string problemFolder = EMUtility::createOutputFolder(command_line,*comm);
+    std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
 
 
     //===========================================================
@@ -132,7 +132,7 @@ int main (int argc, char** argv)
     bcInterfacePtr_Type                     solidBC ( new bcInterface_Type() );
     solidBC->createHandler();
     solidBC->fillHandler ( data_file_name, "solid" );
-    solidBC->handler()->bcUpdate( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
+    solidBC->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
 
     if ( comm->MyPID() == 0 )
     {
@@ -167,7 +167,7 @@ int main (int argc, char** argv)
     //! 1. Constructor of the structuralSolver
     StructuralOperator< RegionMesh<LinearTetra> > solid;
 
-    solid.setup( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
+    solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
     solid.buildSystem (1.0);
 
@@ -196,19 +196,19 @@ int main (int argc, char** argv)
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
 
-    for(Real time(0.0); time < 1;)
+    for (Real time (0.0); time < 1;)
     {
-    	time += dt;
-    	solid.data() -> dataTime() -> updateTime();
+        time += dt;
+        solid.data() -> dataTime() -> updateTime();
 
-    	solidBC -> updatePhysicalSolverVariables();
+        solidBC -> updatePhysicalSolverVariables();
 
-    	solid.iterate ( solidBC -> handler() );
+        solid.iterate ( solidBC -> handler() );
 
-     	exporter->postProcess ( time );
+        exporter->postProcess ( time );
     }
 
-	Real t = 1.0;
+    Real t = 1.0;
 
     //===========================================================
     //===========================================================
