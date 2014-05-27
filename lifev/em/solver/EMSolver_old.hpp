@@ -71,505 +71,505 @@ template<typename Mesh , typename IonicModel>
 class EMSolver
 {
 
-//    //!Monodomain Solver
-//    /*!
-//     The monodomain equation reads
-//     \f \Chi
-//
-//     */
-//
-//public:
-//
-//    //! @name Type definitions
-//    //@{
-//
-//    typedef Mesh mesh_Type;
-//    typedef boost::shared_ptr<mesh_Type> meshPtr_Type;
-//
-//    typedef VectorEpetra vector_Type;
-//    typedef boost::shared_ptr<VectorEpetra> vectorPtr_Type;
-//
-//    typedef std::vector<vectorPtr_Type> vectorOfPtr_Type;
-//
-//    typedef MatrixEpetra<Real> matrix_Type;
-//    typedef boost::shared_ptr<matrix_Type> matrixPtr_Type;
-//
-//    typedef Epetra_Comm comm_Type;
-//    typedef boost::shared_ptr<comm_Type> commPtr_Type;
-//
-//    typedef ETFESpace<mesh_Type, MapEpetra, 3, 1> ETFESpace_Type;
-//    typedef boost::shared_ptr<ETFESpace<mesh_Type, MapEpetra, 3, 1> > ETFESpacePtr_Type;
-//
-//    typedef ETFESpace<mesh_Type, MapEpetra, 3, 3> ETFESpaceVectorial_Type;
-//    typedef boost::shared_ptr< ETFESpaceVectorial_Type > ETFESpaceVectorialPtr_Type;
-//
-//    typedef FESpace<mesh_Type, MapEpetra> feSpace_Type;
-//    typedef boost::shared_ptr<feSpace_Type> feSpacePtr_Type;
-//
-//    typedef LinearSolver linearSolver_Type;
-//    typedef boost::shared_ptr<LinearSolver> linearSolverPtr_Type;
-//
-//    typedef ExporterHDF5< mesh_Type >          exporter_Type;
-//    typedef boost::shared_ptr<exporter_Type>                       exporterPtr_Type;
-//    //  typedef Exporter<mesh_Type> exporter_Type;    //                IOFile_Type;
-//    //  typedef boost::shared_ptr<exporter_Type> exporterPtr_Type; //                IOFilePtr_Type;
-//
-//    typedef LifeV::Preconditioner basePrec_Type;
-//    typedef boost::shared_ptr<basePrec_Type> basePrecPtr_Type;
-//    typedef LifeV::PreconditionerIfpack prec_Type;
-//    typedef boost::shared_ptr<prec_Type> precPtr_Type;
-//
-//    typedef IonicModel ionicModel_Type;
-//    typedef ElectroIonicModel superIonicModel;
-//    typedef boost::shared_ptr<ionicModel_Type> ionicModelPtr_Type;
-//
-//    typedef Teuchos::ParameterList list_Type;
-//
-//    typedef boost::function <
-//    Real (const Real& t, const Real& x, const Real& y, const Real& z,
-//          const ID& i) > function_Type;
-//
-//    typedef MatrixSmall<3, 3>                          matrixSmall_Type;
-//
-//    typedef EMMonodomainSolver<mesh_Type, ionicModel_Type>                  monodomainSolver_Type;
-//    typedef boost::shared_ptr<monodomainSolver_Type>                    monodomainSolverPtr_Type;
-//
-//    typedef FESpace< RegionMesh<LinearTetra>, MapEpetra >               FESpace_Type;
-//    typedef boost::shared_ptr<FESpace_Type>                        FESpacePtr_Type;
-//
-//    typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 1 >       scalarETFESpace_Type;
-//    typedef boost::shared_ptr<scalarETFESpace_Type>                      scalarETFESpacePtr_Type;
-//    typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 3 >       solidETFESpace_Type;
-//    typedef boost::shared_ptr<solidETFESpace_Type>                      solidETFESpacePtr_Type;
-//
-//    typedef StructuralConstitutiveLawData           structureData_Type;
-//    typedef boost::shared_ptr<structureData_Type>           structureDataPtr_Type;
-//
-//    typedef EMStructuralOperator< RegionMesh<LinearTetra> > structuralOperator_Type;
-//    typedef boost::shared_ptr< structuralOperator_Type > structuralOperatorPtr_Type;
-//
-//
-//    typedef BCHandler                                          bc_Type;
-//    typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
-//    typedef StructuralOperator< RegionMesh<LinearTetra> >       physicalSolver_Type;
-//    typedef BCInterface3D< bc_Type, physicalSolver_Type >      bcInterface_Type;
-//    typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
-//
-//    typedef EMActiveStrainSolver<mesh_Type> activeStrain_Type;
-//    typedef boost::shared_ptr< activeStrain_Type >  activeStrainPtr_Type;
-//
-//    typedef RBFInterpolation<mesh_Type>           interpolation_Type;
-//    typedef boost::shared_ptr<interpolation_Type> interpolationPtr_Type;
-//
-//    typedef BCVector                                bcVector_Type;
-//    typedef boost::shared_ptr<bcVector_Type>        bcVectorPtr_Type;
-//    typedef std::vector<bcVectorPtr_Type>           bcVectorPtrs_Type;
-//
-//    typedef MapEpetra                               map_Type;
-//    typedef boost::shared_ptr<map_Type>             mapPtr_Type;
-//    ///////////////////////////////////////////////////////////////////////////
-//
-//    inline monodomainSolverPtr_Type    monodomainPtr()
-//    {
-//        return  M_monodomainPtr;
-//    }
-//    inline bool                     usingDifferentMeshes()
-//    {
-//        return M_usingDifferentMeshes;
-//    }
-//    inline structureDataPtr_Type       solidDataPtr()
-//    {
-//        return M_solidDataPtr;
-//    }
-//    inline structuralOperatorPtr_Type  solidPtr()
-//    {
-//        return M_solidPtr;
-//    }
-//    inline bcInterfacePtr_Type         solidBCPtr()
-//    {
-//        return M_solidBCPtr;
-//    }
-//    inline activeStrainPtr_Type         activationPtr()
-//    {
-//        return M_activationPtr;
-//    }
-//    inline Real                         monodomainTimeStep()
-//    {
-//        return M_monodomainTimeStep;
-//    }
-//    inline Real                         solidTimeStep()
-//    {
-//        return M_solidTimeStep;
-//    }
-//    inline Real                         lvPressure()
-//    {
-//        return M_lvPressure;
-//    }
-//    inline Real                         rvPressure()
-//    {
-//        return M_rvPressure;
-//    }
-//    inline Real                         lvVolume()
-//    {
-//        return M_lvVolume;
-//    }
-//    inline Real                         rvVolume()
-//    {
-//        return M_rvVolume;
-//    }
-//    inline std::vector<UInt>            lvFlags()
-//    {
-//        return M_lvFlags;
-//    }
-//    inline std::vector<UInt>            rvFlags()
-//    {
-//        return M_rvFlags;
-//    }
-//    inline bcVectorPtrs_Type            bcVectorPtrs()
-//    {
-//        return M_bcVectorPtrs;
-//    }
-//    inline bool                     oneWayCoupling()
-//    {
-//        return M_oneWayCoupling;
-//    }
-//    inline vectorPtr_Type               activationSolidPtr()
-//    {
-//        return M_activationSolidPtr;
-//    }
-//    inline FESpacePtr_Type              activationSolidFESpacePtr()
-//    {
-//        return M_solidActivationFESpacePtr;
-//    }
-//    inline FESpace_Type&                activationSolidFESpace()
-//    {
-//        return *M_solidActivationFESpacePtr;
-//    }
-//    inline meshPtr_Type                 fullSolidMesh()
-//    {
-//        return M_fullSolidMesh;
-//    }
-//
-//    inline void setMonodomainPtr (monodomainSolverPtr_Type p)
-//    {
-//        M_monodomainPtr = p;
-//    }
-//    inline void setMonodomainPtr (monodomainSolver_Type& p)
-//    {
-//        *M_monodomainPtr = p;
-//    }
-//    inline void setUsingDifferentMeshes (bool p)
-//    {
-//        M_usingDifferentMeshes = p;
-//    }
-//    inline void setSolidDataPtr (structureDataPtr_Type p )
-//    {
-//        M_solidDataPtr = p;
-//    }
-//    inline void setSolidDataPtr (structureData_Type& p )
-//    {
-//        *M_solidDataPtr = p;
-//    }
-//    inline void setSolidPtr (structuralOperatorPtr_Type p)
-//    {
-//        M_solidPtr = p;
-//    }
-//    inline void setSolidPtr (structuralOperator_Type& p)
-//    {
-//        *M_solidPtr = p;
-//    }
-//    inline void setSolidBCPtr (bcInterfacePtr_Type p)
-//    {
-//        M_solidBCPtr = p;
-//    }
-//    inline void setSolidBCPtr (bcInterface_Type& p)
-//    {
-//        *M_solidBCPtr = p;
-//    }
-//    inline void setActivationPtr (activeStrainPtr_Type p)
-//    {
-//        M_activationPtr = p;
-//    }
-//    inline void setActivationPtr (activeStrain_Type& p)
-//    {
-//        *M_activationPtr = p;
-//    }
-//    inline void setMonodomainTimeStep (Real p)
-//    {
-//        M_monodomainTimeStep = p;
-//    }
-//    inline void setSolidTimeStep (Real p)
-//    {
-//        M_solidTimeStep = p;
-//    }
-//    inline void setLVPressure (Real p)
-//    {
-//        M_lvPressure = p;
-//    }
-//    inline void setRVPressure (Real p)
-//    {
-//        M_rvPressure = p;
-//    }
-//    inline void setLVVolume (Real p)
-//    {
-//        M_lvVolume = p;
-//    }
-//    inline void setRVVolume (Real p)
-//    {
-//        M_rvVolume = p;
-//    }
-//    inline void setLVFlags (std::vector<UInt> p)
-//    {
-//        M_lvFlags = p;
-//    }
-//    inline void setRVFlags (std::vector<UInt> p)
-//    {
-//        M_rvFlags = p;
-//    }
-//    inline void setBCVectorPtrs (bcVectorPtrs_Type p)
-//    {
-//        M_bcVectorPtrs = p;
-//    }
-//    inline void setOneWayCoupling ( bool p)
-//    {
-//        M_oneWayCoupling = p;
-//    }
-//
-//
-//
-//    //@}
-//
-//    //! @name Constructors & Destructor
-//    //@{
-//    EMSolver( );
-//
-//    EMSolver (  Teuchos::ParameterList& parameterList,
-//                const std::string data_file_name,
-//                commPtr_Type comm );    //!Empty Constructor
-//
-//    EMSolver (  structuralOperatorPtr_Type solidPtr,
-//                Teuchos::ParameterList& parameterList,
-//                const std::string data_file_name,
-//                commPtr_Type comm );
-//
-//    virtual ~EMSolver() {};
-//
-//    void setup (Teuchos::ParameterList& parameterList,
-//                const std::string data_file_name,
-//                std::string parameterListName = "ParamList.xml");
-//
-//    void setupMonodomainMatrix (Teuchos::ParameterList& parameterList);
-//
-//    void setupProjectionSolver (GetPot& dataFile, commPtr_Type comm);
-//
-//    void setupProjectionRhs();
-//
-//    void projection();
-//
-//    void updateMonodomainMatrix();
-//
-//    void updateMonodomain();
-//
-//    void updateSolid();
-//
-//    void solveOneMonodomainStep (int subiter = 1);
-//
-//    void solveOneReactionStepFE (int subiter = 1);
-//
-//    void solveOneICIStep();
-//
-//    void solveOneSVIStep();
-//
-//    void solveOneHLStep();
-//
-//    void solveOneOSStep (int subiter = 1);
-//
-//    void solveOneDiffusionStep();
-//
-//    void solveOneActivationStep();
-//
-//    inline void solveSolid()
-//    {
-//        M_solidPtr -> iterate ( M_solidBCPtr -> handler() );
-//    }
-//
-//    void setupExporters (std::string dir = "./");
-//
-//    void exportSolution (Real time = 0.0);
-//
-//    void closeExporters();
-//
-//    void setupPreloadBC ( GetPot& dataFile, map_Type map );
-//
-//    void preloadRamp ( Real dt = 0.1);
-//
-//    void createReferencePositionVector();
-//
-//    void setupBC (const std::string data_file_name, map_Type map  );
-//
-//    void computeLVVolume (Real nx, Real ny, Real nz);
-//    void computeRVVolume (Real nx, Real ny, Real nz);
-//
-//    void exportSolidFibersDirection (std::string dir = "./" );
-//    void exportMonodomainFibersDirection (std::string dir = "./");
-//    void exportSolidSheetsDirection (std::string dir = "./" );
-//    void exportFibersAndSheetsFields (std::string dir = "./" );
-//    void exportActivationTime (std::string dir = "./" );
-//
-//    inline void importSolidFibers (Teuchos::ParameterList& parameterList);
-//    inline void importSolidSheets (Teuchos::ParameterList& parameterList);
-//    inline void importMonodomainFibers (Teuchos::ParameterList& parameterList);
-//
-//    void setFibersAndSheets (Teuchos::ParameterList& parameterList);
-//
-//    void setupInterpolants (std::string parameterListName, Teuchos::ParameterList& parameterList, GetPot& dataFile);
-//
-//
-//    inline void createLVPositionVector (Real nx, Real ny, Real nz)
-//    {
-//        M_lvPositionVectorPtr.reset (new vector_Type ( M_solidPtr -> activeMaterial() -> activationSpace() -> map() ) );
-//        createPositionVector (nx, ny, nz, M_lvFlags, *M_lvPositionVectorPtr);
-//    }
-//    inline void createRVPositionVector (Real nx, Real ny, Real nz)
-//    {
-//        M_rvPositionVectorPtr.reset (new vector_Type ( M_solidPtr -> activeMaterial() -> activationSpace() -> map() ) );
-//        createPositionVector (nx, ny, nz, M_rvFlags, *M_rvPositionVectorPtr );
-//    }
-//
-//    void createPositionVector (Real nx, Real ny, Real nz, std::vector<UInt> flags, vector_Type& vec);
-//
-//    inline void registerActivationTime ( Real time, Real threshold = 0.0)
-//    {
-//        M_monodomainPtr -> registerActivationTime (*M_activationTimePtr, time, threshold);
-//    }
-//
-//    inline void setSolidFibers (vector_Type& fibers)
-//    {
-//        M_solidPtr -> activeMaterial() -> setFiberVector (fibers);
-//    }
-//    inline void setSolidFibers (vectorPtr_Type fibers)
-//    {
-//        M_solidPtr -> activeMaterial() -> setFiberVector (*fibers);
-//    }
-//    inline void setSolidSheets (vector_Type& sheets)
-//    {
-//        M_solidPtr -> activeMaterial() -> setSheetVector (sheets);
-//    }
-//    inline void setSolidSheets (vectorPtr_Type sheets)
-//    {
-//        M_solidPtr -> activeMaterial() -> setSheetVector (*sheets);
-//    }
-//    //monodomain -> setFiberPtr( electroFibers )
-//    inline void setMonodomainFibers (vectorPtr_Type fibers)
-//    {
-//        M_monodomainPtr -> setFiberPtr (fibers);
-//    }
-//    inline void setMonodomainFibers (vector_Type& fibers)
-//    {
-//        M_monodomainPtr -> setFiber (fibers);
-//    }
-//
-//
-//    //  void update();
-//
-//    inline void  setPotentialOnBoundary (Real value, UInt flag)
-//    {
-//        ElectrophysiologyUtility::setValueOnBoundary ( * (M_monodomainPtr -> potentialPtr() ), M_monodomainPtr -> fullMeshPtr(), value, flag);
-//    }
-//    inline void  setPotentialFromFunction (function_Type f, Real time = 0.0)
-//    {
-//        M_monodomainPtr -> setPotentialFromFunction ( f, time );
-//    }
-//
-//    inline Real isochoricPressure (Real Cp, Real pn, Real dV)
-//    {
-//        return (pn + dV / Cp);
-//    }
-//    inline void isochoricLVPressure (Real Cp)
-//    {
-//        M_lvPressure = isochoricPressure (Cp, M_lvPressure, M_lvdV);
-//    }
-//    inline void isochoricRVPressure (Real Cp)
-//    {
-//        M_rvPressure = isochoricPressure (Cp, M_rvPressure, M_rvdV);
-//    }
-//    inline Real windkesselPressure (Real R, Real C, Real pn, Real dV, Real dt = 1.0)
-//    {
-//        return  pn - ( pn * dt / C / R + dV / C );
-//    }
-//
-//    inline  void setSolutionMethod ( std::string p)
-//    {
-//        std::map< std::string, solutionMethod_Type > solutionMap;
-//        solutionMap["OS"] = OS;
-//        solutionMap["ICI"] = ICI;
-//        solutionMap["HL"] = HL;
-//        solutionMap["SVI"] = SVI;
-//        M_solutionMethod   = solutionMap[p];
-//    }
-//    enum solutionMethod_Type { OS, ICI, HL, SVI };
-//    solutionMethod_Type                 M_solutionMethod;
-//    /*!
-//    */
-//    monodomainSolverPtr_Type    M_monodomainPtr;
-//    bool                        M_usingDifferentMeshes;
-//    structureDataPtr_Type       M_solidDataPtr;
-//    structuralOperatorPtr_Type  M_solidPtr;
-//    bcInterfacePtr_Type         M_solidBCPtr;
-//    activeStrainPtr_Type        M_activationPtr;
-//    Real                        M_monodomainTimeStep;
-//    Real                        M_solidTimeStep;
-//    exporterPtr_Type            M_monodomainExporterPtr;
-//    exporterPtr_Type            M_solidExporterPtr;
-//    exporterPtr_Type            M_activationExporterPtr;
-//
-//    //Coarse To Fine ( C2F )
-//    vectorPtr_Type              M_monodomainDisplacementPtr;
-//    interpolationPtr_Type       M_C2FPtr;
-//    //Fine To Coarse ( F2C )
-//    vectorPtr_Type              M_activationSolidPtr;
-//    interpolationPtr_Type       M_F2CPtr;
-//    meshPtr_Type                M_fullSolidMesh;
-//
-//    vectorPtr_Type              M_activationTimePtr;
-//
-//    Real                        M_lvPressure;
-//    Real                        M_rvPressure;
-//    Real                        M_lvVolume;
-//    Real                        M_rvVolume;
-//    Real                        M_lvdV;
-//    Real                        M_rvdV;
-//    std::ofstream               M_lvPVexporter;
-//    std::ofstream               M_rvPVexporter;
-//    bool                        M_lvPV;
-//    bool                        M_rvPV;
-//
-//    std::vector<UInt>           M_lvFlags;
-//    std::vector<UInt>           M_rvFlags;
-//
-//    bcVectorPtrs_Type           M_bcVectorPtrs;
-//
-//    vectorPtr_Type              M_referencePositionPtr;
-//
-//    Real                        M_lvPreloadPressure;
-//    Real                        M_rvPreloadPressure;
-//
-//    vectorPtr_Type              M_lvPositionVectorPtr;//one of the orthogonal vectors with respect  to the normal of the lid
-//    vectorPtr_Type              M_rvPositionVectorPtr;//one of the orthogonal vectors with respect  to the normal of the lid
-//
-//    bool                        M_oneWayCoupling;
-//
-//    commPtr_Type                M_comm;
-//
-//    matrixPtr_Type              M_projectionMassMatrix;
-//    vectorPtr_Type              M_projectionRhs;
-//    basePrecPtr_Type            M_precPtr;
-//    linearSolver_Type           M_projectionSolver;
-//
-//    FESpacePtr_Type             M_solidActivationFESpacePtr;
-//
-//
-//private:
+    //    //!Monodomain Solver
+    //    /*!
+    //     The monodomain equation reads
+    //     \f \Chi
+    //
+    //     */
+    //
+    //public:
+    //
+    //    //! @name Type definitions
+    //    //@{
+    //
+    //    typedef Mesh mesh_Type;
+    //    typedef boost::shared_ptr<mesh_Type> meshPtr_Type;
+    //
+    //    typedef VectorEpetra vector_Type;
+    //    typedef boost::shared_ptr<VectorEpetra> vectorPtr_Type;
+    //
+    //    typedef std::vector<vectorPtr_Type> vectorOfPtr_Type;
+    //
+    //    typedef MatrixEpetra<Real> matrix_Type;
+    //    typedef boost::shared_ptr<matrix_Type> matrixPtr_Type;
+    //
+    //    typedef Epetra_Comm comm_Type;
+    //    typedef boost::shared_ptr<comm_Type> commPtr_Type;
+    //
+    //    typedef ETFESpace<mesh_Type, MapEpetra, 3, 1> ETFESpace_Type;
+    //    typedef boost::shared_ptr<ETFESpace<mesh_Type, MapEpetra, 3, 1> > ETFESpacePtr_Type;
+    //
+    //    typedef ETFESpace<mesh_Type, MapEpetra, 3, 3> ETFESpaceVectorial_Type;
+    //    typedef boost::shared_ptr< ETFESpaceVectorial_Type > ETFESpaceVectorialPtr_Type;
+    //
+    //    typedef FESpace<mesh_Type, MapEpetra> feSpace_Type;
+    //    typedef boost::shared_ptr<feSpace_Type> feSpacePtr_Type;
+    //
+    //    typedef LinearSolver linearSolver_Type;
+    //    typedef boost::shared_ptr<LinearSolver> linearSolverPtr_Type;
+    //
+    //    typedef ExporterHDF5< mesh_Type >          exporter_Type;
+    //    typedef boost::shared_ptr<exporter_Type>                       exporterPtr_Type;
+    //    //  typedef Exporter<mesh_Type> exporter_Type;    //                IOFile_Type;
+    //    //  typedef boost::shared_ptr<exporter_Type> exporterPtr_Type; //                IOFilePtr_Type;
+    //
+    //    typedef LifeV::Preconditioner basePrec_Type;
+    //    typedef boost::shared_ptr<basePrec_Type> basePrecPtr_Type;
+    //    typedef LifeV::PreconditionerIfpack prec_Type;
+    //    typedef boost::shared_ptr<prec_Type> precPtr_Type;
+    //
+    //    typedef IonicModel ionicModel_Type;
+    //    typedef ElectroIonicModel superIonicModel;
+    //    typedef boost::shared_ptr<ionicModel_Type> ionicModelPtr_Type;
+    //
+    //    typedef Teuchos::ParameterList list_Type;
+    //
+    //    typedef boost::function <
+    //    Real (const Real& t, const Real& x, const Real& y, const Real& z,
+    //          const ID& i) > function_Type;
+    //
+    //    typedef MatrixSmall<3, 3>                          matrixSmall_Type;
+    //
+    //    typedef EMMonodomainSolver<mesh_Type, ionicModel_Type>                  monodomainSolver_Type;
+    //    typedef boost::shared_ptr<monodomainSolver_Type>                    monodomainSolverPtr_Type;
+    //
+    //    typedef FESpace< RegionMesh<LinearTetra>, MapEpetra >               FESpace_Type;
+    //    typedef boost::shared_ptr<FESpace_Type>                        FESpacePtr_Type;
+    //
+    //    typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 1 >       scalarETFESpace_Type;
+    //    typedef boost::shared_ptr<scalarETFESpace_Type>                      scalarETFESpacePtr_Type;
+    //    typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 3 >       solidETFESpace_Type;
+    //    typedef boost::shared_ptr<solidETFESpace_Type>                      solidETFESpacePtr_Type;
+    //
+    //    typedef StructuralConstitutiveLawData           structureData_Type;
+    //    typedef boost::shared_ptr<structureData_Type>           structureDataPtr_Type;
+    //
+    //    typedef EMStructuralOperator< RegionMesh<LinearTetra> > structuralOperator_Type;
+    //    typedef boost::shared_ptr< structuralOperator_Type > structuralOperatorPtr_Type;
+    //
+    //
+    //    typedef BCHandler                                          bc_Type;
+    //    typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
+    //    typedef StructuralOperator< RegionMesh<LinearTetra> >       physicalSolver_Type;
+    //    typedef BCInterface3D< bc_Type, physicalSolver_Type >      bcInterface_Type;
+    //    typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
+    //
+    //    typedef EMActiveStrainSolver<mesh_Type> activeStrain_Type;
+    //    typedef boost::shared_ptr< activeStrain_Type >  activeStrainPtr_Type;
+    //
+    //    typedef RBFInterpolation<mesh_Type>           interpolation_Type;
+    //    typedef boost::shared_ptr<interpolation_Type> interpolationPtr_Type;
+    //
+    //    typedef BCVector                                bcVector_Type;
+    //    typedef boost::shared_ptr<bcVector_Type>        bcVectorPtr_Type;
+    //    typedef std::vector<bcVectorPtr_Type>           bcVectorPtrs_Type;
+    //
+    //    typedef MapEpetra                               map_Type;
+    //    typedef boost::shared_ptr<map_Type>             mapPtr_Type;
+    //    ///////////////////////////////////////////////////////////////////////////
+    //
+    //    inline monodomainSolverPtr_Type    monodomainPtr()
+    //    {
+    //        return  M_monodomainPtr;
+    //    }
+    //    inline bool                     usingDifferentMeshes()
+    //    {
+    //        return M_usingDifferentMeshes;
+    //    }
+    //    inline structureDataPtr_Type       solidDataPtr()
+    //    {
+    //        return M_solidDataPtr;
+    //    }
+    //    inline structuralOperatorPtr_Type  solidPtr()
+    //    {
+    //        return M_solidPtr;
+    //    }
+    //    inline bcInterfacePtr_Type         solidBCPtr()
+    //    {
+    //        return M_solidBCPtr;
+    //    }
+    //    inline activeStrainPtr_Type         activationPtr()
+    //    {
+    //        return M_activationPtr;
+    //    }
+    //    inline Real                         monodomainTimeStep()
+    //    {
+    //        return M_monodomainTimeStep;
+    //    }
+    //    inline Real                         solidTimeStep()
+    //    {
+    //        return M_solidTimeStep;
+    //    }
+    //    inline Real                         lvPressure()
+    //    {
+    //        return M_lvPressure;
+    //    }
+    //    inline Real                         rvPressure()
+    //    {
+    //        return M_rvPressure;
+    //    }
+    //    inline Real                         lvVolume()
+    //    {
+    //        return M_lvVolume;
+    //    }
+    //    inline Real                         rvVolume()
+    //    {
+    //        return M_rvVolume;
+    //    }
+    //    inline std::vector<UInt>            lvFlags()
+    //    {
+    //        return M_lvFlags;
+    //    }
+    //    inline std::vector<UInt>            rvFlags()
+    //    {
+    //        return M_rvFlags;
+    //    }
+    //    inline bcVectorPtrs_Type            bcVectorPtrs()
+    //    {
+    //        return M_bcVectorPtrs;
+    //    }
+    //    inline bool                     oneWayCoupling()
+    //    {
+    //        return M_oneWayCoupling;
+    //    }
+    //    inline vectorPtr_Type               activationSolidPtr()
+    //    {
+    //        return M_activationSolidPtr;
+    //    }
+    //    inline FESpacePtr_Type              activationSolidFESpacePtr()
+    //    {
+    //        return M_solidActivationFESpacePtr;
+    //    }
+    //    inline FESpace_Type&                activationSolidFESpace()
+    //    {
+    //        return *M_solidActivationFESpacePtr;
+    //    }
+    //    inline meshPtr_Type                 fullSolidMesh()
+    //    {
+    //        return M_fullSolidMesh;
+    //    }
+    //
+    //    inline void setMonodomainPtr (monodomainSolverPtr_Type p)
+    //    {
+    //        M_monodomainPtr = p;
+    //    }
+    //    inline void setMonodomainPtr (monodomainSolver_Type& p)
+    //    {
+    //        *M_monodomainPtr = p;
+    //    }
+    //    inline void setUsingDifferentMeshes (bool p)
+    //    {
+    //        M_usingDifferentMeshes = p;
+    //    }
+    //    inline void setSolidDataPtr (structureDataPtr_Type p )
+    //    {
+    //        M_solidDataPtr = p;
+    //    }
+    //    inline void setSolidDataPtr (structureData_Type& p )
+    //    {
+    //        *M_solidDataPtr = p;
+    //    }
+    //    inline void setSolidPtr (structuralOperatorPtr_Type p)
+    //    {
+    //        M_solidPtr = p;
+    //    }
+    //    inline void setSolidPtr (structuralOperator_Type& p)
+    //    {
+    //        *M_solidPtr = p;
+    //    }
+    //    inline void setSolidBCPtr (bcInterfacePtr_Type p)
+    //    {
+    //        M_solidBCPtr = p;
+    //    }
+    //    inline void setSolidBCPtr (bcInterface_Type& p)
+    //    {
+    //        *M_solidBCPtr = p;
+    //    }
+    //    inline void setActivationPtr (activeStrainPtr_Type p)
+    //    {
+    //        M_activationPtr = p;
+    //    }
+    //    inline void setActivationPtr (activeStrain_Type& p)
+    //    {
+    //        *M_activationPtr = p;
+    //    }
+    //    inline void setMonodomainTimeStep (Real p)
+    //    {
+    //        M_monodomainTimeStep = p;
+    //    }
+    //    inline void setSolidTimeStep (Real p)
+    //    {
+    //        M_solidTimeStep = p;
+    //    }
+    //    inline void setLVPressure (Real p)
+    //    {
+    //        M_lvPressure = p;
+    //    }
+    //    inline void setRVPressure (Real p)
+    //    {
+    //        M_rvPressure = p;
+    //    }
+    //    inline void setLVVolume (Real p)
+    //    {
+    //        M_lvVolume = p;
+    //    }
+    //    inline void setRVVolume (Real p)
+    //    {
+    //        M_rvVolume = p;
+    //    }
+    //    inline void setLVFlags (std::vector<UInt> p)
+    //    {
+    //        M_lvFlags = p;
+    //    }
+    //    inline void setRVFlags (std::vector<UInt> p)
+    //    {
+    //        M_rvFlags = p;
+    //    }
+    //    inline void setBCVectorPtrs (bcVectorPtrs_Type p)
+    //    {
+    //        M_bcVectorPtrs = p;
+    //    }
+    //    inline void setOneWayCoupling ( bool p)
+    //    {
+    //        M_oneWayCoupling = p;
+    //    }
+    //
+    //
+    //
+    //    //@}
+    //
+    //    //! @name Constructors & Destructor
+    //    //@{
+    //    EMSolver( );
+    //
+    //    EMSolver (  Teuchos::ParameterList& parameterList,
+    //                const std::string data_file_name,
+    //                commPtr_Type comm );    //!Empty Constructor
+    //
+    //    EMSolver (  structuralOperatorPtr_Type solidPtr,
+    //                Teuchos::ParameterList& parameterList,
+    //                const std::string data_file_name,
+    //                commPtr_Type comm );
+    //
+    //    virtual ~EMSolver() {};
+    //
+    //    void setup (Teuchos::ParameterList& parameterList,
+    //                const std::string data_file_name,
+    //                std::string parameterListName = "ParamList.xml");
+    //
+    //    void setupMonodomainMatrix (Teuchos::ParameterList& parameterList);
+    //
+    //    void setupProjectionSolver (GetPot& dataFile, commPtr_Type comm);
+    //
+    //    void setupProjectionRhs();
+    //
+    //    void projection();
+    //
+    //    void updateMonodomainMatrix();
+    //
+    //    void updateMonodomain();
+    //
+    //    void updateSolid();
+    //
+    //    void solveOneMonodomainStep (int subiter = 1);
+    //
+    //    void solveOneReactionStepFE (int subiter = 1);
+    //
+    //    void solveOneICIStep();
+    //
+    //    void solveOneSVIStep();
+    //
+    //    void solveOneHLStep();
+    //
+    //    void solveOneOSStep (int subiter = 1);
+    //
+    //    void solveOneDiffusionStep();
+    //
+    //    void solveOneActivationStep();
+    //
+    //    inline void solveSolid()
+    //    {
+    //        M_solidPtr -> iterate ( M_solidBCPtr -> handler() );
+    //    }
+    //
+    //    void setupExporters (std::string dir = "./");
+    //
+    //    void exportSolution (Real time = 0.0);
+    //
+    //    void closeExporters();
+    //
+    //    void setupPreloadBC ( GetPot& dataFile, map_Type map );
+    //
+    //    void preloadRamp ( Real dt = 0.1);
+    //
+    //    void createReferencePositionVector();
+    //
+    //    void setupBC (const std::string data_file_name, map_Type map  );
+    //
+    //    void computeLVVolume (Real nx, Real ny, Real nz);
+    //    void computeRVVolume (Real nx, Real ny, Real nz);
+    //
+    //    void exportSolidFibersDirection (std::string dir = "./" );
+    //    void exportMonodomainFibersDirection (std::string dir = "./");
+    //    void exportSolidSheetsDirection (std::string dir = "./" );
+    //    void exportFibersAndSheetsFields (std::string dir = "./" );
+    //    void exportActivationTime (std::string dir = "./" );
+    //
+    //    inline void importSolidFibers (Teuchos::ParameterList& parameterList);
+    //    inline void importSolidSheets (Teuchos::ParameterList& parameterList);
+    //    inline void importMonodomainFibers (Teuchos::ParameterList& parameterList);
+    //
+    //    void setFibersAndSheets (Teuchos::ParameterList& parameterList);
+    //
+    //    void setupInterpolants (std::string parameterListName, Teuchos::ParameterList& parameterList, GetPot& dataFile);
+    //
+    //
+    //    inline void createLVPositionVector (Real nx, Real ny, Real nz)
+    //    {
+    //        M_lvPositionVectorPtr.reset (new vector_Type ( M_solidPtr -> activeMaterial() -> activationSpace() -> map() ) );
+    //        createPositionVector (nx, ny, nz, M_lvFlags, *M_lvPositionVectorPtr);
+    //    }
+    //    inline void createRVPositionVector (Real nx, Real ny, Real nz)
+    //    {
+    //        M_rvPositionVectorPtr.reset (new vector_Type ( M_solidPtr -> activeMaterial() -> activationSpace() -> map() ) );
+    //        createPositionVector (nx, ny, nz, M_rvFlags, *M_rvPositionVectorPtr );
+    //    }
+    //
+    //    void createPositionVector (Real nx, Real ny, Real nz, std::vector<UInt> flags, vector_Type& vec);
+    //
+    //    inline void registerActivationTime ( Real time, Real threshold = 0.0)
+    //    {
+    //        M_monodomainPtr -> registerActivationTime (*M_activationTimePtr, time, threshold);
+    //    }
+    //
+    //    inline void setSolidFibers (vector_Type& fibers)
+    //    {
+    //        M_solidPtr -> activeMaterial() -> setFiberVector (fibers);
+    //    }
+    //    inline void setSolidFibers (vectorPtr_Type fibers)
+    //    {
+    //        M_solidPtr -> activeMaterial() -> setFiberVector (*fibers);
+    //    }
+    //    inline void setSolidSheets (vector_Type& sheets)
+    //    {
+    //        M_solidPtr -> activeMaterial() -> setSheetVector (sheets);
+    //    }
+    //    inline void setSolidSheets (vectorPtr_Type sheets)
+    //    {
+    //        M_solidPtr -> activeMaterial() -> setSheetVector (*sheets);
+    //    }
+    //    //monodomain -> setFiberPtr( electroFibers )
+    //    inline void setMonodomainFibers (vectorPtr_Type fibers)
+    //    {
+    //        M_monodomainPtr -> setFiberPtr (fibers);
+    //    }
+    //    inline void setMonodomainFibers (vector_Type& fibers)
+    //    {
+    //        M_monodomainPtr -> setFiber (fibers);
+    //    }
+    //
+    //
+    //    //  void update();
+    //
+    //    inline void  setPotentialOnBoundary (Real value, UInt flag)
+    //    {
+    //        ElectrophysiologyUtility::setValueOnBoundary ( * (M_monodomainPtr -> potentialPtr() ), M_monodomainPtr -> fullMeshPtr(), value, flag);
+    //    }
+    //    inline void  setPotentialFromFunction (function_Type f, Real time = 0.0)
+    //    {
+    //        M_monodomainPtr -> setPotentialFromFunction ( f, time );
+    //    }
+    //
+    //    inline Real isochoricPressure (Real Cp, Real pn, Real dV)
+    //    {
+    //        return (pn + dV / Cp);
+    //    }
+    //    inline void isochoricLVPressure (Real Cp)
+    //    {
+    //        M_lvPressure = isochoricPressure (Cp, M_lvPressure, M_lvdV);
+    //    }
+    //    inline void isochoricRVPressure (Real Cp)
+    //    {
+    //        M_rvPressure = isochoricPressure (Cp, M_rvPressure, M_rvdV);
+    //    }
+    //    inline Real windkesselPressure (Real R, Real C, Real pn, Real dV, Real dt = 1.0)
+    //    {
+    //        return  pn - ( pn * dt / C / R + dV / C );
+    //    }
+    //
+    //    inline  void setSolutionMethod ( std::string p)
+    //    {
+    //        std::map< std::string, solutionMethod_Type > solutionMap;
+    //        solutionMap["OS"] = OS;
+    //        solutionMap["ICI"] = ICI;
+    //        solutionMap["HL"] = HL;
+    //        solutionMap["SVI"] = SVI;
+    //        M_solutionMethod   = solutionMap[p];
+    //    }
+    //    enum solutionMethod_Type { OS, ICI, HL, SVI };
+    //    solutionMethod_Type                 M_solutionMethod;
+    //    /*!
+    //    */
+    //    monodomainSolverPtr_Type    M_monodomainPtr;
+    //    bool                        M_usingDifferentMeshes;
+    //    structureDataPtr_Type       M_solidDataPtr;
+    //    structuralOperatorPtr_Type  M_solidPtr;
+    //    bcInterfacePtr_Type         M_solidBCPtr;
+    //    activeStrainPtr_Type        M_activationPtr;
+    //    Real                        M_monodomainTimeStep;
+    //    Real                        M_solidTimeStep;
+    //    exporterPtr_Type            M_monodomainExporterPtr;
+    //    exporterPtr_Type            M_solidExporterPtr;
+    //    exporterPtr_Type            M_activationExporterPtr;
+    //
+    //    //Coarse To Fine ( C2F )
+    //    vectorPtr_Type              M_monodomainDisplacementPtr;
+    //    interpolationPtr_Type       M_C2FPtr;
+    //    //Fine To Coarse ( F2C )
+    //    vectorPtr_Type              M_activationSolidPtr;
+    //    interpolationPtr_Type       M_F2CPtr;
+    //    meshPtr_Type                M_fullSolidMesh;
+    //
+    //    vectorPtr_Type              M_activationTimePtr;
+    //
+    //    Real                        M_lvPressure;
+    //    Real                        M_rvPressure;
+    //    Real                        M_lvVolume;
+    //    Real                        M_rvVolume;
+    //    Real                        M_lvdV;
+    //    Real                        M_rvdV;
+    //    std::ofstream               M_lvPVexporter;
+    //    std::ofstream               M_rvPVexporter;
+    //    bool                        M_lvPV;
+    //    bool                        M_rvPV;
+    //
+    //    std::vector<UInt>           M_lvFlags;
+    //    std::vector<UInt>           M_rvFlags;
+    //
+    //    bcVectorPtrs_Type           M_bcVectorPtrs;
+    //
+    //    vectorPtr_Type              M_referencePositionPtr;
+    //
+    //    Real                        M_lvPreloadPressure;
+    //    Real                        M_rvPreloadPressure;
+    //
+    //    vectorPtr_Type              M_lvPositionVectorPtr;//one of the orthogonal vectors with respect  to the normal of the lid
+    //    vectorPtr_Type              M_rvPositionVectorPtr;//one of the orthogonal vectors with respect  to the normal of the lid
+    //
+    //    bool                        M_oneWayCoupling;
+    //
+    //    commPtr_Type                M_comm;
+    //
+    //    matrixPtr_Type              M_projectionMassMatrix;
+    //    vectorPtr_Type              M_projectionRhs;
+    //    basePrecPtr_Type            M_precPtr;
+    //    linearSolver_Type           M_projectionSolver;
+    //
+    //    FESpacePtr_Type             M_solidActivationFESpacePtr;
+    //
+    //
+    //private:
     //    void initSolid();
     //    void initMonodomain();
     //    void initActivation();

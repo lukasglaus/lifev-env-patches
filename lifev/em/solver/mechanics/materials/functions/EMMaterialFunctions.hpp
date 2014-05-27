@@ -65,17 +65,17 @@ namespace LifeV
  *  Then the stress tensor is computed as
  *  \f[ \mathbf{P} = W_I \dfrac{\partial \mathcal{I}_1}{\partial \mathbf{F}}} + W_{vol} \dfrac{\partial J}{\partial \mathbf{F}} \f]
  *
- *	Therefore, if we would like to assemble, for example, the residual of different constitutive
- *	laws of this form we only need to change the functions \f[W_I\f] and \f[W_{vol}\f].
+ *  Therefore, if we would like to assemble, for example, the residual of different constitutive
+ *  laws of this form we only need to change the functions \f[W_I\f] and \f[W_{vol}\f].
  *
- *	You can derive this class in order to specify \f[W_I\f] and \f[W_{vol}\f].
- *	In order to deal with particular cases, this class needs the implementation
- *	of the computation of the residual and of the jacobian.
- *	Since the implementation is not function specific the general implementation is
- *	inserted in the EMETAAssembler. So material specific-function (you will implement)
- *	will call to the functions in the EMETAAssembler.
- *	If your function needs to assemble some terms which are not  included
- *	in the EMETAAssembler, you should add your own assembly  in that file.
+ *  You can derive this class in order to specify \f[W_I\f] and \f[W_{vol}\f].
+ *  In order to deal with particular cases, this class needs the implementation
+ *  of the computation of the residual and of the jacobian.
+ *  Since the implementation is not function specific the general implementation is
+ *  inserted in the EMETAAssembler. So material specific-function (you will implement)
+ *  will call to the functions in the EMETAAssembler.
+ *  If your function needs to assemble some terms which are not  included
+ *  in the EMETAAssembler, you should add your own assembly  in that file.
  *
  *
  */
@@ -91,37 +91,38 @@ typedef MatrixEpetra<Real>           matrix_Type;
 typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
 template <class Mesh>
-class EMMaterialFunctions : public boost::enable_shared_from_this<EMMaterialFunctions<Mesh> >{
+class EMMaterialFunctions : public boost::enable_shared_from_this<EMMaterialFunctions<Mesh> >
+{
 public:
 
-	typedef  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
-	typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
+    typedef  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
+    typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
     typedef Real return_Type;
     typedef boost::enable_shared_from_this<EMMaterialFunctions< Mesh > > boostShared_Type;
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
-    	return 0.0;
+        return 0.0;
     }
 
     virtual return_Type operator() (const VectorSmall<3>& f)
     {
-    	return 0.0;
+        return 0.0;
     }
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
-    	return 0.0;
+        return 0.0;
     }
 
     virtual return_Type operator() (const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
-    	return 0.0;
+        return 0.0;
     }
 
     virtual return_Type operator() (const Real& H)
     {
-    	return 0.0;
+        return 0.0;
     }
 
     EMMaterialFunctions() {}
@@ -130,44 +131,44 @@ public:
 
     inline virtual boost::shared_ptr<EMMaterialFunctions<Mesh> > getMe()
     {
-//    	shared_from_this();
+        //      shared_from_this();
         return boostShared_Type::shared_from_this();
     }
 
-	inline virtual void computeJacobian( const vector_Type& disp,
-								  ETFESpacePtr_Type  dispETFESpace,
-									 const vector_Type& fibers,
-									 const vector_Type& sheets,
-								  matrixPtr_Type           jacobianPtr) {}
+    inline virtual void computeJacobian ( const vector_Type& disp,
+                                          ETFESpacePtr_Type  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          matrixPtr_Type           jacobianPtr) {}
 
-	inline virtual void	computeJacobian( const vector_Type& disp,
-			                             ETFESpacePtr_Type  dispETFESpace,
-                                         const vector_Type& fibers,
-                                         const vector_Type& sheets,
-										 const vector_Type& activation,
-										 scalarETFESpacePtr_Type activationETFESpace,
-										 matrixPtr_Type     jacobianPtr) {}
-
-
-
-	inline virtual void computeResidual( const vector_Type& disp,
-								         ETFESpacePtr_Type dispETFESpace,
-									     const vector_Type& fibers,
-									     const vector_Type& sheets,
-								         vectorPtr_Type           residualVectorPtr) {}
-
-	inline virtual void	computeResidual( const vector_Type& disp,
-			                             ETFESpacePtr_Type dispETFESpace,
-                                         const vector_Type& fibers,
-                                         const vector_Type& sheets,
-										 const vector_Type& activation,
-										 scalarETFESpacePtr_Type  activationETFESpace,
-										 vectorPtr_Type           residualVectorPtr) {}
+    inline virtual void computeJacobian ( const vector_Type& disp,
+                                          ETFESpacePtr_Type  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          const vector_Type& activation,
+                                          scalarETFESpacePtr_Type activationETFESpace,
+                                          matrixPtr_Type     jacobianPtr) {}
 
 
-	virtual void showMe() {}
 
-	virtual void setParametersFromGetPot(GetPot& data) {}
+    inline virtual void computeResidual ( const vector_Type& disp,
+                                          ETFESpacePtr_Type dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          vectorPtr_Type           residualVectorPtr) {}
+
+    inline virtual void computeResidual ( const vector_Type& disp,
+                                          ETFESpacePtr_Type dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          const vector_Type& activation,
+                                          scalarETFESpacePtr_Type  activationETFESpace,
+                                          vectorPtr_Type           residualVectorPtr) {}
+
+
+    virtual void showMe() {}
+
+    virtual void setParametersFromGetPot (GetPot& data) {}
 
 };
 

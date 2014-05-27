@@ -168,7 +168,7 @@ public:
     /*!
      * @param parameterList Teuchos parameter list
      */
-    virtual void setup( Teuchos::ParameterList& parameterList) { }
+    virtual void setup ( Teuchos::ParameterList& parameterList) { }
 
     //! returns the number of equations of the ionic model
     /*!

@@ -18,8 +18,8 @@
 //class EMPassiveNeoHookean : public virtual EMPassiveMaterial
 //{
 //public:
-//	EMPassiveNeoHookean();
-//	virtual ~EMPassiveNeoHookean() {}
+//  EMPassiveNeoHookean();
+//  virtual ~EMPassiveNeoHookean() {}
 //};
 
 namespace LifeV
@@ -29,22 +29,22 @@ template<typename Mesh>
 class PassiveTransverselyIsotropicExponential : public virtual EMMaterialType<Mesh>
 {
 public:
-	typedef EMMaterialType<Mesh> super;
+    typedef EMMaterialType<Mesh> super;
 
-	PassiveTransverselyIsotropicExponential();
-	virtual ~PassiveTransverselyIsotropicExponential() {}
+    PassiveTransverselyIsotropicExponential();
+    virtual ~PassiveTransverselyIsotropicExponential() {}
 };
 
 template<typename Mesh>
 PassiveTransverselyIsotropicExponential<Mesh>::PassiveTransverselyIsotropicExponential() :
-		super("Passive Transversely Isotropic Exponential", 6)
+    super ("Passive Transversely Isotropic Exponential", 6)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh>(3500000.0)  );
-	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(3500000.0) );
-	this -> M_materialFunctionList[2].reset(new MaterialFunctions::IsotropicExponential<Mesh>()  );
-	this -> M_materialFunctionList[3].reset(new MaterialFunctions::dIsotropicExponential<Mesh>()  );
-	this -> M_materialFunctionList[4].reset(new MaterialFunctions::AnisotropicExponential<Mesh>()  );
-	this -> M_materialFunctionList[5].reset(new MaterialFunctions::dAnisotropicExponential<Mesh>()  );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
+    this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
+    this -> M_materialFunctionList[2].reset (new MaterialFunctions::IsotropicExponential<Mesh>()  );
+    this -> M_materialFunctionList[3].reset (new MaterialFunctions::dIsotropicExponential<Mesh>()  );
+    this -> M_materialFunctionList[4].reset (new MaterialFunctions::AnisotropicExponential<Mesh>()  );
+    this -> M_materialFunctionList[5].reset (new MaterialFunctions::dAnisotropicExponential<Mesh>()  );
 }
 
 

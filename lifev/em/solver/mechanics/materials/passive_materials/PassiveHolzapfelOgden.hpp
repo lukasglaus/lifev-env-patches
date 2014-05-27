@@ -18,8 +18,8 @@
 //class EMPassiveNeoHookean : public virtual EMPassiveMaterial
 //{
 //public:
-//	EMPassiveNeoHookean();
-//	virtual ~EMPassiveNeoHookean() {}
+//  EMPassiveNeoHookean();
+//  virtual ~EMPassiveNeoHookean() {}
 //};
 
 namespace LifeV
@@ -29,31 +29,31 @@ template<typename Mesh>
 class PassiveHolzapfelOgden : public virtual EMMaterialType<Mesh>
 {
 public:
-	typedef EMMaterialType<Mesh> super;
+    typedef EMMaterialType<Mesh> super;
 
-	PassiveHolzapfelOgden();
-	virtual ~PassiveHolzapfelOgden() {}
+    PassiveHolzapfelOgden();
+    virtual ~PassiveHolzapfelOgden() {}
 };
 
 template<typename Mesh>
 PassiveHolzapfelOgden<Mesh>::PassiveHolzapfelOgden() :
-		super("Passive Holzapfel Ogden", 10)
+    super ("Passive Holzapfel Ogden", 10)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh>(3500000.0)  );
-	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(3500000.0) );
-	this -> M_materialFunctionList[2].reset(new MaterialFunctions::IsotropicExponential<Mesh>(3330.0, 9.242)  );
-	this -> M_materialFunctionList[3].reset(new MaterialFunctions::dIsotropicExponential<Mesh>(3330.0, 9.242)  );
-	this -> M_materialFunctionList[4].reset(new MaterialFunctions::AnisotropicExponential<Mesh>(185350, 15.972)  );
-	this -> M_materialFunctionList[5].reset(new MaterialFunctions::dAnisotropicExponential<Mesh>(185350, 15.972)  );
-	this -> M_materialFunctionList[6].reset(new MaterialFunctions::AnisotropicExponential<Mesh>(25640.0, 10.446, false)  );
-	this -> M_materialFunctionList[7].reset(new MaterialFunctions::dAnisotropicExponential<Mesh>(25640.0, 10.446, false)  );
-	this -> M_materialFunctionList[8].reset( new MaterialFunctions::ShearExponential<Mesh>(4170.0, 11.602)  );
-	this -> M_materialFunctionList[9].reset( new MaterialFunctions::dShearExponential<Mesh>(4170.0, 11.602)  );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
+    this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
+    this -> M_materialFunctionList[2].reset (new MaterialFunctions::IsotropicExponential<Mesh> (3330.0, 9.242)  );
+    this -> M_materialFunctionList[3].reset (new MaterialFunctions::dIsotropicExponential<Mesh> (3330.0, 9.242)  );
+    this -> M_materialFunctionList[4].reset (new MaterialFunctions::AnisotropicExponential<Mesh> (185350, 15.972)  );
+    this -> M_materialFunctionList[5].reset (new MaterialFunctions::dAnisotropicExponential<Mesh> (185350, 15.972)  );
+    this -> M_materialFunctionList[6].reset (new MaterialFunctions::AnisotropicExponential<Mesh> (25640.0, 10.446, false)  );
+    this -> M_materialFunctionList[7].reset (new MaterialFunctions::dAnisotropicExponential<Mesh> (25640.0, 10.446, false)  );
+    this -> M_materialFunctionList[8].reset ( new MaterialFunctions::ShearExponential<Mesh> (4170.0, 11.602)  );
+    this -> M_materialFunctionList[9].reset ( new MaterialFunctions::dShearExponential<Mesh> (4170.0, 11.602)  );
 
-	//	this -> M_materialFunctionList[6].reset(new MaterialFunctions::AnisotropicExponential<Mesh>(25640, 10.446, false)  );
-//	this -> M_materialFunctionList[7].reset(new MaterialFunctions::dAnisotropicExponential<Mesh>(25640, 10.446, false)  );
-//	this -> M_materialFunctionList[8].reset( new MaterialFunctions::ShearExponential<Mesh>(4170, 11.602)  );
-//	this -> M_materialFunctionList[9].reset( new MaterialFunctions::dShearExponential<Mesh>(4170, 11.602)  );
+    //  this -> M_materialFunctionList[6].reset(new MaterialFunctions::AnisotropicExponential<Mesh>(25640, 10.446, false)  );
+    //  this -> M_materialFunctionList[7].reset(new MaterialFunctions::dAnisotropicExponential<Mesh>(25640, 10.446, false)  );
+    //  this -> M_materialFunctionList[8].reset( new MaterialFunctions::ShearExponential<Mesh>(4170, 11.602)  );
+    //  this -> M_materialFunctionList[9].reset( new MaterialFunctions::dShearExponential<Mesh>(4170, 11.602)  );
 }
 
 

@@ -69,94 +69,94 @@ public:
     //! @name Type definitions
     //@{
 
-	//! Mesh
-    typedef Mesh 														mesh_Type;
+    //! Mesh
+    typedef Mesh                                                        mesh_Type;
 
-    typedef boost::shared_ptr<mesh_Type>                    			meshPtr_Type;
+    typedef boost::shared_ptr<mesh_Type>                                meshPtr_Type;
 
     //! Distributed vector // For parallel usage
-    typedef VectorEpetra 												vector_Type;
+    typedef VectorEpetra                                                vector_Type;
 
-    typedef boost::shared_ptr<VectorEpetra> 							vectorPtr_Type;
+    typedef boost::shared_ptr<VectorEpetra>                             vectorPtr_Type;
 
-    typedef std::vector<vectorPtr_Type> 								vectorOfPtr_Type;
+    typedef std::vector<vectorPtr_Type>                                 vectorOfPtr_Type;
 
     //! Distributed Matrix // For parallel usage
-    typedef MatrixEpetra<Real> 											matrix_Type;
+    typedef MatrixEpetra<Real>                                          matrix_Type;
 
-    typedef boost::shared_ptr<matrix_Type> 								matrixPtr_Type;
+    typedef boost::shared_ptr<matrix_Type>                              matrixPtr_Type;
 
     //! Communicator to exchange informations among processes
-    typedef Epetra_Comm 												comm_Type;
+    typedef Epetra_Comm                                                 comm_Type;
 
-    typedef boost::shared_ptr<comm_Type> 								commPtr_Type;
+    typedef boost::shared_ptr<comm_Type>                                commPtr_Type;
 
     //! Expression template  scalar finite element space
     //! To be used in the expression assembly namespace
-    typedef ETFESpace<mesh_Type, MapEpetra, 3, 1> 						ETFESpace_Type;
+    typedef ETFESpace<mesh_Type, MapEpetra, 3, 1>                       ETFESpace_Type;
 
-    typedef boost::shared_ptr<ETFESpace<mesh_Type, MapEpetra, 3, 1> > 	ETFESpacePtr_Type;
+    typedef boost::shared_ptr<ETFESpace<mesh_Type, MapEpetra, 3, 1> >   ETFESpacePtr_Type;
 
     //! Expression template vectorial finite element space
     //! To be used in the expression assembly namespace
-    typedef ETFESpace<mesh_Type, MapEpetra, 3, 3> 						ETFESpaceVectorial_Type;
+    typedef ETFESpace<mesh_Type, MapEpetra, 3, 3>                       ETFESpaceVectorial_Type;
 
-    typedef boost::shared_ptr<ETFESpaceVectorial_Type> 					ETFESpaceVectorialPtr_Type;
+    typedef boost::shared_ptr<ETFESpaceVectorial_Type>                  ETFESpaceVectorialPtr_Type;
 
     //! Finite element space
-    typedef FESpace<mesh_Type, MapEpetra> 								feSpace_Type;
+    typedef FESpace<mesh_Type, MapEpetra>                               feSpace_Type;
 
-    typedef boost::shared_ptr<feSpace_Type> 							feSpacePtr_Type;
+    typedef boost::shared_ptr<feSpace_Type>                             feSpacePtr_Type;
 
     //! Linear Solver
-    typedef LinearSolver 												linearSolver_Type;
+    typedef LinearSolver                                                linearSolver_Type;
 
-    typedef boost::shared_ptr<LinearSolver> 							linearSolverPtr_Type;
+    typedef boost::shared_ptr<LinearSolver>                             linearSolverPtr_Type;
 
     //! Exporter to save the solution
-    typedef Exporter<mesh_Type> 										IOFile_Type;
+    typedef Exporter<mesh_Type>                                         IOFile_Type;
 
-    typedef boost::shared_ptr<IOFile_Type> 								IOFilePtr_Type;
+    typedef boost::shared_ptr<IOFile_Type>                              IOFilePtr_Type;
 
     //! Exporter data
-    typedef ExporterData<mesh_Type> 									IOData_Type;
+    typedef ExporterData<mesh_Type>                                     IOData_Type;
 
-    typedef ExporterEnsight<mesh_Type> 									ensightIOFile_Type;
+    typedef ExporterEnsight<mesh_Type>                                  ensightIOFile_Type;
 
 #ifdef HAVE_HDF5
-    typedef ExporterHDF5< mesh_Type > 									hdf5IOFile_Type;
+    typedef ExporterHDF5< mesh_Type >                                   hdf5IOFile_Type;
 #endif
 
     //! Preconditioner
-    typedef LifeV::Preconditioner 										basePrec_Type;
+    typedef LifeV::Preconditioner                                       basePrec_Type;
 
-    typedef boost::shared_ptr<basePrec_Type> 							basePrecPtr_Type;
+    typedef boost::shared_ptr<basePrec_Type>                            basePrecPtr_Type;
 
     //! MultiLevel Preconditioner
-    typedef LifeV::PreconditionerML 									prec_Type;
+    typedef LifeV::PreconditionerML                                     prec_Type;
 
-    typedef boost::shared_ptr<prec_Type> 								precPtr_Type;
+    typedef boost::shared_ptr<prec_Type>                                precPtr_Type;
 
     //! Ionic model
-    typedef EMIonicModel 													ionicModel_Type;
+    typedef EMIonicModel                                                    ionicModel_Type;
 
     //! Base class of the ionic model
-    typedef ElectroIonicModel 											superIonicModel;
+    typedef ElectroIonicModel                                           superIonicModel;
 
-    typedef boost::shared_ptr<ionicModel_Type> 							ionicModelPtr_Type;
+    typedef boost::shared_ptr<ionicModel_Type>                          ionicModelPtr_Type;
 
     //! xml list to read parameters
-    typedef Teuchos::ParameterList 										list_Type;
+    typedef Teuchos::ParameterList                                      list_Type;
 
     //! boost function
-    typedef boost::function <Real (const Real& t,
-    							   const Real& x,
-    							   const Real& y,
-    							   const Real& z,
-    							   const ID&   i) > 					function_Type;
+    typedef boost::function < Real (const Real& t,
+                                    const Real& x,
+                                    const Real& y,
+                                    const Real& z,
+                                    const ID&   i) >                     function_Type;
 
     //! 3x3 matrix
-    typedef MatrixSmall<3, 3> 											matrixSmall_Type;
+    typedef MatrixSmall<3, 3>                                           matrixSmall_Type;
 
     typedef ElectroETAMonodomainSolver<Mesh, EMIonicModel>              super;
     //@}
@@ -168,15 +168,15 @@ public:
     /*!
      */
     EMMonodomainSolver();
-    
-        //! Constructor
+
+    //! Constructor
     /*!
      * @param GetPot datafile (for preconditioner)
      * @param boost::shared_ptr<IonicModel>  chosen ionic model pointer
      * @param boost::shared_ptr<Mesh> Pointer to the partitioned mesh
      */
     EMMonodomainSolver (GetPot&            dataFile,
-    		            ionicModelPtr_Type model,
+                        ionicModelPtr_Type model,
                         meshPtr_Type       meshPtr);
     //! Constructor
     /*!
@@ -186,7 +186,7 @@ public:
      * @param model shared pointer to the chosen ionic model
      */
     EMMonodomainSolver (std::string        meshName,
-    		            std::string        meshPath,
+                        std::string        meshPath,
                         GetPot&            dataFile,
                         ionicModelPtr_Type model);
 
@@ -199,7 +199,7 @@ public:
      * @param boost::shared_ptr<Epetra_Comm> Epetra communicator
      */
     EMMonodomainSolver (std::string        meshName,
-    		            std::string        meshPath,
+                        std::string        meshPath,
                         GetPot&            dataFile,
                         ionicModelPtr_Type model,
                         commPtr_Type       comm);
@@ -264,11 +264,11 @@ public:
      @param dataFile needed to set up the preconditioner
      @param ionicSize number of equation in the ionic model
      */
-//    void setup (GetPot& dataFile, short int ionicSize);
-//
-//
-//    void setup (std::string meshName, std::string meshPath, GetPot& dataFile,
-//                short int ionicSize);
+    //    void setup (GetPot& dataFile, short int ionicSize);
+    //
+    //
+    //    void setup (std::string meshName, std::string meshPath, GetPot& dataFile,
+    //                short int ionicSize);
     //! create mass matrix
     /*!
      * Computes the mass matrix calling different methods if the mass should be lumped
@@ -320,50 +320,50 @@ public:
      */
     void updateMatrices();
 
-//
-//
-//
-//
-//
-//    //! Solves one diffusion step using the backward Euler scheme
-//    /*!
-//     * \f[
-//     * A\mathbf{V}^{n+1} = \left( C_m \frac{M}{\Delta t} + K(\mathbf{f}) \right)\mathbf{V}^{n+1} =\frac{M}{\Delta t} \mathbf{V}^*.
-//     * \f]
-//     */
-//    void solveOneDiffusionStepBE();
-//
-//
-//    //! add to a given exporter the pointer to the potential and to the gating variables saved with name fileName
-//    /*!
-//     @param exporter where you want to save the solution
-//     @param fileName name of the file we wish to export
-//     @param folder directory where to save the solution
-//     */
-//    void setupExporter (IOFile_Type& exporter, std::string fileName = "output",
-//                        std::string folder = "./");
-//
-//
-//    //! Solves the gating variables with forward Euler
-//    void solveOneStepGatingVariablesFE();
-//
-//    //! Solves the gating variables with Rush-Larsen scheme
-//    void solveOneStepGatingVariablesRL();
-//
-//    //! Compute the rhs using state variable interpolation
-//    void computeRhsSVI();
-//
+    //
+    //
+    //
+    //
+    //
+    //    //! Solves one diffusion step using the backward Euler scheme
+    //    /*!
+    //     * \f[
+    //     * A\mathbf{V}^{n+1} = \left( C_m \frac{M}{\Delta t} + K(\mathbf{f}) \right)\mathbf{V}^{n+1} =\frac{M}{\Delta t} \mathbf{V}^*.
+    //     * \f]
+    //     */
+    //    void solveOneDiffusionStepBE();
+    //
+    //
+    //    //! add to a given exporter the pointer to the potential and to the gating variables saved with name fileName
+    //    /*!
+    //     @param exporter where you want to save the solution
+    //     @param fileName name of the file we wish to export
+    //     @param folder directory where to save the solution
+    //     */
+    //    void setupExporter (IOFile_Type& exporter, std::string fileName = "output",
+    //                        std::string folder = "./");
+    //
+    //
+    //    //! Solves the gating variables with forward Euler
+    //    void solveOneStepGatingVariablesFE();
+    //
+    //    //! Solves the gating variables with Rush-Larsen scheme
+    //    void solveOneStepGatingVariablesRL();
+    //
+    //    //! Compute the rhs using state variable interpolation
+    //    void computeRhsSVI();
+    //
     //! Compute the rhs using ionic current interpolation
     //void computeRhsICI();
 
-//    //! Compute the rhs using ionic current interpolation
-//    /*!
-//     * This method is useful to solve ICI without lumping the mass matrix
-//     * in fron of the reaction term.
-//     * Lump the mass matrix, and pass as argument a full mass matrix
-//     */
-//    void computeRhsICIWithFullMass ();
-//
+    //    //! Compute the rhs using ionic current interpolation
+    //    /*!
+    //     * This method is useful to solve ICI without lumping the mass matrix
+    //     * in fron of the reaction term.
+    //     * Lump the mass matrix, and pass as argument a full mass matrix
+    //     */
+    //    void computeRhsICIWithFullMass ();
+    //
     //!Solve one full step with ionic current interpolation
     /*!
      * \f[
@@ -373,43 +373,43 @@ public:
      */
     void solveOneICIStep();
 
-    virtual void setup( GetPot& dataFile, short int ionicModelSize);
-//
-//    //! solves using ionic current interpolation
-//    /*!
-//     * This method is useful to solve ICI without lumping the mass matrix
-//     * in fron of the reaction term.
-//     * Lump the mass matrix, and pass as argument a full mass matrix
-//	@param mass mass matrix
-//     */
-//    void solveOneICIStep (matrix_Type& mass);
-//
-//    //!Solve one full step with state variable interpolation
-//    /*!
-//     * \f[
-//     * A\mathbf{V}^{n+1} = \left( \frac{M}{\Delta t} + K(\mathbf{f}) \right)\mathbf{V}^{n+1} =\frac{M}{\Delta t} \mathbf{V}^n+\mathbf{I}_{ion}(\mathbf{V}^n).
-//     * \f]
-//     */
-//    void solveOneSVIStep();
+    virtual void setup ( GetPot& dataFile, short int ionicModelSize);
+    //
+    //    //! solves using ionic current interpolation
+    //    /*!
+    //     * This method is useful to solve ICI without lumping the mass matrix
+    //     * in fron of the reaction term.
+    //     * Lump the mass matrix, and pass as argument a full mass matrix
+    //  @param mass mass matrix
+    //     */
+    //    void solveOneICIStep (matrix_Type& mass);
+    //
+    //    //!Solve one full step with state variable interpolation
+    //    /*!
+    //     * \f[
+    //     * A\mathbf{V}^{n+1} = \left( \frac{M}{\Delta t} + K(\mathbf{f}) \right)\mathbf{V}^{n+1} =\frac{M}{\Delta t} \mathbf{V}^n+\mathbf{I}_{ion}(\mathbf{V}^n).
+    //     * \f]
+    //     */
+    //    void solveOneSVIStep();
     inline bool oneWayCoupling()
     {
-    	std::cout << "\nI'm " << M_oneWayCoupling << "\n";
-    	return M_oneWayCoupling;
+        std::cout << "\nI'm " << M_oneWayCoupling << "\n";
+        return M_oneWayCoupling;
     }
 
     inline bool mechanicsModifiesConductivity()
     {
-    	return M_mechanicsModifiesConductivity;
+        return M_mechanicsModifiesConductivity;
     }
 
-    inline void setOneWayCoupling(bool oneWay)
+    inline void setOneWayCoupling (bool oneWay)
     {
-    	M_oneWayCoupling = oneWay;
+        M_oneWayCoupling = oneWay;
     }
 
-    inline void setMechanicsModifiesConductivity(bool modifiesConductivity)
+    inline void setMechanicsModifiesConductivity (bool modifiesConductivity)
     {
-    	M_mechanicsModifiesConductivity = modifiesConductivity;
+        M_mechanicsModifiesConductivity = modifiesConductivity;
     }
     //@}
 
@@ -438,57 +438,57 @@ template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver() :
     super(),
     M_displacementETFESpacePtr(),
-    M_oneWayCoupling(false),
-    M_mechanicsModifiesConductivity(true)
+    M_oneWayCoupling (false),
+    M_mechanicsModifiesConductivity (true)
 {
-//    M_oneWayCoupling = false;
-//    M_mechanicsModifiesConductivity = true;
-//    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-//    		                                                       & (this->M_feSpacePtr -> refFE() ),
-//    		                                                       this -> M_commPtr) );
+    //    M_oneWayCoupling = false;
+    //    M_mechanicsModifiesConductivity = true;
+    //    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
+    //                                                                 & (this->M_feSpacePtr -> refFE() ),
+    //                                                                 this -> M_commPtr) );
 }
 
 
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        meshName,
-														  std::string        meshPath,
-													      GetPot&            dataFile,
-														  ionicModelPtr_Type model) :
-	super                           (meshName, meshPath, dataFile, model),
-	M_oneWayCoupling                (false),
-	M_mechanicsModifiesConductivity (true)
+                                                          std::string        meshPath,
+                                                          GetPot&            dataFile,
+                                                          ionicModelPtr_Type model) :
+    super                           (meshName, meshPath, dataFile, model),
+    M_oneWayCoupling                (false),
+    M_mechanicsModifiesConductivity (true)
 {
     M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-    		                                                       & (this->M_feSpacePtr -> refFE() ),
-    		                                                       this -> M_commPtr) );
+                                                                    & (this->M_feSpacePtr -> refFE() ),
+                                                                    this -> M_commPtr) );
 }
 
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (GetPot&            dataFile,
-														  ionicModelPtr_Type model,
-														  meshPtr_Type       meshPtr) :
-	super                           (dataFile, model, meshPtr),
-	M_oneWayCoupling                (false),
-	M_mechanicsModifiesConductivity (true)
+                                                          ionicModelPtr_Type model,
+                                                          meshPtr_Type       meshPtr) :
+    super                           (dataFile, model, meshPtr),
+    M_oneWayCoupling                (false),
+    M_mechanicsModifiesConductivity (true)
 {
     M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-    		                                                       & (this->M_feSpacePtr -> refFE() ),
-    		                                                       this -> M_commPtr) );
+                                                                    & (this->M_feSpacePtr -> refFE() ),
+                                                                    this -> M_commPtr) );
 }
 
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        meshName,
-														  std::string        meshPath,
-														  GetPot&            dataFile,
-														  ionicModelPtr_Type model,
-														  commPtr_Type       comm):
-	super                           (meshName, meshPath, dataFile, model, comm),
-	M_oneWayCoupling                (false),
-	M_mechanicsModifiesConductivity (true)
+                                                          std::string        meshPath,
+                                                          GetPot&            dataFile,
+                                                          ionicModelPtr_Type model,
+                                                          commPtr_Type       comm) :
+    super                           (meshName, meshPath, dataFile, model, comm),
+    M_oneWayCoupling                (false),
+    M_mechanicsModifiesConductivity (true)
 {
     M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-    		                                                       & (this->M_feSpacePtr -> refFE() ),
-    		                                                       this -> M_commPtr) );
+                                                                    & (this->M_feSpacePtr -> refFE() ),
+                                                                    this -> M_commPtr) );
 }
 
 
@@ -496,12 +496,12 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        mes
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (
     const EMMonodomainSolver& solver) :
-    super::ElectroETAMonodomainSolver(solver)
+    super::ElectroETAMonodomainSolver (solver)
 {
-    if(solver.M_displacementPtr)
+    if (solver.M_displacementPtr)
     {
-    	M_displacementPtr.reset(new vector_Type(*solver.M_displacementPtr));
-        M_displacementETFESpacePtr.reset(new ETFESpaceVectorial_Type(*solver.ETFESpaceVectorialPtr_Type));
+        M_displacementPtr.reset (new vector_Type (*solver.M_displacementPtr) );
+        M_displacementETFESpacePtr.reset (new ETFESpaceVectorial_Type (*solver.ETFESpaceVectorialPtr_Type) );
     }
 
     M_oneWayCoupling = solver.M_oneWayCoupling;
@@ -511,13 +511,13 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (
 //! Assignment operator
 template<typename Mesh, typename IonicModel>
 EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
-                           IonicModel >::operator= (const EMMonodomainSolver& solver)
+                   IonicModel >::operator= (const EMMonodomainSolver& solver)
 {
-	super::operator =(solver);
-	if(solver.M_displacementPtr)
+    super::operator = (solver);
+    if (solver.M_displacementPtr)
     {
-    	M_displacementPtr.reset(new vector_Type(*solver.M_displacementPtr));
-        M_displacementETFESpacePtr.reset(new ETFESpaceVectorial_Type(*solver.ETFESpaceVectorialPtr_Type));
+        M_displacementPtr.reset (new vector_Type (*solver.M_displacementPtr) );
+        M_displacementETFESpacePtr.reset (new ETFESpaceVectorial_Type (*solver.ETFESpaceVectorialPtr_Type) );
     }
 
     M_oneWayCoupling = solver.M_oneWayCoupling;
@@ -532,33 +532,33 @@ EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
 //void EMMonodomainSolver<Mesh, IonicModel>::setup (GetPot& dataFile,
 //                                                          short int ionicSize)
 //{
-//	super::setup(dataFile, ionicSize);
+//  super::setup(dataFile, ionicSize);
 //
 //    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-//    		                                                       & (this->M_feSpacePtr -> refFE() ),
-//    		                                                       this -> M_commPtr) );
+//                                                                 & (this->M_feSpacePtr -> refFE() ),
+//                                                                 this -> M_commPtr) );
 //}
 //
 //template<typename Mesh, typename IonicModel>
 //void EMMonodomainSolver<Mesh, IonicModel>::setup (std::string meshName, std::string meshPath, GetPot& dataFile,
 //            short int ionicSize)
 //{
-//	super::setup(meshName, meshPath, dataFile, ionicSize);
+//  super::setup(meshName, meshPath, dataFile, ionicSize);
 //
 //    M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-//    		                                                       & (this->M_feSpacePtr -> refFE() ),
-//    		                                                       this -> M_commPtr) );
+//                                                                 & (this->M_feSpacePtr -> refFE() ),
+//                                                                 this -> M_commPtr) );
 //}
 ///////////////////////////////////////////////////////////
 //                MATRICES SETUP
 ///////////////////////////////////////////////////////////
 template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setup( GetPot& dataFile, short int ionicModelSize)
+void EMMonodomainSolver<Mesh, IonicModel>::setup ( GetPot& dataFile, short int ionicModelSize)
 {
-    super::setup(dataFile, ionicModelSize);
+    super::setup (dataFile, ionicModelSize);
     M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
-    		                                                       & (this->M_feSpacePtr -> refFE() ),
-    		                                                       this -> M_commPtr) );
+                                                                    & (this->M_feSpacePtr -> refFE() ),
+                                                                    this -> M_commPtr) );
 }
 
 ///////////////////////////////////////////////////////////
@@ -570,18 +570,21 @@ void EMMonodomainSolver<Mesh, IonicModel>::setup( GetPot& dataFile, short int io
 template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrix()
 {
-	if(M_displacementPtr && !M_oneWayCoupling)
-	{
-	    if (this->M_lumpedMassMatrix)
-	    {
-	    	setupLumpedMassMatrixWithMehcanicalFeedback ();
-	    }
-	    else
-	    {
+    if (M_displacementPtr && !M_oneWayCoupling)
+    {
+        if (this->M_lumpedMassMatrix)
+        {
+            setupLumpedMassMatrixWithMehcanicalFeedback ();
+        }
+        else
+        {
             setupMassMatrixWithMehcanicalFeedback ();
-	    }
-	}
-	else super::setupMassMatrix();
+        }
+    }
+    else
+    {
+        super::setupMassMatrix();
+    }
 }
 
 //setup mass matrix with mechanical fedback
@@ -597,19 +600,31 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrixWithMehcanicalFeedback
     {
         using namespace ExpressionAssembly;
 
-        if(M_displacementETFESpacePtr)std::cout <<"Disp ETFE space available\n";
-        if(M_displacementPtr)std::cout <<"Disp available\n";
-        if(super::M_localMeshPtr)std::cout <<"Local Mesh available\n";
-        if(super::M_massMatrixPtr)std::cout <<"Mass Matrix available\n";
+        if (M_displacementETFESpacePtr)
+        {
+            std::cout << "Disp ETFE space available\n";
+        }
+        if (M_displacementPtr)
+        {
+            std::cout << "Disp available\n";
+        }
+        if (super::M_localMeshPtr)
+        {
+            std::cout << "Local Mesh available\n";
+        }
+        if (super::M_massMatrixPtr)
+        {
+            std::cout << "Mass Matrix available\n";
+        }
         BOOST_AUTO_TPL (I, value (super::M_identity) );
         BOOST_AUTO_TPL (Grad_u, grad (M_displacementETFESpacePtr, *M_displacementPtr) );
         BOOST_AUTO_TPL (F, (Grad_u + I) );
         BOOST_AUTO_TPL (J, det (F) );
 
         integrate (elements (super::M_localMeshPtr),
-        		   this->M_feSpacePtr->qr(),
-        		   this->M_ETFESpacePtr,
-        		   this->M_ETFESpacePtr,
+                   this->M_feSpacePtr->qr(),
+                   this->M_ETFESpacePtr,
+                   this->M_ETFESpacePtr,
                    J * phi_i * phi_j ) >> this->M_massMatrixPtr;
 
     }
@@ -666,11 +681,11 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFe
         using namespace ExpressionAssembly;
 
         integrate ( elements (this->M_localMeshPtr),
-        		    quadRuleTetra4ptNodal,
-        		    this->M_ETFESpacePtr,
-        		    this->M_ETFESpacePtr,
+                    quadRuleTetra4ptNodal,
+                    this->M_ETFESpacePtr,
+                    this->M_ETFESpacePtr,
                     value (this->M_ETFESpacePtr, *J) * phi_i * phi_j
-                    ) >> this->M_massMatrixPtr;
+                  ) >> this->M_massMatrixPtr;
 
     }
 
@@ -689,10 +704,10 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrix()
 
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
     {
-    	std::cout << "=========================\n";
-    	std::cout << "Using mechanical feedback\n";
-    	std::cout << "=========================\n";
-//        setupStiffnessMatrix (M_displacementPtr);
+        std::cout << "=========================\n";
+        std::cout << "Using mechanical feedback\n";
+        std::cout << "=========================\n";
+        //        setupStiffnessMatrix (M_displacementPtr);
         setupStiffnessMatrixWithMehcanicalFeedback ();
     }
     else
@@ -732,12 +747,12 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrixWithMehcanicalFee
                         * outerProduct (f0, f0) );
 
         integrate ( elements (this->M_localMeshPtr),
-        		    this->M_feSpacePtr->qr(),
-        		    this->M_ETFESpacePtr,
-        		    this->M_ETFESpacePtr,
+                    this->M_feSpacePtr->qr(),
+                    this->M_ETFESpacePtr,
+                    this->M_ETFESpacePtr,
                     dot (J * Fm1 * D * FmT * grad (phi_i), grad (phi_j) )
-                    )
-                    >> this->M_stiffnessMatrixPtr;
+                  )
+                >> this->M_stiffnessMatrixPtr;
 
     }
 
@@ -749,9 +764,9 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrixWithMehcanicalFee
 template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::setupMatrices()
 {
-    	setupMassMatrix();
-    	setupStiffnessMatrix();
-    	super::setupGlobalMatrix();
+    setupMassMatrix();
+    setupStiffnessMatrix();
+    super::setupGlobalMatrix();
 }
 
 
@@ -761,9 +776,9 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 {
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
     {
-    	setupMassMatrixWithMehcanicalFeedback();
-    	setupStiffnessMatrixWithMehcanicalFeedback();
-    	super::setupGlobalMatrix();
+        setupMassMatrixWithMehcanicalFeedback();
+        setupStiffnessMatrixWithMehcanicalFeedback();
+        super::setupGlobalMatrix();
     }
 }
 //
@@ -847,8 +862,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    int offset = M_ionicModelPtr->numberOfGatingVariables() + 1;
 //    for (int i = offset; i < M_ionicModelPtr->Size(); i++)
 //    {
-//    	*(M_globalRhs[i]) *= M_timeStep;
-//    	* (M_globalSolution[i]) += *(M_globalRhs[i]);
+//      *(M_globalRhs[i]) *= M_timeStep;
+//      * (M_globalSolution[i]) += *(M_globalRhs[i]);
 //    }
 //}
 //
@@ -899,12 +914,12 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 template<typename Mesh, typename IonicModel>
 void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep()
 {
-	updateMatrices();
-	if (M_displacementPtr  && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
-	{
+    updateMatrices();
+    if (M_displacementPtr  && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
+    {
         this->M_linearSolverPtr->setOperator (this->M_globalMatrixPtr);
     }
-	super::computeRhsICI();
+    super::computeRhsICI();
     this->M_linearSolverPtr->setRightHandSide (this->M_rhsPtrUnique);
     this->M_linearSolverPtr->solve (this->M_potentialPtr);
 }

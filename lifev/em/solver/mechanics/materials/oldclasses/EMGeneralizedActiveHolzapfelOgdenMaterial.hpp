@@ -791,10 +791,10 @@ EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::~EMGeneralizedActiveHolzapf
 template <typename MeshType>
 void
 EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type& dFESpace,
-                                                           const ETFESpacePtr_Type& dETFESpace,
-                                                           const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                                           const UInt offset, const dataPtr_Type& dataMaterial,
-                                                           const displayerPtr_Type& displayer  )
+                                                             const ETFESpacePtr_Type& dETFESpace,
+                                                             const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                             const UInt offset, const dataPtr_Type& dataMaterial,
+                                                             const displayerPtr_Type& displayer  )
 {
 
     this->M_displayer = displayer;
@@ -853,12 +853,12 @@ void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setDefaultParams()
 template <typename MeshType>
 void
 EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                                           const ETFESpacePtr_Type&                    dETFESpace,
-                                                           const ETFESpacePtr_Type& activationSpace,
-                                                           const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                                           const UInt                                  offset,
-                                                           const dataPtr_Type&                         dataMaterial,
-                                                           const displayerPtr_Type&                    displayer)
+                                                             const ETFESpacePtr_Type&                    dETFESpace,
+                                                             const ETFESpacePtr_Type& activationSpace,
+                                                             const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                             const UInt                                  offset,
+                                                             const dataPtr_Type&                         dataMaterial,
+                                                             const displayerPtr_Type&                    displayer)
 {
     this->M_displayer = displayer;
     this->M_dataMaterial  = dataMaterial;
@@ -892,13 +892,13 @@ EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Ty
 template <typename MeshType>
 void
 EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                                           const ETFESpacePtr_Type&                    dETFESpace,
-                                                           const ETFESpacePtr_Type& activationSpace,
-                                                           const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                                           const UInt                                  offset,
-                                                           const dataPtr_Type&                         dataMaterial,
-                                                           const displayerPtr_Type&                    displayer,
-                                                           const vector_Type&                           gammaf   )
+                                                             const ETFESpacePtr_Type&                    dETFESpace,
+                                                             const ETFESpacePtr_Type& activationSpace,
+                                                             const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                             const UInt                                  offset,
+                                                             const dataPtr_Type&                         dataMaterial,
+                                                             const displayerPtr_Type&                    displayer,
+                                                             const vector_Type&                           gammaf   )
 {
     setup ( dFESpace, dETFESpace, activationSpace, monolithicMap, offset, dataMaterial, displayer);
     M_Gammaf = gammaf;
@@ -907,14 +907,14 @@ EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Ty
 template <typename MeshType>
 void
 EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setup ( const FESpacePtr_Type&                      dFESpace,
-                                                           const ETFESpacePtr_Type&                    dETFESpace,
-                                                           const ETFESpacePtr_Type& activationSpace,
-                                                           const boost::shared_ptr<const MapEpetra>&   monolithicMap,
-                                                           const UInt                                  offset,
-                                                           const dataPtr_Type&                         dataMaterial,
-                                                           const displayerPtr_Type&                    displayer,
-                                                           const vector_Type&                           gammaf,
-                                                           const vector_Type&                           fiberVector)
+                                                             const ETFESpacePtr_Type&                    dETFESpace,
+                                                             const ETFESpacePtr_Type& activationSpace,
+                                                             const boost::shared_ptr<const MapEpetra>&   monolithicMap,
+                                                             const UInt                                  offset,
+                                                             const dataPtr_Type&                         dataMaterial,
+                                                             const displayerPtr_Type&                    displayer,
+                                                             const vector_Type&                           gammaf,
+                                                             const vector_Type&                           fiberVector)
 {
     setup ( dFESpace, dETFESpace, activationSpace, monolithicMap, offset, dataMaterial, displayer, gammaf );
     M_fiberVector = fiberVector;
@@ -964,8 +964,8 @@ EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::setupVectorsParameters ( vo
 
 template <typename MeshType>
 void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::computeLinearStiff (dataPtr_Type& /*dataMaterial*/,
-                                                                            const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
-                                                                            const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/)
+                                                                              const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
+                                                                              const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/)
 {
     //! Empty method for neo-hookean material
 }
@@ -973,10 +973,10 @@ void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::computeLinearStiff (da
 
 template <typename MeshType>
 void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
-                                                                               const dataPtr_Type&      dataMaterial,
-                                                                               const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                                               const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                                               const displayerPtr_Type& displayer )
+        const dataPtr_Type&      dataMaterial,
+        const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+        const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+        const displayerPtr_Type& displayer )
 {
     this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
 
@@ -1222,8 +1222,8 @@ void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::updateNonLinearJacobia
 
 template <typename MeshType>
 void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::apply ( const vector_Type& sol, vector_Type& res,
-                                                                const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                                const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
+                                                                  const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                  const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
 {
     computeStiffness (sol, 0., this->M_dataMaterial, mapsMarkerVolumes, mapsMarkerIndexes, this->M_displayer);
     res += *M_stiff;
@@ -1231,11 +1231,11 @@ void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::apply ( const vector_T
 
 template <typename MeshType>
 void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::computeStiffness ( const vector_Type&       disp,
-                                                                           Real                     /*factor*/,
-                                                                           const dataPtr_Type&      dataMaterial,
-                                                                           const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                                                           const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
-                                                                           const displayerPtr_Type& displayer )
+                                                                             Real                     /*factor*/,
+                                                                             const dataPtr_Type&      dataMaterial,
+                                                                             const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                                                             const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
+                                                                             const displayerPtr_Type& displayer )
 {
     displayer->leaderPrint (" \n******************************************************************\n  ");
     displayer->leaderPrint (" Non-Linear S-  Computing the GAHO residual vector"     );
@@ -1425,7 +1425,7 @@ void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::computeResidual ( cons
 
 template <typename MeshType>
 void EMGeneralizedActiveHolzapfelOgdenMaterial<MeshType>::showMe ( std::string const& fileNameStiff,
-                                                                 std::string const& fileNameJacobian)
+                                                                   std::string const& fileNameJacobian)
 {
     this->M_stiff->spy (fileNameStiff);
     this->M_jacobian->spy (fileNameJacobian);

@@ -18,8 +18,8 @@
 //class EMPassiveNeoHookean : public virtual EMPassiveMaterial
 //{
 //public:
-//	EMPassiveNeoHookean();
-//	virtual ~EMPassiveNeoHookean() {}
+//  EMPassiveNeoHookean();
+//  virtual ~EMPassiveNeoHookean() {}
 //};
 
 namespace LifeV
@@ -29,20 +29,20 @@ template<typename Mesh>
 class PassiveIsotropicExponential : public virtual EMMaterialType<Mesh>
 {
 public:
-	typedef EMMaterialType<Mesh> super;
+    typedef EMMaterialType<Mesh> super;
 
-	PassiveIsotropicExponential();
-	virtual ~PassiveIsotropicExponential() {}
+    PassiveIsotropicExponential();
+    virtual ~PassiveIsotropicExponential() {}
 };
 
 template<typename Mesh>
 PassiveIsotropicExponential<Mesh>::PassiveIsotropicExponential() :
-		super("Passive Isotropic Exponential", 4)
+    super ("Passive Isotropic Exponential", 4)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::Volumetric<Mesh>(3500000.0)  );
-	this -> M_materialFunctionList[1].reset(new MaterialFunctions::dVolumetric<Mesh>(3500000.0) );
-	this -> M_materialFunctionList[2].reset(new MaterialFunctions::IsotropicExponential<Mesh>()  );
-	this -> M_materialFunctionList[3].reset(new MaterialFunctions::dIsotropicExponential<Mesh>()  );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
+    this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
+    this -> M_materialFunctionList[2].reset (new MaterialFunctions::IsotropicExponential<Mesh>()  );
+    this -> M_materialFunctionList[3].reset (new MaterialFunctions::dIsotropicExponential<Mesh>()  );
 }
 
 

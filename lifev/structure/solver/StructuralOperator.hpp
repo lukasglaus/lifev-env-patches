@@ -225,11 +225,11 @@ public:
       \param comm the Epetra Comunicator
     */
     virtual void setup ( boost::shared_ptr<data_Type>  data,
-                 const FESpacePtr_Type&        dFESpace,
-                 const ETFESpacePtr_Type&      dETFESpace,
-                 bcHandler_Type&       BCh,
-                 boost::shared_ptr<Epetra_Comm>&     comm
-                 );
+                         const FESpacePtr_Type&        dFESpace,
+                         const ETFESpacePtr_Type&      dETFESpace,
+                         bcHandler_Type&       BCh,
+                         boost::shared_ptr<Epetra_Comm>&     comm
+                       );
 
     /*!
       \param data_file GetPot data file

@@ -71,30 +71,30 @@ namespace EMUtility
  *
  */
 
-std::string createOutputFolder(GetPot& command_line, Epetra_Comm& comm)
+std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
 {
-//	std::string problemFolder = "Output";//command_line.follow("Output", 2, "-o","--output");//) command_line.follow ( "Output", 2, "-o", "--output" );
-	std::string problemFolder = command_line.follow("Output", 2, "-o","--output");//) command_line.follow ( "Output", 2, "-o", "--output" );
-	// Create the problem folder
-	std::cout << "EMU - creating output folder: " << problemFolder << "\n";
-	if ( problemFolder.compare ("./") )
-	{
-		problemFolder += "/";
+    //  std::string problemFolder = "Output";//command_line.follow("Output", 2, "-o","--output");//) command_line.follow ( "Output", 2, "-o", "--output" );
+    std::string problemFolder = command_line.follow ("Output", 2, "-o", "--output"); //) command_line.follow ( "Output", 2, "-o", "--output" );
+    // Create the problem folder
+    std::cout << "EMU - creating output folder: " << problemFolder << "\n";
+    if ( problemFolder.compare ("./") )
+    {
+        problemFolder += "/";
 
-		if ( comm.MyPID() == 0 )
-		{
-			mkdir ( problemFolder.c_str(), 0777 );
-		}
-	}
-	return problemFolder;
+        if ( comm.MyPID() == 0 )
+        {
+            mkdir ( problemFolder.c_str(), 0777 );
+        }
+    }
+    return problemFolder;
 }
 
 template<class Mesh>
-void setupExporter( ExporterHDF5<Mesh>& exporter,
-		            boost::shared_ptr<Mesh> localMeshPtr,
-		            boost::shared_ptr<Epetra_Comm> commPtr,
-		            std::string fileName,
-		            std::string folder)
+void setupExporter ( ExporterHDF5<Mesh>& exporter,
+                     boost::shared_ptr<Mesh> localMeshPtr,
+                     boost::shared_ptr<Epetra_Comm> commPtr,
+                     std::string fileName,
+                     std::string folder)
 {
     exporter.setMeshProcId (localMeshPtr, commPtr->MyPID() );
     exporter.setPrefix (fileName);
@@ -140,10 +140,10 @@ MatrixSmall<3, 3> identity()
 
 //void normalize(VectorSmall<3>& v, Real component = 0)
 //{
-//	normalize(v, static_cast<int>(component) );
+//  normalize(v, static_cast<int>(component) );
 //}
 
-void normalize(VectorSmall<3>& v, int component = 0)
+void normalize (VectorSmall<3>& v, int component = 0)
 {
     LifeV::Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     if ( norm >= 1e-13 )
@@ -154,16 +154,16 @@ void normalize(VectorSmall<3>& v, int component = 0)
     }
     else
     {
-    	v *= 0.0;
-    	v[component] = 1.0;
+        v *= 0.0;
+        v[component] = 1.0;
     }
 }
 
-void orthonormalize(VectorSmall<3>& s, VectorSmall<3>& f, int component = 1)
+void orthonormalize (VectorSmall<3>& s, VectorSmall<3>& f, int component = 1)
 {
-	EMUtility::normalize(f);
-	s = s - s.dot(f) *  f;
-	EMUtility::normalize(s,component);
+    EMUtility::normalize (f);
+    s = s - s.dot (f) *  f;
+    EMUtility::normalize (s, component);
 }
 
 

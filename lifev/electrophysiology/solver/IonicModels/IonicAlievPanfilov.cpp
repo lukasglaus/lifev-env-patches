@@ -63,7 +63,7 @@ IonicAlievPanfilov::IonicAlievPanfilov()    :
 IonicAlievPanfilov::IonicAlievPanfilov ( Teuchos::ParameterList& parameterList   )   :
     super       ( 2 )
 {
-	setup ( parameterList );
+    setup ( parameterList );
 
     M_restingConditions.at (0) = 0.0;
     M_restingConditions.at (1) = 0.16;

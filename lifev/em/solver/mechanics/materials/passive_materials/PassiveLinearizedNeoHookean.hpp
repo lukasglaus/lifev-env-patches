@@ -18,8 +18,8 @@
 //class EMPassiveNeoHookean : public virtual EMPassiveMaterial
 //{
 //public:
-//	EMPassiveNeoHookean();
-//	virtual ~EMPassiveNeoHookean() {}
+//  EMPassiveNeoHookean();
+//  virtual ~EMPassiveNeoHookean() {}
 //};
 
 namespace LifeV
@@ -29,18 +29,18 @@ template<typename Mesh>
 class PassiveLinearizedNeoHookean : public virtual EMMaterialType<Mesh>
 {
 public:
-	typedef EMMaterialType<Mesh> super;
+    typedef EMMaterialType<Mesh> super;
 
-	PassiveLinearizedNeoHookean();
-	virtual ~PassiveLinearizedNeoHookean() {}
+    PassiveLinearizedNeoHookean();
+    virtual ~PassiveLinearizedNeoHookean() {}
 };
 
 template<typename Mesh>
 PassiveLinearizedNeoHookean<Mesh>::PassiveLinearizedNeoHookean() :
-		super("Passive Linearized Neo-Hookean", 2)
+    super ("Passive Linearized Neo-Hookean", 2)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::LinearizedNeoHookeanVolumetric<Mesh>()  );
-	this -> M_materialFunctionList[1].reset(new MaterialFunctions::LinearizedNeoHookeanDeviatoric<Mesh>() );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::LinearizedNeoHookeanVolumetric<Mesh>()  );
+    this -> M_materialFunctionList[1].reset (new MaterialFunctions::LinearizedNeoHookeanDeviatoric<Mesh>() );
 }
 
 

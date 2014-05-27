@@ -79,47 +79,47 @@ template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 class EMSolver
 {
 public:
-	typedef Mesh                                              mesh_Type;
+    typedef Mesh                                              mesh_Type;
 
-	typedef boost::shared_ptr<mesh_Type>                      meshPtr_Type;
+    typedef boost::shared_ptr<mesh_Type>                      meshPtr_Type;
 
-	typedef Epetra_Comm                                       comm_Type;
+    typedef Epetra_Comm                                       comm_Type;
 
-	typedef boost::shared_ptr<Epetra_Comm>                    commPtr_Type;
+    typedef boost::shared_ptr<Epetra_Comm>                    commPtr_Type;
 
-	typedef VectorEpetra                                      vector_Type;
+    typedef VectorEpetra                                      vector_Type;
 
-	typedef StructuralConstitutiveLawData                     structureData_Type;
+    typedef StructuralConstitutiveLawData                     structureData_Type;
 
-	typedef boost::shared_ptr<structureData_Type>             structureDataPtr_Type;
+    typedef boost::shared_ptr<structureData_Type>             structureDataPtr_Type;
 
-	typedef EMStructuralOperator< mesh_Type >                 structuralOperator_Type;
+    typedef EMStructuralOperator< mesh_Type >                 structuralOperator_Type;
 
-	typedef boost::shared_ptr< structuralOperator_Type >      structuralOperatorPtr_Type;
+    typedef boost::shared_ptr< structuralOperator_Type >      structuralOperatorPtr_Type;
 
-	typedef BCHandler                                          bc_Type;
+    typedef BCHandler                                          bc_Type;
 
-	typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
+    typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
 
-	typedef StructuralOperator< mesh_Type >                   physicalSolver_Type;
+    typedef StructuralOperator< mesh_Type >                   physicalSolver_Type;
 
-	typedef BCInterface3D< bc_Type, physicalSolver_Type >  bcInterface_Type;
+    typedef BCInterface3D< bc_Type, physicalSolver_Type >  bcInterface_Type;
 
-	typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
+    typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
 
-	typedef boost::shared_ptr<ActivationModel>                 activationModelPtr_Type;
+    typedef boost::shared_ptr<ActivationModel>                 activationModelPtr_Type;
 
-	typedef ElectroSolver                                      electroSolver_Type;
+    typedef ElectroSolver                                      electroSolver_Type;
 
-	typedef boost::shared_ptr<electroSolver_Type>              electroSolverPtr_Type;
+    typedef boost::shared_ptr<electroSolver_Type>              electroSolverPtr_Type;
 
-	typedef ElectroIonicModel                                  ionicModel_Type;
+    typedef ElectroIonicModel                                  ionicModel_Type;
 
-	typedef boost::shared_ptr<ionicModel_Type>                 ionicModelPtr_Type;
+    typedef boost::shared_ptr<ionicModel_Type>                 ionicModelPtr_Type;
 
-	typedef ExporterHDF5< Mesh >                               exporter_Type;
+    typedef ExporterHDF5< Mesh >                               exporter_Type;
 
-	typedef boost::shared_ptr<ExporterHDF5< Mesh > >           exporterPtr_Type;
+    typedef boost::shared_ptr<ExporterHDF5< Mesh > >           exporterPtr_Type;
 
     typedef FESpace< RegionMesh<LinearTetra>, MapEpetra >      solidFESpace_Type;
 
@@ -130,8 +130,8 @@ public:
     typedef boost::shared_ptr<solidETFESpace_Type>              solidETFESpacePtr_Type;
 
     typedef boost::function < Real (const Real& t,
-                                    const Real &   x,
-                                    const Real &   y,
+                                    const Real&    x,
+                                    const Real&    y,
                                     const Real& z,
                                     const ID&   /*i*/ ) >       function_Type;
 
@@ -139,167 +139,173 @@ public:
 
     EMSolver();
 
-	EMSolver(const EMSolver& solver);
+    EMSolver (const EMSolver& solver);
 
 
 
-	inline void loadMesh(std::string meshName, std::string meshPath)
-	{
+    inline void loadMesh (std::string meshName, std::string meshPath)
+    {
         std::cout << "EMS - Loading mesh\n";
-		MeshUtility::loadMesh (M_localMeshPtr, M_fullMeshPtr, meshName, meshPath);
-	}
-
-	inline void setupElectroExporter( std::string problemFolder = "./", std::string outputFileName = "MechanicalSolution" )
-	{
-		M_electroSolverPtr -> setupExporter(*M_electroExporterPtr, outputFileName, problemFolder);
-	}
-
-    inline void setupActivationExporter( std::string problemFolder = "./", std::string outputFileName = "ActivationSolution" )
-    {
-    	EMUtility::setupExporter<Mesh>(*M_activationExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+        MeshUtility::loadMesh (M_localMeshPtr, M_fullMeshPtr, meshName, meshPath);
     }
 
-    inline void setupMechanicsExporter( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
+    inline void setupElectroExporter ( std::string problemFolder = "./", std::string outputFileName = "MechanicalSolution" )
     {
-    	if(M_mechanicsExporterPtr)
-    	EMUtility::setupExporter<Mesh>(*M_mechanicsExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+        M_electroSolverPtr -> setupExporter (*M_electroExporterPtr, outputFileName, problemFolder);
     }
 
-    void setupExporters(std::string problemFolder   = "./",
-    		            std::string electroFileName = "ElectroSolution",
-    		            std::string activationFileName  = "ActivationSolution",
-    		            std::string mechanicsFileName  = "MechanicalSolution");
+    inline void setupActivationExporter ( std::string problemFolder = "./", std::string outputFileName = "ActivationSolution" )
+    {
+        EMUtility::setupExporter<Mesh> (*M_activationExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+    }
 
-	void setupElectroSolver( GetPot& dataFile, Teuchos::ParameterList& list, short int ionicModelSize);
-	void setupElectroSolver( GetPot& dataFile, Teuchos::ParameterList& list, std::string ionicModelName);
+    inline void setupMechanicsExporter ( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
+    {
+        if (M_mechanicsExporterPtr)
+        {
+            EMUtility::setupExporter<Mesh> (*M_mechanicsExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+        }
+    }
 
-	void setupMechanicalSolver( GetPot& dataFile);
+    void setupExporters (std::string problemFolder   = "./",
+                         std::string electroFileName = "ElectroSolution",
+                         std::string activationFileName  = "ActivationSolution",
+                         std::string mechanicsFileName  = "MechanicalSolution");
 
-	void setupMechanicalBC(std::string data_file_name,
-                           std::string section,
-                           solidFESpacePtr_Type dFESpace);
+    void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list, short int ionicModelSize);
+    void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list, std::string ionicModelName);
 
-	inline void setupActivation(const MapEpetra& map)
-	{
-		if(M_commPtr -> MyPID()==0)
-		{
-			std::cout << "EMS - setting up activation solver\n";
-		}
-		M_activationModelPtr.reset( new ActivationModel(map) );
-	}
+    void setupMechanicalSolver ( GetPot& dataFile);
 
-	void setup(GetPot& dataFile, Teuchos::ParameterList& list, short int ionicModelSize, commPtr_Type commPtr);
-	void setup(GetPot& dataFile, Teuchos::ParameterList& list, std::string ionicModelName, commPtr_Type commPtr);
+    void setupMechanicalBC (std::string data_file_name,
+                            std::string section,
+                            solidFESpacePtr_Type dFESpace);
 
-	inline void buildMechanicalSystem()
-	{
-	    M_EMStructuralOperatorPtr -> buildSystem (1.0);
-	}
+    inline void setupActivation (const MapEpetra& map)
+    {
+        if (M_commPtr -> MyPID() == 0)
+        {
+            std::cout << "EMS - setting up activation solver\n";
+        }
+        M_activationModelPtr.reset ( new ActivationModel (map) );
+    }
 
-	inline void buildElectroSystem()
-	{
-	    M_electroSolverPtr -> setupMatrices();
-	}
+    void setup (GetPot& dataFile, Teuchos::ParameterList& list, short int ionicModelSize, commPtr_Type commPtr);
+    void setup (GetPot& dataFile, Teuchos::ParameterList& list, std::string ionicModelName, commPtr_Type commPtr);
 
-	inline  void buildSystem()
-	{
-		buildMechanicalSystem(); buildElectroSystem();
-	}
+    inline void buildMechanicalSystem()
+    {
+        M_EMStructuralOperatorPtr -> buildSystem (1.0);
+    }
 
-	inline void initializeElectroVariables()
-	{
-		M_electroSolverPtr -> setInitialConditions();
-	}
+    inline void buildElectroSystem()
+    {
+        M_electroSolverPtr -> setupMatrices();
+    }
 
-	inline void initialize()
-	{
-		initializeElectroVariables();
-	}
+    inline  void buildSystem()
+    {
+        buildMechanicalSystem();
+        buildElectroSystem();
+    }
 
-	inline bcInterfacePtr_Type bcInterfacePtr()
-	{
-		return M_bcInterfacePtr;
-	}
+    inline void initializeElectroVariables()
+    {
+        M_electroSolverPtr -> setInitialConditions();
+    }
 
+    inline void initialize()
+    {
+        initializeElectroVariables();
+    }
 
-	inline void setupMechanicalFiberVector( Real fx, Real fy, Real fz )
-	{
-	    M_EMStructuralOperatorPtr -> EMMaterial() -> setupFiberVector( fx, fy, fz);
-	}
-
-	inline void setupElectroFiberVector( VectorSmall<3>& fibers)
-	{
-		M_electroSolverPtr -> setupFibers (fibers);
-	}
-
-
-	inline void setupFiberVector( Real fx, Real fy, Real fz )
-	{
-		VectorSmall<3> f; f[0]=fx; f[1]=fy; f[2]=fz;
-		setupElectroFiberVector(f);
-		M_EMStructuralOperatorPtr -> EMMaterial() -> setFiberVectorPtr ( M_electroSolverPtr -> fiberPtr() );
-	}
-
-	inline electroSolverPtr_Type electroSolverPtr()
-	{
-		return M_electroSolverPtr;
-	}
-
-	inline structuralOperator_Type structuralOperatorPtr()
-	{
-		return M_EMStructuralOperatorPtr;
-	}
-
-	inline activationModelPtr_Type  activationModelPtr()
-	{
-		return M_activationModelPtr;
-	}
-
-	void saveSolution(Real time);
-
-	void closeExporters();
-
-	void oneWayCoupling();
-
-	void twoWayCoupling();
-
-	inline void setAppliedCurrent(function_Type& stimulus, Real time = 0.0)
-	{
-		M_electroSolverPtr -> setAppliedCurrentFromFunction(stimulus, time);
-	}
+    inline bcInterfacePtr_Type bcInterfacePtr()
+    {
+        return M_bcInterfacePtr;
+    }
 
 
-	inline void solveMechanics()
-	{
-		M_EMStructuralOperatorPtr -> iterate( M_bcInterfacePtr -> handler() );
-	}
+    inline void setupMechanicalFiberVector ( Real fx, Real fy, Real fz )
+    {
+        M_EMStructuralOperatorPtr -> EMMaterial() -> setupFiberVector ( fx, fy, fz);
+    }
 
-	inline void solveElectrophysiology(function_Type& stimulus, Real time = 0.0);
+    inline void setupElectroFiberVector ( VectorSmall<3>& fibers)
+    {
+        M_electroSolverPtr -> setupFibers (fibers);
+    }
 
 
-	inline void solveActivation(UInt index, Real dt);
-	//	inline bcInterface_Type bcInterface()
-//	{
-//		return *M_bcInterfacePtr;
-//	}
+    inline void setupFiberVector ( Real fx, Real fy, Real fz )
+    {
+        VectorSmall<3> f;
+        f[0] = fx;
+        f[1] = fy;
+        f[2] = fz;
+        setupElectroFiberVector (f);
+        M_EMStructuralOperatorPtr -> EMMaterial() -> setFiberVectorPtr ( M_electroSolverPtr -> fiberPtr() );
+    }
+
+    inline electroSolverPtr_Type electroSolverPtr()
+    {
+        return M_electroSolverPtr;
+    }
+
+    inline structuralOperator_Type structuralOperatorPtr()
+    {
+        return M_EMStructuralOperatorPtr;
+    }
+
+    inline activationModelPtr_Type  activationModelPtr()
+    {
+        return M_activationModelPtr;
+    }
+
+    void saveSolution (Real time);
+
+    void closeExporters();
+
+    void oneWayCoupling();
+
+    void twoWayCoupling();
+
+    inline void setAppliedCurrent (function_Type& stimulus, Real time = 0.0)
+    {
+        M_electroSolverPtr -> setAppliedCurrentFromFunction (stimulus, time);
+    }
+
+
+    inline void solveMechanics()
+    {
+        M_EMStructuralOperatorPtr -> iterate ( M_bcInterfacePtr -> handler() );
+    }
+
+    inline void solveElectrophysiology (function_Type& stimulus, Real time = 0.0);
+
+
+    inline void solveActivation (UInt index, Real dt);
+    //  inline bcInterface_Type bcInterface()
+    //  {
+    //      return *M_bcInterfacePtr;
+    //  }
 
 protected:
-	electroSolverPtr_Type                M_electroSolverPtr;
-	activationModelPtr_Type              M_activationModelPtr;
-	bcInterfacePtr_Type                  M_bcInterfacePtr;
-	structuralOperatorPtr_Type           M_EMStructuralOperatorPtr;
+    electroSolverPtr_Type                M_electroSolverPtr;
+    activationModelPtr_Type              M_activationModelPtr;
+    bcInterfacePtr_Type                  M_bcInterfacePtr;
+    structuralOperatorPtr_Type           M_EMStructuralOperatorPtr;
 
-	exporterPtr_Type                     M_electroExporterPtr;
-	exporterPtr_Type                     M_activationExporterPtr;
-	exporterPtr_Type                     M_mechanicsExporterPtr;
+    exporterPtr_Type                     M_electroExporterPtr;
+    exporterPtr_Type                     M_activationExporterPtr;
+    exporterPtr_Type                     M_mechanicsExporterPtr;
 
-	meshPtr_Type                         M_localMeshPtr;
-	meshPtr_Type                         M_fullMeshPtr;
-	vectorPtr_Type                       M_activationTime;
+    meshPtr_Type                         M_localMeshPtr;
+    meshPtr_Type                         M_fullMeshPtr;
+    vectorPtr_Type                       M_activationTime;
 
     bool                                 M_oneWayCoupling;
 
-	commPtr_Type                         M_commPtr;
+    commPtr_Type                         M_commPtr;
 
 
 };
@@ -327,11 +333,11 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::EMSolver() :
 /////////////////////
 // COPY CONSTRUCTORS
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
-EMSolver<Mesh, ElectroSolver, ActivationModel>::EMSolver(const EMSolver& solver) :
-    M_electroSolverPtr(solver.M_electroSolverPtr),
-    M_activationModelPtr(solver.M_activationModelPtr),
+EMSolver<Mesh, ElectroSolver, ActivationModel>::EMSolver (const EMSolver& solver) :
+    M_electroSolverPtr (solver.M_electroSolverPtr),
+    M_activationModelPtr (solver.M_activationModelPtr),
     M_bcInterfacePtr        ( solver.M_bcInterfacePtr),
-    M_EMStructuralOperatorPtr(solver.M_EMStructuralOperatorPtr),
+    M_EMStructuralOperatorPtr (solver.M_EMStructuralOperatorPtr),
     M_electroExporterPtr ( solver.M_electroExporterPtr),
     M_activationExporterPtr ( solver.M_activationExporterPtr),
     M_mechanicsExporterPtr  ( solver.M_mechanicsExporterPtr),
@@ -349,15 +355,15 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::EMSolver(const EMSolver& solver)
 // Setting up the electrophysiology solver
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setup( GetPot& dataFile,
-		                                               Teuchos::ParameterList& list,
-		                                               short int ionicModelSize,
-		                                               commPtr_Type commPtr)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setup ( GetPot& dataFile,
+                                                        Teuchos::ParameterList& list,
+                                                        short int ionicModelSize,
+                                                        commPtr_Type commPtr)
 {
-	M_commPtr = commPtr;
-	setupElectroSolver( dataFile, list, ionicModelSize );
-	setupMechanicalSolver( dataFile );
-	setupActivation( M_electroSolverPtr -> potentialPtr() ->map() );
+    M_commPtr = commPtr;
+    setupElectroSolver ( dataFile, list, ionicModelSize );
+    setupMechanicalSolver ( dataFile );
+    setupActivation ( M_electroSolverPtr -> potentialPtr() ->map() );
 }
 
 
@@ -365,19 +371,19 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::setup( GetPot& dataFile,
 // Setting up the electrophysiology solver
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setup( GetPot& dataFile,
-		                                               Teuchos::ParameterList& list,
-		                                               std::string ionicModelName,
-		                                               commPtr_Type commPtr)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setup ( GetPot& dataFile,
+                                                        Teuchos::ParameterList& list,
+                                                        std::string ionicModelName,
+                                                        commPtr_Type commPtr)
 {
-	M_commPtr = commPtr;
-	setupElectroSolver( dataFile, list, ionicModelName );
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "EMS - electro solver setup done! ";
-	}
-	setupMechanicalSolver( dataFile );
-	setupActivation( M_electroSolverPtr -> potentialPtr() ->map() );
+    M_commPtr = commPtr;
+    setupElectroSolver ( dataFile, list, ionicModelName );
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "EMS - electro solver setup done! ";
+    }
+    setupMechanicalSolver ( dataFile );
+    setupActivation ( M_electroSolverPtr -> potentialPtr() ->map() );
 }
 
 
@@ -385,42 +391,42 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::setup( GetPot& dataFile,
 // Setting up the electrophysiology solver
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setupElectroSolver( GetPot& dataFile, Teuchos::ParameterList& list, short int ionicModelSize)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list, short int ionicModelSize)
 {
 }
 
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setupElectroSolver( GetPot& dataFile, Teuchos::ParameterList& list,  std::string ionicModelName)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list,  std::string ionicModelName)
 {
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "EMS - creating ionic model ";
-	}
-	ionicModelPtr_Type ionicModelPtr;
-    ionicModelPtr.reset(ionicModel_Type::IonicModelFactory::instance().createObject ( ionicModelName ));
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "EMS - creating ionic model ";
+    }
+    ionicModelPtr_Type ionicModelPtr;
+    ionicModelPtr.reset (ionicModel_Type::IonicModelFactory::instance().createObject ( ionicModelName ) );
 
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "EMS - setting up electrophysiology solver ";
-	}
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "EMS - setting up electrophysiology solver ";
+    }
 
-	M_electroSolverPtr.reset( new ElectroSolver() );
-	M_electroSolverPtr -> setIonicModelPtr(ionicModelPtr);
-	if(M_localMeshPtr)
-	{
-		M_electroSolverPtr -> setLocalMeshPtr(M_localMeshPtr);
-		if(M_fullMeshPtr)
-		{
-			M_electroSolverPtr -> setFullMeshPtr(M_fullMeshPtr);
-		}
-		M_electroSolverPtr ->  setup(dataFile, ionicModelPtr->Size() );
-	}
-	M_electroSolverPtr -> setParameters ( list );
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "... `Done\n";
-	}
+    M_electroSolverPtr.reset ( new ElectroSolver() );
+    M_electroSolverPtr -> setIonicModelPtr (ionicModelPtr);
+    if (M_localMeshPtr)
+    {
+        M_electroSolverPtr -> setLocalMeshPtr (M_localMeshPtr);
+        if (M_fullMeshPtr)
+        {
+            M_electroSolverPtr -> setFullMeshPtr (M_fullMeshPtr);
+        }
+        M_electroSolverPtr ->  setup (dataFile, ionicModelPtr->Size() );
+    }
+    M_electroSolverPtr -> setParameters ( list );
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "... `Done\n";
+    }
 
 }
 
@@ -429,30 +435,30 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::setupElectroSolver( GetPot& data
 // Setting up the electrophysiology solver
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setupMechanicalSolver( GetPot& dataFile)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setupMechanicalSolver ( GetPot& dataFile)
 {
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "EMS - setting up mechanical solver\n";
-	}
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "EMS - setting up mechanical solver\n";
+    }
     boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
     dataStructure->setup (dataFile);
 
     std::string dOrder =  dataFile ( "solid/space_discretization/order", "P1");
     solidFESpacePtr_Type dFESpace ( new solidFESpace_Type (M_localMeshPtr, dOrder, 3, M_commPtr) );
     solidETFESpacePtr_Type dETFESpace ( new solidETFESpace_Type ( M_localMeshPtr,
-    		                                                      & (dFESpace->refFE() ),
-    		                                                      & (dFESpace->fe().geoMap() ),
-    		                                                      M_commPtr) );
-    std::string data_file_name = dataFile.get(0,"NO_DATA_FILENAME_FOUND");
+                                                                  & (dFESpace->refFE() ),
+                                                                  & (dFESpace->fe().geoMap() ),
+                                                                  M_commPtr) );
+    std::string data_file_name = dataFile.get (0, "NO_DATA_FILENAME_FOUND");
 
-    setupMechanicalBC(data_file_name, "solid",  dFESpace);
-    M_EMStructuralOperatorPtr.reset(new structuralOperator_Type() );
-    M_EMStructuralOperatorPtr->setup( dataStructure,
-    		                         dFESpace,
-    		                         dETFESpace,
-    		                         M_bcInterfacePtr->handler(),
-    		                         M_commPtr);
+    setupMechanicalBC (data_file_name, "solid",  dFESpace);
+    M_EMStructuralOperatorPtr.reset (new structuralOperator_Type() );
+    M_EMStructuralOperatorPtr->setup ( dataStructure,
+                                       dFESpace,
+                                       dETFESpace,
+                                       M_bcInterfacePtr->handler(),
+                                       M_commPtr);
     M_EMStructuralOperatorPtr->setDataFromGetPot (dataFile);
 
 }
@@ -461,18 +467,18 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::setupMechanicalSolver( GetPot& d
 // Setting up the electrophysiology solver
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setupMechanicalBC(std::string data_file_name,
-                       std::string section,
-                       solidFESpacePtr_Type dFESpace)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setupMechanicalBC (std::string data_file_name,
+                                                                   std::string section,
+                                                                   solidFESpacePtr_Type dFESpace)
 {
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "EMS - setting up bc interface\n";
-	}
-	M_bcInterfacePtr.reset(new bcInterface_Type() );
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "EMS - setting up bc interface\n";
+    }
+    M_bcInterfacePtr.reset (new bcInterface_Type() );
     M_bcInterfacePtr->createHandler();
     M_bcInterfacePtr->fillHandler ( data_file_name, "solid" );
-    M_bcInterfacePtr->handler()->bcUpdate( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
+    M_bcInterfacePtr->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
 }
 
 
@@ -480,55 +486,55 @@ EMSolver<Mesh, ElectroSolver, ActivationModel>::setupMechanicalBC(std::string da
 //Setup exporters
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::setupExporters(std::string problemFolder,
-													    	   std::string electroFileName,
-														       std::string activationFileName,
-															   std::string mechanicsFileName)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::setupExporters (std::string problemFolder,
+                                                                std::string electroFileName,
+                                                                std::string activationFileName,
+                                                                std::string mechanicsFileName)
 {
-	if(M_commPtr -> MyPID()==0)
-	{
-		std::cout << "EMS - setting up exporters\n";
-	}
-	M_electroExporterPtr.reset(new exporter_Type() );
-	setupElectroExporter(problemFolder, electroFileName);
-	M_activationExporterPtr.reset(new exporter_Type() );
-	setupActivationExporter(problemFolder, activationFileName );
-	M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-			                              "Activation",
-			                              M_electroSolverPtr -> feSpacePtr(),
-			                              M_activationModelPtr -> activationPtr(),
-			                              UInt (0) );
-	M_mechanicsExporterPtr.reset(new exporter_Type() );
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "EMS - setting up exporters\n";
+    }
+    M_electroExporterPtr.reset (new exporter_Type() );
+    setupElectroExporter (problemFolder, electroFileName);
+    M_activationExporterPtr.reset (new exporter_Type() );
+    setupActivationExporter (problemFolder, activationFileName );
+    M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                             "Activation",
+                                             M_electroSolverPtr -> feSpacePtr(),
+                                             M_activationModelPtr -> activationPtr(),
+                                             UInt (0) );
+    M_mechanicsExporterPtr.reset (new exporter_Type() );
 
-	setupMechanicsExporter(problemFolder, mechanicsFileName);
-	M_mechanicsExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-			                             "displacement",
-			                             M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-			                             M_EMStructuralOperatorPtr -> displacementPtr(),
-			                             UInt (0) );
-	M_mechanicsExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-			                             "fibers",
-			                             M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-			                             M_EMStructuralOperatorPtr -> EMMaterial() -> fiberVectorPtr(),
-			                             UInt (0) );
+    setupMechanicsExporter (problemFolder, mechanicsFileName);
+    M_mechanicsExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                            "displacement",
+                                            M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+                                            M_EMStructuralOperatorPtr -> displacementPtr(),
+                                            UInt (0) );
+    M_mechanicsExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                            "fibers",
+                                            M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+                                            M_EMStructuralOperatorPtr -> EMMaterial() -> fiberVectorPtr(),
+                                            UInt (0) );
 }
 
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::saveSolution(Real time)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::saveSolution (Real time)
 {
-	M_electroExporterPtr -> postProcess(time);
-	M_activationExporterPtr -> postProcess(time);
-	M_mechanicsExporterPtr -> postProcess(time);
+    M_electroExporterPtr -> postProcess (time);
+    M_activationExporterPtr -> postProcess (time);
+    M_mechanicsExporterPtr -> postProcess (time);
 }
 
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
 EMSolver<Mesh, ElectroSolver, ActivationModel>::closeExporters()
 {
-	M_electroExporterPtr -> closeFile();
-	M_activationExporterPtr -> closeFile();
-	M_mechanicsExporterPtr -> closeFile();
+    M_electroExporterPtr -> closeFile();
+    M_activationExporterPtr -> closeFile();
+    M_mechanicsExporterPtr -> closeFile();
 }
 
 
@@ -537,35 +543,35 @@ template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
 EMSolver<Mesh, ElectroSolver, ActivationModel>::oneWayCoupling()
 {
-	M_electroSolverPtr -> setMechanicsModifiesConductivity(false);
-	M_electroSolverPtr -> displacementPtr().reset();
-	M_EMStructuralOperatorPtr -> EMMaterial() -> setActivationPtr( M_activationModelPtr -> activationPtr() );
+    M_electroSolverPtr -> setMechanicsModifiesConductivity (false);
+    M_electroSolverPtr -> displacementPtr().reset();
+    M_EMStructuralOperatorPtr -> EMMaterial() -> setActivationPtr ( M_activationModelPtr -> activationPtr() );
 }
 
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
 EMSolver<Mesh, ElectroSolver, ActivationModel>::twoWayCoupling()
 {
-	M_electroSolverPtr -> setMechanicsModifiesConductivity(true);
-	M_electroSolverPtr -> setDisplacementPtr( M_EMStructuralOperatorPtr -> displacementPtr() );
-	M_EMStructuralOperatorPtr -> EMMaterial() -> setActivationPtr( M_activationModelPtr -> activationPtr() );
+    M_electroSolverPtr -> setMechanicsModifiesConductivity (true);
+    M_electroSolverPtr -> setDisplacementPtr ( M_EMStructuralOperatorPtr -> displacementPtr() );
+    M_EMStructuralOperatorPtr -> EMMaterial() -> setActivationPtr ( M_activationModelPtr -> activationPtr() );
 }
 
 ////////////////////////////
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::solveElectrophysiology(function_Type& stimulus, Real time )
+EMSolver<Mesh, ElectroSolver, ActivationModel>::solveElectrophysiology (function_Type& stimulus, Real time )
 {
-	setAppliedCurrent ( stimulus, time );
+    setAppliedCurrent ( stimulus, time );
     M_electroSolverPtr -> solveOneStepGatingVariablesFE();
     M_electroSolverPtr -> solveOneICIStep();
 }
 
 template<typename Mesh , typename ElectroSolver, typename ActivationModel>
 void
-EMSolver<Mesh, ElectroSolver, ActivationModel>::solveActivation(UInt index, Real dt)
+EMSolver<Mesh, ElectroSolver, ActivationModel>::solveActivation (UInt index, Real dt)
 {
-	M_activationModelPtr -> solveModel( *( (M_electroSolverPtr -> globalSolution())[index] ), dt);
+    M_activationModelPtr -> solveModel ( * ( (M_electroSolverPtr -> globalSolution() ) [index] ), dt);
 }
 
 

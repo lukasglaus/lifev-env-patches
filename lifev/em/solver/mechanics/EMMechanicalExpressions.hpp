@@ -93,7 +93,7 @@
 // d2JdF = d2J : dF = Second derivative of J in direction dF
 //matrix
 #define _d2JdF(y, z, w)  ( _dJdF(y, z, w) * _FmT(y, z, w) \
-		                                   + _J(y, z, w) * _dFmTdF(y, z, w) )
+                                           + _J(y, z, w) * _dFmTdF(y, z, w) )
 // dJm23 = Derivative of J^{-2/3}
 //matrix
 #define _dJm23(y, z, w)  ( value(-2.0/3.0) * _Jm23(y, z, w) * _FmT(y, z, w) )
@@ -103,7 +103,7 @@
 // d2Jm23dF = d2Jm23 : dF = Second derivative of Jm23 with respect to F in direction dF
 //matrix
 #define _d2Jm23dF(y, z, w)  ( value(-2.0/3.0) * _Jm23(y, z, w) * ( _dFmTdF(y, z, w) \
-		                                      + _dJm23dF(y, z, w) * _FmT(y, z, w) ) )
+                                              + _dJm23dF(y, z, w) * _FmT(y, z, w) ) )
 
 ///////////////////////////////////////////////////////////////////////////
 // VOLUMETRIC PART
@@ -153,9 +153,9 @@
 // d2I1bardF = d2I1bar : dF = Second derivative of I1bar with respect to F in direction dF
 //matrix
 #define _d2I1bardF(y, z, w)    ( ( _dJm23dF(y, z, w) * _dI1(y, z, w) ) \
-							   + ( _Jm23(y, z, w) * _d2I1dF          ) \
-							   + ( _I1(y, z, w) * _d2Jm23dF(y, z, w) ) \
-							   + ( _dI1dF(y, z, w) * _dJm23(y, z, w) ) )
+                               + ( _Jm23(y, z, w) * _d2I1dF          ) \
+                               + ( _I1(y, z, w) * _d2Jm23dF(y, z, w) ) \
+                               + ( _dI1dF(y, z, w) * _dJm23(y, z, w) ) )
 
 // WI = Derivative of the energy W with respect to I1bar
 //scalar
@@ -200,7 +200,7 @@
 
 
 #define _d2I4bardF(y, z, w, v0) ( ( _Jm23(y, z, w) * _d2I4dF(y, v0) )        \
-		                              + ( _dJm23dF(y, z, w) * _dI4(y, z, w, v0)  ) \
+                                      + ( _dJm23dF(y, z, w) * _dI4(y, z, w, v0)  ) \
                                       + ( _dI4dF(y, z, w, v0) * _dJm23(y, z, w)  ) \
                                       + ( _I4(y, z, w, v0)    * _d2Jm23dF(y, z, w) ) )
 
@@ -227,7 +227,7 @@
 #define _d2I8dF(y, v0, w0)   ( _dF * ( outerProduct( v0, w0 ) + outerProduct( w0, v0 ) ) )
 
 #define _d2I8bardF(y, z, w, v0, w0) ( ( _Jm23(y, z, w) * _d2I8dF(y, v0, w0) )        \
-		                              + ( _dJm23dF(y, z, w) * _dI8(y, z, w, v0, w0)  ) \
+                                      + ( _dJm23dF(y, z, w) * _dI8(y, z, w, v0, w0)  ) \
                                       + ( _dI8dF(y, z, w, v0, w0) * _dJm23(y, z, w)  ) \
                                       + ( _I8(y, z, w, v0, w0)    * _d2Jm23dF(y, z, w) ) )
 

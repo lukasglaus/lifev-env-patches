@@ -90,7 +90,7 @@ ElectroIonicModel::ElectroIonicModel ( const ElectroIonicModel& Ionic ) :
 {
     if (Ionic.M_appliedCurrentPtr)
     {
-        M_appliedCurrentPtr.reset(new vector_Type(*Ionic.M_appliedCurrentPtr));
+        M_appliedCurrentPtr.reset (new vector_Type (*Ionic.M_appliedCurrentPtr) );
     }
 }
 
@@ -306,7 +306,7 @@ void ElectroIonicModel::computeRhs (   const std::vector<vectorPtr_Type>& v,
             M_appliedCurrent = 0.0;
         }
         computeRhs ( localVec, localRhs );
-        addAppliedCurrent(localRhs);
+        addAppliedCurrent (localRhs);
 
         for ( int i = 0; i < M_numberOfEquations; i++ )
         {

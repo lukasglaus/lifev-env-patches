@@ -18,8 +18,8 @@
 //class EMPassiveNeoHookean : public virtual EMPassiveMaterial
 //{
 //public:
-//	EMPassiveNeoHookean();
-//	virtual ~EMPassiveNeoHookean() {}
+//  EMPassiveNeoHookean();
+//  virtual ~EMPassiveNeoHookean() {}
 //};
 
 namespace LifeV
@@ -29,17 +29,17 @@ template<typename Mesh>
 class SimpleFibersActiveStress : public virtual EMMaterialType<Mesh>
 {
 public:
-	typedef EMMaterialType<Mesh> super;
+    typedef EMMaterialType<Mesh> super;
 
-	SimpleFibersActiveStress();
-	virtual ~SimpleFibersActiveStress() {}
+    SimpleFibersActiveStress();
+    virtual ~SimpleFibersActiveStress() {}
 };
 
 template<typename Mesh>
 SimpleFibersActiveStress<Mesh>::SimpleFibersActiveStress() :
-		super("Simple Fibers Active Stress", 1)
+    super ("Simple Fibers Active Stress", 1)
 {
-	this -> M_materialFunctionList[0].reset(new MaterialFunctions::SimpleActiveStress<Mesh>(47900.0)  );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::SimpleActiveStress<Mesh> (47900.0)  );
 }
 
 

@@ -33,49 +33,50 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 ////////////////////////////////////////////////////////////////////////
 
 template <class Mesh>
-class IsotropicExponential : public virtual EMMaterialFunctions<Mesh> {
+class IsotropicExponential : public virtual EMMaterialFunctions<Mesh>
+{
 public:
-	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
-    	auto I1bar = Elasticity::I1bar(F);
-    	return M_a / 2.0 * std::exp( M_b * ( I1bar - 3 ) );
+        auto I1bar = Elasticity::I1bar (F);
+        return M_a / 2.0 * std::exp ( M_b * ( I1bar - 3 ) );
     }
 
-//    IsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    IsotropicExponential(Real a = 3330., Real b = 9.242) : M_a(a), M_b(b) {} // 0.33 KPa
-    IsotropicExponential(const IsotropicExponential& isotropicExponential)
+    //    IsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
+    IsotropicExponential (Real a = 3330., Real b = 9.242) : M_a (a), M_b (b) {} // 0.33 KPa
+    IsotropicExponential (const IsotropicExponential& isotropicExponential)
     {
-    	M_a = isotropicExponential.M_a;
-    	M_b = isotropicExponential.M_b;
+        M_a = isotropicExponential.M_a;
+        M_b = isotropicExponential.M_b;
     }
     virtual ~IsotropicExponential() {}
 
-	inline virtual void computeJacobian( const vector_Type& disp,
-								         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-								         const vector_Type& fibers,
-								         const vector_Type& sheets,
-								         matrixPtr_Type           jacobianPtr)
-	{
-		EMAssembler::computeI1JacobianTerms(disp,dispETFESpace, jacobianPtr, this->getMe());
-	}
+    inline virtual void computeJacobian ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          matrixPtr_Type           jacobianPtr)
+    {
+        EMAssembler::computeI1JacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
+    }
 
-	inline virtual void computeResidual( const vector_Type& disp,
-								  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-							         const vector_Type& fibers,
-							         const vector_Type& sheets,
-							         vectorPtr_Type           residualVectorPtr)
-	{
-		EMAssembler::computeI1ResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
-	}
+    inline virtual void computeResidual ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          vectorPtr_Type           residualVectorPtr)
+    {
+        EMAssembler::computeI1ResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
+    }
 
-	void showMe()
-	{
-		std::cout << "Isotropic Exponential Function\n";
-		std::cout << "Coefficient a: " << M_a;
-		std::cout << ", coefficient b: " << M_b << "\n";
-	}
+    void showMe()
+    {
+        std::cout << "Isotropic Exponential Function\n";
+        std::cout << "Coefficient a: " << M_a;
+        std::cout << ", coefficient b: " << M_b << "\n";
+    }
 
 
 private:
@@ -84,41 +85,42 @@ private:
 };
 
 template <class Mesh>
-class dIsotropicExponential : public virtual EMMaterialFunctions<Mesh> {
+class dIsotropicExponential : public virtual EMMaterialFunctions<Mesh>
+{
 public:
-	typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
-    	auto I1bar = Elasticity::I1bar(F);
-    	return M_a * M_b / 2.0 * std::exp( M_b * ( I1bar - 3 ) );
+        auto I1bar = Elasticity::I1bar (F);
+        return M_a * M_b / 2.0 * std::exp ( M_b * ( I1bar - 3 ) );
     }
 
-//    dIsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    dIsotropicExponential(Real a = 3330., Real b = 9.242) : M_a(a), M_b(b) {} // 0.33 KPa
-    dIsotropicExponential(const dIsotropicExponential& dIsotropicExponential)
+    //    dIsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
+    dIsotropicExponential (Real a = 3330., Real b = 9.242) : M_a (a), M_b (b) {} // 0.33 KPa
+    dIsotropicExponential (const dIsotropicExponential& dIsotropicExponential)
     {
-    	M_a = dIsotropicExponential.M_a;
-    	M_b = dIsotropicExponential.M_b;
+        M_a = dIsotropicExponential.M_a;
+        M_b = dIsotropicExponential.M_b;
     }
     virtual ~dIsotropicExponential() {}
 
 
-	inline virtual void computeJacobian( const vector_Type& disp,
-		     boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-		     const vector_Type& fibers,
-		     const vector_Type& sheets,
-								  matrixPtr_Type           jacobianPtr)
-	{
-		EMAssembler::computeI1JacobianTermsSecondDerivative(disp,dispETFESpace, jacobianPtr, this->getMe());
-	}
+    inline virtual void computeJacobian ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          matrixPtr_Type           jacobianPtr)
+    {
+        EMAssembler::computeI1JacobianTermsSecondDerivative (disp, dispETFESpace, jacobianPtr, this->getMe() );
+    }
 
-	void showMe()
-	{
-		std::cout << "Derivative Isotropic Exponential Function\n";
-		std::cout << "Coefficient a: " << M_a;
-		std::cout << ", coefficient b: " << M_b << "\n";
-	}
+    void showMe()
+    {
+        std::cout << "Derivative Isotropic Exponential Function\n";
+        std::cout << "Coefficient a: " << M_a;
+        std::cout << ", coefficient b: " << M_b << "\n";
+    }
 
 
 private:

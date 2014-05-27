@@ -261,7 +261,7 @@ void IonicMinimalModel::computeGatingVariablesWithRushLarsen ( std::vector<Real>
 {
     std::cout << "\n\nRush Larsen method, for minimal model not implemented!!!\n";
     std::cout << "\n\nI will use Forward Euler!!!\n";
-    std::vector<Real> rhs(3,0.0);
+    std::vector<Real> rhs (3, 0.0);
     computeGatingRhs ( v, rhs );
     v[1] += dt * rhs[0];
     v[2] += dt * rhs[1];
