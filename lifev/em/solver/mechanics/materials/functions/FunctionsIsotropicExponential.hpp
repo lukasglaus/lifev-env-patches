@@ -43,8 +43,8 @@ public:
     	return M_a / 2.0 * std::exp( M_b * ( I1bar - 3 ) );
     }
 
-    IsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    IsotropicExponential(Real a, Real b) : M_a(a), M_b(b) {} // 0.33 KPa
+//    IsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
+    IsotropicExponential(Real a = 3330., Real b = 9.242) : M_a(a), M_b(b) {} // 0.33 KPa
     IsotropicExponential(const IsotropicExponential& isotropicExponential)
     {
     	M_a = isotropicExponential.M_a;
@@ -70,6 +70,14 @@ public:
 		EMAssembler::computeI1ResidualTerms(disp,dispETFESpace, residualVectorPtr, this->getMe());
 	}
 
+	void showMe()
+	{
+		std::cout << "Isotropic Exponential Function\n";
+		std::cout << "Coefficient a: " << M_a;
+		std::cout << ", coefficient b: " << M_b << "\n";
+	}
+
+
 private:
     Real M_a;
     Real M_b;
@@ -86,8 +94,8 @@ public:
     	return M_a * M_b / 2.0 * std::exp( M_b * ( I1bar - 3 ) );
     }
 
-    dIsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    dIsotropicExponential(Real a, Real b) : M_a(a), M_b(b) {} // 0.33 KPa
+//    dIsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
+    dIsotropicExponential(Real a = 3330., Real b = 9.242) : M_a(a), M_b(b) {} // 0.33 KPa
     dIsotropicExponential(const dIsotropicExponential& dIsotropicExponential)
     {
     	M_a = dIsotropicExponential.M_a;
@@ -104,6 +112,15 @@ public:
 	{
 		EMAssembler::computeI1JacobianTermsSecondDerivative(disp,dispETFESpace, jacobianPtr, this->getMe());
 	}
+
+	void showMe()
+	{
+		std::cout << "Derivative Isotropic Exponential Function\n";
+		std::cout << "Coefficient a: " << M_a;
+		std::cout << ", coefficient b: " << M_b << "\n";
+	}
+
+
 private:
     Real M_a;
     Real M_b;
