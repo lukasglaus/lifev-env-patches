@@ -138,36 +138,35 @@ MatrixSmall<3, 3> identity()
 
 
 
+//void normalize(VectorSmall<3>& v, Real component = 0)
+//{
+//	normalize(v, static_cast<int>(component) );
+//}
 
-
-class Normalize
+void normalize(VectorSmall<3>& v, int component = 0)
 {
-public:
-    typedef LifeV::VectorSmall<3> return_Type;
-
-    return_Type operator() (const LifeV::VectorSmall<3>& a)
+    LifeV::Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    if ( norm >= 1e-13 )
     {
-        LifeV::VectorSmall<3>   n;
-
-        LifeV::Real norm = std::sqrt (a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
-        if ( norm != 0 )
-        {
-            n[0] = a[0] / norm;
-            n[1] = a[1] / norm;
-            n[2] = a[2] / norm;
-        }
-        else
-        {
-            n[0] = 1.0;
-            n[1] = 0.0;
-            n[2] = 0.0;
-        }
-        return n;
+        v[0] = v[0] / norm;
+        v[1] = v[1] / norm;
+        v[2] = v[2] / norm;
     }
+    else
+    {
+    	v *= 0.0;
+    	v[component] = 1.0;
+    }
+}
 
-    Normalize() {}
-    ~Normalize() {}
-};
+void orthonormalize(VectorSmall<3>& s, VectorSmall<3>& f, int component = 1)
+{
+	EMUtility::normalize(f);
+	s = s - s.dot(f) *  f;
+	EMUtility::normalize(s,component);
+}
+
+
 
 
 } // namespace EMUtility
