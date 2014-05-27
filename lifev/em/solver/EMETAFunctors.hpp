@@ -54,6 +54,9 @@
 #include <lifev/eta/expression/Integrate.hpp>
 #include <lifev/core/fem/FESpace.hpp>
 
+#include <lifev/em/util/EMUtility.hpp>
+#include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
+
 
 
 namespace LifeV
@@ -277,21 +280,56 @@ public:
     ~ShowValue() {}
 };
 
-class Psi4f
+
+////////////////////////////////////////////////////////////////////////////////////////
+class orthonormalizeFibers
 {
 public:
-    typedef Real return_Type;
+    typedef LifeV::VectorSmall<3> return_Type;
 
-    return_Type operator() (const Real& af, const Real& bf, const Real& I4f)
+//    return_Type operator() (const LifeV::VectorSmall<3>& v)
+//    {
+//    	auto a(v);
+//    	EMUtility::normalize(a);
+//    	return a;
+//    }
+
+    return_Type operator() (const LifeV::VectorSmall<3>& v)
     {
-        return ( 2.0 * af * std::exp ( bf * (I4f - 1.0 ) * (I4f - 1.0 ) ) );
+    	auto a(v);
+    	EMUtility::normalize(a, M_component);
+    	return a;
     }
 
-    Psi4f() {}
-    Psi4f (const Psi4f&) {}
-    ~Psi4f() {}
+    return_Type operator() (const LifeV::VectorSmall<3>& v, const LifeV::VectorSmall<3>& w )
+    {
+    	auto a(v);
+    	auto b(w);
+    	EMUtility::normalize(a);
+    	EMUtility::orthonormalize(b, a);
+    	return b;
+    }
+
+    orthonormalizeFibers(LifeV::Int component = 0) : M_component(component) {}
+    ~orthonormalizeFibers(){}
+
+    LifeV::Int M_component;
 };
 
+
+class CrossProduct
+{
+public:
+    typedef LifeV::VectorSmall<3> return_Type;
+
+    return_Type operator()(const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
+	{
+    	return Elasticity::crossProduct(v1, v2);
+	}
+
+	CrossProduct() {}
+	~CrossProduct() {}
+};
 
 
 }
