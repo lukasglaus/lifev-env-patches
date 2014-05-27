@@ -8,7 +8,6 @@
 #ifndef EMETARESIDUALASSMEBLER_HPP_
 #define EMETARESIDUALASSMEBLER_HPP_
 
-
 #include <lifev/core/fem/FESpace.hpp>
 #include <lifev/core/array/VectorEpetra.hpp>
 #include <lifev/core/array/MatrixEpetra.hpp>
@@ -18,11 +17,9 @@
 #include <lifev/eta/expression/Integrate.hpp>
 
 #include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
-//#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
 #include <lifev/em/util/EMUtility.hpp>
 #include <lifev/em/solver/EMETAFunctors.hpp>
-//#include <boost/typeof/typeof.hpp>
 
 namespace LifeV
 {
@@ -33,111 +30,8 @@ typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 typedef MatrixEpetra<Real>           matrix_Type;
 typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
-//static MatrixSmall<3, 3> IdMatrix = EMUtility::identity();
-
-//typedef EMMaterialFunctions  materialFunctions_Type;
-//typedef boost::shared_ptr<materialFunctions_Type> materialFunctionsPtr_Type;
-
 namespace EMAssembler
 {
-
-//template <class Mesh> using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
-//template <class Mesh> using scalarETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >;
-//template <class Mesh> using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
-
-
-template< typename Mesh, typename FunctorPtr >
-void
-computeLinearizedVolumetricResidualTerms( const vector_Type& disp,
-					  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-					  vectorPtr_Type           residualVectorPtr,
-					  FunctorPtr               W)
-{
-	using namespace ExpressionAssembly;
-	//
-	auto I = value(EMUtility::identity());
-	auto GradU = _Grad_u(dispETFESpace, disp, 0);
-	auto GradUT = transpose(GradU);
-	auto P = eval(W, I) * (GradU + GradUT) * value(1./2.);
-
-	std::cout << "EMETA - Computing linear volumetric residual terms ... \n";
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			quadRuleTetra4pt,
-				dispETFESpace,
-				dot ( P  , grad (phi_i) )
-				) >> residualVectorPtr;
-}
-
-template< typename Mesh, typename FunctorPtr >
-void
-computeLinearizedDeviatoricResidualTerms( const vector_Type& disp,
-								boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-								vectorPtr_Type           residualVectorPtr,
-								FunctorPtr               W)
-{
-	using namespace ExpressionAssembly;
-	//
-	auto I = value(EMUtility::identity());
-	auto GradU = _Grad_u(dispETFESpace, disp, 0);
-	auto GradUT = transpose(GradU);
-	auto P = eval(W, I) * trace(GradU + GradUT) * value(1./2.) * I;
-
-	std::cout << "EMETA - Computing linear deviatoric residual terms ... \n";
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			    quadRuleTetra4pt,
-				dispETFESpace,
-				dot ( P  , grad (phi_i) )
-				) >> residualVectorPtr;
-}
-
-template< typename Mesh, typename FunctorPtr >
-void
-computeI1ResidualTerms( const vector_Type& disp,
-		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-		                vectorPtr_Type           residualVectorPtr,
-                        FunctorPtr                  W1)
-{
-	using namespace ExpressionAssembly;
-	//
-//	auto I = value(EMUtility::identity());
-//	//auto u = value(dispETFESpace, disp, 0);
-//	auto F = I + grad(dispETFESpace, disp, 0);
-//	auto J = det(F);
-//	auto Jm23 = pow(J, -2.0/3);
-//	auto I1 = dot(F, F);
-//	auto FinvT = minusT(F);
-//	auto P = 4960 * Jm23 * (F - I1 * value(1.0/3.0) * FinvT);
-	std::cout << "EMETA - Computing I1 residual terms ... \n";
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			    quadRuleTetra4pt,
-				dispETFESpace,
-		//		dot(P, grad (phi_i) )
-				dot ( eval (W1, _F(dispETFESpace, disp, 0)) * _dI1bar(dispETFESpace, disp, 0), grad (phi_i) )
-				) >> residualVectorPtr;
-}
-
-
-template <typename Mesh, typename FunctorPtr >
-void
-computeVolumetricResidualTerms( const vector_Type& disp,
-								boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-								vectorPtr_Type           residualVectorPtr,
-								FunctorPtr                  Wvol)
-{
-	//
-	std::cout << "EMETA - Computing Volumetric residual terms ... \n";
-
-	using namespace ExpressionAssembly;
-
-
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			quadRuleTetra4pt,
-			dispETFESpace,
-			dot ( eval(Wvol, _F(dispETFESpace, disp, 0)) * _dJ(dispETFESpace, disp, 0), grad (phi_i) )
-		  ) >> residualVectorPtr;
-
-}
-
 
 template <typename Mesh, typename FunctorPtr >
 void
@@ -170,7 +64,6 @@ computeFiberActiveStressResidualTerms( const vector_Type& disp,
 			    quadRuleTetra4pt,
 			    dispETFESpace,
 				dot ( Wa* F * outerProduct(f0, f0), grad (phi_i) )
-			    //			    dot ( P, grad (phi_i) )
 		      ) >> residualVectorPtr;
 
 }
@@ -179,46 +72,120 @@ computeFiberActiveStressResidualTerms( const vector_Type& disp,
 template< typename Mesh, typename FunctorPtr >
 void
 computeI4ResidualTerms( const vector_Type& disp,
-						ETFESpacePtr_Type<Mesh>  dispETFESpace,
+		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
 					    const vector_Type& fibers,
 						vectorPtr_Type     residualVectorPtr,
 						FunctorPtr         W4)
 {
 	using namespace ExpressionAssembly;
 	//
-	std::cout << "EMETA - Computing I4 residual terms ... \n";
+	std::cout << "EMETA - Computing I4 f residual terms ... \n";
+
+	auto f_0 = _v0(dispETFESpace, fibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+    boost::shared_ptr<ShowValue> sv( new ShowValue() );
+
+    auto f0 = eval(normalize0, f_0);
+
+    auto P = eval (W4, _I4( dispETFESpace, disp, 0, f0 ) )
+		   * _dI4(dispETFESpace, disp, 0, f0);
 
 
-    auto F = _F(dispETFESpace, disp, 0);
-	auto I = value(EMUtility::identity());
-
-    auto f0 = value(dispETFESpace, fibers);
-    auto f = F * f0;
-    auto fxf0 = outerProduct (f, f0);
-//    auto H = value(activationETFESpace, activation);
-    auto Wa = eval(W4, f);
-    auto Wm = eval(W4, f);
-    auto P = value(2.0) * Wa /* Wm */ *  fxf0;
-//    auto F = _F(dispETFESpace, disp, 0);
-//    auto J = det(F);
-//    auto Jm23 = pow(J, -2.0/3.0);
-//    auto f0 = value(dispETFESpace, fibers);
-//    auto f = F * f0;
-//    auto fxf0 = F *  outerProduct (f0, f0);
-//    auto I4 = dot(f, f);
-//    auto FinvT = minusT(F);
-//    auto H = value(activationETFESpace, activation);
-//    auto Wa = eval(W, H);
-    auto W4f = eval(W4, f);
-    //auto P = value(2.0) * W4f *  fxf0;//( fxf0 - value(1.0/3.0) * I4 * FinvT ) ;
 	integrate ( elements ( dispETFESpace->mesh() ) ,
 			    quadRuleTetra4pt,
 				dispETFESpace,
-		//		dot(P, grad (phi_i) )
-				dot ( value(2.0) * Wm * F * outerProduct(f0, f0) , grad (phi_i) )
+				dot ( P , grad (phi_i) )
 				) >> residualVectorPtr;
 }
 
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI4ResidualTerms( const vector_Type& disp,
+		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
+					    const vector_Type& fibers,
+					    const vector_Type& sheets,
+						vectorPtr_Type     residualVectorPtr,
+						FunctorPtr         W4)
+{
+	using namespace ExpressionAssembly;
+	//
+	std::cout << "EMETA - Computing I4 s residual terms ... \n";
+
+	auto f_0 = _v0(dispETFESpace, fibers);
+    auto s_0 = _v0(dispETFESpace, sheets);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+    auto f0 = eval(normalize0, f_0);
+
+    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+
+    auto s0 = eval(normalize1, s_00);
+
+    auto P = eval (W4, _I4( dispETFESpace, disp, 0, s0 ) )
+		   * _dI4(dispETFESpace, disp, 0, s0);
+
+
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+			    quadRuleTetra4pt,
+				dispETFESpace,
+				dot ( P , grad (phi_i) )
+				) >> residualVectorPtr;
+}
+
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI4ResidualTermsFung( const vector_Type& disp,
+		boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+					    const vector_Type& fibers,
+					    const vector_Type& sheets,
+						vectorPtr_Type     residualVectorPtr,
+						FunctorPtr         W4,
+						Int Case = 0)
+{
+	using namespace ExpressionAssembly;
+	//
+	std::cout << "EMETA - Computing I4 s residual terms (Fung) ... \n";
+
+	auto f_0 = _v0(dispETFESpace, fibers);
+    auto s_0 = _v0(dispETFESpace, sheets);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+    auto f0 = eval(normalize0, f_0);
+
+    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+
+    auto s0 = eval(normalize1, s_00);
+
+    if(Case == 0)
+    {
+		auto P = eval (W4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+			   * _dI4(dispETFESpace, disp, 0, f0);
+
+
+		integrate ( elements ( dispETFESpace->mesh() ) ,
+					quadRuleTetra4pt,
+					dispETFESpace,
+					dot ( P , grad (phi_i) )
+					) >> residualVectorPtr;
+    }
+    else
+    {
+		auto P = eval (W4, _F( dispETFESpace, disp, 0 ), f0, s0 )
+			   * _dI4(dispETFESpace, disp, 0, s0);
+
+
+		integrate ( elements ( dispETFESpace->mesh() ) ,
+					quadRuleTetra4pt,
+					dispETFESpace,
+					dot ( P , grad (phi_i) )
+					) >> residualVectorPtr;
+    }
+
+}
 
 template< typename Mesh, typename FunctorPtr >
 void
@@ -227,39 +194,208 @@ computeI8ResidualTerms( const vector_Type& disp,
 					    const vector_Type& fibers,
 					    const vector_Type& sheets,
 		                vectorPtr_Type           residualVectorPtr,
-                        FunctorPtr                  W8)
+                        FunctorPtr                  W8,
+                        bool orthonormalize = true)
 {
 	using namespace ExpressionAssembly;
-//    auto F = _F(dispETFESpace, disp, 0);
-//    auto J = det(F);
-//    auto Jm23 = pow(J, -2.0/3.0 );
-//
-//    auto FinvT = minusT(F);
-//
-//    auto f0 = value(dispETFESpace, fibers);
-//    auto s0 = value(dispETFESpace, sheets);
-//
-//    auto f = F * f0;
-//    auto s = F * s0;
 
-    boost::shared_ptr<ShowValue> sv( new ShowValue() );
+	if(orthonormalize)
+	{
+	auto f_0 = _v0(dispETFESpace, fibers);
+    auto s_0 = _v0(dispETFESpace, sheets);
 
-//    auto I8 = dot(f, s);
-//    auto I8bar = Jm23 * I8;
-    auto I8bar = _I8fsbar(dispETFESpace, disp, 0, fibers, sheets);
-    auto P = eval (W8, I8bar )
-    	   * _dI8fsbar(dispETFESpace, disp, 0, fibers, sheets);
+    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+    auto f0 = eval(normalize0, f_0);
 
-//	dot ( eval (W1, _F(dispETFESpace, disp, 0)) * _dI1bar(dispETFESpace, disp, 0), grad (phi_i) )
+    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+
+    auto s0 = eval(normalize1, s_00);
+
+    auto P = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
+		   * _dI8(dispETFESpace, disp, 0, f0, s0);
 
     std::cout << "EMETA - Computing I8 residual terms ... \n";
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-			    quadRuleTetra4pt,
-				dispETFESpace,
-		//		dot(P, grad (phi_i) )
-				dot (  P , grad (phi_i) )
-				) >> residualVectorPtr;
+
+    integrate ( elements ( dispETFESpace->mesh() ),
+          		quadRuleTetra4pt,
+                dispETFESpace,
+                dot (  P, grad (phi_i) )
+              ) >> residualVectorPtr;
+	}
+	else
+	{
+
+		auto f_0 = _v0(dispETFESpace, fibers);
+	    auto s_0 = _v0(dispETFESpace, sheets);
+
+	    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+	    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+
+	    auto f0 = eval(normalize0, f_0);
+	    auto s0 = eval(normalize1, s_0);
+
+	    auto P = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
+			   * _dI8(dispETFESpace, disp, 0, f0, s0);
+
+	    std::cout << "EMETA - Computing I8 residual terms ... \n";
+
+	    integrate ( elements ( dispETFESpace->mesh() ),
+	          		quadRuleTetra4pt,
+	                dispETFESpace,
+	                dot (  P, grad (phi_i) )
+	              ) >> residualVectorPtr;
+	}
+
+
 }
+
+template< typename Mesh, typename FunctorPtr >
+void
+computeI8ResidualTermsFung( const vector_Type& disp,
+		                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+					    const vector_Type& fibers,
+					    const vector_Type& sheets,
+		                vectorPtr_Type           residualVectorPtr,
+                        FunctorPtr                  W8,
+                        Int Case = 0,
+                        bool orthonormalize = true)
+{
+	using namespace ExpressionAssembly;
+
+	if(orthonormalize)
+	{
+		auto f_0 = _v0(dispETFESpace, fibers);
+		auto s_0 = _v0(dispETFESpace, sheets);
+
+		boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+		boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+		auto f0 = eval(normalize0, f_0);
+
+		auto s_00 = s_0 - dot(f0, s_0) * s_0;
+
+		auto s0 = eval(normalize1, s_00);
+
+		if(Case == 0)
+		{
+		auto P = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
+			   * _dI8(dispETFESpace, disp, 0, f0, s0);
+
+		std::cout << "EMETA - Computing I8 fs residual terms Fung orthonormalize... \n";
+
+
+		integrate ( elements ( dispETFESpace->mesh() ),
+					quadRuleTetra4pt,
+					dispETFESpace,
+					dot (  P, grad (phi_i) )
+				  ) >> residualVectorPtr;
+		}
+		else
+		{
+			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+			auto n0 = eval( wedge, f0, s0);
+
+			if(Case == 1)
+			{
+				auto P = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+					   * _dI8(dispETFESpace, disp, 0, f0, n0);
+
+				std::cout << "EMETA - Computing I8 fn residual terms Fung orthonormalize ... \n";
+
+
+				integrate ( elements ( dispETFESpace->mesh() ),
+							quadRuleTetra4pt,
+							dispETFESpace,
+							dot (  P, grad (phi_i) )
+						  ) >> residualVectorPtr;
+			}
+			else
+			{
+				auto P = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+					   * _dI8(dispETFESpace, disp, 0, s0, n0);
+
+				std::cout << "EMETA - Computing I8 sn residual terms Fung orthonormalize ... \n";
+
+
+				integrate ( elements ( dispETFESpace->mesh() ),
+							quadRuleTetra4pt,
+							dispETFESpace,
+							dot (  P, grad (phi_i) )
+						  ) >> residualVectorPtr;
+
+			}
+		}
+	}
+	else
+	{
+
+		auto f_0 = _v0(dispETFESpace, fibers);
+	    auto s_0 = _v0(dispETFESpace, sheets);
+
+	    boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+	    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1));
+	    boost::shared_ptr<orthonormalizeFibers> normalize2(new orthonormalizeFibers(2));
+
+	    auto f0 = eval(normalize0, f_0);
+	    auto s0 = eval(normalize1, s_0);
+
+		if(Case == 0)
+		{
+		auto P = eval (W8, _I8( dispETFESpace, disp, 0, f0, s0 ) )
+			   * _dI8(dispETFESpace, disp, 0, f0, s0);
+
+		std::cout << "EMETA - Computing I8 fs residual terms Fung ... \n";
+
+
+		integrate ( elements ( dispETFESpace->mesh() ),
+					quadRuleTetra4pt,
+					dispETFESpace,
+					dot (  P, grad (phi_i) )
+				  ) >> residualVectorPtr;
+		}
+		else
+		{
+			boost::shared_ptr<CrossProduct> wedge(new CrossProduct);
+			auto n_0 = eval( wedge, f0, s0);
+		    auto n0 = eval(normalize2, n_0);
+
+
+			if(Case == 1)
+			{
+				auto P = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+					   * _dI8(dispETFESpace, disp, 0, f0, n0);
+
+				std::cout << "EMETA - Computing I8 fn residual terms Fung ... \n";
+
+
+				integrate ( elements ( dispETFESpace->mesh() ),
+							quadRuleTetra4pt,
+							dispETFESpace,
+							dot (  P, grad (phi_i) )
+						  ) >> residualVectorPtr;
+			}
+			else
+			{
+				auto P = eval (W8, _F( dispETFESpace, disp, 0), f0, s0 )
+					   * _dI8(dispETFESpace, disp, 0, s0, n0);
+
+				std::cout << "EMETA - Computing I8 sn residual terms Fung ... \n";
+
+
+				integrate ( elements ( dispETFESpace->mesh() ),
+							quadRuleTetra4pt,
+							dispETFESpace,
+							dot (  P, grad (phi_i) )
+						  ) >> residualVectorPtr;
+
+			}
+		}
+
+	}
+
+
+}
+
 
 
 

@@ -11,6 +11,7 @@
 
 #include <lifev/core/LifeV.hpp>
 #include <lifev/core/array/MatrixSmall.hpp>
+#include <lifev/core/array/VectorSmall.hpp>
 
 
 namespace LifeV
@@ -50,16 +51,41 @@ Real I4(const LifeV::VectorSmall<3>& f)
 	return f.dot(f);
 }
 
+Real I8(const LifeV::MatrixSmall<3, 3>& F, const LifeV::VectorSmall<3>& f0, const LifeV::VectorSmall<3>& s0)
+{
+	auto f = F * f0;
+	auto s = F * s0;
+	return f.dot(s);
+}
+
+
 Real RegularizedHeaviside(const LifeV::Real x)
 {
 	return 0.5 * ( 1 + std::tanh(1000.0 * x) );
 }
 
+Real dRegularizedHeaviside(const LifeV::Real x)
+{
+	Real a = 1.0 / std::cosh(1000.0 * x);
+	return 0.5 * 1000.0 *  a * a;
+}
+
 Real Heaviside(const LifeV::Real x)
 {
 	if(x>0) return 1.0;
-	else return 0;
+	else return 0.0;
 }
+
+
+VectorSmall<3> crossProduct(const VectorSmall<3>& v1, const VectorSmall<3>& v2)
+{
+	VectorSmall<3> v;
+	v[0] = v1[1] * v2[2] - v1[2] * v2[1];
+	v[1] = v1[2] * v2[0] - v1[0] * v2[2];
+	v[2] = v1[0] * v2[1] - v1[1] * v2[0];
+	return v;
+}
+
 
 
 }// Elasticity
