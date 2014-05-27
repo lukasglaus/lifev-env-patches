@@ -94,6 +94,15 @@ public:
 	inline void showMe()
 	{
 		std::cout << "Material Type: " << M_materialName << "\n";
+		int n = M_materialFunctionList.size();
+			for(int j(0); j < n; j++)
+				M_materialFunctionList[j]->showMe();
+	}
+
+	void setParametersFromGetPot(GetPot& data) {
+		int n = M_materialFunctionList.size();
+			for(int j(0); j < n; j++)
+				M_materialFunctionList[j]->setParametersFromGetPot(data);
 	}
 
 protected:
