@@ -69,30 +69,32 @@ public:
 
     Real computeQ (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
-        Real I4f = Elasticity::I4 (F, f0);
-        Real I4fm1 = I4f - 1;
-        Real I4s = Elasticity::I4 (F, s0);
-        Real I4sm1 = I4s - 1;
-        Real I1bar = Elasticity::I1bar (F);
-        Real I8fs = Elasticity::I8 (F, f0, s0);
-        VectorSmall<3> n0 = Elasticity::crossProduct (f0, s0);
-        Real I8fn = Elasticity::I8 (F, f0, n0);
-        Real I8sn = Elasticity::I8 (F, s0, n0);
-        Real Q  = M_bff * I4fm1 * I4fm1;
-        Q += M_bss * I4sm1 * I4sm1;
-        Q += M_bnn * (I1bar - I4f - I4s - 1.0) * (I1bar - I4f - I4s - 1.0);
-        Q += 2.0 * M_bfs * I8fs * I8fs;
-        Q += 2.0 * M_bfn * I8fn * I8fn;
-        Q += 2.0 * M_bsn * I8sn * I8sn;
-        return Q;
+    	Real I4f = Elasticity::I4(F, f0);
+    	Real I4fm1 = I4f - 1;
+    	Real I4s = Elasticity::I4(F, s0);
+    	Real I4sm1 = I4s - 1;
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
+    	Real I8fs = Elasticity::I8(F, f0,s0);
+        VectorSmall<3> n0 = Elasticity::crossProduct(f0, s0);
+    	Real I8fn = Elasticity::I8(F, f0, n0);
+    	Real I8sn = Elasticity::I8(F, s0, n0);
+		Real Q  = M_bff * I4fm1 * I4fm1;
+		     Q += M_bss * I4sm1 * I4sm1;
+    	     Q += M_bnn * (I1bar - I4f - I4s - 1.0) * (I1bar - I4f - I4s - 1.0);
+    	     Q += 2.0 * M_bfs * I8fs * I8fs;
+    	     Q += 2.0 * M_bfn * I8fn * I8fn;
+    	     Q += 2.0 * M_bsn * I8sn * I8sn;
+        	return Q;
     }
 
     Real computedQdI1 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
-        Real I4f = Elasticity::I4 (F, f0);
-        Real I4s = Elasticity::I4 (F, s0);
-        Real I1bar = Elasticity::I1bar (F);
-        return 2.0 * M_bnn * (I1bar - I4f - I4s - 1.0);
+    	Real I4f = Elasticity::I4(F, f0);
+    	Real I4s = Elasticity::I4(F, s0);
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
+    	return 2.0 * M_bnn * (I1bar - I4f - I4s - 1.0);
     }
     Real computed2QdI12 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
@@ -121,11 +123,12 @@ public:
 
     Real computedQdI4f (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
-        Real I4f = Elasticity::I4 (F, f0);
-        Real I4fm1 = I4f - 1;
-        Real I4s = Elasticity::I4 (F, s0);
-        Real I1bar = Elasticity::I1bar (F);
-        return 2.0 * ( M_bff * I4fm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
+    	Real I4f = Elasticity::I4(F, f0);
+    	Real I4fm1 = I4f - 1;
+    	Real I4s = Elasticity::I4(F, s0);
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
+    	return 2.0 * ( M_bff * I4fm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
     }
     Real computed2QdI4f2 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
@@ -151,11 +154,12 @@ public:
 
     Real computedQdI4s (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
-        Real I4f = Elasticity::I4 (F, f0);
-        Real I4s = Elasticity::I4 (F, s0);
-        Real I4sm1 = I4s - 1;
-        Real I1bar = Elasticity::I1bar (F);
-        return 2.0 * ( M_bss * I4sm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
+    	Real I4f = Elasticity::I4(F, f0);
+    	Real I4s = Elasticity::I4(F, s0);
+    	Real I4sm1 = I4s - 1;
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
+    	return 2.0 * ( M_bss * I4sm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
     }
     Real computed2QdI4s2 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
     {
@@ -1146,9 +1150,10 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
 
     auto n0 = eval (cross, f0, s0);
 
-    auto W1bar = eval (W1_bar, F, f0, s0);
-    auto dI1bar = _dI1bar (dispETFESpace, disp, 0);
-    auto P1bar = W1bar * dI1bar;
+    auto W1bar = eval(W1_bar, F, f0, s0);
+//    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
+    auto dI1bar = _dI1(dispETFESpace, disp, 0);
+	auto P1bar = W1bar * dI1bar;
 
     auto W4F = eval (W4_f, F, f0, s0);
     auto dI4F = value (2.0) * F * outerProduct (f0, f0);
@@ -1172,8 +1177,6 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
 
     auto P = P4F + P4S + P1bar + P8FS + P8FN + P8SN;
 
-    //  auto P = P8FS;
-
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -1189,132 +1192,135 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
                                                const vector_Type& sheets,
                                                matrixPtr_Type           jacobianPtr)
 {
-    using namespace ExpressionAssembly;
+	using namespace ExpressionAssembly;
 
-    boost::shared_ptr<FungFunctors::W1<Mesh> > W1_bar ( new FungFunctors::W1<Mesh> );
-    boost::shared_ptr<FungFunctors::dW1dI1<Mesh> > dW1_bar ( new FungFunctors::dW1dI1<Mesh> );
-    boost::shared_ptr<FungFunctors::dW1dI4f<Mesh> > dW1_dI4f ( new FungFunctors::dW1dI4f<Mesh> );
-    boost::shared_ptr<FungFunctors::dW1dI4s<Mesh> > dW1_dI4s ( new FungFunctors::dW1dI4s<Mesh> );
-    boost::shared_ptr<FungFunctors::dW1dI8fs<Mesh> > dW1_dI8fs ( new FungFunctors::dW1dI8fs<Mesh> );
-    boost::shared_ptr<FungFunctors::dW1dI8fn<Mesh> > dW1_dI8fn ( new FungFunctors::dW1dI8fn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW1dI8sn<Mesh> > dW1_dI8sn ( new FungFunctors::dW1dI8sn<Mesh> );
+	boost::shared_ptr<FungFunctors::W1<Mesh> > W1_bar( new FungFunctors::W1<Mesh> );
+	boost::shared_ptr<FungFunctors::dW1dI1<Mesh> > dW1_bar( new FungFunctors::dW1dI1<Mesh> );
+	boost::shared_ptr<FungFunctors::dW1dI4f<Mesh> > dW1_dI4f( new FungFunctors::dW1dI4f<Mesh> );
+	boost::shared_ptr<FungFunctors::dW1dI4s<Mesh> > dW1_dI4s( new FungFunctors::dW1dI4s<Mesh> );
+	boost::shared_ptr<FungFunctors::dW1dI8fs<Mesh> > dW1_dI8fs( new FungFunctors::dW1dI8fs<Mesh> );
+	boost::shared_ptr<FungFunctors::dW1dI8fn<Mesh> > dW1_dI8fn( new FungFunctors::dW1dI8fn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW1dI8sn<Mesh> > dW1_dI8sn( new FungFunctors::dW1dI8sn<Mesh> );
 
-    boost::shared_ptr<FungFunctors::W4f<Mesh> > W4_f ( new FungFunctors::W4f<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4fdI1<Mesh> > dW4f_dI1 ( new FungFunctors::dW4fdI1<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4fdI4f<Mesh> > dW4f_dI4f ( new FungFunctors::dW4fdI4f<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4fdI4s<Mesh> > dW4f_dI4s ( new FungFunctors::dW4fdI4s<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4fdI8fs<Mesh> > dW4f_dI8fs ( new FungFunctors::dW4fdI8fs<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4fdI8fn<Mesh> > dW4f_dI8fn ( new FungFunctors::dW4fdI8fn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4fdI8sn<Mesh> > dW4f_dI8sn ( new FungFunctors::dW4fdI8sn<Mesh> );
+	boost::shared_ptr<FungFunctors::W4f<Mesh> > W4_f( new FungFunctors::W4f<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4fdI1<Mesh> > dW4f_dI1( new FungFunctors::dW4fdI1<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4fdI4f<Mesh> > dW4f_dI4f( new FungFunctors::dW4fdI4f<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4fdI4s<Mesh> > dW4f_dI4s( new FungFunctors::dW4fdI4s<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4fdI8fs<Mesh> > dW4f_dI8fs( new FungFunctors::dW4fdI8fs<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4fdI8fn<Mesh> > dW4f_dI8fn( new FungFunctors::dW4fdI8fn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4fdI8sn<Mesh> > dW4f_dI8sn( new FungFunctors::dW4fdI8sn<Mesh> );
 
-    boost::shared_ptr<FungFunctors::W4s<Mesh> > W4_s ( new FungFunctors::W4s<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4sdI1<Mesh> > dW4s_dI1 ( new FungFunctors::dW4sdI1<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4sdI4f<Mesh> > dW4s_dI4f ( new FungFunctors::dW4sdI4f<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4sdI4s<Mesh> > dW4s_dI4s ( new FungFunctors::dW4sdI4s<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4sdI8fs<Mesh> > dW4s_dI8fs ( new FungFunctors::dW4sdI8fs<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4sdI8fn<Mesh> > dW4s_dI8fn ( new FungFunctors::dW4sdI8fn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW4sdI8sn<Mesh> > dW4s_dI8sn ( new FungFunctors::dW4sdI8sn<Mesh> );
-
-
-    boost::shared_ptr<FungFunctors::W8fs<Mesh> > W8_fs ( new FungFunctors::W8fs<Mesh> );
-    boost::shared_ptr<FungFunctors::dW8fsdI8fs<Mesh> > dW8fs_dI8fs ( new FungFunctors::dW8fsdI8fs<Mesh> );
-    boost::shared_ptr<FungFunctors::dW8fsdI8fn<Mesh> > dW8fs_dI8fn ( new FungFunctors::dW8fsdI8fn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW8fsdI8sn<Mesh> > dW8fs_dI8sn ( new FungFunctors::dW8fsdI8sn<Mesh> );
-
-    boost::shared_ptr<FungFunctors::W8fn<Mesh> > W8_fn ( new FungFunctors::W8fn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW8fndI8fn<Mesh> > dW8fn_dI8fn ( new FungFunctors::dW8fndI8fn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW8fndI8sn<Mesh> > dW8fn_dI8sn ( new FungFunctors::dW8fndI8sn<Mesh> );
-
-    boost::shared_ptr<FungFunctors::W8sn<Mesh> > W8_sn ( new FungFunctors::W8sn<Mesh> );
-    boost::shared_ptr<FungFunctors::dW8sndI8sn<Mesh> > dW8sn_dI8sn ( new FungFunctors::dW8sndI8sn<Mesh> );
-
-    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
-    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
-    boost::shared_ptr<CrossProduct> cross ( new CrossProduct );
-
-    auto F = _F (dispETFESpace, disp, 0);
-    auto f_0 = _v0 (dispETFESpace, fibers);
-    auto f0 = eval (normalize0, f_0);
-    auto s_0 = _v0 (dispETFESpace, sheets);
-    auto s_00 = s_0 - dot (f0, s_0) * s_0;
-    auto s0 = eval (normalize1, s_00);
-
-    auto n0 = eval (cross, f0, s0);
+	boost::shared_ptr<FungFunctors::W4s<Mesh> > W4_s( new FungFunctors::W4s<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4sdI1<Mesh> > dW4s_dI1( new FungFunctors::dW4sdI1<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4sdI4f<Mesh> > dW4s_dI4f( new FungFunctors::dW4sdI4f<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4sdI4s<Mesh> > dW4s_dI4s( new FungFunctors::dW4sdI4s<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4sdI8fs<Mesh> > dW4s_dI8fs( new FungFunctors::dW4sdI8fs<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4sdI8fn<Mesh> > dW4s_dI8fn( new FungFunctors::dW4sdI8fn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW4sdI8sn<Mesh> > dW4s_dI8sn( new FungFunctors::dW4sdI8sn<Mesh> );
 
 
-    auto W1bar = eval (W1_bar, F, f0, s0);
-    auto dW1bardI1 = eval (dW1_bar, F, f0, s0);
-    auto dW1bardI4F = eval (dW1_dI4f, F, f0, s0);
-    auto dW1bardI4S = eval (dW1_dI4s, F, f0, s0);
-    auto dW1bardI8FS = eval (dW1_dI8fs, F, f0, s0);
-    auto dW1bardI8FN = eval (dW1_dI8fn, F, f0, s0);
-    auto dW1bardI8SN = eval (dW1_dI8sn, F, f0, s0);
-    auto dI1bar = _dI1bar (dispETFESpace, disp, 0);
-    auto dI1bardF = _dI1bardF (dispETFESpace, disp, 0);
-    auto d2I1bardF = _d2I1bardF (dispETFESpace, disp, 0);
+	boost::shared_ptr<FungFunctors::W8fs<Mesh> > W8_fs( new FungFunctors::W8fs<Mesh> );
+	boost::shared_ptr<FungFunctors::dW8fsdI8fs<Mesh> > dW8fs_dI8fs( new FungFunctors::dW8fsdI8fs<Mesh> );
+	boost::shared_ptr<FungFunctors::dW8fsdI8fn<Mesh> > dW8fs_dI8fn( new FungFunctors::dW8fsdI8fn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW8fsdI8sn<Mesh> > dW8fs_dI8sn( new FungFunctors::dW8fsdI8sn<Mesh> );
 
-    auto W4F = eval (W4_f, F, f0, s0);
-    auto dW4FdI4F = eval (dW4f_dI4f, F, f0, s0);
-    auto dW4FdI1 = eval (dW4f_dI1, F, f0, s0);
-    auto dW4FdI4S = eval (dW4f_dI4s, F, f0, s0);
-    auto dW4FdI8FS = eval (dW4f_dI8fs, F, f0, s0);
-    auto dW4FdI8FN = eval (dW4f_dI8fn, F, f0, s0);
-    auto dW4FdI8SN = eval (dW4f_dI8sn, F, f0, s0);
-    auto dI4F = value (2.0) * F * outerProduct (f0, f0);
-    auto dI4FdF = dot ( dI4F, _dF );
-    auto d2I4FdF = value (2.0) * _dF * outerProduct (f0, f0);
+	boost::shared_ptr<FungFunctors::W8fn<Mesh> > W8_fn( new FungFunctors::W8fn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW8fndI8fn<Mesh> > dW8fn_dI8fn( new FungFunctors::dW8fndI8fn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW8fndI8sn<Mesh> > dW8fn_dI8sn( new FungFunctors::dW8fndI8sn<Mesh> );
 
-    auto W4S = eval (W4_s, F, f0, s0);
-    auto dW4SdI4S = eval (dW4s_dI4s, F, f0, s0);
-    auto dW4SdI1 = eval (dW4s_dI1, F, f0, s0);
-    auto dW4SdI4F = eval (dW4s_dI4f, F, f0, s0);
-    auto dW4SdI8FS = eval (dW4s_dI8fs, F, f0, s0);
-    auto dW4SdI8FN = eval (dW4s_dI8fn, F, f0, s0);
-    auto dW4SdI8SN = eval (dW4s_dI8sn, F, f0, s0);
-    auto dI4S = value (2.0) * F * outerProduct (s0, s0);
-    auto dI4SdF = dot ( dI4S, _dF );
-    auto d2I4SdF = value (2.0) * _dF * outerProduct (s0, s0);
+	boost::shared_ptr<FungFunctors::W8sn<Mesh> > W8_sn( new FungFunctors::W8sn<Mesh> );
+	boost::shared_ptr<FungFunctors::dW8sndI8sn<Mesh> > dW8sn_dI8sn( new FungFunctors::dW8sndI8sn<Mesh> );
 
-    auto W8FS     = eval (W8_fs, F, f0, s0);
-    auto dW8FSdI1 = eval (dW1_dI8fs, F, f0, s0);
-    auto dW8FSdI4F = eval (dW4f_dI8fs, F, f0, s0);
-    auto dW8FSdI4S = eval (dW4s_dI8fs, F, f0, s0);
-    auto dW8FSdI8FS = eval (dW8fs_dI8fs, F, f0, s0);
-    auto dW8FSdI8FN = eval (dW8fs_dI8fn, F, f0, s0);
-    auto dW8FSdI8SN = eval (dW8fs_dI8sn, F, f0, s0);
-    auto dI8FS = _dI8 (dispETFESpace, disp, 0, f0, s0);
-    auto dI8FSdF = _dI8dF (dispETFESpace, disp, 0, f0, s0);
-    auto d2I8FSdF = _d2I8dF (dispETFESpace, f0, s0);
+	boost::shared_ptr<orthonormalizeFibers> normalize0(new orthonormalizeFibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize1(new orthonormalizeFibers(1) );
+	boost::shared_ptr<CrossProduct> cross( new CrossProduct );
 
-    auto W8FN     = eval (W8_fn, F, f0, s0);
-    auto dW8FNdI1 = eval (dW1_dI8fn, F, f0, s0);
-    auto dW8FNdI4F = eval (dW4f_dI8fn, F, f0, s0);
-    auto dW8FNdI4S = eval (dW4s_dI8fn, F, f0, s0);
-    auto dW8FNdI8FS = eval (dW8fs_dI8fn, F, f0, s0);
-    auto dW8FNdI8FN = eval (dW8fn_dI8fn, F, f0, s0);
-    auto dW8FNdI8SN = eval (dW8fn_dI8sn, F, f0, s0);
-    auto dI8FN = _dI8 (dispETFESpace, disp, 0, f0, n0);
-    auto dI8FNdF = _dI8dF (dispETFESpace, disp, 0, f0, n0);
-    auto d2I8FNdF = _d2I8dF (dispETFESpace, f0, n0);
+	auto F = _F(dispETFESpace, disp, 0);
+	auto f_0 = _v0(dispETFESpace, fibers);
+	auto f0 = eval(normalize0, f_0);
+	auto s_0 = _v0(dispETFESpace, sheets);
+    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+    auto s0 = eval(normalize1, s_00);
 
-    auto W8SN     = eval (W8_sn, F, f0, s0);
-    auto dW8SNdI1 = eval (dW1_dI8sn, F, f0, s0);
-    auto dW8SNdI4F = eval (dW4f_dI8sn, F, f0, s0);
-    auto dW8SNdI4S = eval (dW4s_dI8sn, F, f0, s0);
-    auto dW8SNdI8FS = eval (dW8fs_dI8sn, F, f0, s0);
-    auto dW8SNdI8FN = eval (dW8fn_dI8sn, F, f0, s0);
-    auto dW8SNdI8SN = eval (dW8sn_dI8sn, F, f0, s0);
-    auto dI8SN = _dI8 (dispETFESpace, disp, 0, s0, n0);
-    auto dI8SNdF = _dI8dF (dispETFESpace, disp, 0, s0, n0);
-    auto d2I8SNdF = _d2I8dF (dispETFESpace, s0, n0);
+    auto n0 = eval(cross, f0, s0);
 
-    auto dP1bar = W1bar * d2I1bardF
-                  + ( dW1bardI1 * dI1bardF
-                      + dW1bardI4F * dI4FdF
-                      + dW1bardI4S * dI4SdF
-                      + dW1bardI8FS * dI8FSdF
-                      + dW1bardI8FN * dI8FNdF
-                      + dW1bardI8SN * dI8SNdF  ) * dI1bar;
+
+    auto W1bar = eval(W1_bar, F, f0, s0);
+    auto dW1bardI1= eval(dW1_bar,F, f0, s0);
+    auto dW1bardI4F= eval(dW1_dI4f,F, f0, s0);
+    auto dW1bardI4S= eval(dW1_dI4s,F, f0, s0);
+    auto dW1bardI8FS=eval(dW1_dI8fs,F, f0, s0);
+    auto dW1bardI8FN=eval(dW1_dI8fn,F, f0, s0);
+    auto dW1bardI8SN=eval(dW1_dI8sn,F, f0, s0);
+//    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
+//    auto dI1bardF = _dI1bardF(dispETFESpace, disp, 0);
+//	auto d2I1bardF= _d2I1bardF(dispETFESpace, disp, 0);
+    auto dI1bar = _dI1(dispETFESpace, disp, 0);
+    auto dI1bardF = _dI1dF(dispETFESpace, disp, 0);
+	auto d2I1bardF= _d2I1dF;
+
+    auto W4F = eval(W4_f, F, f0, s0);
+    auto dW4FdI4F = eval(dW4f_dI4f, F, f0, s0);
+    auto dW4FdI1= eval(dW4f_dI1,F, f0, s0);
+    auto dW4FdI4S= eval(dW4f_dI4s,F, f0, s0);
+    auto dW4FdI8FS= eval(dW4f_dI8fs,F, f0, s0);
+    auto dW4FdI8FN= eval(dW4f_dI8fn,F, f0, s0);
+    auto dW4FdI8SN= eval(dW4f_dI8sn,F, f0, s0);
+    auto dI4F = value(2.0) * F * outerProduct(f0, f0);
+    auto dI4FdF = dot( dI4F, _dF );
+    auto d2I4FdF = value(2.0) * _dF * outerProduct(f0, f0);
+
+    auto W4S = eval(W4_s, F, f0, s0);
+    auto dW4SdI4S = eval(dW4s_dI4s, F, f0, s0);
+    auto dW4SdI1= eval(dW4s_dI1,F, f0, s0);
+    auto dW4SdI4F= eval(dW4s_dI4f,F, f0, s0);
+    auto dW4SdI8FS= eval(dW4s_dI8fs,F, f0, s0);
+    auto dW4SdI8FN= eval(dW4s_dI8fn,F, f0, s0);
+    auto dW4SdI8SN= eval(dW4s_dI8sn,F, f0, s0);
+    auto dI4S = value(2.0) * F * outerProduct(s0, s0);
+    auto dI4SdF = dot( dI4S, _dF );
+    auto d2I4SdF = value(2.0) * _dF * outerProduct(s0, s0);
+
+	auto W8FS     = eval(W8_fs, F, f0, s0);
+    auto dW8FSdI1 = eval(dW1_dI8fs,F, f0, s0);
+    auto dW8FSdI4F= eval(dW4f_dI8fs,F, f0, s0);
+    auto dW8FSdI4S= eval(dW4s_dI8fs,F, f0, s0);
+    auto dW8FSdI8FS=eval(dW8fs_dI8fs,F, f0, s0);
+    auto dW8FSdI8FN=eval(dW8fs_dI8fn,F, f0, s0);
+    auto dW8FSdI8SN=eval(dW8fs_dI8sn,F, f0, s0);
+	auto dI8FS= _dI8(dispETFESpace, disp, 0, f0, s0);
+	auto dI8FSdF= _dI8dF(dispETFESpace, disp, 0, f0, s0);
+	auto d2I8FSdF= _d2I8dF(dispETFESpace, f0, s0);
+
+	auto W8FN     = eval(W8_fn, F, f0, s0);
+    auto dW8FNdI1 = eval(dW1_dI8fn,F, f0, s0);
+    auto dW8FNdI4F= eval(dW4f_dI8fn,F, f0, s0);
+    auto dW8FNdI4S= eval(dW4s_dI8fn,F, f0, s0);
+    auto dW8FNdI8FS=eval(dW8fs_dI8fn,F, f0, s0);
+    auto dW8FNdI8FN=eval(dW8fn_dI8fn,F, f0, s0);
+    auto dW8FNdI8SN=eval(dW8fn_dI8sn,F, f0, s0);
+	auto dI8FN= _dI8(dispETFESpace, disp, 0, f0, n0);
+	auto dI8FNdF= _dI8dF(dispETFESpace, disp, 0, f0, n0);
+	auto d2I8FNdF= _d2I8dF(dispETFESpace, f0, n0);
+
+	auto W8SN     = eval(W8_sn, F, f0, s0);
+    auto dW8SNdI1 = eval(dW1_dI8sn,F, f0, s0);
+    auto dW8SNdI4F= eval(dW4f_dI8sn,F, f0, s0);
+    auto dW8SNdI4S= eval(dW4s_dI8sn,F, f0, s0);
+    auto dW8SNdI8FS=eval(dW8fs_dI8sn,F, f0, s0);
+    auto dW8SNdI8FN=eval(dW8fn_dI8sn,F, f0, s0);
+    auto dW8SNdI8SN=eval(dW8sn_dI8sn,F, f0, s0);
+	auto dI8SN= _dI8(dispETFESpace, disp, 0, s0, n0);
+	auto dI8SNdF= _dI8dF(dispETFESpace, disp, 0, s0, n0);
+	auto d2I8SNdF= _d2I8dF(dispETFESpace, s0, n0);
+
+	auto dP1bar = W1bar * d2I1bardF
+			    + ( dW1bardI1 * dI1bardF
+			      + dW1bardI4F * dI4FdF
+			      + dW1bardI4S * dI4SdF
+			      + dW1bardI8FS * dI8FSdF
+			      + dW1bardI8FN * dI8FNdF
+			      + dW1bardI8SN * dI8SNdF  ) * dI1bar;
 
     auto dP4F = W4F * d2I4FdF
                 + ( dW4FdI1 * dI1bardF
