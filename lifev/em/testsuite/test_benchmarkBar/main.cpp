@@ -180,7 +180,7 @@ int main (int argc, char** argv)
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
     solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
-    solid.EMMaterial() -> setupSheetVector( 0.0, 0.0, 1.0);
+    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
     if(solid.EMMaterial()->sheetVectorPtr()) std::cout << "I have sheets!\n";
     else
     {
@@ -195,6 +195,44 @@ int main (int argc, char** argv)
         std::cout << " Done!" << std::endl;
     }
 
+
+    //===========================================================
+    //===========================================================
+    //              IMPORTER
+    //===========================================================
+    //===========================================================
+    vectorPtr_Type importedSolutionPtr;
+    bool import = dataFile("importer/import",false);
+    Real importTime = 0.0;
+
+    if(import)
+    {
+		importedSolutionPtr.reset( new vector_Type ( solid.displacement().map() ) );
+
+		boost::shared_ptr< Exporter<RegionMesh<LinearTetra> > > importer;
+		importer.reset(new ExporterHDF5<RegionMesh<LinearTetra> > () );
+
+		std::string prefix = dataFile("importer/prefix","");
+		std::cout <<  "Prefix: " << prefix <<"\n";
+		importer->setPrefix (prefix);
+
+		std::string postDir = dataFile("importer/prefix","");
+		std::cout <<  "PostDir: " << postDir <<"\n";
+		importer->setPostDir (postDir);
+
+		importer->setMeshProcId (dFESpace->mesh(),
+								 dFESpace->map().comm().MyPID() );
+		//! Exporter data
+		typedef ExporterData<mesh_Type>                                     IOData_Type;
+		importer->addVariable (IOData_Type::VectorField, "displacement", dFESpace,
+				importedSolutionPtr, static_cast<UInt> (0) );
+
+		importTime = dataFile("importer/import_time", 0.0);
+		importer->importFromTime (importTime);
+		importer->closeFile();
+
+		solid.initialize(importedSolutionPtr);
+    }
     //===========================================================
     //===========================================================
     //              BOUNDARY CONDITIONS Part II
@@ -231,12 +269,33 @@ int main (int argc, char** argv)
     //===========================================================
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
-    Real endTime = dataFile ( "solid/time_discretization/endtime", 1);
+    Real endTime = dataFile ( "solid/time_discretization/endtime", 1.0);
+    bool updatedTimeStep1 = false;
+    bool updatedTimeStep2 = false;
 
-    for (Real time (0.0); time < endTime ; )
+    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << "\n";
+    for (Real time (importTime); time < endTime ; )
     {
+    	if(time >= 0.85)
+		{
+    		if(!updatedTimeStep1)
+    		{
+    			updatedTimeStep1 = true;
+    			dt = 0.1 * dt;
+    		}
+		}
+    	if(time >= 0.91)
+		{
+    		if(!updatedTimeStep2)
+    		{
+    			updatedTimeStep2 = true;
+    			dt = 0.25 * dt;
+    		}
+		}
+
+
     	time += dt;
-    	solid.data() -> dataTime() -> updateTime();
+//    	solid.data() -> dataTime() -> updateTime();
 
     	std::cout << "\n=====================================================\n";
     	std::cout << "============= TIME: " << time ;
@@ -244,12 +303,12 @@ int main (int argc, char** argv)
 
 
     	//Update boundary Conditions
-    	solidBC -> updatePhysicalSolverVariables();
+//    	solidBC -> updatePhysicalSolverVariables();
 
         ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
         *boundaryVectorPtr *= (FinalPressure * time);
         Real norm = boundaryVectorPtr -> norm2();
-        std::cout << "Norm BC: " << norm << "\n";
+        std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure * time << "\n";
         bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
 	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
     	/////
@@ -302,7 +361,7 @@ template<typename space> void ComputeBC( const boost::shared_ptr<RegionMesh<Line
 	  	auto FmT = minusT(F);
 	  	auto J = det(F);
 
-    	QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
+    	QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
 
         integrate ( boundary ( localMesh, bdFlag),
         		    myBDQR,
