@@ -23,6 +23,12 @@ multimesh  = false
 start      = 0
 save       = 1
 
+[importer]
+import = false
+import_time = 0.01
+prefix = structure
+postDir = ./
+
 [solid]
 
 	[./physics]
@@ -42,12 +48,13 @@ save       = 1
 	#PHO   = Passive Holzapfel Ogden
 	#POF   = Passive Orthotropic Fung
 	#PTIF  = Passive Transversely Isotropic Fung
+	#SFAS  = Simple Fiber Active Stress
 	EMPassiveMaterialType = PTIF
 
 
    [../boundary_conditions]
-   flag = 500
-   pressure = -1
+   flag = 200
+   pressure = -40
    list = 'Top Bottom Back Right'
 
         [./Top]
@@ -59,7 +66,7 @@ save       = 1
 
         [../Bottom]
         type       = Essential
-        flag       = 600
+        flag       = 1024
         mode       = Full #Component #Full
         component  = 3
     	function  = '0.0'
@@ -81,16 +88,16 @@ save       = 1
         [../]
 
 	[../time_discretization]
-	initialtime 	= 0.
+	initialtime 	= 0
 	endtime     	= 1
-	timestep    	= 0.5
+	timestep    	= 0.1
 	theta       	= 0.35
 	zeta        	= 0.75
 	BDF_order   	= 2
 	
 	[../space_discretization]
 	mesh_type = .mesh
-	mesh_dir  	= /Users/srossi/LifeV/meshes/
+	mesh_dir  	= ./
 	mesh_file 	= bar_05mm.mesh
 	order     	= P2
 	
@@ -125,23 +132,57 @@ save       = 1
 	[./ifpack]
 	overlap  	= 3
 	
-	[./fact]
-	ilut_level-of-fill 	= 1
-	drop_tolerance          = 1.e-5
-	relax_value             = 0
+		[./fact]
+		ilut_level-of-fill 	= 1
+		drop_tolerance          = 1.e-5
+		relax_value             = 0
 	
-	[../amesos]
-	solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+		[../amesos]
+		solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
 	
-	[../partitioner]
-	overlap 		= 4
+		[../partitioner]
+		overlap 		= 4
 	
 	
-	[../schwarz]
-	reordering_type 	= none 			# metis, rcm, none
-	filter_singletons 	= true
+		[../schwarz]
+		reordering_type 	= none 			# metis, rcm, none
+		filter_singletons 	= true
+		
+		[../]
 	
-	[../]
+	
+	[../ML] 
+
+	default_parameter_list = NSSA  # Domain-decomposition
+	prec_type =  MGV               # Multigrid, single V-cycle
+	max_levels = 10
+	inc_or_dec = increasing
+
+		[./energy_minimization]
+		enable = true
+		type   = 3
+
+		[../repartition]
+		enable              = 1
+        max_min_ratio       = 1.3
+        min_per_proc        = 500
+        partitioner         = ParMETIS #Zoltan: to be implemented
+
+        [../aggregation]
+        threshold            = 0.01
+        nodes_per_aggregate = 32
+
+        [../coarse]
+        max_size            = 10
+        type                = 'self' 
+
+        [../smoother]
+        type        = 'symmetric Gauss-Seidel'           # Gauss-Seidel smoother
+        sweeps      = 1
+        pre_or_post = both
+        [../] #smoother
+
+    [../] # ML
 	
 [../]
 
