@@ -46,32 +46,34 @@ save       = 1
 
 
    [../boundary_conditions]
+   flag = 500
+   pressure = -1
    list = 'Top Bottom Back Right'
 
         [./Top]
         type       = Natural
-        flag       = 600
+        flag       = 505
         mode       = Full
         component  = 3
-    	function  = '[-25000*t, 0, -0*t]'
+    	function  = '[0.0, -1*t, 0.0]'
 
         [../Bottom]
         type       = Essential
-        flag       = 200
-        mode       = Component #Full
-        component  = 2
+        flag       = 600
+        mode       = Full #Component #Full
+        component  = 3
     	function  = '0.0'
         
         [../Back]
         type       = Essential
-        flag       = 300
+        flag       = 303
         mode       = Component
         component  = 1
 	    function  = '0.0'
 
         [../Right]
         type       = Essential
-        flag       = 900
+        flag       = 909
         mode       = Component
         component  = 0
     	function  = '0.0'
@@ -80,17 +82,17 @@ save       = 1
 
 	[../time_discretization]
 	initialtime 	= 0.
-	endtime     	= 10
-	timestep    	= 0.25
+	endtime     	= 1
+	timestep    	= 0.5
 	theta       	= 0.35
 	zeta        	= 0.75
 	BDF_order   	= 2
 	
 	[../space_discretization]
 	mesh_type = .mesh
-	mesh_dir  	= ./
-	mesh_file 	= cube4.mesh
-	order     	= P1
+	mesh_dir  	= /Users/srossi/LifeV/meshes/
+	mesh_file 	= bar_05mm.mesh
+	order     	= P2
 	
 	
 	[../miscellaneous]
@@ -105,7 +107,7 @@ save       = 1
 	
 	
 	[../solver]
-	solver          = gmres
+	solver          = cg #gmres
 	scaling         = none
 	output          = all 			# none
 	conv            = rhs

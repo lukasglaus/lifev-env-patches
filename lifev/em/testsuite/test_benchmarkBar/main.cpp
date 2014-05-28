@@ -32,6 +32,15 @@ using namespace LifeV;
 
 
 
+
+
+template<typename space> void ComputeBC( const boost::shared_ptr<RegionMesh<LinearTetra> > localMesh,
+						const VectorEpetra& disp,
+						boost::shared_ptr<VectorEpetra> bcVectorPtr,
+						const boost::shared_ptr< space > dETFESpace,
+						int bdFlag);
+
+
 int main (int argc, char** argv)
 {
 
@@ -117,7 +126,7 @@ int main (int argc, char** argv)
 
     //===========================================================
     //===========================================================
-    //              BOUNDARY CONDITIONS
+    //              BOUNDARY CONDITIONS Part I
     //===========================================================
     //===========================================================
     if ( comm->MyPID() == 0 )
@@ -134,7 +143,6 @@ int main (int argc, char** argv)
     bcInterfacePtr_Type                     solidBC ( new bcInterface_Type() );
     solidBC->createHandler();
     solidBC->fillHandler ( data_file_name, "solid" );
-    solidBC->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
 
     if ( comm->MyPID() == 0 )
     {
@@ -171,12 +179,9 @@ int main (int argc, char** argv)
 
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
-    solid.EMMaterial() -> setupFiberVector ( 1.0, 0.0, 0.0);
-    solid.EMMaterial() -> setupSheetVector ( 0.0, 1.0, 0.0);
-    if (solid.EMMaterial()->sheetVectorPtr() )
-    {
-        std::cout << "I have sheets!\n";
-    }
+    solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
+    solid.EMMaterial() -> setupSheetVector( 0.0, 0.0, 1.0);
+    if(solid.EMMaterial()->sheetVectorPtr()) std::cout << "I have sheets!\n";
     else
     {
         std::cout << "I don't have sheets!\n";
@@ -189,6 +194,23 @@ int main (int argc, char** argv)
     {
         std::cout << " Done!" << std::endl;
     }
+
+    //===========================================================
+    //===========================================================
+    //              BOUNDARY CONDITIONS Part II
+    //===========================================================
+    //===========================================================
+
+    //ADD THE NATURAL CONDITION ON THE DEFORMED CONFIGURATION
+    Int flag =  dataFile ( "solid/boundary_conditions/flag", 500);
+    Real FinalPressure =  dataFile ( "solid/boundary_conditions/pressure", 1000.0);
+
+    vectorPtr_Type boundaryVectorPtr(new vector_Type ( solid.displacement().map(), Repeated ) );
+    ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
+    boost::shared_ptr<BCVector> bcVectorPtr( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
+    solidBC -> handler() -> addBC("DeformedSide", flag, Natural, Full, *bcVectorPtr, 3);
+    solidBC -> handler() -> bcUpdate( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
+
 
     //===========================================================
     //===========================================================
@@ -209,19 +231,30 @@ int main (int argc, char** argv)
     //===========================================================
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
-    Real endTime = dataFile ( "solid/time_discretization/endtime", 0.05);
+    Real endTime = dataFile ( "solid/time_discretization/endtime", 1);
 
     for (Real time (0.0); time < endTime ; )
     {
-        std::cout << "\n=====================================================\n";
-        std::cout << "============= TIME: " << time ;
-        std::cout << "\n=====================================================\n";
-        time += dt;
-        solid.data() -> dataTime() -> updateTime();
+    	time += dt;
+    	solid.data() -> dataTime() -> updateTime();
 
-        solidBC -> updatePhysicalSolverVariables();
+    	std::cout << "\n=====================================================\n";
+    	std::cout << "============= TIME: " << time ;
+    	std::cout << "\n=====================================================\n";
 
-        solid.iterate ( solidBC -> handler() );
+
+    	//Update boundary Conditions
+    	solidBC -> updatePhysicalSolverVariables();
+
+        ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
+        *boundaryVectorPtr *= (FinalPressure * time);
+        Real norm = boundaryVectorPtr -> norm2();
+        std::cout << "Norm BC: " << norm << "\n";
+        bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
+	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
+    	/////
+
+    	solid.iterate ( solidBC -> handler() );
 
         exporter->postProcess ( time );
     }
@@ -240,4 +273,45 @@ int main (int argc, char** argv)
     MPI_Finalize();
 #endif
     return 0;
+}
+
+
+
+template<typename space> void ComputeBC( const boost::shared_ptr<RegionMesh<LinearTetra> > localMesh,
+						const VectorEpetra& disp,
+						boost::shared_ptr<VectorEpetra> bcVectorPtr,
+						const boost::shared_ptr< space > dETFESpace,
+						int bdFlag)
+{
+
+	*bcVectorPtr *= 0.0;
+
+    MatrixSmall<3,3> Id;
+    Id(0,0) = 1.; Id(0,1) = 0., Id(0,2) = 0.;
+    Id(1,0) = 0.; Id(1,1) = 1., Id(1,2) = 0.;
+    Id(2,0) = 0.; Id(2,1) = 0., Id(2,2) = 1.;
+
+	boost::shared_ptr<VectorEpetra> intergral( new VectorEpetra( disp.map() ) );
+
+	{
+	  	using namespace ExpressionAssembly;
+
+	  	auto I = value(Id);
+	  	auto Grad_u = grad( dETFESpace, disp, 0);
+	  	auto F =  Grad_u + I;
+	  	auto FmT = minusT(F);
+	  	auto J = det(F);
+
+    	QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
+
+        integrate ( boundary ( localMesh, bdFlag),
+        		    myBDQR,
+        		    dETFESpace,
+        		    J * dot( FmT * Nface,  phi_i)
+                  ) >> bcVectorPtr;
+
+        bcVectorPtr -> globalAssemble();
+
+
+	}
 }
