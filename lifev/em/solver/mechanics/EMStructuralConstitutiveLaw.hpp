@@ -49,6 +49,7 @@
 //#include <lifev/em/solver/mechanics/materials/EMActiveStrainMaterial.hpp>
 
 #include <lifev/em/util/EMUtility.hpp>
+#include <lifev/electrophysiology/util/HeartUtility.hpp>
 #include <lifev/em/solver/mechanics/materials/MaterialsList.hpp>
 //#include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
 
@@ -187,8 +188,12 @@ public:
 
     inline void setupFiberVector ( std::string& name, std::string& path )
     {
-        ElectrophysiologyUtility::importFibers ( M_fiberVectorPtr, name, path  );
-        ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
+        /* These two lines are giving compilation errors that I have not been able to solve.
+           The function importFibers is not defined in the ElectroPhysiologyUtility or the
+           Heartutility. Paolo Tricerri, June, 10th, 2014
+        */
+       //ElectrophysiologyUtility::importFibers ( M_fiberVectorPtr, name, path  );
+        //ElectrophysiologyUtility::normalize (*M_fiberVectorPtr);
     }
 
     void setupFiberVector ( Real fx, Real fy, Real fz )
@@ -205,8 +210,12 @@ public:
 
     inline void setupSheetVector ( std::string& name, std::string& path )
     {
-        ElectrophysiologyUtility::importFibers ( M_sheetVectorPtr, name, path  );
-        ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
+        /* These two lines are giving compilation errors that I have not been able to solve.
+           The function importFibers is not defined in the ElectroPhysiologyUtility or the
+           Heartutility. Paolo Tricerri, June, 10th, 2014
+        */
+        //ElectrophysiologyUtility::importFibers ( M_sheetVectorPtr, name, path  );
+        //ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
     }
 
     void setupSheetVector ( Real sx, Real sy, Real sz )
