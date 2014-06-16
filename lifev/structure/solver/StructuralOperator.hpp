@@ -537,6 +537,12 @@ public:
         return M_BCh;
     }
 
+    //! Get the bCHandler object
+    bcHandler_Type& bcH()
+    {
+        return M_BCh;
+    }
+
     //! Get the residual
     vector_Type& residual()
     {
