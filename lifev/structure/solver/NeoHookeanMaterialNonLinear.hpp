@@ -137,6 +137,9 @@ public:
                                 const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                 const displayerPtr_Type& displayer);
 
+   void updateJacobianMatrix ( const vector_Type& disp, const vector_Type& pressure, const dataPtr_Type& dataMaterial );
+
+
 
     //! Updates the nonlinear terms in the Jacobian matrix in StructualSolver::updateJacobian
     /*!
@@ -166,6 +169,9 @@ public:
                             const mapMarkerVolumesPtr_Type /*mapsMarkerVolumes*/,
                             const mapMarkerIndexesPtr_Type /*mapsMarkerIndexes*/,
                             const displayerPtr_Type& displayer );
+
+    void computeStiffness ( const vector_Type& sol, const vector_Type& pressure,
+        		                         const dataPtr_Type& dataMaterial );
 
     //! Computes the new Stiffness vector for Neo-Hookean and Exponential materials in
     //! StructuralSolver given a certain displacement field.
@@ -485,6 +491,77 @@ void NeoHookeanMaterialNonLinear<MeshType>::updateNonLinearJacobianTerms ( matri
 
 
 template <typename MeshType>
+void NeoHookeanMaterialNonLinear<MeshType>::updateJacobianMatrix ( const vector_Type& disp,
+		                                                           const vector_Type& pressure,
+		                                                           const dataPtr_Type& dataMaterial )
+{
+    this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
+
+    this->M_displayer->leaderPrint (" \n*********************************\n  ");
+    this->M_displayer->leaderPrint ("   Non-Linear S-  updating non linear terms in the Jacobian Matrix (Mixed Neo-Hookean)");
+    this->M_displayer->leaderPrint (" \n*********************************\n  ");
+
+
+    *(this->M_jacobian) *= 0.0;
+
+    using namespace ExpressionAssembly;
+
+    auto F = grad( this->M_dispETFESpace,  disp, this->M_offset) + value(this->M_identity);
+    auto FmT = minusT(F);
+    auto C = transpose(F)*F;
+    auto p = value(this->M_pressureETFESpace, pressure);
+
+    auto J = det(F);
+    auto Jm23= pow(J, -2./3.);
+    auto dF= grad (phi_j);
+    auto dFmTdF= value (-1.0) * FmT * transpose (dF) * FmT;
+    auto dJ = J * FmT;
+    auto dJdF = dot(dJ , dF );
+    auto d2JdF = dJdF * FmT + J * dFmTdF;
+    auto dJm23 = value(-2./3.) * Jm23 * FmT;
+    auto dJm23dF = dot( dJm23, dF);
+    auto d2Jm23dF = value(-2./3.) * Jm23 * dFmTdF + dJm23dF * FmT;
+
+    auto I1= trace(C);
+    auto I1bar = Jm23 * I1;
+    auto dI1 = value(2.) * F;
+    auto dI1bar = Jm23 * dI1 + I1 *dJm23;
+    auto dI1dF = dot( dI1, dF);
+    auto dI1bardF = dot( dI1bar, dF);
+    auto d2I1dF = value(2.0) * dF;
+    auto d2I1bardF = dJm23dF * dI1 + Jm23 * d2I1dF + I1 * d2Jm23dF + dI1dF * dJm23;
+
+    auto mu = parameter ( (* (this->M_vectorsParameters) ) [0] );
+//    auto dP = value(0.5) * mu * ( d2I1bardF +   dI1bardF  * dI1bar ) + p * ( J * dFmTdF + dJdF * FmT);
+
+    auto FdF = dot(F, dF);
+    auto FmTdF=dot(FmT, dF);
+
+    auto dP = value(0.5 / 3.0) * mu * Jm23 * ( value(3.0) * dF
+    		                                 + I1 * FmT * transpose(dF) * FmT
+    										 - value(2.0) * FdF * FmT
+    										 - value(2.0) * FmTdF * ( F + value(-1.0/3.0) * I1 * FmT ) )
+             + p * ( J * dFmTdF + dJdF * FmT);
+//    auto dP = value(0.5) * mu * dF + p * ( J * dFmTdF + dJdF * FmT) ; //( d2I1bardF +   dI1bardF  * dI1bar );
+    //    	auto dP = grad(phi_j);
+
+    this->M_displayer->leaderPrint ("   Non-Linear Mixed S - updating non linear terms in the Jacobian Matrix (Neo-Hookean)");
+
+    integrate ( elements ( this->M_dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                this->M_dispETFESpace,
+                this->M_dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> this->M_jacobian;
+
+    this->M_jacobian->globalAssemble();
+    this->M_displayer->leaderPrint (" \n*********************************\n  ");
+}
+
+
+
+
+template <typename MeshType>
 void NeoHookeanMaterialNonLinear<MeshType>::apply ( const vector_Type& sol, vector_Type& res,
                                                     const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                                                     const mapMarkerIndexesPtr_Type mapsMarkerIndexes)
@@ -553,6 +630,46 @@ void NeoHookeanMaterialNonLinear<MeshType>::computeStiffness ( const vector_Type
     //    }
     this->M_stiff->globalAssemble();
 }
+
+
+
+template <typename MeshType>
+void NeoHookeanMaterialNonLinear<MeshType>::computeStiffness ( 	const vector_Type& disp,
+																const vector_Type& pressure,
+																const dataPtr_Type& dataMaterial )
+{
+    this->M_displayer->leaderPrint (" \n******************************************************************\n  ");
+    this->M_displayer->leaderPrint (" Non-Linear S-  Computing the Mixed Neo-Hookean nonlinear stiffness vector"     );
+    this->M_displayer->leaderPrint (" \n******************************************************************\n  ");
+
+    M_stiff.reset (new vector_Type (*this->M_localMap) );
+    * (M_stiff) *= 0.0;
+
+//    std::cout << "\nMax pressure: " << pressure.normInf();
+    using namespace ExpressionAssembly;
+
+    auto F = grad( this->M_dispETFESpace,  disp, this->M_offset) + value(this->M_identity);
+    auto FmT = minusT(F);
+    auto C = transpose(F)*F;
+    auto p = value(this->M_pressureETFESpace, pressure);
+
+    auto J = det(F);
+    auto Jm23= pow(J, -2./3.);
+
+    auto I1= trace(C);
+
+    auto mu = parameter ( (* (this->M_vectorsParameters) ) [0] );
+    auto P = value(0.5) *mu * Jm23 * ( F + value(-1./3.) * I1 * FmT  ) + J * p * FmT;
+//    auto P =  value(0.5) *mu * F + J * p * FmT; //p  * value(this->M_identity);
+    integrate ( elements ( this->M_dispETFESpace->mesh() ),
+                this->M_dispFESpace->qr(),
+                this->M_dispETFESpace,
+               dot( P, grad(phi_i) )
+              ) >> M_stiff;
+
+    this->M_stiff->globalAssemble();
+}
+
 
 template <typename MeshType>
 void NeoHookeanMaterialNonLinear<MeshType>::showMe ( std::string const& fileNameStiff,
