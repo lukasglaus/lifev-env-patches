@@ -115,6 +115,9 @@ public:
     typedef ETFESpace<MeshType, MapEpetra, 3, 3 >         ETFESpace_Type;
     typedef boost::shared_ptr<ETFESpace_Type>             ETFESpacePtr_Type;
 
+    typedef ETFESpace<MeshType, MapEpetra, 3, 1 >         scalarETFESpace_Type;
+    typedef boost::shared_ptr<scalarETFESpace_Type>       scalarETFESpacePtr_Type;
+
     typedef FESpace< MeshType, MapEpetra >                FESpace_Type;
     typedef boost::shared_ptr<FESpace_Type>               FESpacePtr_Type;
 
@@ -172,6 +175,8 @@ public:
                                          const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                          const displayerPtr_Type& displayer ) = 0;
 
+    virtual  void updateJacobianMatrix ( const vector_Type& disp, const vector_Type& pressure, const dataPtr_Type& dataMaterial ) {}
+
     //! Computes the new Stiffness matrix in StructuralSolver given a certain displacement field.
     //! This function is used both in StructuralSolver::evalResidual and in
     //! StructuralSolver::updateSystem since the matrix is the expression of the matrix is the same.
@@ -187,6 +192,9 @@ public:
                                      const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                                      const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                      const displayerPtr_Type& displayer ) = 0;
+
+    virtual  void computeStiffness ( const vector_Type& sol, const vector_Type& pressure,
+    		                         const dataPtr_Type& dataMaterial ) {}
 
 
     //! Computes the deformation Gradient F, the cofactor of F Cof(F),
@@ -244,6 +252,22 @@ public:
         return M_dispFESpace;
     }
 
+    FESpace_Type& pressureFESpace()
+    {
+        return M_pressureFESpace;
+    }
+
+    inline void setPressureETFESpace( scalarETFESpacePtr_Type space )
+    {
+    	M_pressureETFESpace = space;
+    }
+
+    inline void setPressureFESpace( FESpacePtr_Type space )
+    {
+    	M_pressureFESpace = space;
+    }
+
+
     //! Get the Stiffness matrix
     matrixPtr_Type const jacobian()    const
     {
@@ -260,6 +284,10 @@ public:
                          const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                          const mapMarkerIndexesPtr_Type mapsMarkerIndexes) = 0;
 
+    vectorsParametersPtr_Type vectorsParameters() const
+    {
+    	return M_vectorsParameters;
+    }
     //@}
 
 protected:
@@ -277,6 +305,10 @@ protected:
     FESpacePtr_Type                                M_dispFESpace;
 
     ETFESpacePtr_Type                              M_dispETFESpace;
+
+    FESpacePtr_Type                                M_pressureFESpace;
+
+    scalarETFESpacePtr_Type                        M_pressureETFESpace;
 
     boost::shared_ptr<const MapEpetra>             M_localMap;
 

@@ -3,6 +3,7 @@ INCLUDE(TribitsAddExecutableAndTest)
 INCLUDE(AddSubdirectories)
 
 ADD_SUBDIRECTORIES(
+  basicExample
   example_InflationExtension
   example_CookMembrane
   example_creatingDamagedZone
