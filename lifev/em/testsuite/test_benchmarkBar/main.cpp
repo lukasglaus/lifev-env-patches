@@ -276,22 +276,22 @@ int main (int argc, char** argv)
     std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << "\n";
     for (Real time (importTime); time < endTime ; )
     {
-    	if(time >= 0.85)
-		{
-    		if(!updatedTimeStep1)
-    		{
-    			updatedTimeStep1 = true;
-    			dt = 0.1 * dt;
-    		}
-		}
-    	if(time >= 0.91)
-		{
-    		if(!updatedTimeStep2)
-    		{
-    			updatedTimeStep2 = true;
-    			dt = 0.25 * dt;
-    		}
-		}
+//    	if(time >= 0.85)
+//		{
+//    		if(!updatedTimeStep1)
+//    		{
+//    			updatedTimeStep1 = true;
+//    			dt = 0.1 * dt;
+//    		}
+//		}
+//    	if(time >= 0.91)
+//		{
+//    		if(!updatedTimeStep2)
+//    		{
+//    			updatedTimeStep2 = true;
+//    			dt = 0.25 * dt;
+//    		}
+//		}
 
 
     	time += dt;
