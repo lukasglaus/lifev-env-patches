@@ -70,6 +70,13 @@ postDir = ./
         mode       = Full #Component #Full
         component  = 3
     	function  = '0.0'
+    	
+    	[../Black]
+        type       = Essential
+        flag       = 1024
+        mode       = Full #Component #Full
+        component  = 3
+    	function  = '0.0'
         
         [../Back]
         type       = Essential
@@ -90,7 +97,7 @@ postDir = ./
 	[../time_discretization]
 	initialtime 	= 0
 	endtime     	= 1
-	timestep    	= 0.1
+	timestep    	= 0.2
 	theta       	= 0.35
 	zeta        	= 0.75
 	BDF_order   	= 2
@@ -114,7 +121,7 @@ postDir = ./
 	
 	
 	[../solver]
-	solver          = cg #gmres
+	solver          = cg
 	scaling         = none
 	output          = all 			# none
 	conv            = rhs
