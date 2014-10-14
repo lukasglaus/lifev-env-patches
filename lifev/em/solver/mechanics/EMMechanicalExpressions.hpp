@@ -60,21 +60,36 @@
 // F = deformation gradient tensor
 //matrix
 #define _F(y, z, w)        ( _Grad_u(y, z, w) + _I )
+// FT = transpose of the deformation gradient tensor
+//matrix
+#define _FT(y, z, w)        ( transpose(_F(y, z, w) ) )
 // F^-T = inverse transpose of F
 //matrix
 #define _FmT(y, z, w)      ( minusT (_F(y, z, w)) )
 // C = F^TF = Right Cauchy Green tensor
 //matrix
-#define _C(y, z, w)        ( transpose(_F(y, z, w)) * _F(y, z, w) )
+#define _C(y, z, w)        ( _FT(y, z, w) * _F(y, z, w) )
+// B = FF^T = Left Cauchy Green tensor
+//matrix
+#define _B(y, z, w)        ( _F(y, z, w) * _FT(y, z, w) )
 
 // dF = \delta \nabla u = variation of F
 //matrix
 #define _dF   ( grad (phi_j) )
+// dF = \delta \nabla u = variation of F
+//matrix
+#define _dFT   ( transpose( _dF ) )
+// dF = \delta \nabla u = variation of F
+//matrix
+#define _dFdF   ( grad (phi_j) )
+
 // dFmTdF = dFmT : dF = Derivative of FmT with respect to F in direction dF
 //matrix
-#define _dFmTdF(y, z, w)  ( value (-1.0) * _FmT(y, z, w) * transpose (_dF) * _FmT(y, z, w) )
+#define _dFmTdF(y, z, w)  ( value (-1.0) * _FmT(y, z, w) * _dFT * _FmT(y, z, w) )
 
-
+// dBdF = dB : dF = Derivative of B with respect to F in direction dF
+//matrix
+#define _dBdF(y, z, w)  ( ( _F(y, z, w) * _dFT + _dF * _FT(y, z, w) )  )
 ///////////////////////////////////////////////////////////////////////////
 // J terms
 ///////////////////////////////////////////////////////////////////////////
@@ -83,7 +98,7 @@
 #define _J(y, z, w)      ( det (_F(y, z, w)) )// J^{-2/3}
 // Jm23 = J^{-2/3}
 //scalar
-#define _Jm23(y, z, w)   ( pow (_J(y, z, w), -2. / 3) )
+#define _Jm23(y, z, w)   ( pow (_J(y, z, w), 2 / -3.0 ) )
 // dJ = Derivative of J with respect to F = J F^{-T}
 //matrix
 #define _dJ(y, z, w)     ( _J(y, z, w) * _FmT(y, z, w) )
@@ -104,6 +119,21 @@
 //matrix
 #define _d2Jm23dF(y, z, w)  ( value(-2.0/3.0) * _Jm23(y, z, w) * ( _dFmTdF(y, z, w) \
                                               + _dJm23dF(y, z, w) * _FmT(y, z, w) ) )
+
+
+// Jm43 = J^{-4/3}
+//scalar
+#define _Jm43(y, z, w)   ( pow (_J(y, z, w), 4 / -3.0 ) )
+// dJm43 = Derivative of J^{-4/3}
+//matrix
+#define _dJm43(y, z, w)  ( value(-4.0/3.0) * _Jm43(y, z, w) * _FmT(y, z, w) )
+// dJm43dF = dJm43 : dF = Derivative of Jm43 with respect to F in direction dF
+//scalar
+#define _dJm43dF(y, z, w)  ( dot( _dJm43(y, z, w), _dF)  )
+// d2Jm43dF = d2Jm43 : dF = Second derivative of Jm43 with respect to F in direction dF
+//matrix
+#define _d2Jm43dF(y, z, w)  ( value(-4.0/3.0) * _Jm43(y, z, w) * ( _dFmTdF(y, z, w) \
+                                              + _dJm43dF(y, z, w) * _FmT(y, z, w) ) )
 
 ///////////////////////////////////////////////////////////////////////////
 // VOLUMETRIC PART
@@ -171,6 +201,60 @@
 // dPdF =  dP : dF = Derivative of the stress tensor P with respect to F in direction dF
 //matrix
 #define _dP1          ( _dW1 * _dI1bardF * _dI1bar + _W1 * _d2I1bardF )
+
+
+///////////////////////////////////////////////////////////////////////////
+// ISOTROPIC TERMS DEPENDING ON I2
+///////////////////////////////////////////////////////////////////////////
+// I_2 = first invariant of C
+#define _I2(y, z, w)           ( value(0.5) * ( _I1(y, z, w) * _I1(y, z, w) - dot( _C(y, z, w), _C(y, z, w) ) ) )
+// dI2 = Derivative of I_2 with respect of F = 2 F
+//matrix
+#define _dI2(y, z, w)          (  value(2.0) * ( _I1(y, z, w) * _I - _B(y, z, w) ) * _F(y, z, w) )
+
+// \bar{I}_2 = modified invariant of C
+#define _I2bar(y, z, w)        ( _Jm43(y, z, w) * _I2(y, z, w) )
+// dI2bar = Derivative of \bar{I}_2 with respect to F
+//matrix
+#define _dI2bar(y, z, w)       ( _Jm43(y, z, w) * _dI2(y, z, w) + _I2(y, z, w) * _dJm43(y, z, w) )
+
+
+// dI2dF = dI2 : dF = Derivative of I_2 with respect to F in direction dF
+//scalar
+#define _dI2dF(y, z, w)        ( dot( _dI2(y, z, w), _dF ) )
+// dI2bardF = dI2bar : dF = Derivative of \bar{I}_2 with respect to F in direction dF
+//scalar
+#define _dI2bardF(y, z, w)     ( dot( _dI2bar(y, z, w), _dF ) )
+
+// d2I2dF = d2I2 : dF = Second derivative of I_2 with respect to F in direction dF
+//matrix
+//#define _d2I2dF(y, z, w)       ( value(2.0) * ( _dI1dF(y, z, w)  *  _F(y, z, w) + _I1(y, z, w) * _dF )     \
+//		                       + value(-1.0) * ( _dBdF(y, z, w) * _F(y, z, w)  + _B(y, z, w) * _dF  ) )
+
+#define _d2I2dF(y, z, w)       ( value(2.0) * ( (  _dI1dF(y, z, w) * _F(y, z, w) - _dBdF(y, z, w) * _F(y, z, w) )   \
+		                                      + (  _I1(y, z, w) * _I - _B(y, z, w) ) *  _dF )  )
+
+// d2I2bardF = d2I2bar : dF = Second derivative of I2bar with respect to F in direction dF
+//matrix
+#define _d2I2bardF(y, z, w)    ( ( _dJm43dF(y, z, w) * _dI2(y, z, w) )  \
+                               + ( _Jm43(y, z, w) * _d2I2dF(y, z, w) )  \
+                               + ( _I2(y, z, w) * _d2Jm43dF(y, z, w) )  \
+                               + ( _dI2dF(y, z, w) * _dJm43(y, z, w) ) )
+
+// W2 = Derivative of the energy W with respect to I2bar
+//scalar
+#define _W2           ( eval (M_materialPtr ->W2(), _F ) )
+// dW2 = Second derivative of the energy W with respect to I2bar
+//scalar
+#define _dW2          ( eval (M_materialPtr ->dW2(), _F ) )
+
+// PI = First Piola Stress tensor (I1 component)
+//matrix
+//#define _P2           ( _W2 * _dI2bar)
+
+// dPdF =  dP : dF = Derivative of the stress tensor P with respect to F in direction dF
+//matrix
+//#define _dP1          ( _dW1 * _dI1bardF * _dI1bar + _W1 * _d2I1bardF )
 
 
 ///////////////////////////////////////////////////////////////////////////
