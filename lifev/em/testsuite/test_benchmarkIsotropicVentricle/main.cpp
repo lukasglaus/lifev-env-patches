@@ -81,6 +81,11 @@ int main (int argc, char** argv)
     std::string meshName = dataFile ( "solid/space_discretization/mesh_file", "" );
     std::string meshPath = dataFile ( "solid/space_discretization/mesh_dir", "./" );
 
+    if( comm->MyPID() == 0 )
+    {
+    	std::cout << meshName << "\n";
+    }
+
     typedef RegionMesh<LinearTetra>                         mesh_Type;
     typedef boost::shared_ptr<mesh_Type>                    meshPtr_Type;
 
