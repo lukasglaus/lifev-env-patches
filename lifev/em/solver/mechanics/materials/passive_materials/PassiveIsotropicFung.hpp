@@ -29,13 +29,14 @@ template<typename Mesh>
 PassiveIsotropicFung<Mesh>::PassiveIsotropicFung() :
     super ("Passive Isotropic Fung", 3)
 {
-    this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (2500000.0)  );
-    this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh>(2500000.0) );
+    this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
+    this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh>(3500000.0) );
     Real C = 100000.0;
-    Real bf = 1.0;
+    Real b = 1.0;//0.0
     Real bt =  1.0;
     Real bfs = 1.0;
-    this -> M_materialFunctionList[2].reset (new MaterialFunctions::OrthotropicFung<Mesh> (C, bf, bt, bt, bfs, bfs, bt) );
+    this -> M_materialFunctionList[2].reset (new MaterialFunctions::IsotropicFung<Mesh> (C, b) );
+//    this -> M_materialFunctionList[2].reset (new MaterialFunctions::OrthotropicFung<Mesh> (C, b, bt, bfs) );
 }
 
 
