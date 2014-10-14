@@ -40,6 +40,16 @@ Real I1bar (const LifeV::MatrixSmall<3, 3>& F)
     return std::pow (J (F), -2.0 / 3.0) * I1 (F);
 }
 
+Real I2 (const LifeV::MatrixSmall<3, 3>& F)
+{
+    return 0.5 * ( I1(F) * I1(F) - I1(F.transpose() * F ) );
+}
+
+Real I2bar (const LifeV::MatrixSmall<3, 3>& F)
+{
+    return  std::pow (J (F), 4 / -3.0) * I2 (F);
+}
+
 Real I4 (const LifeV::MatrixSmall<3, 3>& F, const LifeV::VectorSmall<3>& f0)
 {
     auto f = F * f0;

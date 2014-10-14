@@ -98,6 +98,24 @@ computeI1ResidualTerms ( const vector_Type& disp,
 }
 
 
+template< typename Mesh, typename FunctorPtr >
+void
+computeI2ResidualTerms ( const vector_Type& disp,
+                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                         vectorPtr_Type           residualVectorPtr,
+                         FunctorPtr                  W2)
+{
+    using namespace ExpressionAssembly;
+
+    std::cout << "EMETA - Computing I2 residual terms ... \n";
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dot ( eval (W2, _F (dispETFESpace, disp, 0) ) * _dI2bar (dispETFESpace, disp, 0), grad (phi_i) )
+              ) >> residualVectorPtr;
+}
+
+
 template <typename Mesh, typename FunctorPtr >
 void
 computeVolumetricResidualTerms ( const vector_Type& disp,

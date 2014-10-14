@@ -35,6 +35,7 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 namespace EMAssembler
 {
 
+
 template <typename Mesh, typename FunctorPtr >
 void
 computeVolumetricJacobianTerms ( const vector_Type& disp,
@@ -128,26 +129,6 @@ computeLinearizedDeviatoricJacobianTerms ( const vector_Type& disp,
               ) >> jacobianPtr;
 }
 
-template <typename Mesh, typename FunctorPtr>
-void
-computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
-                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-                                         matrixPtr_Type           jacobianPtr,
-                                         FunctorPtr                 dW1)
-{
-    using namespace ExpressionAssembly;
-    //
-    std::cout << "Computing I1 jacobian terms with second derivative of the energy ... \n";
-
-    auto dP = eval (dW1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
-    integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
-                dispETFESpace,
-                dispETFESpace,
-                dot ( dP , grad (phi_i) )
-              ) >> jacobianPtr;
-}
-
 template <typename Mesh, typename FunctorPtr >
 void
 computeI1JacobianTerms ( const vector_Type& disp,
@@ -169,32 +150,19 @@ computeI1JacobianTerms ( const vector_Type& disp,
               ) >> jacobianPtr;
 }
 
-template <typename Mesh, typename FunctorPtr >
+
+template <typename Mesh, typename FunctorPtr>
 void
-computeI1JacobianTerms ( const vector_Type& disp,
-                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-                         const vector_Type& fibers,
-                         const vector_Type& sheets,
-                         matrixPtr_Type           jacobianPtr,
-                         FunctorPtr                 W1)
+computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
+                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                         matrixPtr_Type           jacobianPtr,
+                                         FunctorPtr                 dW1)
 {
     using namespace ExpressionAssembly;
-
-    auto f_0 = _v0 (dispETFESpace, fibers);
-    auto s_0 = _v0 (dispETFESpace, sheets);
-
-    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
-    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
-    auto f0 = eval (normalize0, f_0);
-
-    auto s_00 = s_0 - dot (f0, s_0) * s_0;
-
-    auto s0 = eval (normalize1, s_00);
-
     //
-    std::cout << "Computing I1 jacobian terms (Fung) ... \n";
+    std::cout << "Computing I1 jacobian terms with second derivative of the energy ... \n";
 
-    auto dP = eval (W1, _F (dispETFESpace, disp, 0), f0, s0) * (_d2I1bardF (dispETFESpace, disp, 0) );
+    auto dP = eval (dW1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -202,6 +170,125 @@ computeI1JacobianTerms ( const vector_Type& disp,
                 dot ( dP , grad (phi_i) )
               ) >> jacobianPtr;
 }
+
+
+template <typename Mesh, typename FunctorPtr>
+void
+computeI1JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
+                                              boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                              matrixPtr_Type           jacobianPtr,
+                                              FunctorPtr                 dW1dI2)
+{
+    using namespace ExpressionAssembly;
+    //
+    std::cout << "Computing I1 jacobian mixed terms with second derivative of the energy  (derivative on I2)... \n";
+
+    auto dP = eval (dW1dI2, _F (dispETFESpace, disp, 0) ) * (_dI2bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> jacobianPtr;
+}
+
+
+template <typename Mesh, typename FunctorPtr >
+void
+computeI2JacobianTerms ( const vector_Type& disp,
+                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                         matrixPtr_Type           jacobianPtr,
+                         FunctorPtr                 W2)
+{
+    using namespace ExpressionAssembly;
+
+    //
+    std::cout << "Computing I2 jacobian terms  ... \n";
+
+    auto dP = eval (W2, _F (dispETFESpace, disp, 0) ) * (_d2I2bardF (dispETFESpace, disp, 0) );
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> jacobianPtr;
+}
+
+template <typename Mesh, typename FunctorPtr>
+void
+computeI2JacobianTermsSecondDerivative ( const vector_Type& disp,
+                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                         matrixPtr_Type           jacobianPtr,
+                                         FunctorPtr                 dW2)
+{
+    using namespace ExpressionAssembly;
+    //
+    std::cout << "Computing I2 jacobian terms with second derivative of the energy ... \n";
+
+    auto dP = eval (dW2, _F (dispETFESpace, disp, 0) ) * (_dI2bardF (dispETFESpace, disp, 0) ) * (_dI2bar (dispETFESpace, disp, 0) );
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> jacobianPtr;
+}
+
+
+
+template <typename Mesh, typename FunctorPtr>
+void
+computeI2JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
+                                              boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                              matrixPtr_Type           jacobianPtr,
+                                              FunctorPtr                 dW2dI1)
+{
+    using namespace ExpressionAssembly;
+    //
+    std::cout << "Computing I2 jacobian mixed terms with second derivative of the energy (derivative on I1 ) ... \n";
+
+    auto dP = eval (dW2dI1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI2bar (dispETFESpace, disp, 0) );
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP , grad (phi_i) )
+              ) >> jacobianPtr;
+}
+
+//template <typename Mesh, typename FunctorPtr >
+//void
+//computeI1JacobianTerms ( const vector_Type& disp,
+//                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+//                         const vector_Type& fibers,
+//                         const vector_Type& sheets,
+//                         matrixPtr_Type           jacobianPtr,
+//                         FunctorPtr                 W1)
+//{
+//    using namespace ExpressionAssembly;
+//
+//    auto f_0 = _v0 (dispETFESpace, fibers);
+//    auto s_0 = _v0 (dispETFESpace, sheets);
+//
+//    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+//    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+//    auto f0 = eval (normalize0, f_0);
+//
+//    auto s_00 = s_0 - dot (f0, s_0) * s_0;
+//
+//    auto s0 = eval (normalize1, s_00);
+//
+//    //
+//    std::cout << "Computing I1 jacobian terms (Fung) ... \n";
+//
+//    auto dP = eval (W1, _F (dispETFESpace, disp, 0), f0, s0) * (_d2I1bardF (dispETFESpace, disp, 0) );
+//    integrate ( elements ( dispETFESpace->mesh() ) ,
+//                quadRuleTetra4pt,
+//                dispETFESpace,
+//                dispETFESpace,
+//                dot ( dP , grad (phi_i) )
+//              ) >> jacobianPtr;
+//}
 
 
 
