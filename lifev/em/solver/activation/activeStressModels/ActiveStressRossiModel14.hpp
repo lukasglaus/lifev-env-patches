@@ -24,8 +24,8 @@ public:
 
     typedef ActiveStressActivation                                      super;
 
-    ActiveStressRossiModel14 (MapEpetra& map, Real beta = 2.279, Real mu = 1000, Real Tmax = 50);
-    ActiveStressRossiModel14 (const MapEpetra& map, Real beta = 2.279, Real mu = 1000, Real Tmax = 50);
+    ActiveStressRossiModel14 (MapEpetra& map, Real beta = 2.279, Real mu = 1000., Real Tmax = 50.);
+    ActiveStressRossiModel14 (const MapEpetra& map, Real beta = 2.279, Real mu = 1000., Real Tmax = 50.);
 
     virtual ~ActiveStressRossiModel14() {}
 

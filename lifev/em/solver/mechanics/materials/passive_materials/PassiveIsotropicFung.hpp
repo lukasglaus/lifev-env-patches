@@ -35,8 +35,8 @@ PassiveIsotropicFung<Mesh>::PassiveIsotropicFung() :
     Real b = 1.0;//0.0
     Real bt =  1.0;
     Real bfs = 1.0;
-    this -> M_materialFunctionList[2].reset (new MaterialFunctions::IsotropicFung<Mesh> (C, b) );
-//    this -> M_materialFunctionList[2].reset (new MaterialFunctions::OrthotropicFung<Mesh> (C, b, bt, bfs) );
+//    this -> M_materialFunctionList[2].reset (new MaterialFunctions::IsotropicFung<Mesh> (C, b) );
+    this -> M_materialFunctionList[2].reset (new MaterialFunctions::OrthotropicFung<Mesh> (C, b, bt, bfs) );
 }
 
 

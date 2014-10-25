@@ -1,9 +1,9 @@
-SET( solver_activation_activeStressModels_HEADERS
+SET( solver_activation_activeStrainModels_HEADERS
   solver/activation/activeStrainModels/ActiveStrainRossiModel14.hpp
   solver/activation/activeStrainModels/ActiveStrainActivation.hpp
 CACHE INTERNAL "")
 
-SET( solver_activation_activeStressModels_SOURCES
+SET( solver_activation_activeStrainModels_SOURCES
   solver/activation/activeStrainModels/ActiveStrainRossiModel14.cpp
  CACHE INTERNAL "")
 
