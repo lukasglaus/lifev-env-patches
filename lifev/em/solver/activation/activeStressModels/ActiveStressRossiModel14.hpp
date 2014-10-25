@@ -5,15 +5,15 @@
  *      Author: srossi
  */
 
-#ifndef ROSSIMODEL14_HPP_
-#define ROSSIMODEL14_HPP_
+#ifndef ACTIVESTRESSROSSIMODEL14_HPP_
+#define ACTIVESTRESSROSSIMODEL14_HPP_
 
 #include <lifev/em/solver/activation/activeStressModels/ActiveStressActivation.hpp>
 
 namespace LifeV
 {
 
-class RossiModel14 : public virtual ActiveStressActivation
+class ActiveStressRossiModel14 : public virtual ActiveStressActivation
 {
 public:
 
@@ -24,10 +24,10 @@ public:
 
     typedef ActiveStressActivation                                      super;
 
-    RossiModel14 (MapEpetra& map, Real beta = 2.279, Real mu = 1000, Real Tmax = 50);
-    RossiModel14 (const MapEpetra& map, Real beta = 2.279, Real mu = 1000, Real Tmax = 50);
+    ActiveStressRossiModel14 (MapEpetra& map, Real beta = 2.279, Real mu = 1000, Real Tmax = 50);
+    ActiveStressRossiModel14 (const MapEpetra& map, Real beta = 2.279, Real mu = 1000, Real Tmax = 50);
 
-    virtual ~RossiModel14() {}
+    virtual ~ActiveStressRossiModel14() {}
 
     void solveModel (VectorEpetra& potential, Real timeStep);
 

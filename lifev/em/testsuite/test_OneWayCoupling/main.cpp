@@ -804,7 +804,7 @@ int main (int argc, char** argv)
     Real dt = 0.02;
     Real t = 0;
 
-    RossiModel14 activationModel (monodomain.potentialPtr()->map() );
+    ActiveStressRossiModel14 activationModel (monodomain.potentialPtr()->map() );
     std::cout << "Activation Model set!\n";
 
     vectorPtr_Type activationPtr (&activationModel.activation() );
