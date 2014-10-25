@@ -10,5 +10,6 @@ ADD_SUBDIRECTORIES(
 	test_OneWayCoupling
 	test_fixedMonodomain
 	test_benchmarkBar	
+	test_benchmarkStaticActiveStress
 	test_benchmarkIsotropicVentricle
 )
