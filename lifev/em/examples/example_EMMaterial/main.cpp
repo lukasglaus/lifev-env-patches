@@ -104,7 +104,7 @@ int main (int argc, char** argv)
         cout << "% using MPI" << endl;
     }
 
-    EMSolver<mesh_Type, monodomain_Type, RossiModel14> solver;
+    EMSolver<mesh_Type, monodomain_Type, ActiveStressRossiModel14> solver;
 
     //********************************************//
     // Import parameters from an xml list. Use    //
