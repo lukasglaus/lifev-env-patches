@@ -1,4 +1,6 @@
 ADD_SUBDIRECTORY(activeStressModels)
+ADD_SUBDIRECTORY(activeStrainModels)
+
 
 
 SET( solver_activation_HEADERS
