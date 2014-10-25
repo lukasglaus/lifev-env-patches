@@ -5,15 +5,15 @@
  *      Author: srossi
  */
 
-#ifndef NASHPANFILOVMODEL04_HPP_
-#define NASHPANFILOVMODEL04_HPP_
+#ifndef ACTIVESTRESSNASHPANFILOVMODEL04_HPP_
+#define ACTIVESTRESSNASHPANFILOVMODEL04_HPP_
 
 #include <lifev/em/solver/activation/activeStressModels/ActiveStressActivation.hpp>
 
 namespace LifeV
 {
 
-class NashPanfilovModel04 :  public virtual ActiveStressActivation
+class ActiveStressNashPanfilovModel04 :  public virtual ActiveStressActivation
 {
 public:
 
@@ -24,10 +24,10 @@ public:
 
     typedef ActiveStressActivation                                      super;
 
-    NashPanfilovModel04 (MapEpetra& map, Real kTa = 49.7, Real epsilon0 = 1.0);
-    NashPanfilovModel04 (const MapEpetra& map, Real kTa = 49.7, Real epsilon0 = 1.0);
+    ActiveStressNashPanfilovModel04 (MapEpetra& map, Real kTa = 49.7, Real epsilon0 = 1.0);
+    ActiveStressNashPanfilovModel04 (const MapEpetra& map, Real kTa = 49.7, Real epsilon0 = 1.0);
 
-    virtual ~NashPanfilovModel04() {}
+    virtual ~ActiveStressNashPanfilovModel04() {}
 
     void solveModel (VectorEpetra& potential, Real timeStep);
 

@@ -28,7 +28,7 @@ public:
 
     ActiveStressActivation (ActiveStressActivation& activation) : M_activationPtr ( new vector_Type (activation.activation() ) ) {}
 
-    inline ActiveStressActivation& operator= (ActiveStressActivation& activation)
+    ActiveStressActivation& operator= (ActiveStressActivation& activation)
     {
         M_activationPtr.reset ( new vector_Type (activation.activation() ) );
         return *this;
@@ -36,27 +36,27 @@ public:
 
     virtual ~ActiveStressActivation() {}
 
-    inline VectorEpetra& activation()
+    VectorEpetra& activation()
     {
         return *M_activationPtr;
     }
 
-    inline vectorPtr_Type activationPtr()
+    vectorPtr_Type activationPtr()
     {
         return M_activationPtr;
     }
 
-    inline void setActivation (VectorEpetra& activation)
+    void setActivation (VectorEpetra& activation)
     {
         *M_activationPtr = activation;
     }
 
-    inline void setActivationPtr (vectorPtr_Type activationPtr)
+    void setActivationPtr (vectorPtr_Type activationPtr)
     {
         M_activationPtr = activationPtr;
     }
 
-    virtual void solveModel() {}
+    virtual void solveModel() {};
 
 protected:
     vectorPtr_Type M_activationPtr;

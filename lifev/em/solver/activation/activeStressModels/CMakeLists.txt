@@ -1,12 +1,12 @@
 SET( solver_activation_activeStressModels_HEADERS
-  solver/activation/activeStressModels/RossiModel14.hpp
-  solver/activation/activeStressModels/NashPanfilovModel04.hpp
+  solver/activation/activeStressModels/ActiveStressRossiModel14.hpp
+  solver/activation/activeStressModels/ActiveStressNashPanfilovModel04.hpp
   solver/activation/activeStressModels/ActiveStressActivation.hpp
 CACHE INTERNAL "")
 
 SET( solver_activation_activeStressModels_SOURCES
-  solver/activation/activeStressModels/RossiModel14.cpp
-  solver/activation/activeStressModels/NashPanfilovModel04.cpp
+  solver/activation/activeStressModels/ActiveStressRossiModel14.cpp
+  solver/activation/activeStressModels/ActiveStressNashPanfilovModel04.cpp
  CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)

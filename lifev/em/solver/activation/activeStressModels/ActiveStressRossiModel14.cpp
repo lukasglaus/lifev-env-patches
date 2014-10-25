@@ -5,14 +5,14 @@
  *      Author: srossi
  */
 
-#include <lifev/em/solver/activation/activeStressModels/RossiModel14.hpp>
+#include <lifev/em/solver/activation/activeStressModels/ActiveStressRossiModel14.hpp>
 
 
 
 namespace LifeV
 {
 
-RossiModel14::RossiModel14 (const MapEpetra& map, Real beta, Real mu, Real Tmax) :
+ActiveStressRossiModel14::ActiveStressRossiModel14 (const MapEpetra& map, Real beta, Real mu, Real Tmax) :
     super (map),
     M_coefficientBeta (beta),
     M_coefficientMu (mu),
@@ -20,7 +20,7 @@ RossiModel14::RossiModel14 (const MapEpetra& map, Real beta, Real mu, Real Tmax)
 {
 }
 
-RossiModel14::RossiModel14 (MapEpetra& map, Real beta, Real mu, Real Tmax) :
+ActiveStressRossiModel14::ActiveStressRossiModel14 (MapEpetra& map, Real beta, Real mu, Real Tmax) :
     super (map),
     M_coefficientBeta (beta),
     M_coefficientMu (mu),
@@ -28,7 +28,7 @@ RossiModel14::RossiModel14 (MapEpetra& map, Real beta, Real mu, Real Tmax) :
 {
 }
 
-void RossiModel14::solveModel (VectorEpetra& potential, Real timeStep)
+void ActiveStressRossiModel14::solveModel (VectorEpetra& potential, Real timeStep)
 {
     VectorEpetra rhs ( potential.map() );
     rhs = potential;
