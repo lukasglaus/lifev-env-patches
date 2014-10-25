@@ -168,6 +168,78 @@ void orthonormalize (VectorSmall<3>& s, VectorSmall<3>& f, int component = 1)
 
 
 
+Real FLRelationship(Real I4f)
+{
+    if (I4f > 0.87277 && I4f < 1.334)
+    {
+        Real d0 = -4.333618335582119e3;
+        Real d1 = 2.570395355352195e3;
+        Real e1 = -2.051827278991976e3;
+        Real d2 = 1.329536116891330e3;
+        Real e2 = 0.302216784558222e3;
+        Real d3 = 0.104943770305116e3;
+        Real e3 = 0.218375174229422e3;
+        Real l0 = 1.95;
+
+        Real Force = d0 / 2
+        		   + d1 * std::sin (I4f * l0)
+                   + e1 * std::cos (I4f * l0)
+                   + d2 * std::sin (2 * I4f * l0)
+                   + e2 * std::cos (2 * I4f * l0)
+                   + d3 * std::sin (3 * I4f * l0)
+                   + e3 * std::cos (3 * I4f * l0);
+        return Force;
+    }
+    else
+    {
+        return 0.0;
+    }
+}
+
+template< typename FESpaceType >
+void computeI4 ( VectorEpetra& I4, VectorEpetra& displacement, VectorEpetra& fibers, boost::shared_ptr<FESpaceType> dFESpace )
+{
+    VectorEpetra sx = GradientRecovery::ZZGradient (dFESpace, displacement, 0);
+    VectorEpetra sy = GradientRecovery::ZZGradient (dFESpace, displacement, 1);
+    VectorEpetra sz = GradientRecovery::ZZGradient (dFESpace, displacement, 2);
+
+    I4 *= 0.0;
+    Int nLocalDof = I4.epetraVector().MyLength();
+    //Int nComponentLocalDof = nLocalDof / 3;
+    for (int k (0); k < nLocalDof; k++)
+    {
+        UInt iGID = sx.blockMap().GID (k);
+        UInt jGID = sx.blockMap().GID (k + nLocalDof);
+        UInt kGID = sx.blockMap().GID (k + 2 * nLocalDof);
+
+        Real fx, fy, fz;
+        Real F11 = sx[iGID] + 1.0;
+        Real F12 = sy[iGID];
+        Real F13 = sz[iGID];
+        Real F21 = sx[jGID];
+        Real F22 = sy[jGID] + 1.0;
+        Real F23 = sz[jGID];
+        Real F31 = sx[kGID];
+        Real F32 = sy[kGID];
+        Real F33 = sz[kGID] + 1.0;
+        fx = F11 * fibers[iGID];
+        fx += ( F12 * fibers[jGID] );
+        fx += ( F13 * fibers[kGID] );
+        fy = F21 * fibers[iGID];
+        fy += ( F22 * fibers[jGID] );
+        fy += ( F23 * fibers[kGID] );
+        fz = F31 * fibers[iGID];
+        fz += ( F32 * fibers[jGID] );
+        fz += ( F33 * fibers[kGID] );
+        Real J = F11 * (F22 * F33 - F32 * F23) - F22 * (F21 * F33 - F31 * F23) + F33 * (F21 * F32 - F31 * F22);
+
+        I4[iGID] = fx * fx + fy * fy + fz * fz;
+//        I4[iGID] *= std::pow (J, -2.0 / 3.0);
+
+    }
+
+}
+
 
 } // namespace EMUtility
 
