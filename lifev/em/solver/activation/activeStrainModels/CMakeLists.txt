@@ -4,11 +4,11 @@ SET( solver_activation_activeStressModels_HEADERS
 CACHE INTERNAL "")
 
 SET( solver_activation_activeStressModels_SOURCES
-  solver/activation/activeStrainModels/ActiveStrainossiModel14.cpp
+  solver/activation/activeStrainModels/ActiveStrainRossiModel14.cpp
  CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)
-FOREACH(INC ${solver_acitvation_activeStressModels_HEADERS})
+FOREACH(INC ${solver_acitvation_activeStrainModels_HEADERS})
   STRING(REPLACE "solver/activation/activeStrainModels/" "" LOCAL_INC ${INC})
   SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
 ENDFOREACH()
