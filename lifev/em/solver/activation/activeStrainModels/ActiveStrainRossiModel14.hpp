@@ -8,7 +8,7 @@
 #ifndef ACTIVESTRAINROSSIMODEL14_HPP_
 #define ACTIVESTRAINROSSIMODEL14_HPP_
 
-#include <lifev/em/solver/activation/activeStressModels/ActiveStrainActivation.hpp>
+#include <lifev/em/solver/activation/activeStrainModels/ActiveStrainActivation.hpp>
 
 namespace LifeV
 {
@@ -40,7 +40,7 @@ public:
 
     void solveModel (VectorEpetra& displacement, VectorEpetra& Calcium, Real timeStep, ActivationAnisotropy type = Orthotropic);
 
-    void computeTransversalActivation( ActivationAnisotropy  anisotropy = Orthotropic )
+    void computeTransversalActivation( ActivationAnisotropy  anisotropy = Orthotropic );
 
     Real computeActiveStress(Real i4f, Real Calcium);
 

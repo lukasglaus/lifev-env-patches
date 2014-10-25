@@ -11,6 +11,7 @@
 #include <lifev/core/array/VectorEpetra.hpp>
 #include <lifev/core/array/MapEpetra.hpp>
 
+#include <lifev/em/util/EMUtility.hpp>
 
 
 

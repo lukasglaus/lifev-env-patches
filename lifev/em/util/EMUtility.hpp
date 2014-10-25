@@ -52,6 +52,8 @@
 #include <lifev/core/filter/ExporterHDF5.hpp>
 #include <lifev/core/filter/GetPot.hpp>
 #include <boost/shared_ptr.hpp>
+#include <lifev/core/fem/GradientRecovery.hpp>
+#include <lifev/core/array/MatrixSmall.hpp>
 
 
 
@@ -196,32 +198,44 @@ Real FLRelationship(Real I4f)
     }
 }
 
+template<typename DispVectorPtr, typename FESpaceType>
+void computeZZGradient(VectorEpetra& displacement, std::vector<DispVectorPtr> gradientPtr, boost::shared_ptr<FESpaceType>  dFESpace)
+{
+    gradientPtr[0].reset( &GradientRecovery::ZZGradient(dFESpace, displacement, 0) );
+    gradientPtr[1].reset( &GradientRecovery::ZZGradient(dFESpace, displacement, 1) );
+    gradientPtr[2].reset( &GradientRecovery::ZZGradient(dFESpace, displacement, 2) );
+}
+
+
 template< typename FESpaceType >
 void computeI4 ( VectorEpetra& I4, VectorEpetra& displacement, VectorEpetra& fibers, boost::shared_ptr<FESpaceType> dFESpace )
 {
-    VectorEpetra sx = GradientRecovery::ZZGradient (dFESpace, displacement, 0);
-    VectorEpetra sy = GradientRecovery::ZZGradient (dFESpace, displacement, 1);
-    VectorEpetra sz = GradientRecovery::ZZGradient (dFESpace, displacement, 2);
+
+//    VectorEpetra sx = GradientRecovery::ZZGradient (dFESpace, displacement, 0);
+//    VectorEpetra sy = GradientRecovery::ZZGradient (dFESpace, displacement, 1);
+//    VectorEpetra sz = GradientRecovery::ZZGradient (dFESpace, displacement, 2);
+    std::vector<boost::shared_ptr<VectorEpetra> >gradientPtr(3);
+    EMUtility::computeZZGradient(displacement, gradientPtr, dFESpace);
 
     I4 *= 0.0;
     Int nLocalDof = I4.epetraVector().MyLength();
     //Int nComponentLocalDof = nLocalDof / 3;
     for (int k (0); k < nLocalDof; k++)
     {
-        UInt iGID = sx.blockMap().GID (k);
-        UInt jGID = sx.blockMap().GID (k + nLocalDof);
-        UInt kGID = sx.blockMap().GID (k + 2 * nLocalDof);
+        UInt iGID = ( *gradientPtr[0] ).blockMap().GID (k);
+        UInt jGID = ( *gradientPtr[0] ).blockMap().GID (k + nLocalDof);
+        UInt kGID = ( *gradientPtr[0] ).blockMap().GID (k + 2 * nLocalDof);
 
         Real fx, fy, fz;
-        Real F11 = sx[iGID] + 1.0;
-        Real F12 = sy[iGID];
-        Real F13 = sz[iGID];
-        Real F21 = sx[jGID];
-        Real F22 = sy[jGID] + 1.0;
-        Real F23 = sz[jGID];
-        Real F31 = sx[kGID];
-        Real F32 = sy[kGID];
-        Real F33 = sz[kGID] + 1.0;
+        Real F11 = ( *gradientPtr[0] ) [iGID] + 1.0;
+        Real F12 = ( *gradientPtr[1] ) [iGID];
+        Real F13 = ( *gradientPtr[2] ) [iGID];
+        Real F21 = ( *gradientPtr[0] ) [jGID];
+        Real F22 = ( *gradientPtr[1] ) [jGID] + 1.0;
+        Real F23 = ( *gradientPtr[2] ) [jGID];
+        Real F31 = ( *gradientPtr[0] ) [kGID];
+        Real F32 = ( *gradientPtr[1] ) [kGID];
+        Real F33 = ( *gradientPtr[2] ) [kGID] + 1.0;
         fx = F11 * fibers[iGID];
         fx += ( F12 * fibers[jGID] );
         fx += ( F13 * fibers[kGID] );

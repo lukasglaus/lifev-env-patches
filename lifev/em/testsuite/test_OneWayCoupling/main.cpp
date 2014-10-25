@@ -30,7 +30,7 @@
 
 #include <lifev/bc_interface/3D/bc/BCInterface3D.hpp>
 
-#include <lifev/em/solver/activation/activeStressModels/RossiModel14.hpp>
+#include <lifev/em/solver/activation/activeStressModels/ActiveStressRossiModel14.hpp>
 
 #include <sys/stat.h>
 
