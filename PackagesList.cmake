@@ -81,7 +81,7 @@ SET( LifeV_PACKAGES_AND_DIRS_AND_CLASSIFICATIONS
   Darcy                 lifev/darcy                       PS
   NavierStokes          lifev/navier_stokes               PS
   Structure             lifev/structure                   PS
-  Electrophysiology     lifev/electrophysiology           PS
+  Electrophysiology     lifev/electrophysiology           EX
   EM                    lifev/em                          EX
   Heart                 lifev/heart                       EX
   FSI                   lifev/fsi                         PS
