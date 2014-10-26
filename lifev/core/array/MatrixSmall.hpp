@@ -611,6 +611,89 @@ public:
             }
         return (tmp);
     }
+
+
+    MatrixSmall< Dim1 , Dim2 > outerProduct ( VectorSmall< Dim1 > const& vector ) const
+    {
+        ASSERT ( Dim2 == Dim1 && Dim1 == 3, "The outer product for matrices and vectors has been implemented only for 3x3 matrices!");
+
+        //Create the matrix to store the cofactor
+        //In this case it is a copy of the current matrix
+        MatrixSmall<Dim1, Dim2> product (*this);
+
+        switch ( Dim1 )
+        {
+            case 3:
+                product[ 0 ][ 0 ] =   M_coords[0][1] * vector.M_coords[2] - M_coords[0][2] * vector.M_coords[1];
+                product[ 1 ][ 0 ] =   M_coords[1][1] * vector.M_coords[2] - M_coords[1][2] * vector.M_coords[1];
+                product[ 2 ][ 0 ] =   M_coords[2][1] * vector.M_coords[2] - M_coords[2][2] * vector.M_coords[1];
+
+                product[ 0 ][ 1 ] =   M_coords[0][2] * vector.M_coords[0] - M_coords[0][0] * vector.M_coords[2];
+                product[ 1 ][ 1 ] =   M_coords[1][2] * vector.M_coords[0] - M_coords[1][0] * vector.M_coords[2];
+                product[ 2 ][ 1 ] =   M_coords[2][2] * vector.M_coords[0] - M_coords[2][0] * vector.M_coords[2];
+
+                product[ 0 ][ 2 ] =   M_coords[0][0] * vector.M_coords[1] - M_coords[0][1] * vector.M_coords[0];
+                product[ 1 ][ 2 ] =   M_coords[1][0] * vector.M_coords[1] - M_coords[1][1] * vector.M_coords[0];
+                product[ 2 ][ 2 ] =   M_coords[2][0] * vector.M_coords[1] - M_coords[2][1] * vector.M_coords[0];
+                break;
+            default:
+                ERROR_MSG ("The outer product for matrices  and vectors is implemented for Dim1 = Dim2 = 3!");
+                break;
+        }
+
+        return product;
+    }
+
+    MatrixSmall< Dim1 , Dim2 > outerProduct ( MatrixSmall< Dim1 , Dim2 > const& matrix ) const
+    {
+        ASSERT ( Dim2 == Dim1 && Dim1 == 3, "The outer product for matrices has been implemented only for 3x3 matrices!");
+
+        //Create the matrix to store the cofactor
+        //In this case it is a copy of the current matrix
+        MatrixSmall<Dim1, Dim2> product (*this);
+
+        switch ( Dim1 )
+        {
+            case 3:
+                product[ 0 ][ 0 ] = M_coords[1][1] * matrix.M_coords[2][2] - M_coords[1][2] * matrix.M_coords[2][1]
+								  + M_coords[2][2] * matrix.M_coords[1][1] - M_coords[2][1] * matrix.M_coords[1][2];
+
+                product[ 0 ][ 1 ] = M_coords[1][2] * matrix.M_coords[2][0] - M_coords[1][0] * matrix.M_coords[2][2]
+								  + M_coords[2][0] * matrix.M_coords[1][2] - M_coords[2][2] * matrix.M_coords[1][0];
+
+                product[ 0 ][ 2 ] = M_coords[1][0] * matrix.M_coords[2][1] - M_coords[1][1] * matrix.M_coords[2][0]
+								  + M_coords[2][1] * matrix.M_coords[1][0] - M_coords[2][0] * matrix.M_coords[1][1];
+
+
+
+                product[ 1 ][ 0 ] = M_coords[2][1] * matrix.M_coords[0][2] - M_coords[2][2] * matrix.M_coords[0][1]
+								  + M_coords[0][2] * matrix.M_coords[2][1] - M_coords[0][1] * matrix.M_coords[2][2];
+
+                product[ 1 ][ 1 ] = M_coords[2][2] * matrix.M_coords[0][0] - M_coords[0][2] * matrix.M_coords[2][0]
+								  + M_coords[0][0] * matrix.M_coords[2][2] - M_coords[2][0] * matrix.M_coords[0][2];
+
+                product[ 1 ][ 2 ] = M_coords[2][0] * matrix.M_coords[0][1] - M_coords[2][1] * matrix.M_coords[0][0]
+								  + M_coords[0][1] * matrix.M_coords[2][0] - M_coords[0][0] * matrix.M_coords[2][1];
+
+
+
+                product[ 2 ][ 0 ] = M_coords[0][1] * matrix.M_coords[1][2] - M_coords[0][3] * matrix.M_coords[1][1]
+								  + M_coords[1][2] * matrix.M_coords[0][1] - M_coords[1][1] * matrix.M_coords[0][3];
+
+                product[ 2 ][ 1 ] = M_coords[0][2] * matrix.M_coords[1][0] - M_coords[0][0] * matrix.M_coords[1][2]
+								  + M_coords[1][0] * matrix.M_coords[0][2] - M_coords[1][2] * matrix.M_coords[0][0];
+
+                product[ 2 ][ 2 ] = M_coords[0][0] * matrix.M_coords[1][1] - M_coords[0][1] * matrix.M_coords[1][0]
+								  + M_coords[1][1] * matrix.M_coords[0][0] - M_coords[1][0] * matrix.M_coords[0][1];
+
+                break;
+            default:
+                ERROR_MSG ("The outer product for matrices is implemented for Dim1 = Dim2 = 3!");
+                break;
+        }
+
+        return product;
+    }
     //@}
     //
 private:
