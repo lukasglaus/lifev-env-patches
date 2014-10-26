@@ -2,6 +2,7 @@ SET(array_HEADERS
   array/ETMatrixElemental.hpp
   array/ETVectorElemental.hpp
   array/OperationSmallAddition.hpp
+  array/OperationSmallCofactor.hpp
   array/OperationSmallDivision.hpp
   array/OperationSmallDot.hpp
   array/OperationSmallEmult.hpp
