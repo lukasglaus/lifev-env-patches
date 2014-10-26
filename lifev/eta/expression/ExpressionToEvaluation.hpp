@@ -42,6 +42,7 @@
 #include <lifev/eta/expression/ExpressionDphiJ.hpp>
 #include <lifev/eta/expression/ExpressionDivI.hpp>
 #include <lifev/eta/expression/ExpressionDivJ.hpp>
+#include <lifev/eta/expression/ExpressionCofactor.hpp>
 #include <lifev/eta/expression/ExpressionMinusTransposed.hpp>
 #include <lifev/eta/expression/ExpressionDeterminant.hpp>
 #include <lifev/eta/expression/ExpressionTrace.hpp>
@@ -84,6 +85,7 @@
 #include <lifev/eta/expression/EvaluationDphiJ.hpp>
 #include <lifev/eta/expression/EvaluationDivI.hpp>
 #include <lifev/eta/expression/EvaluationDivJ.hpp>
+#include <lifev/eta/expression/EvaluationCofactor.hpp>
 #include <lifev/eta/expression/EvaluationMinusTransposed.hpp>
 #include <lifev/eta/expression/EvaluationDeterminant.hpp>
 #include <lifev/eta/expression/EvaluationTrace.hpp>
@@ -294,6 +296,22 @@ private:
     ~ExpressionToEvaluation();
 };
 
+// Specialized for the cofactor
+template<typename Expression, UInt testDim, UInt solutionDim, UInt spaceDim>
+class ExpressionToEvaluation <
+    ExpressionCofactor<Expression>
+    , testDim
+    , solutionDim
+    , spaceDim >
+{
+public:
+    typedef EvaluationCofactor <
+    typename ExpressionToEvaluation<Expression, testDim, solutionDim, spaceDim>::evaluation_Type
+    > evaluation_Type;
+private:
+    ExpressionToEvaluation();
+    ~ExpressionToEvaluation();
+};
 
 // Specialized for the minus transposed
 template<typename Expression, UInt testDim, UInt solutionDim, UInt spaceDim>
