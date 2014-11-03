@@ -25,9 +25,29 @@ Real J (const LifeV::MatrixSmall<3, 3>& F)
     return F.determinant();
 }
 
+LifeV::MatrixSmall<3, 3> H (const LifeV::MatrixSmall<3, 3>& F)
+{
+    return F.cofactor();
+}
+
 Real Jm23 (const LifeV::MatrixSmall<3, 3>& F)
 {
     return std::pow (F.determinant(), -2.0 / 3.0);
+}
+
+Real Jm43 (const LifeV::MatrixSmall<3, 3>& F)
+{
+    return std::pow (F.determinant(), -4.0 / 3.0);
+}
+
+Real Jm53 (const LifeV::MatrixSmall<3, 3>& F)
+{
+    return std::pow (F.determinant(), -5.0 / 3.0);
+}
+
+Real Jm83 (const LifeV::MatrixSmall<3, 3>& F)
+{
+    return std::pow (F.determinant(), -8.0 / 3.0);
 }
 
 Real I1 (const LifeV::MatrixSmall<3, 3>& F)
