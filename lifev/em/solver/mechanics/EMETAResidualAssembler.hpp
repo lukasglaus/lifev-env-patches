@@ -45,6 +45,7 @@ computeFiberActiveStressResidualTerms ( const vector_Type& disp,
                                         FunctorPtr               W)
 {
     //
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing Fibers Active Stress residual terms ... \n";
 
     using namespace ExpressionAssembly;
@@ -79,6 +80,7 @@ computeI4ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 f residual terms ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
@@ -110,6 +112,7 @@ computeI4ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 s residual terms ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
@@ -147,6 +150,7 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 s residual terms (Fung) ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
@@ -215,6 +219,7 @@ computeI8ResidualTerms ( const vector_Type& disp,
         auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
                  * _dI8 (dispETFESpace, disp, 0, f0, s0);
 
+    	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 residual terms ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
@@ -238,6 +243,7 @@ computeI8ResidualTerms ( const vector_Type& disp,
         auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
                  * _dI8 (dispETFESpace, disp, 0, f0, s0);
 
+    	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 residual terms ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
@@ -281,6 +287,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
                      * _dI8 (dispETFESpace, disp, 0, f0, s0);
 
+        	if(disp.comm().MyPID() == 0)
             std::cout << "EMETA - Computing I8 fs residual terms Fung orthonormalize... \n";
 
 
@@ -300,6 +307,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
                 auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
                          * _dI8 (dispETFESpace, disp, 0, f0, n0);
 
+            	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 fn residual terms Fung orthonormalize ... \n";
 
 
@@ -314,6 +322,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
                 auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
                          * _dI8 (dispETFESpace, disp, 0, s0, n0);
 
+            	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 sn residual terms Fung orthonormalize ... \n";
 
 
@@ -344,6 +353,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
                      * _dI8 (dispETFESpace, disp, 0, f0, s0);
 
+        	if(disp.comm().MyPID() == 0)
             std::cout << "EMETA - Computing I8 fs residual terms Fung ... \n";
 
 
@@ -365,6 +375,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
                 auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
                          * _dI8 (dispETFESpace, disp, 0, f0, n0);
 
+            	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 fn residual terms Fung ... \n";
 
 
@@ -379,7 +390,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
                 auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
                          * _dI8 (dispETFESpace, disp, 0, s0, n0);
 
-                std::cout << "EMETA - Computing I8 sn residual terms Fung ... \n";
+            	if(disp.comm().MyPID() == 0)
+            		std::cout << "EMETA - Computing I8 sn residual terms Fung ... \n";
 
 
                 integrate ( elements ( dispETFESpace->mesh() ),

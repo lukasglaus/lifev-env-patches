@@ -50,6 +50,7 @@ computeLinearizedVolumetricResidualTerms ( const vector_Type& disp,
     auto GradUT = transpose (GradU);
     auto P = eval (W, I) * (GradU + GradUT) * value (1. / 2.);
 
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing linear volumetric residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -72,6 +73,7 @@ computeLinearizedDeviatoricResidualTerms ( const vector_Type& disp,
     auto GradUT = transpose (GradU);
     auto P = eval (W, I) * trace (GradU + GradUT) * value (1. / 2.) * I;
 
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing linear deviatoric residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -89,6 +91,7 @@ computeI1ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
 
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I1 residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -107,6 +110,7 @@ computeI2ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
 
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I2 residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -124,7 +128,8 @@ computeVolumetricResidualTerms ( const vector_Type& disp,
                                  FunctorPtr                  Wvol)
 {
     //
-    std::cout << "EMETA - Computing Volumetric residual terms ... \n";
+	if(disp.comm().MyPID() == 0)
+		std::cout << "EMETA - Computing Volumetric residual terms ... \n";
 
     using namespace ExpressionAssembly;
 
@@ -159,6 +164,7 @@ computeI1ResidualTerms ( const vector_Type& disp,
 
     auto s0 = eval (normalize1, s_00);
 
+	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I1 residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
