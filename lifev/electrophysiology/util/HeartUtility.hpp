@@ -75,7 +75,7 @@ namespace ElectrophysiologyUtility
  * @param fileName    Name of the HDF5 file to read from
  * @param localMesh   Pointer to the mesh
  */
-template<typename Mesh> inline void importFibers (  boost::shared_ptr<VectorEpetra> fiberVector, const std::string& fileName, boost::shared_ptr< Mesh > localMesh, const std::string& filePath = "./" )
+template<typename Mesh> inline void importFibers (  boost::shared_ptr<VectorEpetra> fiberVector, const std::string& fileName, boost::shared_ptr< Mesh > localMesh, const std::string& filePath = "./", const std::string& polynomialDegree = "P1" )
 {
     typedef Mesh                                                                          mesh_Type;
     typedef ExporterData<mesh_Type>                                                       exporterData_Type;
@@ -85,7 +85,7 @@ template<typename Mesh> inline void importFibers (  boost::shared_ptr<VectorEpet
 
 
     boost::shared_ptr<Epetra_Comm> comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
-    boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > fiberSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, "P1", 3, comm ) );
+    boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > fiberSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, polynomialDegree, 3, comm ) );
 
     exporterData_Type impData (exporterData_Type::VectorField, "fibers.00000", fiberSpace,
                                fiberVector, UInt (0), exporterData_Type::UnsteadyRegime);
@@ -136,7 +136,12 @@ template<typename Mesh> inline void importScalarField (  boost::shared_ptr<Vecto
  * @param fieldName   Name of the vector field in the HDF5 file
  * @param localMesh   Pointer to the mesh
  */
-template<typename Mesh> inline void importVectorField (  boost::shared_ptr<VectorEpetra> vector, const std::string& fileName, const std::string& fieldName, boost::shared_ptr< Mesh > localMesh  , const std::string& postDir = "./")
+template<typename Mesh> inline void importVectorField (  boost::shared_ptr<VectorEpetra> vector,
+		                                                 const std::string& fileName,
+		                                                 const std::string& fieldName,
+		                                                 boost::shared_ptr< Mesh > localMesh  ,
+		                                                 const std::string& postDir = "./",
+		                                                 const std::string& polynomialDegree = "P1" )
 {
     typedef Mesh                                                                         mesh_Type;
     typedef ExporterData<mesh_Type>                                                      exporterData_Type;
@@ -146,7 +151,7 @@ template<typename Mesh> inline void importVectorField (  boost::shared_ptr<Vecto
 
 
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
-    boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > feSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, "P1", 3, comm ) );
+    boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > feSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, polynomialDegree, 3, comm ) );
 
     exporterData_Type impData (exporterData_Type::VectorField, fieldName + ".00000", feSpace,
                                vector, UInt (0), exporterData_Type::UnsteadyRegime);
