@@ -93,6 +93,13 @@ public:
                                                             this->getMe() );
     }
 
+
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+    	M_Tmax = data.parameter("MaxActiveTension");
+    }
+
 private:
     LifeV::Real M_Tmax;
 };

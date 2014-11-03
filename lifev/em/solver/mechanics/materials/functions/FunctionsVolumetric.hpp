@@ -71,6 +71,11 @@ public:
         EMAssembler::computeVolumetricResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
     }
 
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+    	M_bulk = data.parameter("BulkModulus");
+    }
 private:
     Real M_bulk;
 };
@@ -103,6 +108,11 @@ public:
         EMAssembler::computeVolumetricJacobianTermsSecondDerivative (disp, dispETFESpace, jacobianPtr, this->getMe() );
     }
 
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+    	M_bulk = data.parameter("BulkModulus");
+    }
 private:
     Real M_bulk;
 };

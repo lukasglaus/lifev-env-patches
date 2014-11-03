@@ -1121,6 +1121,18 @@ public:
                            const vector_Type& sheets,
                            vectorPtr_Type           residualVectorPtr);
 
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+        M_a   = data.parameter("C");
+        M_bff = data.parameter("bff");
+        M_bss = data.parameter("bss");
+        M_bnn = data.parameter("bnn");
+        M_bfs = data.parameter("bfs");
+        M_bfn = data.parameter("bfn");
+        M_bsn = data.parameter("bsn");
+    }
+
 protected:
     Real M_a;
     Real M_bff;

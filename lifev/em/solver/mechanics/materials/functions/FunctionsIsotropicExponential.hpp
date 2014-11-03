@@ -37,6 +37,8 @@ class IsotropicExponential : public virtual EMMaterialFunctions<Mesh>
 {
 public:
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef EMData          data_Type;
+
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
@@ -53,7 +55,7 @@ public:
     }
     virtual ~IsotropicExponential() {}
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
+    virtual void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -62,7 +64,7 @@ public:
         EMAssembler::computeI1JacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
     }
 
-    inline virtual void computeResidual ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -76,6 +78,12 @@ public:
         std::cout << "Isotropic Exponential Function\n";
         std::cout << "Coefficient a: " << M_a;
         std::cout << ", coefficient b: " << M_b << "\n";
+    }
+
+    void setParameters (data_Type& data)
+    {
+    	M_a = data.parameter("a");
+    	M_b = data.parameter("b");
     }
 
 
@@ -122,6 +130,13 @@ public:
         std::cout << ", coefficient b: " << M_b << "\n";
     }
 
+    typedef EMData          data_Type;
+
+    void setParameters (data_Type& data)
+    {
+    	M_a = data.parameter("a");
+    	M_b = data.parameter("b");
+    }
 
 private:
     Real M_a;
