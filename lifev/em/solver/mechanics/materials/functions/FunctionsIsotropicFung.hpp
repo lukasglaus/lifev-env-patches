@@ -271,7 +271,11 @@ public:
         std::cout << ", coefficient b: " << M_W1->M_b << "\n";
     }
 
-
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+    	std::cout << "\nWarning: setParameters not implemented for Isotropic Fung Function!";
+    }
     boost::shared_ptr< IsotropicFungFunctions::W1<Mesh> > M_W1;
     boost::shared_ptr< IsotropicFungFunctions::W2<Mesh> > M_W2;
     boost::shared_ptr< IsotropicFungFunctions::dW1dI1<Mesh> > M_dW1dI1;

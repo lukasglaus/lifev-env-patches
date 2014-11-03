@@ -37,6 +37,8 @@
 #define EMMATERIALFUNCTIONS_HPP_
 
 #include <boost/smart_ptr/enable_shared_from_this.hpp>
+#include <lifev/em/solver/EMData.hpp>
+
 #include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
 
 #include <lifev/em/solver/mechanics/EMETAJacobianAssembler.hpp>
@@ -90,15 +92,21 @@ typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 typedef MatrixEpetra<Real>           matrix_Type;
 typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
+
 template <class Mesh>
 class EMMaterialFunctions : public boost::enable_shared_from_this<EMMaterialFunctions<Mesh> >
 {
 public:
 
+
     typedef  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
     typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
     typedef Real return_Type;
+    typedef MatrixSmall<3, 3> matrix_return_Type;
     typedef boost::enable_shared_from_this<EMMaterialFunctions< Mesh > > boostShared_Type;
+
+    typedef EMData          data_Type;
+    typedef typename boost::shared_ptr<data_Type>  dataPtr_Type;
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
@@ -123,6 +131,11 @@ public:
     virtual return_Type operator() (const Real& H)
     {
         return 0.0;
+    }
+
+    virtual matrix_return_Type operator() (const MatrixSmall<3, 3>& F, bool isReturnTypeMatrix)
+    {
+        return MatrixSmall<3,3>();
     }
 
     EMMaterialFunctions() {}
@@ -168,7 +181,7 @@ public:
 
     virtual void showMe() {}
 
-    virtual void setParametersFromGetPot (GetPot& data) {}
+    virtual void setParameters (data_Type& data) = 0;
 
 };
 

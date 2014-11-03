@@ -68,6 +68,12 @@ public:
         EMAssembler::computeLinearizedVolumetricResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
     }
 
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+    	M_mu= data.parameter("mu");
+    }
+
 private:
     Real M_mu;
 };
@@ -109,6 +115,13 @@ public:
                                           vectorPtr_Type           residualVectorPtr)
     {
         EMAssembler::computeLinearizedDeviatoricResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
+    }
+
+    typedef EMData          data_Type;
+    void setParameters (data_Type& data)
+    {
+    	M_mu= data.parameter("mu");
+    	M_bulk = data.parameter("BulkModulus");
     }
 
 private:

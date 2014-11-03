@@ -37,6 +37,8 @@ class ShearExponential : public virtual EMMaterialFunctions<Mesh>
 {
 public:
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef EMData          data_Type;
+
 
     return_Type operator() (const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
@@ -80,6 +82,12 @@ public:
         std::cout << "Shear Exponential Function\n";
         std::cout << "Coefficient a: " << M_a;
         std::cout << ", coefficient b: " << M_b << "\n";
+    }
+
+    void setParameters (data_Type& data)
+    {
+		M_a = data.parameter("afs");
+		M_b = data.parameter("bfs");
     }
 
 private:
@@ -130,6 +138,12 @@ public:
         std::cout << ", coefficient b: " << M_b << "\n";
     }
 
+    typedef EMData data_Type;
+    void setParameters (data_Type& data)
+    {
+		M_a = data.parameter("afs");
+		M_b = data.parameter("bfs");
+    }
 
 private:
     Real M_a;

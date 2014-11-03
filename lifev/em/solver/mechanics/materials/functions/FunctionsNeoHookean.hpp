@@ -39,41 +39,72 @@ template <class Mesh>
 class NeoHookean : public virtual EMMaterialFunctions<Mesh>
 {
 public:
-    typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef EMData          data_Type;
 
-    virtual return_Type operator() (const MatrixSmall<3, 3>& F)
+//    virtual return_Type operator() (const MatrixSmall<3, 3>& F)
+//    {
+//        return 0.5 * M_mu;
+//    }
+//
+//    //    NeoHookean() : M_mu(4960) {} // 0.496 KPa
+//    NeoHookean (Real mu = 4960) : M_mu (mu) {} // 0.496 KPa
+//    NeoHookean (const NeoHookean& neoHookean)
+//    {
+//        M_mu = neoHookean.M_mu;
+//    }
+//    virtual ~NeoHookean() {}
+
+    class W1
     {
-        return 0.5 * M_mu;
-    }
+    public:
+        typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+        virtual return_Type operator() (const MatrixSmall<3, 3>& F)
+        {
+            return 0.5 * mu;
+        }
 
-    //    NeoHookean() : M_mu(4960) {} // 0.496 KPa
-    NeoHookean (Real mu = 4960) : M_mu (mu) {} // 0.496 KPa
-    NeoHookean (const NeoHookean& neoHookean)
-    {
-        M_mu = neoHookean.M_mu;
-    }
-    virtual ~NeoHookean() {}
+        //    NeoHookean() : M_mu(4960) {} // 0.496 KPa
+        W1 (Real mu = 4960) : mu (mu) {} // 0.496 KPa
+        W1 (const W1& neoHookean)
+        {
+            mu = neoHookean.mu;
+        }
+        virtual ~W1() {}
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
+        void setMu( Real mu )
+        {
+        	this->mu = mu;
+        }
+        Real mu;
+
+    };
+
+    virtual void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
-                                          matrixPtr_Type           jacobianPtr)
+                                          matrixPtr_Type           jacobianPtr )
     {
-        EMAssembler::computeI1JacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
+        EMAssembler::computeI1JacobianTerms ( disp, dispETFESpace, jacobianPtr, M_W1 );
     }
 
-    inline virtual void computeResidual ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
-                                          vectorPtr_Type           residualVectorPtr)
+                                          vectorPtr_Type residualVectorPtr)
     {
-        EMAssembler::computeI1ResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
+        EMAssembler::computeI1ResidualTerms ( disp, dispETFESpace, residualVectorPtr, M_W1 );
     }
+
+    void setParameters (data_Type& data)
+    {
+    	M_W1->setMu( data.parameter("mu") );
+    }
+
 
 private:
-    Real M_mu;
+    boost::shared_ptr<NeoHookean::W1> M_W1;
 };
 
 
