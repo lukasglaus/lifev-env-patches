@@ -8,13 +8,13 @@
 #ifndef EMACTIVESTRESSTYPE_HPP_
 #define EMACTIVESTRESSTYPE_HPP_
 
-#include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
+#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
 
 namespace LifeV
 {
 
 template<typename Mesh>
-class EMActiveMaterialType
+class EMActiveMaterialType : public virtual EMMaterialType<Mesh>
 {
 public:
 
@@ -23,8 +23,6 @@ public:
 
     typedef ETFESpace< mesh_Type, MapEpetra, 3, 1 >                        scalarETFESpace_Type;
     typedef boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > >    scalarETFESpacePtr_Type;
-
-    typedef FactorySingleton<Factory<EMActiveMaterialType<Mesh>, std::string> >  EMActiveStressFactory;
 
 
     typedef Mesh mesh_Type;
@@ -39,20 +37,12 @@ public:
     typedef MatrixEpetra<Real>           matrix_Type;
     typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
+    typedef EMMaterialType<Mesh> super;
+
 
     EMActiveMaterialType (std::string materialName = "None", UInt n = 0);
     virtual ~EMActiveMaterialType() {}
 
-
-    inline std::string& materialName()
-    {
-        return M_materialName;
-    }
-
-    inline vectorMaterialsPtr_Type materialFunctionList()
-    {
-        return M_materialFunctionList;
-    }
 
     void
     computeJacobian ( const vector_Type&       disp,
@@ -79,8 +69,6 @@ public:
     }
 
 protected:
-    std::string M_materialName;
-    vectorMaterialsPtr_Type M_materialFunctionList;
     vectorPtr_Type          M_activeStressPtr;
 
 };
@@ -88,8 +76,7 @@ protected:
 
 template<typename Mesh>
 EMActiveMaterialType<Mesh>::EMActiveMaterialType (std::string materialName, UInt n ) :
-    M_materialName (materialName),
-    M_materialFunctionList (n)
+	super(materialName, n)
 {
 
 }
