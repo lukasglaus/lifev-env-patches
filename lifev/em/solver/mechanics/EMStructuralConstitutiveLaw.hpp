@@ -65,6 +65,9 @@ namespace LifeV
   This class has just pure virtual methods. They are implemented in the specific class for one material
 */
 
+//forward declaration
+class EMData;
+
 template <typename MeshType>
 class EMStructuralConstitutiveLaw  : public StructuralConstitutiveLaw<MeshType>
 {
@@ -380,7 +383,7 @@ public:
         setActivation (activation);
     }
 
-    void setParametersFromGetPot (GetPot& data);
+    void setParameters(EMData& data);
 
     //@}
 
@@ -454,7 +457,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 
     M_activationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map() ) );
 
-    std::string passiveMaterialType (dataMaterial -> passiveType() );
+    std::string passiveMaterialType ( dataMaterial -> passiveType() );
     std::string activeStressMaterialType (dataMaterial -> activeStressType() );
     std::cout << "\n===========================";
     std::cout << "\nPassive Type: " << passiveMaterialType;
@@ -561,9 +564,17 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 }
 
 template <typename MeshType>
-void EMStructuralConstitutiveLaw<MeshType>::setParametersFromGetPot (GetPot& data)
+void EMStructuralConstitutiveLaw<MeshType>::setParameters(EMData& data)
 {
+    if (M_activeStressMaterialPtr)
+    {
+        M_activeStressMaterialPtr-> setParameters(data);
+    }
 
+    if (M_passiveMaterialPtr)
+    {
+        M_passiveMaterialPtr-> setParameters(data);
+    }
 }
 
 
