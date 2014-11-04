@@ -278,9 +278,18 @@ int main (int argc, char** argv)
     bool updatedTimeStep1 = false;
     bool updatedTimeStep2 = false;
 
-    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << "\n";
-    Real time (importTime);
-    for ( ; time < endTime ; )
+    if ( comm->MyPID() == 0 )
+    {
+		std::cout << "\n=====================================================\n";
+		std::cout << "============= SOLVING PART I" ;
+		std::cout << "\n=====================================================\n";
+    }
+
+    Real time(importTime);
+    Int iter = 0;
+    Int itermax = static_cast<Int>( endTime / dt );
+    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << ", with " << itermax << " iterations\n";
+    for ( ; iter < itermax ; iter++ )
     {
 
 
@@ -307,6 +316,13 @@ int main (int argc, char** argv)
     //===========================================================
     //         SOLVE PART II: Iterate till convergence
     //===========================================================
+    if ( comm->MyPID() == 0 )
+    {
+		std::cout << "\n=====================================================\n";
+		std::cout << "============= SOLVING PART I" ;
+		std::cout << "\n=====================================================\n";
+    }
+
     Real tol = 1e-8;
     Real res = 2*tol;
     int iteration(0);
