@@ -76,6 +76,10 @@ public:
     {
     	M_bulk = data.parameter("BulkModulus");
     }
+    void showMe()
+    {
+    	std::cout << "BulkModulus = " << M_bulk << "\n";
+    }
 private:
     Real M_bulk;
 };
@@ -112,6 +116,9 @@ public:
     void setParameters (data_Type& data)
     {
     	M_bulk = data.parameter("BulkModulus");
+    }
+    void showMe()
+    {
     }
 private:
     Real M_bulk;

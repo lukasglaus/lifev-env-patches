@@ -47,7 +47,7 @@ public:
 //    }
 //
 //    //    NeoHookean() : M_mu(4960) {} // 0.496 KPa
-//    NeoHookean (Real mu = 4960) : M_mu (mu) {} // 0.496 KPa
+      NeoHookean (Real mu = 4960) : M_W1 (new W1(mu)) { } // 0.496 KPa
 //    NeoHookean (const NeoHookean& neoHookean)
 //    {
 //        M_mu = neoHookean.M_mu;
@@ -75,6 +75,7 @@ public:
         {
         	this->mu = mu;
         }
+
         Real mu;
 
     };
@@ -102,7 +103,10 @@ public:
     	M_W1->setMu( data.parameter("mu") );
     }
 
-
+    void showMe()
+    {
+    	std::cout << "Shear Modulus = " << M_W1->mu << "\n";
+    }
 private:
     boost::shared_ptr<NeoHookean::W1> M_W1;
 };

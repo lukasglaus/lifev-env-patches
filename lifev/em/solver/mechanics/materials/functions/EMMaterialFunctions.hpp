@@ -179,7 +179,7 @@ public:
                                           vectorPtr_Type           residualVectorPtr) {}
 
 
-    virtual void showMe() {}
+    virtual void showMe() { std::cout << "\nYuo should implement the showMe() method for your constitutive law!\n"; }
 
     virtual void setParameters (data_Type& data) = 0;
 

@@ -1133,6 +1133,17 @@ public:
         M_bsn = data.parameter("bsn");
     }
 
+    void showMe()
+    {
+    	std::cout << "C  = " << M_a   << "\n";
+    	std::cout << "bff= " << M_bff << "\n";
+    	std::cout << "bss= " << M_bss << "\n";
+    	std::cout << "bnn= " << M_bnn << "\n";
+    	std::cout << "bfs= " << M_bfs << "\n";
+    	std::cout << "bfn= " << M_bfn << "\n";
+    	std::cout << "bsn= " << M_bsn << "\n";
+    }
+
 protected:
     Real M_a;
     Real M_bff;

@@ -5,8 +5,8 @@
  *      Author: srossi
  */
 
-#include "EMData.hpp"
-#include <Teuchos_ParameterList.hpp>
+#include <lifev/em/solver/EMData.hpp>
+
 
 namespace LifeV{
 
@@ -15,10 +15,11 @@ void
 EMData::setup(GetPot& dataFile)
 {
 	setupSolver(dataFile);
+	setupMaterialParamters(dataFile);
 }
 
 void
-EMData::setupMaterialParaters(GetPot& dataFile, const std::string& section)
+EMData::setupMaterialParamters(GetPot& dataFile, const std::string& section)
 {
     std::string EMpassiveMaterialType = dataFile ( ( section + "/physics/EMPassiveMaterialType" ).data(), "NO_DEFAULT_PASSIVE_TYPE" );
     M_materialParametersList.set ("EMPassiveMaterialType", EMpassiveMaterialType);
@@ -97,7 +98,7 @@ EMData::setupSolver(GetPot& dataFile)
     M_solverParametersList.set ("Quit On Failure", quitOnFailure);
     M_solverParametersList.set ("Silent", silent);
     std::string subListName = "Solver: Operator List";
-    std::string subSubListName = "Trilinos: " + solverName + " List");
+    std::string subSubListName = "Trilinos: " + solverName + " List";
     M_solverParametersList.sublist (subListName).sublist (subSubListName).set ("solver", solver);
     M_solverParametersList.sublist (subListName).sublist (subSubListName).set ("conv", conv);
     M_solverParametersList.sublist (subListName).sublist (subSubListName).set ("scaling", scaling);
