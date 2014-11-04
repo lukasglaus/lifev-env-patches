@@ -668,6 +668,8 @@ public:
         return M_timeAdvance;
     }
 
+
+    void setNewtonParameters(GetPot& data);
     //@}
 
 protected:
@@ -715,6 +717,16 @@ protected:
     void reconstructElementaryVector ( VectorElemental& elVecSigma, vector_Type& patchArea, UInt nVol );
 #endif
 
+    struct NonLinearRichardsonParameters
+    {
+        Real M_abstol = 1e-7;
+        Real M_reltol = 1e-7;
+        UInt M_maxiter = 200;
+        Real M_etamax = 1e-7;
+        Int  M_NonLinearLineSearch = 0;
+    };
+
+    NonLinearRichardsonParameters        M_nonlinearParameters;
 
     boost::shared_ptr<data_Type>         M_data;
 
@@ -908,6 +920,17 @@ StructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>        data,
 
 
 template <typename Mesh>
+void StructuralOperator<Mesh>::setNewtonParameters(GetPot& data)
+{
+	M_nonlinearParameters.M_abstol = data ( "solid/newton/abstol", 1e-7 );
+	M_nonlinearParameters.M_reltol = data ( "solid/newton/reltol", 1e-7 );
+	M_nonlinearParameters.M_maxiter = data ( "solid/newton/maxiter", 200 );
+	M_nonlinearParameters.M_etamax = data ( "solid/newton/etamax", 1e-7 );
+	M_nonlinearParameters.M_NonLinearLineSearch = data ( "solid/newton/NonLinearLineSearch", 0 );
+
+}
+
+template <typename Mesh>
 void StructuralOperator<Mesh>::setupMapMarkersVolumes ( void )
 {
 
@@ -1070,11 +1093,11 @@ StructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch )
 
     M_BCh = bch;
 
-    Real abstol  = 1.e-7;
-    Real reltol  = 1.e-7;
-    UInt maxiter = 200;
-    Real etamax  = 1e-7;
-    Int NonLinearLineSearch = 0;
+    Real abstol  = M_nonlinearParameters.M_abstol;
+    Real reltol  = M_nonlinearParameters.M_reltol;
+    UInt maxiter = M_nonlinearParameters.M_maxiter;
+    Real etamax  = M_nonlinearParameters.M_etamax;
+    Int NonLinearLineSearch = M_nonlinearParameters.M_NonLinearLineSearch;
 
     Real time = M_data->dataTime()->time();
 
@@ -1082,11 +1105,27 @@ StructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch )
 
     if ( M_data->verbose() )
     {
-        status = NonLinearRichardson ( *M_disp, *this, abstol, reltol, maxiter, etamax, NonLinearLineSearch, 0, 2, M_out_res, M_data->dataTime()->time() );
+        status = NonLinearRichardson ( *M_disp,
+        		                       *this,
+        		                       abstol,
+        		                       reltol,
+        		                       maxiter,
+        		                       etamax,
+        		                       NonLinearLineSearch,
+        		                       0,
+        		                       2,
+        		                       M_out_res,
+        		                       M_data->dataTime()->time() );
     }
     else
     {
-        status = NonLinearRichardson ( *M_disp, *this, abstol, reltol, maxiter, etamax, NonLinearLineSearch );
+        status = NonLinearRichardson ( *M_disp,
+        							   *this,
+        							   abstol,
+									   reltol,
+									   maxiter,
+									   etamax,
+									   NonLinearLineSearch );
     }
 
 
