@@ -283,9 +283,18 @@ int main (int argc, char** argv)
     //===========================================================
     //         SOLVE PART I: Increase value of the pressure
     //===========================================================
+    if ( comm->MyPID() == 0 )
+    {
+		std::cout << "\n=====================================================\n";
+		std::cout << "============= SOLVING PART I" ;
+		std::cout << "\n=====================================================\n";
+    }
+
     Real time(importTime);
-    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << "\n";
-    for ( ; time < endTime ; )
+    Int iter = 0;
+    Int itermax = static_cast<Int>( endTime / dt );
+    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << ", with " << itermax << " iterations\n";
+    for ( ; iter < itermax ; iter++ )
     {
     	time += dt;
 
@@ -310,6 +319,13 @@ int main (int argc, char** argv)
     //===========================================================
     //         SOLVE PART II: Iterate till convergence
     //===========================================================
+    if ( comm->MyPID() == 0 )
+    {
+		std::cout << "\n=====================================================\n";
+		std::cout << "============= SOLVING PART II" ;
+		std::cout << "\n=====================================================\n";
+    }
+
     Real tol = 1e-8;
     Real res = 2*tol;
     int iteration(0);
