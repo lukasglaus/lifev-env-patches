@@ -50,6 +50,12 @@ public:
     	return M_materialParametersList.get(parameterName, 0.0);
     }
 
+    template< class Type >
+    void setParameter(std::string parameterName, Type type)
+    {
+    	return M_materialParametersList.set(parameterName, type);
+    }
+
 private:
 	void setupSolver(GetPot& dataFile);
 	Teuchos::ParameterList M_solverParametersList;
