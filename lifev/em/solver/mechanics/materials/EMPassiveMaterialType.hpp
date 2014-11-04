@@ -30,7 +30,7 @@ public:
     typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
     typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > scalarETFESpacePtr_Type;
     //template <class Mesh>
-    using FESpacePtr_Type = boost::shared_ptr< FESpace< Mesh, MapEpetra >  >;
+    typedef boost::shared_ptr< FESpace< Mesh, MapEpetra >  > FESpacePtr_Type;
 
     typedef VectorEpetra           vector_Type;
     typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
