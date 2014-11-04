@@ -18,7 +18,7 @@
 
 
 [exporter]
-type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+type       = hdf5 #ensight          # hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
 start      = 0
 save       = 1
@@ -31,146 +31,137 @@ postDir = ./
 
 [solid]
 
-	[./physics]
-	density   	= 0
-	material_flag  = 1000
-	young     	= 9920
-	poisson   	= 0
-	bulk		= 100000 
-	solidType 	= EMMaterial #neoHookean #EMMaterial 
-	lawType     = nonlinear
-	#Passive material available types for EM
-	#PNH   = Passive NeoHookean
-	#PNHL  = Passive NeoHookean Linearized
-	#PIE   = Passive Isoptropic Exponential
-	#PTIE  = Passive Transversely Isoptropic Exponential
-	#PIEWS = Passive Isoptropic Exponential With Shear
-	#PHO   = Passive Holzapfel Ogden
-	#POF   = Passive Orthotropic Fung
-	#PTIF  = Passive Transversely Isotropic Fung
-	#SFAS  = Simple Fiber Active Stress
-	EMPassiveMaterialType = PTIF
+    [./Fibers]
+    FileName = FiberDirection
+    FileField = fibers
+
+    [../Sheets]
+    FileName = SheetDirection
+    FileField = sheets
+    
+    [../physics]
+    density     = 0
+    material_flag  = 1000
+    young       = 9920
+    poisson     = 0
+    bulk        = 100000 
+    solidType   = EMMaterial #neoHookean #EMMaterial 
+    lawType     = nonlinear
+    #Passive material available types for EM
+    #PNH   = Passive NeoHookean
+    #PNHL  = Passive NeoHookean Linearized
+    #PIE   = Passive Isoptropic Exponential
+    #PTIE  = Passive Transversely Isoptropic Exponential
+    #PIEWS = Passive Isoptropic Exponential With Shear
+    #PHO   = Passive Holzapfel Ogden
+    #POF   = Passive Orthotropic Fung
+    #PTIF  = Passive Transversely Isotropic Fung
+    #SFAS  = Simple Fiber Active Stress
+    EMPassiveMaterialType = POF
+    EMActiveStressMaterialType = SimpleActiveStress #SFAS
+    
+    C = 20000.0
+    bff = 8.0
+    bss = 2.0
+    bnn = 2.0
+    bfs = 4.0
+    bfn = 4.0
+    bsn = 2.0
+    Tmax = 600000.0
+    BulkModulus = 3500.0
 
 
    [../boundary_conditions]
-   flag = 200
-   pressure = -40
-   list = 'Top Bottom Back Right'
+   flag = 100
+   pressure = -150000.
+   list = 'Base'
 
-        [./Top]
-        type       = Natural
-        flag       = 505
-        mode       = Full
-        component  = 3
-    	function  = '[0.0, -1*t, 0.0]'
-
-        [../Bottom]
+        [./Base]
         type       = Essential
         flag       = 1024
         mode       = Full #Component #Full
         component  = 3
-    	function  = '0.0'
-    	
-    	[../Black]
-        type       = Essential
-        flag       = 1024
-        mode       = Full #Component #Full
-        component  = 3
-    	function  = '0.0'
-        
-        [../Back]
-        type       = Essential
-        flag       = 303
-        mode       = Component
-        component  = 1
-	    function  = '0.0'
-
-        [../Right]
-        type       = Essential
-        flag       = 909
-        mode       = Component
-        component  = 0
-    	function  = '0.0'
+        function  = '0.0'
 
         [../]
 
-	[../time_discretization]
-	initialtime 	= 0
-	endtime     	= 1
-	timestep    	= 0.2
-	theta       	= 0.35
-	zeta        	= 0.75
-	BDF_order   	= 2
-	
-	[../space_discretization]
-	mesh_type = .mesh
-	mesh_dir  	= ./
-	mesh_file 	= bar_05mm.mesh
-	order     	= P2
-	
-	
-	[../miscellaneous]
-	factor    	= 1
-	verbose   	= 1
-	
-	
-	[../newton]
-	maxiter 	= 1
-	reltol  	= 1.e-7
-	abstol  	= 1.e-7
-	
-	
-	[../solver]
-	solver          = cg
-	scaling         = none
-	output          = all 			# none
-	conv            = rhs
-	max_iter        = 500
-	reuse           = true
-	max_iter_reuse  = 250
-	kspace          = 800
-	tol             = 1.e-10    		# AztecOO tolerance
-	
-	[../prec]
-	prectype        = Ifpack #Ifpack	 		# Ifpack or ML
-	displayList     = true
-	xmlName         = ParamList.xml 
-	
-	[./ifpack]
-	overlap  	= 3
-	
-		[./fact]
-		ilut_level-of-fill 	= 1
-		drop_tolerance          = 1.e-5
-		relax_value             = 0
-	
-		[../amesos]
-		solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
-	
-		[../partitioner]
-		overlap 		= 4
-	
-	
-		[../schwarz]
-		reordering_type 	= none 			# metis, rcm, none
-		filter_singletons 	= true
-		
-		[../]
-	
-	
-	[../ML] 
+    [../time_discretization]
+    initialtime     = 0
+    endtime         = 1
+    timestep        = 0.025
+    theta           = 0.35
+    zeta            = 0.75
+    BDF_order       = 2
+    
+    [../space_discretization]
+    mesh_type = .mesh
+    mesh_dir    = ./
+    mesh_file   = ellipsoid_015mm.mesh
+    order       = P2
+    
+    
+    [../miscellaneous]
+    factor      = 1
+    verbose     = 1
+    
+    
+    [../newton]
+    maxiter     = 1
+    reltol      = 1.e-7
+    abstol      = 1.e-7
+    
+    
+    [../solver]
+    solver          = cg
+    scaling         = none
+    output          = all           # none
+    conv            = rhs
+    max_iter        = 500
+    reuse           = true
+    max_iter_reuse  = 250
+    kspace          = 800
+    tol             = 1.e-10            # AztecOO tolerance
+    
+    [../prec]
+    prectype        = Ifpack #Ifpack            # Ifpack or ML
+    displayList     = true
+    xmlName         = ParamList.xml 
+    
+    [./ifpack]
+    overlap     = 3
+    
+        [./fact]
+        ilut_level-of-fill  = 1
+        drop_tolerance          = 1.e-5
+        relax_value             = 0
+    
+        [../amesos]
+        solvertype      =  Amesos_Umfpack   # Amesos_KLU or Amesos_Umfpack
+    
+        [../partitioner]
+        overlap         = 4
+    
+    
+        [../schwarz]
+        reordering_type     = none          # metis, rcm, none
+        filter_singletons   = true
+        
+        [../]
+    
+    
+    [../ML] 
 
-	default_parameter_list = NSSA  # Domain-decomposition
-	prec_type =  MGV               # Multigrid, single V-cycle
-	max_levels = 10
-	inc_or_dec = increasing
+    default_parameter_list = NSSA  # Domain-decomposition
+    prec_type =  MGV               # Multigrid, single V-cycle
+    max_levels = 10
+    inc_or_dec = increasing
 
-		[./energy_minimization]
-		enable = true
-		type   = 3
+        [./energy_minimization]
+        enable = true
+        type   = 3
 
-		[../repartition]
-		enable              = 1
+        [../repartition]
+        enable              = 1
         max_min_ratio       = 1.3
         min_per_proc        = 500
         partitioner         = ParMETIS #Zoltan: to be implemented
@@ -190,13 +181,13 @@ postDir = ./
         [../] #smoother
 
     [../] # ML
-	
+    
 [../]
 
 
 
 
-	# -*- getpot -*- (GetPot mode activation for emacs)
+    # -*- getpot -*- (GetPot mode activation for emacs)
 #----------------------------------------------------------------
 #      Data file for heart test
 #----------------------------------------------------------------

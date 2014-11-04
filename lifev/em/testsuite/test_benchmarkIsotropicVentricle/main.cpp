@@ -319,7 +319,7 @@ int main (int argc, char** argv)
     if ( comm->MyPID() == 0 )
     {
 		std::cout << "\n=====================================================\n";
-		std::cout << "============= SOLVING PART I" ;
+		std::cout << "============= SOLVING PART II" ;
 		std::cout << "\n=====================================================\n";
     }
 
