@@ -107,7 +107,7 @@ postDir = ./
 	[../space_discretization]
 	mesh_type = .mesh
 	mesh_dir  	= ./
-	mesh_file 	= bar_01mm.mesh
+	mesh_file 	= bar_02mm.mesh
 	order     	= P2
 
 

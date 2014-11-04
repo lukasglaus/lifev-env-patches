@@ -719,11 +719,20 @@ protected:
 
     struct NonLinearRichardsonParameters
     {
-        Real M_abstol = 1e-7;
-        Real M_reltol = 1e-7;
-        UInt M_maxiter = 200;
-        Real M_etamax = 1e-7;
-        Int  M_NonLinearLineSearch = 0;
+        Real M_abstol;
+        Real M_reltol;
+        UInt M_maxiter;
+        Real M_etamax;
+        Int  M_NonLinearLineSearch;
+
+        NonLinearRichardsonParameters()
+        {
+		M_abstol = 1e-7;
+		M_reltol = 1e-7;
+		M_maxiter=200;
+		M_etamax=1e-7;
+		M_NonLinearLineSearch=0;
+	}
     };
 
     NonLinearRichardsonParameters        M_nonlinearParameters;
@@ -848,7 +857,8 @@ StructuralOperator<Mesh>::StructuralOperator( ) :
 #endif
     M_mapMarkersVolumes          ( ),
     M_mapMarkersIndexes          ( ),
-    M_timeAdvance                ( )
+    M_timeAdvance                ( ),
+    M_nonlinearParameters        ( )
 {
 
     //    M_Displayer->leaderPrint("I am in the constructor for the solver");
