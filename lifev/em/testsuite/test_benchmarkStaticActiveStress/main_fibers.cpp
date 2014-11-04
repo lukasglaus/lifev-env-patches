@@ -268,12 +268,21 @@ int main ( int argc, char** argv )
     //   the solution.
     //*************************************************************//
 
-    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace
-    ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+    std::string order = dataFile ( "problem/space_discretization/order", "P1" );
 
-    fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P1", 1, Comm) );
+    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace;
+    if(order == "P2")
+    {
+		uSpace.reset( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP2, Comm) );
+    }
+    else
+    {
+		uSpace.reset( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+    }
 
-    fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P1", 3, Comm) );
+    fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, order, 1, Comm) );
+
+    fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, order, 3, Comm) );
 
     //*************************************************************//
     // We asseble the stiffness matrix using expression template.
@@ -424,24 +433,24 @@ int main ( int argc, char** argv )
 
 		Real t = (*solution)[iGID];
 
-		Real alpha = 90.0 - 180 * t;
-		Real rl = 17. + 3. * t;
-		Real rs =  7. + 3. * t;
+		Real alpha_degrees = 90.0 - 180 * t;
+		Real alpha = (alpha_degrees * 3.1415 ) / 180.0;
+
+		Real rl = 1.7 + 0.3 * t;
+		Real rs =  0.7 + 0.3 * t;
 
 		Real CosU = z / rl;
 		Real SinU = std::sqrt(1.0 - CosU * CosU );
 
-		Real CosV(0.);
-		if( std::abs(x) >= 1e-13 )
+		Real CosV(1.);
+		if( x*x + y*y >= 1e-12 )
 		{
 			Real TgV = y / x;
-			Real V =std::atan(TgV);
+			Real V = std::atan(TgV);
 			CosV = sgn(x) * std::cos(V);
+//			CosV = x / rs / SinU;
 		}
-		else
-		{
-			CosV = 0.0;
-		}
+
 
 		Real SinV = sgn(y) * std::sqrt(1.0 - CosV * CosV );
 
@@ -450,17 +459,23 @@ int main ( int argc, char** argv )
 		Real dxdu3 = - rl * SinU;
 		Real norm1 = std::sqrt( dxdu1 * dxdu1 + dxdu2 * dxdu2 + dxdu3 * dxdu3 );
 
-		Real dxdv1 = - rs * SinU * SinV;
-		Real dxdv2 = rs * SinU * CosV;
-		Real dxdv3 = 0.0;
-		Real norm2 = std::sqrt( dxdv1 * dxdv1 + dxdv2 * dxdv2 + dxdv3 * dxdv3 );
+//		Real dxdv1 = - rs * SinU * SinV;
+//		Real dxdv2 = rs * SinU * CosV;
+//		Real dxdv3 = 0.0;
+//		Real norm2 = std::sqrt( dxdv1 * dxdv1 + dxdv2 * dxdv2 + dxdv3 * dxdv3 );
 
+		Real dxdv1 = - SinV;
+		Real dxdv2 = CosV;
+		Real dxdv3 = 0.0;
+		Real norm2 = 1.0;
 //		std::cout << "dxdu1: " << dxdu1 << ", SinV: " << SinV << ", CosU: " << CosU << "\n";
+		Real SinA = std::sin(alpha);
+		Real CosA = std::cos(alpha);
 		if(norm1 >= 1e-13 && norm2 >= 1e-13)
 		{
-			(*rbFiber)[iGID] = dxdu1 * std::sin(alpha) / norm1 + dxdv1 * std::cos(alpha) / norm2;
-			(*rbFiber)[jGID] = dxdu2 * std::sin(alpha) / norm1 + dxdv2 * std::cos(alpha) / norm2;
-			(*rbFiber)[kGID] = dxdu3 * std::sin(alpha) / norm1 + dxdv3 * std::cos(alpha) / norm2;
+			(*rbFiber)[iGID] = dxdu1 * SinA / norm1 + dxdv1 * CosA / norm2;
+			(*rbFiber)[jGID] = dxdu2 * SinA / norm1 + dxdv2 * CosA / norm2;
+			(*rbFiber)[kGID] = dxdu3 * SinA / norm1 + dxdv3 * CosA / norm2;
 		}
 		else
 		{
@@ -468,236 +483,9 @@ int main ( int argc, char** argv )
 			(*rbFiber)[jGID] = 0.0;
 			(*rbFiber)[kGID] = 0.0;
 		}
-							(*rbFiber)[jGID] = CosV;
-				(*rbFiber)[kGID] = SinV;
 	}
 
 
-
-    //*************************************************************//
-    // The sheets are defined as the gradient of the scalar
-    // potential just computed.  We create three vector where we
-    // store the components of the sheets direction.
-    // We computed the gradient using the superconvergent
-    // gradient recovery patch of ZZ (check that file for more infos)
-    //*************************************************************//
-//    vectorPtr_Type sx (new vector_Type ( uSpace -> map() ) );
-//    vectorPtr_Type sy (new vector_Type ( uSpace -> map() ) );
-//    vectorPtr_Type sz (new vector_Type ( uSpace -> map() ) );
-//
-//    *sx = GradientRecovery::ZZGradient (uSpace, *solution, 0);
-//    *sy = GradientRecovery::ZZGradient (uSpace, *solution, 1);
-//    *sz = GradientRecovery::ZZGradient (uSpace, *solution, 2);
-//
-//    //*************************************************************//
-//    // We declare the rule-based sheets, fibers, and the projection
-//    // vectors. All these vectors have three components. Therefore
-//    // we use the vectorFESpace to create them.
-//    //*************************************************************//
-//
-//    vectorPtr_Type rbSheet ( new vector_Type ( vectorFESpace -> map() ) );
-//    vectorPtr_Type rbFiber ( new vector_Type ( vectorFESpace -> map() ) );
-//    vectorPtr_Type projection ( new vector_Type ( vectorFESpace -> map() ) );
-//
-//    //*************************************************************//
-//    // From now on all the operations (except for the export)
-//    // will not require communication between the processors.
-//    // Using more processor will surely speed up the computations.
-//    // Therefore the first step is to understand what is the length
-//    // of each of the above vectors on each processor.
-//    // Since we used the same map to declare the vectors, they
-//    // are distributed on the processors in the same way.
-//    // We check only the lenght one of them calling the
-//    // MyLength() method (this method is defined in Trilinos).
-//    // The length n is an integer, and since we have 3 components
-//    // each component will hav n/3 entries.
-//    //*************************************************************//
-//
-//
-//    int n = (*rbSheet).epetraVector().MyLength();
-//    int d = n / 3;
-//
-//    //*************************************************************//
-//    // We loop over the number of entries for each component and
-//    // we fill the rule-based sheet vector field.
-//    // To access the components of the vector we use the global IDs.
-//    // Therefore, we first compute the GIDs and the we assign to
-//    // rbSheet the components of the sheets sx, sy and sz.
-//    // After that we normalize this vector field.
-//    // In this way we have computed the sheet field.
-//    //*************************************************************//
-//    for ( int l (0); l < d; l++)
-//    {
-//        int i = (*rbSheet).blockMap().GID (l);
-//        int j = (*rbSheet).blockMap().GID (l + d);
-//        int k = (*rbSheet).blockMap().GID (l + 2 * d);
-//
-//        (*rbSheet) [i] = (*sx) [i];
-//        (*rbSheet) [j] = (*sy) [i];
-//        (*rbSheet) [k] = (*sz) [i];
-//    }
-//
-//    ElectrophysiologyUtility::normalize (*rbSheet);
-//
-//    //*************************************************************//
-//    // The algorithm requires to give as input the centerline of
-//    // the left ventricle. This can be read from datafile
-//    // so that if you want to change the mesh/geoemtry you don't have
-//    // to recompile
-//    //*************************************************************//
-//    Real cx = dataFile ("problem/centerline_x", 0.0);
-//    Real cy = dataFile ("problem/centerline_y", 0.0);
-//    Real cz = dataFile ("problem/centerline_z", 1.0);
-//
-//
-//    //*************************************************************//
-//    // What I call the projection field is the projection of the
-//    // centerline to the plane orthogonal to the sheets.
-//    // Given the vector of the centerline c and the sheets s.
-//    // then this projection vector p is given by
-//    // p = c - (c,s) s,
-//    // where (c,s) is the scalar product of c with s.
-//    // After we normalize the projection vector.
-//    //*************************************************************//
-//
-//    for ( int l (0); l < d; l++)
-//    {
-//        int i = (*rbSheet).blockMap().GID (l);
-//        int j = (*rbSheet).blockMap().GID (l + d);
-//        int k = (*rbSheet).blockMap().GID (l + 2 * d);
-//
-//        Real cdot = cx * (*rbSheet) [i] + cy * (*rbSheet) [j] + cz * (*rbSheet) [k];
-//
-//        (*projection) [i] = cx - cdot *  (*rbSheet) [i];
-//        (*projection) [j] = cy - cdot *  (*rbSheet) [j];
-//        (*projection) [k] = cz - cdot *  (*rbSheet) [k];
-//    }
-//
-//    ElectrophysiologyUtility::normalize (*projection);
-//
-//    //*************************************************************//
-//    // In each point we have defined to orthogonal direction s and p
-//    // We finish computing the local coordinate system computing the
-//    // third orthonormal component. This is a prototype of the fiber
-//    // field. I usually call it flat fiber field in the sense that
-//    // is a vector field which has zero component in the direction
-//    // of the left ventricle centerline and it can be rotated in
-//    // order to define the seeked fiber field.
-//    // This flat fiber vector f is the vector product of s and p:
-//    // f = s x p;
-//    // Although f should already be normalized, since the vector
-//    // product of two unit vector is a unit vector, we call again
-//    // the normalize function.
-//    //*************************************************************//
-//
-//    for ( int l (0); l < d; l++)
-//    {
-//        int i = (*rbSheet).blockMap().GID (l);
-//        int j = (*rbSheet).blockMap().GID (l + d);
-//        int k = (*rbSheet).blockMap().GID (l + 2 * d);
-//
-//        (*rbFiber) [i] = (*rbSheet) [j]  * (*projection) [k] - (*rbSheet) [k]  * (*projection) [j];
-//        (*rbFiber) [j] = (*rbSheet) [k]  * (*projection) [i] - (*rbSheet) [i]  * (*projection) [k];
-//        (*rbFiber) [k] = (*rbSheet) [i]  * (*projection) [j] - (*rbSheet) [j]  * (*projection) [i];
-//    }
-//
-//    ElectrophysiologyUtility::normalize (*rbFiber);
-//
-//    //*************************************************************//
-//    // The last step is to rotate the flat fiber field just computed
-//    // We rotate the fibers with respect to the sheet field in order
-//    // to keep the orthogonal.
-//    // We make use of Rodrigues formula (you can check wikipedia :) )
-//    // The angle of rotation changes through the wall thickness.
-//    // The hypothesis is that the angle of rotation can be written
-//    // as a function of the scalar potential we computed at the
-//    // beginning.
-//    // We first read from the data file the angle of rotation we
-//    // want to impose on the endocardium and on the epicardium.
-//    //*************************************************************//
-//    Real epi_angle = dataFile ("problem/epi_angle", -60.0);
-//    Real endo_angle = dataFile ("problem/endo_angle", 60.0);
-//
-//    for ( int l (0); l < d; l++)
-//    {
-//        int i = (*rbSheet).blockMap().GID (l);
-//        int j = (*rbSheet).blockMap().GID (l + d);
-//        int k = (*rbSheet).blockMap().GID (l + 2 * d);
-//
-//        //*************************************************************//
-//        // We define a linear relation between the scalar potential u
-//        // (the vector solution) and the angle teta, such that
-//        //  teta = m * u + q;
-//        // We need to compute m and q!
-//        // First: transform the angles in radiants.
-//        // Second: define m as the difference betwee the epi and the endo
-//        // angles.
-//        // Third: define q as the endo angle.
-//        // Fourth: compute m * u + q
-//        //*************************************************************//
-//        Real p = 3.14159265358979;
-//        Real teta1 = p * epi_angle / 180;
-//        Real teta2 = p * endo_angle / 180;
-//        Real m = (teta1 - teta2 );
-//        Real q = teta2;
-//        Real teta;
-//
-//        teta = m * (*solution) [i] + q;
-//
-//        //*************************************************************//
-//        // For easiness of implementation and to be more readable
-//        // we define the local components of the sheets and of the fibers.
-//        // Note that the component of the fibers are the one of the
-//        // flat fiber field.
-//        //*************************************************************//
-//
-//        Real s01 = (*rbSheet) [i];
-//        Real s02 = (*rbSheet) [j];
-//        Real s03 = (*rbSheet) [k];
-//        Real f01 = (*rbFiber) [i];
-//        Real f02 = (*rbFiber) [j];
-//        Real f03 = (*rbFiber) [k];
-//
-//        //*************************************************************//
-//        // The fiber field F is a rotation of the flat fiber field f
-//        // F = R f
-//        // where R is the rotation matrix.
-//        // To compute R we need the sin(teta) and
-//        // the sin(teta)^2 and the cross-product matrix W (check
-//        // rodrigues formula on wikipedia :) )
-//        //*************************************************************//
-//        Real sa = std::sin (teta);
-//        Real sa2 = 2.0 * std::sin (0.5 * teta) * std::sin (0.5 * teta);
-//
-//        Real W11 = 0.0;
-//        Real W12 = -s03;
-//        Real W13 = s02;
-//        Real W21 = s03;
-//        Real W22 = 0.0;
-//        Real W23 = -s01;
-//        Real W31 = -s02;
-//        Real W32 = s01;
-//        Real W33 = 0.0;
-//        //
-//        Real R11 = 1.0 + sa * W11 + sa2 * ( s01 * s01 - 1.0 );
-//        Real R12 = 0.0 + sa * W12 + sa2 * ( s01 * s02 );
-//        Real R13 = 0.0 + sa * W13 + sa2 * ( s01 * s03 );
-//        Real R21 = 0.0 + sa * W21 + sa2 * ( s02 * s01 );
-//        Real R22 = 1.0 + sa * W22 + sa2 * ( s02 * s02 - 1.0 );
-//        Real R23 = 0.0 + sa * W23 + sa2 * ( s02 * s03 );
-//        Real R31 = 0.0 + sa * W31 + sa2 * ( s03 * s01 );
-//        Real R32 = 0.0 + sa * W32 + sa2 * ( s03 * s02 );
-//        Real R33 = 1.0 + sa * W33 + sa2  * ( s03 * s03 - 1.0 );
-//
-//        //*************************************************************//
-//        // Finally we perform the rotation of the flat fiber field
-//        //*************************************************************//
-//
-//        (*rbFiber) [i] = R11 * f01 + R12 * f02 + R13 * f03;
-//        (*rbFiber) [j] = R21 * f01 + R22 * f02 + R23 * f03;
-//        (*rbFiber) [k] = R31 * f01 + R32 * f02 + R33 * f03;
-//    }
-//
 //
 //    //*************************************************************//
 //    // Now that we have computed all the desired vector fields

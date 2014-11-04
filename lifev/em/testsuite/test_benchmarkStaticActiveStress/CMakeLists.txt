@@ -10,6 +10,12 @@ TRIBITS_ADD_EXECUTABLE(
   SOURCES main_fibers.cpp
   )
 
+TRIBITS_ADD_EXECUTABLE(
+  test_StaticActiveStress
+  SOURCES main_benchmark.cpp
+  )
+
+
  TRIBITS_COPY_FILES_TO_BINARY_DIR(data_staticActiveStress
    SOURCE_FILES ParamList.xml data_fibers data_benchmark
    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
