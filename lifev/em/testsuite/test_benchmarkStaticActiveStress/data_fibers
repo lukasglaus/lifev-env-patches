@@ -59,7 +59,8 @@ hdf5_sheets_name       = sheets
     [../space_discretization]
     mesh_dir  	= ./
     mesh_file 	= ellipsoid_015mm.mesh 
-  
+    order       = P2
+      
     [../solver]
     solver_name     = AztecOO #Belos
     solver          = cg
