@@ -114,6 +114,9 @@ public:
     typedef EMMaterialType<MeshType>                             material_Type;
     typedef boost::shared_ptr<material_Type>        materialPtr_Type;
 
+    typedef EMPassiveMaterialType<MeshType>                passiveMaterial_Type;
+    typedef boost::shared_ptr<passiveMaterial_Type>        passiveMaterialPtr_Type;
+
 
     //@}
 
@@ -288,7 +291,7 @@ public:
                            material coefficients (e.g. Young modulus, Poisson ratio..)
       \param displayer: a pointer to the Dysplaier member in the StructuralSolver class
     */
-    inline virtual  void updateJacobianMatrix ( const vector_Type& disp, const dataPtr_Type& dataMaterial,
+    virtual  void updateJacobianMatrix ( const vector_Type& disp, const dataPtr_Type& dataMaterial,
                                                 const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                                                 const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                                 const displayerPtr_Type& displayer );
@@ -385,6 +388,13 @@ public:
 
     void setParameters(EMData& data);
 
+
+    void showMaterialParameters()
+    {
+    	if(M_passiveMaterialPtr) M_passiveMaterialPtr-> showMe();
+    	if(M_activeStressMaterialPtr) M_activeStressMaterialPtr-> showMe();
+    }
+
     //@}
 
 protected:
@@ -404,7 +414,7 @@ protected:
     //materialPtr_Type                               M_materialPtr;
     //    Real                                         M_bulkModulus;
 
-    materialPtr_Type                               M_passiveMaterialPtr;
+    passiveMaterialPtr_Type                               M_passiveMaterialPtr;
     materialPtr_Type                               M_activeStressMaterialPtr;
 
     vectorPtr_Type                                 M_activationPtr;
@@ -467,18 +477,30 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     if (activeStressMaterialType != "NO_DEFAULT_ACTIVESTRESS_TYPE")
     {
         M_activeStressMaterialPtr.reset (material_Type::EMMaterialFactory::instance().createObject ( activeStressMaterialType ) );
-        std::cout << "\nCreated Active Stress Material!\n";
-        M_activeStressMaterialPtr-> showMe();
-        std::cout << "\nShowed Active Stress Material!\n";
-    }
+        if(dFESpace->map().commPtr() ->MyPID() == 0)
+        {
+			std::cout << "\nCreated Active Stress Material!\n";
+			M_activeStressMaterialPtr-> showMe();
+			std::cout << "\nShowed Active Stress Material!\n";
+        }
 
+    }
     if (passiveMaterialType != "NO_DEFAULT_PASSIVE_TYPE")
     {
         //    M_materialPtr.reset(new EMMaterial<MeshType>(materialType));
-        M_passiveMaterialPtr.reset (material_Type::EMMaterialFactory::instance().createObject ( passiveMaterialType ) );
-        M_passiveMaterialPtr-> showMe();
-        std::cout << "\nCreated Passive Material!\n";
+        M_passiveMaterialPtr.reset (passiveMaterial_Type::EMPassiveMaterialFactory::instance().createObject ( passiveMaterialType ) );
+        if(dFESpace->map().commPtr() ->MyPID() == 0)
+        {
+			std::cout << "\nCreated Passive Material!\n";
+			M_passiveMaterialPtr-> showMe();
+			std::cout << "\nCreated Passive Material!\n";
+        }
     }
+
+    if(M_passiveMaterialPtr)
+    	std::cout << "Passive Material has been created\n";
+    else
+    	std::cout << "Passive Material has not been created\n";
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
     //    // another way would be to set up the number of constitutive parameters of the law
@@ -505,6 +527,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     * (this->M_jacobian) *= 0.0;
     if (M_passiveMaterialPtr)
     {
+
         M_passiveMaterialPtr -> computeJacobian (disp,
                                                  this->M_dispETFESpace,
                                                  *M_fiberVectorPtr,

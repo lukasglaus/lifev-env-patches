@@ -8,8 +8,12 @@
 #ifndef EMDATA_HPP_
 #define EMDATA_HPP_
 
+#include <lifev/core/LifeV.hpp>
+
 
 #include <lifev/core/filter/GetPot.hpp>
+#include <Teuchos_ParameterList.hpp>
+
 
 namespace LifeV {
 

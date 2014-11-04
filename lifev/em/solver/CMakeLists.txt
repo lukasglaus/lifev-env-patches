@@ -8,7 +8,8 @@ SET(solver_HEADERS
 #  solver/EMActiveStrainSolver.hpp
 #  solver/EMEvaluate.hpp
   solver/EMSolver.hpp
-#  solver/EMETAFunctors.hpp
+  solver/EMETAFunctors.hpp
+  solver/EMData.hpp
 #  solver/EMGeneralizedActiveHolzapfelOgdenMaterial.hpp
 #  solver/EMActiveStructuralConstitutiveLaw.hpp
 #  solver/EMNeoHookeanActivatedMaterial.hpp
@@ -17,6 +18,7 @@ CACHE INTERNAL "")
 
 SET(solver_SOURCES
   solver/EMSolver.cpp
+  solver/EMData.cpp
 CACHE INTERNAL "")
 
 
