@@ -279,24 +279,9 @@ int main (int argc, char** argv)
     bool updatedTimeStep2 = false;
 
     std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << "\n";
-    for (Real time (importTime); time < endTime ; )
+    Real time (importTime);
+    for ( ; time < endTime ; )
     {
-//    	if(time >= 0.85)
-//		{
-//    		if(!updatedTimeStep1)
-//    		{
-//    			updatedTimeStep1 = true;
-//    			dt = 0.1 * dt;
-//    		}
-//		}
-//    	if(time >= 0.91)
-//		{
-//    		if(!updatedTimeStep2)
-//    		{
-//    			updatedTimeStep2 = true;
-//    			dt = 0.25 * dt;
-//    		}
-//		}
 
 
     	time += dt;
@@ -305,10 +290,6 @@ int main (int argc, char** argv)
     	std::cout << "\n=====================================================\n";
     	std::cout << "============= TIME: " << time ;
     	std::cout << "\n=====================================================\n";
-
-
-    	//Update boundary Conditions
-//    	solidBC -> updatePhysicalSolverVariables();
 
         ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
         *boundaryVectorPtr *= (FinalPressure * time);
@@ -323,7 +304,46 @@ int main (int argc, char** argv)
         exporter->postProcess ( time );
     }
 
-    //  Real t = 1.0;
+    //===========================================================
+    //         SOLVE PART II: Iterate till convergence
+    //===========================================================
+    Real tol = 1e-8;
+    Real res = 2*tol;
+    int iteration(0);
+    while( res > tol )
+    {
+    	iteration++;
+    	time += dt;
+
+        if ( comm->MyPID() == 0 )
+        {
+			std::cout << "\n=====================================================\n";
+			std::cout << "============= TIME: " << time << ", Iteration: " << iteration;
+			std::cout << "\n=====================================================\n";
+        }
+    	VectorEpetra disp_tn(solid.displacement());
+
+        ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
+        *boundaryVectorPtr *= (FinalPressure);
+        Real norm = boundaryVectorPtr -> norm2();
+        std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure << "\n";
+        bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
+	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
+
+    	solid.iterate ( solidBC -> handler() );
+
+        exporter->postProcess ( time );
+
+        disp_tn -= solid.displacement();
+
+        res = disp_tn.norm2();
+
+        if ( comm->MyPID() == 0 )
+        {
+			std::cout << "\n============= Residual: " << res ;
+			std::cout << "\n=====================================================\n";
+        }
+    }
 
     //===========================================================
     //===========================================================
