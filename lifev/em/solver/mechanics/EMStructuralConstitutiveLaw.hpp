@@ -117,6 +117,8 @@ public:
     typedef EMPassiveMaterialType<MeshType>                passiveMaterial_Type;
     typedef boost::shared_ptr<passiveMaterial_Type>        passiveMaterialPtr_Type;
 
+    typedef EMActiveMaterialType<MeshType>                             activeMaterial_Type;
+    typedef boost::shared_ptr<activeMaterial_Type>        activeMaterialPtr_Type;
 
     //@}
 
@@ -415,7 +417,7 @@ protected:
     //    Real                                         M_bulkModulus;
 
     passiveMaterialPtr_Type                               M_passiveMaterialPtr;
-    materialPtr_Type                               M_activeStressMaterialPtr;
+    activeMaterialPtr_Type                               M_activeStressMaterialPtr;
 
     vectorPtr_Type                                 M_activationPtr;
 
@@ -476,7 +478,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 
     if (activeStressMaterialType != "NO_DEFAULT_ACTIVESTRESS_TYPE")
     {
-        M_activeStressMaterialPtr.reset (material_Type::EMMaterialFactory::instance().createObject ( activeStressMaterialType ) );
+        M_activeStressMaterialPtr.reset (activeMaterial_Type::EMActiveMaterialFactory::instance().createObject ( activeStressMaterialType ) );
         if(dFESpace->map().commPtr() ->MyPID() == 0)
         {
 			std::cout << "\nCreated Active Stress Material!\n";
@@ -536,12 +538,12 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     }
     if (M_activeStressMaterialPtr)
         M_activeStressMaterialPtr -> computeJacobian ( disp,
-                                                       super::M_dispETFESpace,
+                                                       this->M_dispETFESpace,
                                                        *M_fiberVectorPtr,
                                                        *M_sheetVectorPtr,
                                                        *M_activationPtr,
                                                        M_scalarETFESpacePtr,
-                                                       super::M_jacobian);
+                                                       this->M_jacobian);
 
 
     //  computeJacobian(disp);

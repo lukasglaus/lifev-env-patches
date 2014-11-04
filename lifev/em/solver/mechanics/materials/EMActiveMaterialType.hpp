@@ -26,6 +26,8 @@ public:
     typedef ETFESpace< mesh_Type, MapEpetra, 3, 1 >                        scalarETFESpace_Type;
     typedef boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > >    scalarETFESpacePtr_Type;
 
+    typedef FactorySingleton<Factory<EMActiveMaterialType<Mesh>, std::string> >  EMActiveMaterialFactory;
+
 
     //template <class Mesh>
     using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
@@ -51,7 +53,16 @@ public:
                       scalarETFESpacePtr_Type  aETFESpace,
                       ETFESpacePtr_Type        dispETFESpace,
                       FESpacePtr_Type          dispFESpace,
-                      matrixPtr_Type           jacobianPtr);
+                      matrixPtr_Type           jacobianPtr) {}
+
+    void
+    computeJacobian ( const vector_Type& disp,
+                      ETFESpacePtr_Type  dispETFESpace,
+                      const vector_Type& fibers,
+                      const vector_Type& sheets,
+                      const vector_Type& activation,
+                      scalarETFESpacePtr_Type  activationETFESpace,
+                      matrixPtr_Type     jacobianPtr);
     //
 
 
@@ -62,7 +73,16 @@ public:
                       scalarETFESpacePtr_Type  aETFESpace,
                       ETFESpacePtr_Type        dispETFESpace,
                       FESpacePtr_Type          dispFESpace,
-                      vectorPtr_Type           residualVectorPtr);
+                      vectorPtr_Type           residualVectorPtr) {}
+
+    void
+    computeResidual ( const vector_Type& disp,
+                      ETFESpacePtr_Type  dispETFESpace,
+                      const vector_Type& fibers,
+                      const vector_Type& sheets,
+                      const vector_Type& activation,
+                      scalarETFESpacePtr_Type  activationETFESpace,
+                      vectorPtr_Type     residualVectorPtr);
 
 //    inline void showMe()
 //    {
@@ -86,33 +106,47 @@ EMActiveMaterialType<Mesh>::EMActiveMaterialType (std::string materialName, UInt
 
 template<typename Mesh>
 void
-EMActiveMaterialType<Mesh>::computeJacobian ( const vector_Type&       disp,
-                                              const vector_Type&       activation,
-                                              scalarETFESpacePtr_Type  aETFESpace,
-                                              ETFESpacePtr_Type        dispETFESpace,
-                                              FESpacePtr_Type          dispFESpace,
-                                              matrixPtr_Type           jacobianPtr)
+EMActiveMaterialType<Mesh>::computeJacobian ( const vector_Type& disp,
+												ETFESpacePtr_Type  dispETFESpace,
+												const vector_Type& fibers,
+												const vector_Type& sheets,
+												const vector_Type& activation,
+												scalarETFESpacePtr_Type  activationETFESpace,
+												matrixPtr_Type     jacobianPtr)
 {
     int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-    	this->M_materialFunctionList[j]->computeJacobian (disp, activation, aETFESpace, dispETFESpace, dispFESpace, jacobianPtr);
+    	this->M_materialFunctionList[j]->computeJacobian ( disp,
+    			                                           dispETFESpace,
+    			                                           fibers,
+    			                                           sheets,
+    			                                           activation,
+    			                                           activationETFESpace,
+    			                                           jacobianPtr);
     }
 }
 
 template <typename Mesh>
 void
-EMActiveMaterialType<Mesh>::computeResidual ( const vector_Type&       disp,
-                                              const vector_Type&       activation,
-                                              scalarETFESpacePtr_Type  aETFESpace,
-                                              ETFESpacePtr_Type        dispETFESpace,
-                                              FESpacePtr_Type          dispFESpace,
-                                              vectorPtr_Type           residualVectorPtr)
+EMActiveMaterialType<Mesh>::computeResidual  (  const vector_Type& disp,
+												ETFESpacePtr_Type  dispETFESpace,
+												const vector_Type& fibers,
+												const vector_Type& sheets,
+												const vector_Type& activation,
+												scalarETFESpacePtr_Type  activationETFESpace,
+												vectorPtr_Type     residualVectorPtr)
 {
     int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-    	this->M_materialFunctionList[j]->computeResidual (disp, activation, aETFESpace, dispETFESpace, dispFESpace, residualVectorPtr);
+    	this->M_materialFunctionList[j]->computeResidual (disp,
+    													  dispETFESpace,
+    													  fibers,
+    													  sheets,
+    													  activation,
+    													  activationETFESpace,
+    													  residualVectorPtr );
     }
 }
 

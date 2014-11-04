@@ -31,7 +31,7 @@ public:
     typedef typename boost::shared_ptr<MaterialFunctions::EMMaterialFunctions<Mesh> >    materialFunctionsPtr_Type;
     typedef std::vector<materialFunctionsPtr_Type>  vectorMaterialsPtr_Type;
 
-    typedef FactorySingleton<Factory<EMMaterialType<Mesh>, std::string> >  EMMaterialFactory;
+//    typedef FactorySingleton<Factory<EMMaterialType<Mesh>, std::string> >  EMMaterialFactory;
 
 
     typedef Mesh mesh_Type;
@@ -63,7 +63,7 @@ public:
         return M_materialFunctionList;
     }
 
-    void
+    virtual void
     computeJacobian ( const vector_Type& disp,
                       ETFESpacePtr_Type dispETFESpace,
                       const vector_Type& fibers,
@@ -73,7 +73,7 @@ public:
     	std::cout << "\nEMMaterial: wrong call to computeJacobian";
     }
 
-    void
+    virtual void
     computeJacobian ( const vector_Type& disp,
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
@@ -86,7 +86,7 @@ public:
     }
 
 
-    void
+    virtual void
     computeJacobian ( const vector_Type&       disp,
                       const vector_Type&       activation,
                       scalarETFESpacePtr_Type  aETFESpace,
@@ -100,7 +100,7 @@ public:
 
 
 
-    void
+    virtual void
     computeResidual ( const vector_Type&       disp,
                       const vector_Type&       activation,
                       scalarETFESpacePtr_Type  aETFESpace,
@@ -114,7 +114,7 @@ public:
 
 
 
-    void
+    virtual void
     computeResidual ( const vector_Type& disp,
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
@@ -124,7 +124,7 @@ public:
     	std::cout << "\nEMMaterial: wrong call to computeResidual";
     }
 
-    void
+    virtual void
     computeResidual ( const vector_Type& disp,
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
