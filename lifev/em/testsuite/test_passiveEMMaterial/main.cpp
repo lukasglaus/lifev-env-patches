@@ -169,6 +169,7 @@ int main (int argc, char** argv)
 
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
+    solid.setNewtonParameters(dataFile);
     solid.buildSystem (1.0);
 
     if ( comm->MyPID() == 0 )
@@ -195,8 +196,9 @@ int main (int argc, char** argv)
     //===========================================================
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
+    Real endTime =  dataFile ( "solid/time_discretization/endtime", 1.0);
 
-    for (Real time (0.0); time < 1;)
+    for (Real time (0.0); time < endTime;)
     {
         time += dt;
         solid.data() -> dataTime() -> updateTime();
