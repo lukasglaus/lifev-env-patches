@@ -50,7 +50,7 @@ public:
     typedef EMData          data_Type;
     typedef typename boost::shared_ptr<data_Type>  dataPtr_Type;
 
-    EMMaterialType (std::string materialName = "None", UInt n = 0);
+    EMMaterialType (std::string materialName, UInt n);
     virtual ~EMMaterialType()   {}
 
     inline std::string& materialName()
@@ -68,7 +68,10 @@ public:
                       ETFESpacePtr_Type dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      matrixPtr_Type     jacobianPtr) {}
+                      matrixPtr_Type     jacobianPtr)
+    {
+    	std::cout << "\nEMMaterial: wrong call to computeJacobian";
+    }
 
     void
     computeJacobian ( const vector_Type& disp,
@@ -77,7 +80,10 @@ public:
                       const vector_Type& sheets,
                       const vector_Type& activation,
                       scalarETFESpacePtr_Type  activationETFESpace,
-                      matrixPtr_Type     jacobianPtr) {}
+                      matrixPtr_Type     jacobianPtr)
+    {
+    	std::cout << "\nEMMaterial: wrong call to computeJacobian";
+    }
 
 
     void
@@ -86,7 +92,10 @@ public:
                       scalarETFESpacePtr_Type  aETFESpace,
                       ETFESpacePtr_Type        dispETFESpace,
                       FESpacePtr_Type          dispFESpace,
-                      matrixPtr_Type           jacobianPtr) {}
+                      matrixPtr_Type           jacobianPtr)
+    {
+    	std::cout << "\nEMMaterial: wrong call to computeJacobian";
+    }
     //
 
 
@@ -97,7 +106,10 @@ public:
                       scalarETFESpacePtr_Type  aETFESpace,
                       ETFESpacePtr_Type        dispETFESpace,
                       FESpacePtr_Type          dispFESpace,
-                      vectorPtr_Type           residualVectorPtr) {}
+                      vectorPtr_Type           residualVectorPtr)
+    {
+    	std::cout << "\nEMMaterial: wrong call to computeResidual";
+    }
     //
 
 
@@ -107,7 +119,10 @@ public:
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      vectorPtr_Type           residualVectorPtr) {}
+                      vectorPtr_Type           residualVectorPtr)
+    {
+    	std::cout << "\nEMMaterial: wrong call to computeResidual";
+    }
 
     void
     computeResidual ( const vector_Type& disp,
@@ -116,7 +131,10 @@ public:
                       const vector_Type& sheets,
                       const vector_Type& activation,
                       scalarETFESpacePtr_Type  activationETFESpace,
-                      vectorPtr_Type     residualVectorPtr) {}
+                      vectorPtr_Type     residualVectorPtr)
+    {
+    	std::cout << "\nEMMaterial: wrong call to computeResidual";
+    }
 
     inline void showMe()
     {
@@ -155,7 +173,7 @@ EMMaterialType<Mesh>::EMMaterialType (std::string materialName, UInt n ) :
     M_materialName (materialName),
     M_materialFunctionList (n)
 {
-
+	std::cout << "\nCreating: " << materialName << " with " << n << " functions.\n";
 }
 
 

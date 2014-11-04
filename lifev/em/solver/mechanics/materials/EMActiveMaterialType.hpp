@@ -18,6 +18,8 @@ class EMActiveMaterialType : public virtual EMMaterialType<Mesh>
 {
 public:
 
+    typedef Mesh mesh_Type;
+
     typedef typename boost::shared_ptr<MaterialFunctions::EMMaterialFunctions<Mesh> >    materialFunctionsPtr_Type;
     typedef std::vector<materialFunctionsPtr_Type>  vectorMaterialsPtr_Type;
 
@@ -25,7 +27,6 @@ public:
     typedef boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > >    scalarETFESpacePtr_Type;
 
 
-    typedef Mesh mesh_Type;
     //template <class Mesh>
     using ETFESpacePtr_Type = boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >;
     //template <class Mesh>
@@ -63,10 +64,10 @@ public:
                       FESpacePtr_Type          dispFESpace,
                       vectorPtr_Type           residualVectorPtr);
 
-    inline void showMe()
-    {
-        std::cout << "Material Type: " << M_materialName << "\n";
-    }
+//    inline void showMe()
+//    {
+//        std::cout << "Material Type: " << M_materialName << "\n";
+//    }
 
 protected:
     vectorPtr_Type          M_activeStressPtr;
@@ -92,10 +93,10 @@ EMActiveMaterialType<Mesh>::computeJacobian ( const vector_Type&       disp,
                                               FESpacePtr_Type          dispFESpace,
                                               matrixPtr_Type           jacobianPtr)
 {
-    int n = M_materialFunctionList.size();
+    int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-        M_materialFunctionList[j]->computeJacobian (disp, activation, aETFESpace, dispETFESpace, dispFESpace, jacobianPtr);
+    	this->M_materialFunctionList[j]->computeJacobian (disp, activation, aETFESpace, dispETFESpace, dispFESpace, jacobianPtr);
     }
 }
 
@@ -108,10 +109,10 @@ EMActiveMaterialType<Mesh>::computeResidual ( const vector_Type&       disp,
                                               FESpacePtr_Type          dispFESpace,
                                               vectorPtr_Type           residualVectorPtr)
 {
-    int n = M_materialFunctionList.size();
+    int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-        M_materialFunctionList[j]->computeResidual (disp, activation, aETFESpace, dispETFESpace, dispFESpace, residualVectorPtr);
+    	this->M_materialFunctionList[j]->computeResidual (disp, activation, aETFESpace, dispETFESpace, dispFESpace, residualVectorPtr);
     }
 }
 

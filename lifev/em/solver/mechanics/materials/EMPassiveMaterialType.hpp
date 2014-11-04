@@ -23,6 +23,8 @@ public:
     typedef typename boost::shared_ptr<MaterialFunctions::EMMaterialFunctions<Mesh> >    materialFunctionsPtr_Type;
     typedef std::vector<materialFunctionsPtr_Type>  vectorMaterialsPtr_Type;
 
+    typedef FactorySingleton<Factory<EMPassiveMaterialType<Mesh>, std::string> >  EMPassiveMaterialFactory;
+
     typedef Mesh mesh_Type;
     //template <class Mesh>
     typedef boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > ETFESpacePtr_Type;
@@ -43,17 +45,6 @@ public:
 
     EMPassiveMaterialType (std::string materialName = "None", UInt n = 0);
     virtual ~EMPassiveMaterialType()   {}
-
-
-    inline std::string& materialName()
-    {
-        return M_materialName;
-    }
-
-    inline vectorMaterialsPtr_Type materialFunctionList()
-    {
-        return M_materialFunctionList;
-    }
 
     void
     computeJacobian ( const vector_Type& disp,
@@ -90,18 +81,15 @@ public:
                       scalarETFESpacePtr_Type  activationETFESpace,
                       vectorPtr_Type     residualVectorPtr);
 
-protected:
-    std::string M_materialName;
-    vectorMaterialsPtr_Type M_materialFunctionList;
+
 
 };
 
 
 template<typename Mesh>
 EMPassiveMaterialType<Mesh>::EMPassiveMaterialType (std::string materialName, UInt n ) :
-    super (materialName, n)
+super(materialName, n)
 {
-
 }
 
 
@@ -114,10 +102,10 @@ EMPassiveMaterialType<Mesh>::computeJacobian ( const vector_Type& disp,
                                         const vector_Type& sheets,
                                         matrixPtr_Type           jacobianPtr)
 {
-    int n = M_materialFunctionList.size();
+    int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-        M_materialFunctionList[j]->computeJacobian (disp, dispETFESpace, fibers, sheets, jacobianPtr);
+    	this->M_materialFunctionList[j]->computeJacobian (disp, dispETFESpace, fibers, sheets, jacobianPtr);
     }
 }
 
@@ -132,15 +120,15 @@ EMPassiveMaterialType<Mesh>::computeJacobian ( const vector_Type& disp,
                                         scalarETFESpacePtr_Type   activationETFESpace,
                                         matrixPtr_Type           jacobianPtr)
 {
-    int n = M_materialFunctionList.size();
+    int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
-        M_materialFunctionList[j]->computeJacobian (disp,
-                                                    dispETFESpace,
-                                                    fibers,
-                                                    sheets,
-                                                    activation,
-                                                    activationETFESpace,
-                                                    jacobianPtr);
+    	this->M_materialFunctionList[j]->computeJacobian (disp,
+														dispETFESpace,
+														fibers,
+														sheets,
+														activation,
+														activationETFESpace,
+														jacobianPtr);
 }
 
 template <typename Mesh>
@@ -159,10 +147,10 @@ EMPassiveMaterialType<Mesh>::computeResidual ( const vector_Type& disp,
     {
         std::cout << "EM Material Type: dispETFESpace available\n";
     }
-    int n = M_materialFunctionList.size();
+    int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-        M_materialFunctionList[j]->computeResidual (disp, dispETFESpace, fibers, sheets, residualVectorPtr);
+    	this->M_materialFunctionList[j]->computeResidual (disp, dispETFESpace, fibers, sheets, residualVectorPtr);
     }
 }
 
@@ -177,9 +165,9 @@ EMPassiveMaterialType<Mesh>::computeResidual ( const vector_Type& disp,
                                         scalarETFESpacePtr_Type   activationETFESpace,
                                         vectorPtr_Type           residualVectorPtr)
 {
-    int n = M_materialFunctionList.size();
+    int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
-        M_materialFunctionList[j]->computeResidual (disp,
+    	this->M_materialFunctionList[j]->computeResidual (disp,
                                                     dispETFESpace,
                                                     fibers,
                                                     sheets,

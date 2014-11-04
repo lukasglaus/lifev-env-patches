@@ -9,7 +9,7 @@
 #define PassiveIsotropicExponentialWithShear_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMPassiveMaterialType.hpp>
 
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
@@ -26,7 +26,7 @@ namespace LifeV
 {
 
 template<typename Mesh>
-class PassiveIsotropicExponentialWithShear : public virtual EMMaterialType<Mesh>
+class PassiveIsotropicExponentialWithShear : public virtual EMPassiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;
@@ -49,13 +49,13 @@ PassiveIsotropicExponentialWithShear<Mesh>::PassiveIsotropicExponentialWithShear
 
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createPassiveIsotropicExponentialWithShear()
+inline EMPassiveMaterialType<MeshType>* createPassiveIsotropicExponentialWithShear()
 {
     return new PassiveIsotropicExponentialWithShear<MeshType>();
 }
 namespace
 {
-static bool registerEM_passiveIEWS = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("PIEWS", &createPassiveIsotropicExponentialWithShear<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_passiveIEWS = EMPassiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMPassiveMaterialFactory::instance().registerProduct ("PIEWS", &createPassiveIsotropicExponentialWithShear<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV
