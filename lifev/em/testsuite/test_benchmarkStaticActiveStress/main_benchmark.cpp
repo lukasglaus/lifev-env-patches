@@ -28,6 +28,9 @@
 #include <lifev/bc_interface/3D/bc/BCInterface3D.hpp>
 #include <lifev/structure/solver/NeoHookeanMaterialNonLinear.hpp>
 
+#include <lifev/em/solver/EMData.hpp>
+
+
 using namespace LifeV;
 
 
@@ -39,8 +42,6 @@ template<typename space> void ComputeBC( const boost::shared_ptr<RegionMesh<Line
 						boost::shared_ptr<VectorEpetra> bcVectorPtr,
 						const boost::shared_ptr< space > dETFESpace,
 						int bdFlag);
-
-
 
 
 int main (int argc, char** argv)
@@ -82,6 +83,11 @@ int main (int argc, char** argv)
 
     std::string meshName = dataFile ( "solid/space_discretization/mesh_file", "" );
     std::string meshPath = dataFile ( "solid/space_discretization/mesh_dir", "./" );
+
+    if( comm->MyPID() == 0 )
+    {
+    	std::cout << meshName << "\n";
+    }
 
     typedef RegionMesh<LinearTetra>                         mesh_Type;
     typedef boost::shared_ptr<mesh_Type>                    meshPtr_Type;
@@ -165,6 +171,9 @@ int main (int argc, char** argv)
     //Setup the data of the constitutive law
     boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
     dataStructure->setup (dataFile);
+    EMData emdata;
+    emdata.setup (dataFile);
+
 
     if ( comm->MyPID() == 0 )
     {
@@ -181,14 +190,27 @@ int main (int argc, char** argv)
 
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
+    solid.EMMaterial()->setParameters(emdata);
+    solid.EMMaterial()->showMaterialParameters();
     solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
-    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
+    std::string fiberFile ( dataFile ( "solid/Fibers/FileName", "FiberDirection") );
+    std::string fiberField ( dataFile ( "solid/Fibers/FileField", "fibers") );
+    std::string sheetFile ( dataFile ( "solid/Sheets/FileName", "SheetsDirection") );
+    std::string sheetField ( dataFile ( "solid/Sheets/FileField", "sheets") );
+    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->fiberVectorPtr(),  fiberFile,  fiberField, localSolidMesh, "./", dOrder);
+    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->sheetVectorPtr(),  sheetFile,  sheetField, localSolidMesh, "./", dOrder);
+
+//    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
     if(solid.EMMaterial()->sheetVectorPtr()) std::cout << "I have sheets!\n";
     else
     {
         std::cout << "I don't have sheets!\n";
         return 0.0;
     }
+
+
+
+    *( solid.EMMaterial()->activationPtr() ) = 1.0;
 
     solid.buildSystem (1.0);
 
@@ -263,6 +285,7 @@ int main (int argc, char** argv)
     exporter->setPostDir ( problemFolder );
     exporter->setMeshProcId ( localSolidMesh, comm->MyPID() );
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
+    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
     exporter->postProcess ( 0 );
 
     //===========================================================
@@ -275,28 +298,40 @@ int main (int argc, char** argv)
     bool updatedTimeStep1 = false;
     bool updatedTimeStep2 = false;
 
-
-    //===========================================================
-    //         SOLVE PART I: Increase value of the pressure
-    //===========================================================
-    Real time(importTime);
-    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << "\n";
-    for ( ; time < endTime ; )
+    if ( comm->MyPID() == 0 )
     {
-    	time += dt;
+		std::cout << "\n=====================================================\n";
+		std::cout << "============= SOLVING PART I" ;
+		std::cout << "\n=====================================================\n";
+    }
 
-        if ( comm->MyPID() == 0 )
-        {
-			std::cout << "\n=====================================================\n";
-			std::cout << "============= TIME: " << time ;
-			std::cout << "\n=====================================================\n";
-        }
+    Real time(importTime);
+    Int iter = 0;
+    Int itermax = static_cast<Int>( endTime / dt );
+    std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << ", with " << itermax << " iterations\n";
+    Real Tmax =  dataFile ( "solid/physics/Tmax", 60000);
+    for ( ; iter < itermax ; iter++ )
+    {
+
+        emdata.setParameter("MaxActiveTension", Tmax * time );
+        solid.EMMaterial()->setParameters(emdata);
+        solid.EMMaterial()->showMaterialParameters();
+
+
+    	time += dt;
+//    	solid.data() -> dataTime() -> updateTime();
+
+    	std::cout << "\n=====================================================\n";
+    	std::cout << "============= TIME: " << time ;
+    	std::cout << "\n=====================================================\n";
+
         ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
         *boundaryVectorPtr *= (FinalPressure * time);
         Real norm = boundaryVectorPtr -> norm2();
-        std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure * time << "\n";
+        std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure * time << ", Active Tension: " << Tmax * time <<"\n";
         bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
 	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
+    	/////
 
     	solid.iterate ( solidBC -> handler() );
 
@@ -306,6 +341,13 @@ int main (int argc, char** argv)
     //===========================================================
     //         SOLVE PART II: Iterate till convergence
     //===========================================================
+    if ( comm->MyPID() == 0 )
+    {
+		std::cout << "\n=====================================================\n";
+		std::cout << "============= SOLVING PART II" ;
+		std::cout << "\n=====================================================\n";
+    }
+
     Real tol = 1e-8;
     Real res = 2*tol;
     int iteration(0);
@@ -324,8 +366,9 @@ int main (int argc, char** argv)
 
         ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
         *boundaryVectorPtr *= (FinalPressure);
+
         Real norm = boundaryVectorPtr -> norm2();
-        std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure << "\n";
+        std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure << ", Active Tension: " << Tmax <<"\n";
         bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
 	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
 

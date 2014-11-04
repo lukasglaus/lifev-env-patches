@@ -415,6 +415,7 @@ int main ( int argc, char** argv )
     // using HDF5.
     //*************************************************************//
     vectorPtr_Type rbFiber ( new vector_Type ( vectorFESpace -> map() ) );
+    vectorPtr_Type rbSheet ( new vector_Type ( vectorFESpace -> map() ) );
     UInt d =  rbFiber->epetraVector().MyLength();
     UInt nComponentLocalDof = d / 3;
 
@@ -483,9 +484,15 @@ int main ( int argc, char** argv )
 			(*rbFiber)[jGID] = 0.0;
 			(*rbFiber)[kGID] = 0.0;
 		}
+
+		(*rbSheet)[iGID] = (*rbFiber)[jGID];
+		(*rbSheet)[jGID] = -(*rbFiber)[iGID];
+		(*rbSheet)[kGID] = 0.0;
+
+
 	}
 
-
+    ElectrophysiologyUtility::normalize(*rbSheet);
 //
 //    //*************************************************************//
 //    // Now that we have computed all the desired vector fields
@@ -500,11 +507,14 @@ int main ( int argc, char** argv )
 //    //*************************************************************//
     std::string outputFiberFileName = dataFile ("problem/output_fiber_filename", "FiberDirection");
     std::string fiberHDF5Name = dataFile ("problem/hdf5_fiber_name", "fibers");
+    std::string outputSheetFileName = dataFile ("problem/output_sheet_filename", "SheetDirection");
+    std::string sheetHDF5Name = dataFile ("problem/hdf5_sheet_name", "sheets");
 
 //    std::string outputSheetsFileName = dataFile ("problem/output_sheets_filename", "SheetsDirection");
 //    std::string sheetsHDF5Name = dataFile ("problem/hdf5_sheets_name", "sheets");
 //
     exportVectorField (Comm, meshPart, vectorFESpace, rbFiber, problemFolder, outputFiberFileName, fiberHDF5Name );
+    exportVectorField (Comm, meshPart, vectorFESpace, rbSheet, problemFolder, outputSheetFileName, sheetHDF5Name );
 //    exportVectorField (Comm, meshPart, vectorFESpace, rbSheet, problemFolder, outputSheetsFileName, sheetsHDF5Name );
 //    exportVectorField (Comm, meshPart, vectorFESpace, projection, problemFolder, "Projection", "projection" );
 //
