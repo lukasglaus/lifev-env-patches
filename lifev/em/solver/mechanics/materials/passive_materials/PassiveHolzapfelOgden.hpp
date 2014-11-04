@@ -9,7 +9,7 @@
 #define PASSIVEHOLZAPFELOGDEN_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMPassiveMaterialType.hpp>
 
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
@@ -26,7 +26,7 @@ namespace LifeV
 {
 
 template<typename Mesh>
-class PassiveHolzapfelOgden : public virtual EMMaterialType<Mesh>
+class PassiveHolzapfelOgden : public virtual EMPassiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;
@@ -64,13 +64,13 @@ PassiveHolzapfelOgden<Mesh>::PassiveHolzapfelOgden() :
 
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createPassiveHolzapfelOgden()
+inline EMPassiveMaterialType<MeshType>* createPassiveHolzapfelOgden()
 {
     return new PassiveHolzapfelOgden<MeshType>();
 }
 namespace
 {
-static bool registerEM_passiveHO = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("PHO", &createPassiveHolzapfelOgden<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_passiveHO = EMPassiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMPassiveMaterialFactory::instance().registerProduct ("PHO", &createPassiveHolzapfelOgden<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV

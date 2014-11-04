@@ -9,7 +9,7 @@
 #define PASSIVEORTHOTROPICFUNG_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMPassiveMaterialType.hpp>
 
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
@@ -26,7 +26,7 @@ namespace LifeV
 {
 
 template<typename Mesh>
-class PassiveOrthotropicFung : public virtual EMMaterialType<Mesh>
+class PassiveOrthotropicFung : public virtual EMPassiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;
@@ -46,13 +46,13 @@ PassiveOrthotropicFung<Mesh>::PassiveOrthotropicFung() :
 
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createPassiveOrthotropicFung()
+inline EMPassiveMaterialType<MeshType>* createPassiveOrthotropicFung()
 {
     return new PassiveOrthotropicFung<MeshType>();
 }
 namespace
 {
-static bool registerEM_passiveOF = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("POF", &createPassiveOrthotropicFung<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_passiveOF = EMPassiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMPassiveMaterialFactory::instance().registerProduct ("POF", &createPassiveOrthotropicFung<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV

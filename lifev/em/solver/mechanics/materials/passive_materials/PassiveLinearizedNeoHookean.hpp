@@ -9,7 +9,7 @@
 #define PASSIVELINEARIZEDNEOHOOKEAN_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMPassiveMaterialType.hpp>
 
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
@@ -26,7 +26,7 @@ namespace LifeV
 {
 
 template<typename Mesh>
-class PassiveLinearizedNeoHookean : public virtual EMMaterialType<Mesh>
+class PassiveLinearizedNeoHookean : public virtual EMPassiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;
@@ -45,13 +45,13 @@ PassiveLinearizedNeoHookean<Mesh>::PassiveLinearizedNeoHookean() :
 
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createPassiveLinearizedNeoHookean()
+inline EMPassiveMaterialType<MeshType>* createPassiveLinearizedNeoHookean()
 {
     return new PassiveLinearizedNeoHookean<MeshType>();
 }
 namespace
 {
-static bool registerEM_passiveNHL = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("PNHL", &createPassiveLinearizedNeoHookean<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_passiveNHL = EMPassiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMPassiveMaterialFactory::instance().registerProduct ("PNHL", &createPassiveLinearizedNeoHookean<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV

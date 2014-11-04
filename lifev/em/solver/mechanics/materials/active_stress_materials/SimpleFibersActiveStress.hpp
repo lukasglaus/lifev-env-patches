@@ -9,7 +9,7 @@
 #define SIMPLEFIBERSACTIVESTRESS_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMActiveMaterialType.hpp>
 
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
@@ -26,7 +26,7 @@ namespace LifeV
 {
 
 template<typename Mesh>
-class SimpleFibersActiveStress : public virtual EMMaterialType<Mesh>
+class SimpleFibersActiveStress : public virtual EMActiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;

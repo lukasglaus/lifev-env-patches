@@ -9,14 +9,14 @@
 #define PASSIVEISOTROPICFUNG_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMPassiveMaterialType.hpp>
 
 
 namespace LifeV
 {
 
 template<typename Mesh>
-class PassiveIsotropicFung : public virtual EMMaterialType<Mesh>
+class PassiveIsotropicFung : public virtual EMPassiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;
@@ -41,13 +41,13 @@ PassiveIsotropicFung<Mesh>::PassiveIsotropicFung() :
 
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createPassiveIsotropicFung()
+inline EMPassiveMaterialType<MeshType>* createPassiveIsotropicFung()
 {
     return new PassiveIsotropicFung<MeshType>();
 }
 namespace
 {
-static bool registerEM_passiveIF = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("PIF", &createPassiveIsotropicFung<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_passiveIF = EMPassiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMPassiveMaterialFactory::instance().registerProduct ("PIF", &createPassiveIsotropicFung<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV

@@ -9,7 +9,7 @@
 #define PASSIVENEOHOOKEAN_HPP_
 
 
-#include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
+#include <lifev/em/solver/mechanics/materials/EMPassiveMaterialType.hpp>
 
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
@@ -26,7 +26,7 @@ namespace LifeV
 {
 
 template<typename Mesh>
-class PassiveNeoHookean : public virtual EMMaterialType<Mesh>
+class PassiveNeoHookean : public virtual EMPassiveMaterialType<Mesh>
 {
 public:
     typedef EMMaterialType<Mesh> super;
@@ -38,21 +38,22 @@ public:
 
 template<typename Mesh>
 PassiveNeoHookean<Mesh>::PassiveNeoHookean() :
-    super ("Passive Neo-Hookean", 3)
+    super("Passive Neo-Hookean", 3)
 {
+	std::cout << "Number of Functions in List: " << this->M_materialFunctionList.size();
     this -> M_materialFunctionList[0].reset (new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
     this -> M_materialFunctionList[1].reset (new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
     this -> M_materialFunctionList[2].reset (new MaterialFunctions::NeoHookean<Mesh> ()  );
 }
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createPassiveNeoHookean()
+inline EMPassiveMaterialType<MeshType>* createPassiveNeoHookean()
 {
     return new PassiveNeoHookean<MeshType>();
 }
 namespace
 {
-static bool registerEM_passiveNH = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("PNH", &createPassiveNeoHookean<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_passiveNH = EMPassiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMPassiveMaterialFactory::instance().registerProduct ("PNH", &createPassiveNeoHookean<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV
