@@ -100,6 +100,11 @@ public:
     	M_Tmax = data.parameter("MaxActiveTension");
     }
 
+    void showMe()
+    {
+    	std::cout << "Activa Tension = " << M_Tmax << "\n";
+    }
+
 private:
     LifeV::Real M_Tmax;
 };

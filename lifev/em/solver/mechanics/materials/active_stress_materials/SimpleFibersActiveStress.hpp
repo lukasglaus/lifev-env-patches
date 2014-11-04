@@ -44,13 +44,13 @@ SimpleFibersActiveStress<Mesh>::SimpleFibersActiveStress() :
 
 
 template <typename MeshType>
-inline EMMaterialType<MeshType>* createSimpleFibersActiveStress()
+inline EMActiveMaterialType<MeshType>* createSimpleFibersActiveStress()
 {
     return new SimpleFibersActiveStress<MeshType>();
 }
 namespace
 {
-static bool registerEM_SimpleFibersActiveStress = EMMaterialType<LifeV::RegionMesh<LinearTetra> >::EMMaterialFactory::instance().registerProduct ("SimpleActiveStress", &createSimpleFibersActiveStress<LifeV::RegionMesh<LinearTetra> > );
+static bool registerEM_SimpleFibersActiveStress = EMActiveMaterialType<LifeV::RegionMesh<LinearTetra> >::EMActiveMaterialFactory::instance().registerProduct ("SimpleActiveStress", &createSimpleFibersActiveStress<LifeV::RegionMesh<LinearTetra> > );
 }
 
 }//LifeV
