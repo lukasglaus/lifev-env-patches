@@ -33,7 +33,7 @@ postDir = ./
 
 	[./physics]
 	density   	= 0
-	material_flag  = 101
+	material_flag  = 1000
 	young     	= 9920
 	poisson   	= 0
 	bulk		= 100000
@@ -50,16 +50,25 @@ postDir = ./
 	#PTIF  = Passive Transversely Isotropic Fung
 	#SFAS  = Simple Fiber Active Stress
 	EMPassiveMaterialType = PTIF
+	    
+	C = 20000.0
+    bff = 8.0
+    bss = 3.0
+    bnn = 3.0
+    bfs = 4.0
+    bfn = 4.0
+    bsn = 3.0
+    BulkModulus = 3500.0
 
 
    [../boundary_conditions]
-   flag = 40
+   flag = 200
    pressure = 1000
    list = 'Top'
 
         [./Top]
         type       = Essential
-        flag       = 3
+        flag       = 900
         mode       = Full
         component  = 3
     	function  = '0.0'
@@ -98,7 +107,7 @@ postDir = ./
 	[../space_discretization]
 	mesh_type = .mesh
 	mesh_dir  	= ./
-	mesh_file 	= bechmarkCoarse.mesh
+	mesh_file 	= bar_05mm.mesh
 	order     	= P2
 
 
@@ -108,7 +117,7 @@ postDir = ./
 
 
 	[../newton]
-	maxiter 	= 1
+	maxiter 	= 40
 	reltol  	= 1.e-7
 	abstol  	= 1.e-7
 

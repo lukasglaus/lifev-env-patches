@@ -164,6 +164,9 @@ int main (int argc, char** argv)
     boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
     dataStructure->setup (dataFile);
 
+    EMData emdata;
+    emdata.setup (dataFile);
+
     if ( comm->MyPID() == 0 )
     {
         std::cout << " Done!" << std::endl;
@@ -179,6 +182,9 @@ int main (int argc, char** argv)
 
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
+    solid.EMMaterial()->setParameters(emdata);
+
+    solid.EMMaterial()->showMaterialParameters();
     solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
     solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
     if(solid.EMMaterial()->sheetVectorPtr()) std::cout << "I have sheets!\n";
