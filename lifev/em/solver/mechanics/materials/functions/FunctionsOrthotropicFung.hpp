@@ -74,8 +74,8 @@ public:
     	Real I4fm1 = I4f - 1;
     	Real I4s = Elasticity::I4(F, s0);
     	Real I4sm1 = I4s - 1;
-    	Real I1bar = Elasticity::I1bar(F);
-//    	Real I1bar = Elasticity::I1(F);
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
     	Real I8fs = Elasticity::I8(F, f0,s0);
         VectorSmall<3> n0 = Elasticity::crossProduct(f0, s0);
     	Real I8fn = Elasticity::I8(F, f0, n0);
@@ -93,8 +93,8 @@ public:
     {
     	Real I4f = Elasticity::I4(F, f0);
     	Real I4s = Elasticity::I4(F, s0);
-    	Real I1bar = Elasticity::I1bar(F);
-//    	Real I1bar = Elasticity::I1(F);
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
     	return 0.5 * M_bnn * (I1bar - I4f - I4s - 1.0);
     }
     Real computed2QdI12 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
@@ -127,8 +127,8 @@ public:
     	Real I4f = Elasticity::I4(F, f0);
     	Real I4fm1 = I4f - 1;
     	Real I4s = Elasticity::I4(F, s0);
-    	Real I1bar = Elasticity::I1bar(F);
-//    	Real I1bar = Elasticity::I1(F);
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
     	return 0.5 * ( M_bff * I4fm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
     }
     Real computed2QdI4f2 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
@@ -158,8 +158,8 @@ public:
     	Real I4f = Elasticity::I4(F, f0);
     	Real I4s = Elasticity::I4(F, s0);
     	Real I4sm1 = I4s - 1;
-    	Real I1bar = Elasticity::I1bar(F);
-//    	Real I1bar = Elasticity::I1(F);
+//    	Real I1bar = Elasticity::I1bar(F);
+    	Real I1bar = Elasticity::I1(F);
     	return 0.5 * ( M_bss * I4sm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
     }
     Real computed2QdI4s2 (const MatrixSmall<3, 3>& F, const VectorSmall<3>& f0, const VectorSmall<3>& s0)
@@ -1185,8 +1185,8 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
     auto n0 = eval (cross, f0, s0);
 
     auto W1bar = eval(W1_bar, F, f0, s0);
-    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
-//    auto dI1bar = _dI1(dispETFESpace, disp, 0);
+//    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
+    auto dI1bar = _dI1(dispETFESpace, disp, 0);
 	auto P1bar = W1bar * dI1bar;
 
     auto W4F = eval (W4_f, F, f0, s0);
@@ -1210,6 +1210,19 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
     auto P8SN = W8SN * dI8SN;
 
     auto P = P4F + P4S + P1bar + P8FS + P8FN + P8SN;
+
+    if(disp.comm().MyPID() == 0 )
+    {
+    	std::cout << "Assembling residual of the Orthotropic Fung Law with parameters: \n";
+    	std::cout << "C  = " << M_a   << "\n";
+    	std::cout << "bff= " << M_bff << "\n";
+    	std::cout << "bss= " << M_bss << "\n";
+    	std::cout << "bnn= " << M_bnn << "\n";
+    	std::cout << "bfs= " << M_bfs << "\n";
+    	std::cout << "bfn= " << M_bfn << "\n";
+    	std::cout << "bsn= " << M_bsn << "\n";
+
+    }
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -1286,12 +1299,12 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
     auto dW1bardI8FS=eval(dW1_dI8fs,F, f0, s0);
     auto dW1bardI8FN=eval(dW1_dI8fn,F, f0, s0);
     auto dW1bardI8SN=eval(dW1_dI8sn,F, f0, s0);
-    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
-    auto dI1bardF = _dI1bardF(dispETFESpace, disp, 0);
-	auto d2I1bardF= _d2I1bardF(dispETFESpace, disp, 0);
-//    auto dI1bar = _dI1(dispETFESpace, disp, 0);
-//    auto dI1bardF = _dI1dF(dispETFESpace, disp, 0);
-//	auto d2I1bardF= _d2I1dF;
+//    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
+//    auto dI1bardF = _dI1bardF(dispETFESpace, disp, 0);
+//	auto d2I1bardF= _d2I1bardF(dispETFESpace, disp, 0);
+    auto dI1bar = _dI1(dispETFESpace, disp, 0);
+    auto dI1bardF = _dI1dF(dispETFESpace, disp, 0);
+	auto d2I1bardF= _d2I1dF;
 
     auto W4F = eval(W4_f, F, f0, s0);
     auto dW4FdI4F = eval(dW4f_dI4f, F, f0, s0);
@@ -1399,6 +1412,19 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
     //    auto dP = dP4F + dP4F;
     auto dP = dP4F + dP4S + dP1bar + dP8FS + dP8FN + dP8SN;
     //    auto dP = W4S * d2I4SdF + dW4SdI1 * dI1bardF * dI4S + dW4SdI4S * dI4SdF * dI4S;
+    if(disp.comm().MyPID() == 0 )
+    {
+    	std::cout << "Assembling Jacobian of the Orthotropic Fung Law with parameters: \n";
+    	std::cout << "C  = " << M_a   << "\n";
+    	std::cout << "bff= " << M_bff << "\n";
+    	std::cout << "bss= " << M_bss << "\n";
+    	std::cout << "bnn= " << M_bnn << "\n";
+    	std::cout << "bfs= " << M_bfs << "\n";
+    	std::cout << "bfn= " << M_bfn << "\n";
+    	std::cout << "bsn= " << M_bsn << "\n";
+
+    }
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
