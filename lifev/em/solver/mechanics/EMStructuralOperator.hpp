@@ -44,6 +44,7 @@ along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
 #include <lifev/structure/solver/StructuralOperator.hpp>
+#include <memory>
 
 
 namespace LifeV
@@ -159,7 +160,7 @@ EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
 {
 
     this->super::setup (data, dFESpace, dETFESpace, BCh, comm);
-    M_EMMaterial = dynamic_pointer_cast<material_Type> (this -> material() );
+    M_EMMaterial = boost::dynamic_pointer_cast<material_Type> (this -> material() );
 }
 
 

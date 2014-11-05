@@ -53,7 +53,7 @@ public:
     template< class Type >
     void setParameter(std::string parameterName, Type type)
     {
-    	return M_materialParametersList.set(parameterName, type);
+    	M_materialParametersList.set(parameterName, type);
     }
 
 private:
