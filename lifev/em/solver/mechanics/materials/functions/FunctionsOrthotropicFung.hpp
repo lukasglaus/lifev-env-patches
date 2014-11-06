@@ -1214,14 +1214,6 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
     if(disp.comm().MyPID() == 0 )
     {
     	std::cout << "Assembling residual of the Orthotropic Fung Law with parameters: \n";
-    	std::cout << "C  = " << M_a   << "\n";
-    	std::cout << "bff= " << M_bff << "\n";
-    	std::cout << "bss= " << M_bss << "\n";
-    	std::cout << "bnn= " << M_bnn << "\n";
-    	std::cout << "bfs= " << M_bfs << "\n";
-    	std::cout << "bfn= " << M_bfn << "\n";
-    	std::cout << "bsn= " << M_bsn << "\n";
-
     }
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -1415,14 +1407,6 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
     if(disp.comm().MyPID() == 0 )
     {
     	std::cout << "Assembling Jacobian of the Orthotropic Fung Law with parameters: \n";
-    	std::cout << "C  = " << M_a   << "\n";
-    	std::cout << "bff= " << M_bff << "\n";
-    	std::cout << "bss= " << M_bss << "\n";
-    	std::cout << "bnn= " << M_bnn << "\n";
-    	std::cout << "bfs= " << M_bfs << "\n";
-    	std::cout << "bfn= " << M_bfn << "\n";
-    	std::cout << "bsn= " << M_bsn << "\n";
-
     }
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
