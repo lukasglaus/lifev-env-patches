@@ -409,6 +409,22 @@ int main ( int argc, char** argv )
     exporter.closeFile();
 
 
+    //*************************************************************//
+    // The sheets are defined as the gradient of the scalar
+    // potential just computed.  We create three vector where we
+    // store the components of the sheets direction.
+    // We computed the gradient using the superconvergent
+    // gradient recovery patch of ZZ (check that file for more infos)
+    //*************************************************************//
+    vectorPtr_Type sx (new vector_Type ( uSpace -> map() ) );
+    vectorPtr_Type sy (new vector_Type ( uSpace -> map() ) );
+    vectorPtr_Type sz (new vector_Type ( uSpace -> map() ) );
+
+    *sx = GradientRecovery::ZZGradient (uSpace, *solution, 0);
+    *sy = GradientRecovery::ZZGradient (uSpace, *solution, 1);
+    *sz = GradientRecovery::ZZGradient (uSpace, *solution, 2);
+
+
 
     //*************************************************************//
     // We save the potential field just computed on a file
@@ -485,9 +501,11 @@ int main ( int argc, char** argv )
 			(*rbFiber)[kGID] = 0.0;
 		}
 
-		(*rbSheet)[iGID] = (*rbFiber)[jGID];
-		(*rbSheet)[jGID] = -(*rbFiber)[iGID];
-		(*rbSheet)[kGID] = 0.0;
+		Real cdot = (*sx) [iGID] * (*rbFiber)[iGID] + (*sy) [iGID] * (*rbFiber)[jGID]  + (*sz) [iGID] * (*rbFiber)[kGID] ;
+        (*rbSheet) [iGID] = (*sx) [iGID] - cdot * (*rbFiber)[iGID];
+        (*rbSheet) [jGID] = (*sy) [iGID] - cdot * (*rbFiber)[jGID];
+        (*rbSheet) [kGID] = (*sz) [iGID] - cdot * (*rbFiber)[kGID];
+
 
 
 	}
