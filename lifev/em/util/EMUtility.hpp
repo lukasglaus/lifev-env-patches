@@ -44,6 +44,7 @@
 //#include <lifev/core/array/MapEpetra.hpp>
 //#include <lifev/core/filter/ExporterEnsight.hpp>
 #include <lifev/core/filter/ExporterHDF5.hpp>
+//#include  <lifev/core/fem/GeometricMap.hpp>
 //#include <lifev/core/filter/ExporterEmpty.hpp>
 //#include <lifev/core/filter/Exporter.hpp>
 #include <lifev/core/mesh/RegionMesh.hpp>
@@ -54,7 +55,6 @@
 #include <boost/shared_ptr.hpp>
 #include <lifev/core/fem/GradientRecovery.hpp>
 #include <lifev/core/array/MatrixSmall.hpp>
-
 
 
 #include <sys/stat.h>
@@ -254,6 +254,16 @@ void computeI4 ( VectorEpetra& I4, VectorEpetra& displacement, VectorEpetra& fib
 
 }
 
+template<class FESpace>
+QuadratureRule chooseQR(FESpace& fespace)
+{
+	QuadratureRule qr;
+	if( fespace.refFE().type() == FE_P2_3D)
+		qr = quadRuleTetra15pt;
+	else
+		qr = quadRuleTetra4pt;
+	return qr;
+}
 
 } // namespace EMUtility
 
