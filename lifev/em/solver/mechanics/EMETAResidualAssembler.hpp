@@ -61,8 +61,10 @@ computeFiberActiveStressResidualTerms ( const vector_Type& disp,
     auto Wm = eval (W, I);
     auto P = Wa /* Wm */ *  fxf0;
 
+    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
+    if ( dispETFESpace )
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                qr,
                 dispETFESpace,
                 dot ( Wa * F * outerProduct (f0, f0), grad (phi_i) )
               ) >> residualVectorPtr;
@@ -92,9 +94,9 @@ computeI4ResidualTerms ( const vector_Type& disp,
     auto P = eval (W4, _I4 ( dispETFESpace, disp, 0, f0 ) )
              * _dI4 (dispETFESpace, disp, 0, f0);
 
-
+    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                qr,
                 dispETFESpace,
                 dot ( P , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -129,9 +131,9 @@ computeI4ResidualTerms ( const vector_Type& disp,
     auto P = eval (W4, _I4 ( dispETFESpace, disp, 0, s0 ) )
              * _dI4 (dispETFESpace, disp, 0, s0);
 
-
+    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                qr,
                 dispETFESpace,
                 dot ( P , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -169,9 +171,9 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
         auto P = eval (W4, _F ( dispETFESpace, disp, 0 ), f0, s0 )
                  * _dI4 (dispETFESpace, disp, 0, f0);
 
-
+        QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    qr,
                     dispETFESpace,
                     dot ( P , grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -181,9 +183,9 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
         auto P = eval (W4, _F ( dispETFESpace, disp, 0 ), f0, s0 )
                  * _dI4 (dispETFESpace, disp, 0, s0);
 
-
+        QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    qr,
                     dispETFESpace,
                     dot ( P , grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -222,8 +224,9 @@ computeI8ResidualTerms ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 residual terms ... \n";
 
+        QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
         integrate ( elements ( dispETFESpace->mesh() ),
-                    quadRuleTetra4pt,
+                    qr,
                     dispETFESpace,
                     dot (  P, grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -246,8 +249,9 @@ computeI8ResidualTerms ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 residual terms ... \n";
 
+        QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
         integrate ( elements ( dispETFESpace->mesh() ),
-                    quadRuleTetra4pt,
+                    qr,
                     dispETFESpace,
                     dot (  P, grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -290,9 +294,9 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
         	if(disp.comm().MyPID() == 0)
             std::cout << "EMETA - Computing I8 fs residual terms Fung orthonormalize... \n";
 
-
+            QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
             integrate ( elements ( dispETFESpace->mesh() ),
-                        quadRuleTetra4pt,
+                        qr,
                         dispETFESpace,
                         dot (  P, grad (phi_i) )
                       ) >> residualVectorPtr;
@@ -310,9 +314,9 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 fn residual terms Fung orthonormalize ... \n";
 
-
+                QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            qr,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
@@ -325,9 +329,9 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 sn residual terms Fung orthonormalize ... \n";
 
-
+                QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            qr,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
@@ -356,9 +360,9 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
         	if(disp.comm().MyPID() == 0)
             std::cout << "EMETA - Computing I8 fs residual terms Fung ... \n";
 
-
+            QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
             integrate ( elements ( dispETFESpace->mesh() ),
-                        quadRuleTetra4pt,
+                        qr,
                         dispETFESpace,
                         dot (  P, grad (phi_i) )
                       ) >> residualVectorPtr;
@@ -378,9 +382,9 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 fn residual terms Fung ... \n";
 
-
+                QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            qr,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
@@ -393,9 +397,9 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             	if(disp.comm().MyPID() == 0)
             		std::cout << "EMETA - Computing I8 sn residual terms Fung ... \n";
 
-
+                QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            qr,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
