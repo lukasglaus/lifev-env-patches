@@ -156,7 +156,7 @@ computeI4JacobianTerms ( const vector_Type& disp,
     boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
     auto f0 = eval (normalize0, f_0);
 
-    auto s_00 = s_0 - dot (f0, s_0) * s_0;
+    auto s_00 = s_0 - dot (f0, s_0) * f0;
 
     auto s0 = eval (normalize1, s_00);
 
@@ -530,7 +530,7 @@ computeI8JacobianTerms ( const vector_Type& disp,
         boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
         auto f0 = eval (normalize0, f_0);
 
-        auto s_00 = s_0 - dot (f0, s_0) * s_0;
+        auto s_00 = s_0 - dot (f0, s_0) * f0;
 
         auto s0 = eval (normalize1, s_00);
 
@@ -595,7 +595,7 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
         boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
         auto f0 = eval (normalize0, f_0);
 
-        auto s_00 = s_0 - dot (f0, s_0) * s_0;
+        auto s_00 = s_0 - dot (f0, s_0) * f0;
 
         auto s0 = eval (normalize1, s_00);
 

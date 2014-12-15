@@ -52,9 +52,8 @@ computeLinearizedVolumetricResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing linear volumetric residual terms ... \n";
-    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                qr,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( P  , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -76,9 +75,8 @@ computeLinearizedDeviatoricResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing linear deviatoric residual terms ... \n";
-    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                qr,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( P  , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -95,10 +93,8 @@ computeI1ResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I1 residual terms ... \n";
-    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
-
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                qr,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( eval (W1, _F (dispETFESpace, disp, 0) ) * _dI1bar (dispETFESpace, disp, 0), grad (phi_i) )
               ) >> residualVectorPtr;
@@ -116,10 +112,8 @@ computeI2ResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I2 residual terms ... \n";
-    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
-
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                qr,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( eval (W2, _F (dispETFESpace, disp, 0) ) * _dI2bar (dispETFESpace, disp, 0), grad (phi_i) )
               ) >> residualVectorPtr;
@@ -139,8 +133,9 @@ computeVolumetricResidualTerms ( const vector_Type& disp,
 
     using namespace ExpressionAssembly;
 
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
-    			quadRuleTetra4pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( eval (Wvol, _F (dispETFESpace, disp, 0) ) * _dJ (dispETFESpace, disp, 0), grad (phi_i) )
               ) >> residualVectorPtr;
@@ -171,10 +166,8 @@ computeI1ResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I1 residual terms ... \n";
-    QuadratureRule qr = EMUtility::chooseQR(*dispETFESpace);
-
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                qr,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( eval (W1, _F (dispETFESpace, disp, 0), f0, s0) * _dI1bar (dispETFESpace, disp, 0), grad (phi_i) )
               ) >> residualVectorPtr;

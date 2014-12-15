@@ -98,9 +98,8 @@
 // ------------------------------------------------------------------------------
 //  Cannot save without HDF5 !!! Please make sure you have it
 // ------------------------------------------------------------------------------
-#ifdef HAVE_HDF5
 #include <lifev/core/filter/ExporterHDF5.hpp>
-#endif
+#include <lifev/core/filter/ExporterVTK.hpp>
 
 // ------------------------------------------------------------------------------
 //  In this file there are a bunch of useful functions.
@@ -172,9 +171,23 @@ Real fzero (const Real& /*t*/, const Real& /*x*/, const Real& /*y*/, const Real&
 }
 
 
+Real pos (const Real& /*t*/, const Real& x, const Real& y, const Real& z, const ID& i)
+{
+	if (i == 0)
+		return x;
+	else if ( i == 1)
+		return y;
+	else if (i == 2)
+		return z;
+	else
+		return 0.0;
+}
+
+
+
 template <typename T> int sgn(T val)
 {
-    return (T(0) < val) - (val < T(0));
+    return (  - (T(0) < val) + (val < T(0)) );
 }
 
 // Starting ...
@@ -200,6 +213,12 @@ int main ( int argc, char** argv )
 
     typedef boost::shared_ptr< bcInterface_Type >                  bcInterfacePtr_Type;
     typedef MeshUtility::MeshTransformer<mesh_Type>                meshTransformer_Type;
+
+    typedef boost::function < Real (const Real&  t,
+                                    const Real&  x,
+                                    const Real&  y,
+                                    const Real&  z,
+                                    const ID&    i ) >   function_Type;
 
     //*************************************************************//
     // We create, as usual, the output folder where
@@ -283,6 +302,11 @@ int main ( int argc, char** argv )
     fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, order, 1, Comm) );
 
     fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, order, 3, Comm) );
+
+    //compute x, y, z
+    function_Type coords = &pos;
+    vectorPtr_Type position( new vector_Type ( vectorFESpace -> map() ) );
+    vectorFESpace->interpolate ( static_cast<FESpace<RegionMesh<LinearTetra>, MapEpetra>::function_Type> (coords),*position, 0.0);
 
     //*************************************************************//
     // We asseble the stiffness matrix using expression template.
@@ -420,9 +444,9 @@ int main ( int argc, char** argv )
     vectorPtr_Type sy (new vector_Type ( uSpace -> map() ) );
     vectorPtr_Type sz (new vector_Type ( uSpace -> map() ) );
 
-    *sx = GradientRecovery::ZZGradient (uSpace, *solution, 0);
-    *sy = GradientRecovery::ZZGradient (uSpace, *solution, 1);
-    *sz = GradientRecovery::ZZGradient (uSpace, *solution, 2);
+    *sx = GradientRecovery::ZZGradient (uFESpace, *solution, 0);
+    *sy = GradientRecovery::ZZGradient (uFESpace, *solution, 1);
+    *sz = GradientRecovery::ZZGradient (uFESpace, *solution, 2);
 
 
 
@@ -431,6 +455,11 @@ int main ( int argc, char** argv )
     // using HDF5.
     //*************************************************************//
     vectorPtr_Type rbFiber ( new vector_Type ( vectorFESpace -> map() ) );
+    vectorPtr_Type Ua ( new vector_Type ( vectorFESpace -> map() ) );
+    vectorPtr_Type Va ( new vector_Type ( vectorFESpace -> map() ) );
+    vectorPtr_Type Angle ( new vector_Type ( vectorFESpace -> map() ) );
+    vectorPtr_Type dXdU ( new vector_Type ( vectorFESpace -> map() ) );
+    vectorPtr_Type dXdV ( new vector_Type ( vectorFESpace -> map() ) );
     vectorPtr_Type rbSheet ( new vector_Type ( vectorFESpace -> map() ) );
     UInt d =  rbFiber->epetraVector().MyLength();
     UInt nComponentLocalDof = d / 3;
@@ -442,9 +471,9 @@ int main ( int argc, char** argv )
         UInt kGID = rbFiber->blockMap().GID (l + 2 * nComponentLocalDof);
 
 //        meshFull->point(iGID).MeshVertex::showMe(true);
-		Real x = meshFull->point(iGID).x();
-		Real y = meshFull->point(iGID).y();
-		Real z = meshFull->point(iGID).z();
+		Real x = (*position)[iGID];
+		Real y = (*position)[jGID];
+		Real z = (*position)[kGID];
 
 		//		std::cout << "x: " << x << ", y: " << y << ", z: " << z << "\n";
 
@@ -459,6 +488,10 @@ int main ( int argc, char** argv )
 		Real CosU = z / rl;
 		Real SinU = std::sqrt(1.0 - CosU * CosU );
 
+//		(*Ua)[iGID] = CosU;
+//		(*Ua)[jGID] = SinU;
+//		(*Ua)[kGID] = std::acos(CosU);
+
 		Real CosV(1.);
 		if( x*x + y*y >= 1e-12 )
 		{
@@ -471,10 +504,19 @@ int main ( int argc, char** argv )
 
 		Real SinV = sgn(y) * std::sqrt(1.0 - CosV * CosV );
 
+//		(*Va)[iGID] = CosV;
+//		(*Va)[jGID] = SinV;
+//		(*Va)[kGID] = std::acos(CosV);
+
+
 		Real dxdu1 = rs * CosU * CosV;
 		Real dxdu2 = rs * CosU * SinV;
 		Real dxdu3 = - rl * SinU;
 		Real norm1 = std::sqrt( dxdu1 * dxdu1 + dxdu2 * dxdu2 + dxdu3 * dxdu3 );
+
+//		(*dXdU)[iGID] = dxdu1;
+//		(*dXdU)[jGID] = dxdu2;
+//		(*dXdU)[kGID] = dxdu3;
 
 //		Real dxdv1 = - rs * SinU * SinV;
 //		Real dxdv2 = rs * SinU * CosV;
@@ -486,8 +528,18 @@ int main ( int argc, char** argv )
 		Real dxdv3 = 0.0;
 		Real norm2 = 1.0;
 //		std::cout << "dxdu1: " << dxdu1 << ", SinV: " << SinV << ", CosU: " << CosU << "\n";
+
+		(*dXdV)[iGID] = dxdv1;
+		(*dXdV)[jGID] = dxdv2;
+		(*dXdV)[kGID] = dxdv3;
+
 		Real SinA = std::sin(alpha);
 		Real CosA = std::cos(alpha);
+		(*Angle)[iGID] = CosA;
+		(*Angle)[jGID] = SinA;
+		(*Angle)[kGID] = alpha;
+
+
 		if(norm1 >= 1e-13 && norm2 >= 1e-13)
 		{
 			(*rbFiber)[iGID] = dxdu1 * SinA / norm1 + dxdv1 * CosA / norm2;
@@ -511,6 +563,7 @@ int main ( int argc, char** argv )
 	}
 
     ElectrophysiologyUtility::normalize(*rbSheet);
+
 //
 //    //*************************************************************//
 //    // Now that we have computed all the desired vector fields
@@ -533,7 +586,15 @@ int main ( int argc, char** argv )
 //
     exportVectorField (Comm, meshPart, vectorFESpace, rbFiber, problemFolder, outputFiberFileName, fiberHDF5Name );
     exportVectorField (Comm, meshPart, vectorFESpace, rbSheet, problemFolder, outputSheetFileName, sheetHDF5Name );
-//    exportVectorField (Comm, meshPart, vectorFESpace, rbSheet, problemFolder, outputSheetsFileName, sheetsHDF5Name );
+//    exportVectorField (Comm, meshPart, vectorFESpace, position, problemFolder, "position", "position" );
+//    exportVectorField (Comm, meshPart, vectorFESpace, Ua, problemFolder, "angleU", "angleU" );
+//    exportVectorField (Comm, meshPart, vectorFESpace, Va, problemFolder, "angleV", "angleV" );
+//    exportVectorField (Comm, meshPart, vectorFESpace, Angle, problemFolder, "alpha", "alpha" );
+//    exportVectorField (Comm, meshPart, vectorFESpace, dXdU, problemFolder, "dXdU", "dXdU" );
+//    exportVectorField (Comm, meshPart, vectorFESpace, dXdV, problemFolder, "dXdV", "dXdV" );
+
+
+    //    exportVectorField (Comm, meshPart, vectorFESpace, rbSheet, problemFolder, outputSheetsFileName, sheetsHDF5Name );
 //    exportVectorField (Comm, meshPart, vectorFESpace, projection, problemFolder, "Projection", "projection" );
 //
 //
@@ -616,6 +677,20 @@ void exportVectorField (boost::shared_ptr<Epetra_Comm> comm,
     exporter.addVariable ( ExporterData<mesh_Type>::VectorField,  hdf5name, fespace, vector, UInt (0) );
     exporter.postProcess (0);
     exporter.closeFile();
+
+
+    //*************************************************************//
+    // We save the potential field just computed on a file
+    // using VTK.
+    //*************************************************************//
+    outputName += "VTK";
+    ExporterVTK< mesh_Type > exporterVTK;
+    exporterVTK.setMeshProcId ( mesh, comm -> MyPID() );
+    exporterVTK.setPostDir (postDir);
+    exporterVTK.setPrefix (outputName);
+    exporterVTK.addVariable ( ExporterData<mesh_Type>::VectorField,  hdf5name, fespace, vector, UInt (0) );
+    exporterVTK.postProcess (0);
+    exporterVTK.closeFile();
 }
 
 

@@ -525,6 +525,12 @@ public:
         return *M_dispFESpace;
     }
 
+    //! Get the FESpacePtr object
+    FESpacePtr_Type& dispFESpacePtr()
+    {
+        return M_dispFESpace;
+    }
+
     //! Get the ETFESpace object
     ETFESpace_Type& dispETFESpace()
     {
@@ -1463,7 +1469,6 @@ template <typename Mesh>
 void
 StructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter)
 {
-
     //This method call the M_material computeStiffness
     computeMatrix (M_systemMatrix, solution, 1.);
 
