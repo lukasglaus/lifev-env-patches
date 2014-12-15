@@ -315,7 +315,7 @@ void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& d
 			auto FmT = minusT(F);
 			auto J = det(F);
 			auto p = value(pressure);
-			auto dP = p * J * ( dot(FmT, dF) * I + value(-1.0) *  FmT * dF ) * FmT;
+			auto dP = p * J * ( value(-1.0) * dot(FmT, dF) * I + FmT * dF ) * FmT;
 
 			QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
 
