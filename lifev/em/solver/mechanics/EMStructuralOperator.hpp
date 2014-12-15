@@ -43,6 +43,7 @@ along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
 #define _EMSTRUCTURALOPERATOR_H_ 1
 
 #include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
+#include <lifev/core/fem/BCVector.hpp>
 #include <lifev/structure/solver/StructuralOperator.hpp>
 #include <memory>
 
@@ -130,12 +131,54 @@ public:
     {
         return super::M_dispFESpace;
     }
+
+    void setPressureBC( Real p )
+    {
+    	M_LVPressure = p;
+    }
+
+    Real pressureBC() const
+    {
+    	return M_LVPressure;
+    }
+
+    void setBCFlag(ID flag)
+    {
+    	M_LVPressureFlag = flag;
+    }
+    ID BCFlag()
+    {
+    	return M_LVPressureFlag;
+    }
+
+    void solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol);
+
+    void computePressureBC(const VectorEpetra& disp,
+			boost::shared_ptr<VectorEpetra> bcVectorPtr,
+			const ETFESpacePtr_Type dETFESpace,
+			Real pressure, int bdFlag);
+
+    void computePressureBCJacobian(const VectorEpetra& disp,
+    		matrixPtr_Type& jacobian,
+			const ETFESpacePtr_Type dETFESpace,
+			Real pressure, int bdFlag);
+
+
+    void evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter);
+
+    void iterate ( const bcHandler_Type& bch );
+
 protected:
 
     //! Material class
     //    structuralOperatorPtr_Type             M_structuralOperator;
     materialPtr_Type                     M_EMMaterial;
 
+    //left ventricular pressure
+    Real                                 M_LVPressure;
+    ID								M_LVPressureFlag;
+    vectorPtr_Type M_boundaryVectorPtr;
+    boost::shared_ptr<BCVector>  M_bcVectorPtr;
 };
 
 //====================================
@@ -145,8 +188,12 @@ protected:
 template <typename Mesh>
 EMStructuralOperator<Mesh>::EMStructuralOperator( ) :
     //    M_structuralOperator(),
+	M_LVPressure(),
+	M_LVPressureFlag(),
     super(),
-    M_EMMaterial()
+    M_EMMaterial(),
+    M_boundaryVectorPtr(),
+    M_bcVectorPtr()
 {
 }
 
@@ -161,8 +208,208 @@ EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
 
     this->super::setup (data, dFESpace, dETFESpace, BCh, comm);
     M_EMMaterial = boost::dynamic_pointer_cast<material_Type> (this -> material() );
+    M_boundaryVectorPtr.reset(new vector_Type ( this->M_disp->map(), Repeated ) );
+
 }
 
+
+template <typename Mesh>
+void
+EMStructuralOperator<Mesh>::computePressureBC(  const VectorEpetra& disp,
+										boost::shared_ptr<VectorEpetra> bcVectorPtr,
+										const ETFESpacePtr_Type dETFESpace,
+										Real pressure, int bdFlag)
+{
+
+	*bcVectorPtr *= 0.0;
+
+    MatrixSmall<3,3> Id;
+    Id(0,0) = 1.; Id(0,1) = 0., Id(0,2) = 0.;
+    Id(1,0) = 0.; Id(1,1) = 1., Id(1,2) = 0.;
+    Id(2,0) = 0.; Id(2,1) = 0., Id(2,2) = 1.;
+
+	{
+	  	using namespace ExpressionAssembly;
+
+	  	auto I = value(Id);
+	  	auto Grad_u = grad( dETFESpace, disp, 0);
+	  	auto F =  Grad_u + I;
+	  	auto FmT = minusT(F);
+	  	auto J = det(F);
+	  	auto p = value(pressure);
+
+    	QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
+
+        integrate ( boundary ( dETFESpace->mesh(), bdFlag),
+        		    myBDQR,
+        		    dETFESpace,
+        		    p * J * dot( FmT * Nface,  phi_i)
+                  ) >> bcVectorPtr;
+
+        bcVectorPtr -> globalAssemble();
+
+
+	}
+}
+
+
+template <typename Mesh>
+void
+EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter)
+{
+	if(M_LVPressure != 0 && M_LVPressureFlag != 0)
+	{
+		this->M_Displayer->leaderPrint ("\n    S- Updating the pressure boundary conditions: pressure = ", M_LVPressure);
+		computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
+	    M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
+		this-> M_BCh -> modifyBC(M_LVPressureFlag, *M_bcVectorPtr);
+
+	}
+	else
+	{
+		this->M_Displayer->leaderPrint ("\n    S- Not Updating the pressure boundary conditions\n");
+	}
+
+    super::evalResidual(residual, solution, iter);
+}
+
+
+//solveJac( const Vector& res, Real& linear_rel_tol, Vector &step)
+template <typename Mesh>
+void EMStructuralOperator<Mesh>::
+solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol)
+{
+    this->updateJacobian ( *this->M_disp, this->M_jacobian );
+    computePressureBCJacobian(*this->M_disp, this->M_jacobian, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
+    this->solveJacobian (step,  res, linear_rel_tol, this->M_BCh);
+}
+
+template <typename Mesh>
+void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& disp,
+		matrixPtr_Type& jacobian,
+		const ETFESpacePtr_Type dETFESpace,
+		Real pressure, int bdFlag)
+{
+
+	if(M_LVPressure != 0 && M_LVPressureFlag != 0)
+	{
+		if(disp.comm().MyPID() == 0)
+		{
+			std::cout << "\nUpdating the pressure BC Jacobian: pressure = " << M_LVPressure << "\n";
+		}
+
+		MatrixSmall<3,3> Id;
+		Id(0,0) = 1.; Id(0,1) = 0., Id(0,2) = 0.;
+		Id(1,0) = 0.; Id(1,1) = 1., Id(1,2) = 0.;
+		Id(2,0) = 0.; Id(2,1) = 0., Id(2,2) = 1.;
+
+		matrixPtr_Type BCjacPtr(new matrix_Type (*this->M_localMap) );
+
+		{
+			using namespace ExpressionAssembly;
+
+			auto dF = grad (phi_j);
+			auto I = value(Id);
+			auto Grad_u = grad( dETFESpace, disp, 0);
+			auto F =  Grad_u + I;
+			auto FmT = minusT(F);
+			auto J = det(F);
+			auto p = value(pressure);
+			auto dP = p * J * ( dot(FmT, dF) * I + value(-1.0) *  FmT * dF ) * FmT;
+
+			QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
+
+
+			integrate ( boundary ( dETFESpace->mesh(), bdFlag),
+						myBDQR,
+						dETFESpace,
+						dETFESpace,
+						dot( dF * Nface,  phi_i )
+					  ) >> BCjacPtr;
+
+			BCjacPtr -> globalAssemble();
+
+
+		}
+		*jacobian += *BCjacPtr;
+	}
+	else
+	{
+		if(disp.comm().MyPID() == 0)
+		{
+			std::cout << "\nI'm not pdating the pressure BC: pressure = " << M_LVPressure << "\n";
+		}
+	}
+
+}
+
+
+template <typename Mesh>
+void
+EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch )
+{
+    LifeChrono chrono;
+
+    // matrix and vector assembling communication
+    this->M_Displayer->leaderPrint ("  EMSolver -  Solving the system ... \n");
+
+    this->M_BCh = bch;
+
+    Real abstol  = this->M_nonlinearParameters.M_abstol;
+    Real reltol  = this->M_nonlinearParameters.M_reltol;
+    UInt maxiter = this->M_nonlinearParameters.M_maxiter;
+    Real etamax  = this->M_nonlinearParameters.M_etamax;
+    Int NonLinearLineSearch = this->M_nonlinearParameters.M_NonLinearLineSearch;
+
+    Real time = this->M_data->dataTime()->time();
+
+    Int status = 0;
+
+    if ( this->M_data->verbose() )
+    {
+        status = NonLinearRichardson ( *this->M_disp,
+        		                       *this,
+        		                       abstol,
+        		                       reltol,
+        		                       maxiter,
+        		                       etamax,
+        		                       NonLinearLineSearch,
+        		                       0,
+        		                       2,
+        		                       this->M_out_res,
+        		                       this->M_data->dataTime()->time() );
+    }
+    else
+    {
+        status = NonLinearRichardson ( *this->M_disp,
+        							   *this,
+        							   abstol,
+									   reltol,
+									   maxiter,
+									   etamax,
+									   NonLinearLineSearch );
+    }
+
+
+    if ( status == 1 )
+    {
+        std::ostringstream ex;
+        ex << "StructuralOperator::iterate() Inners nonLinearRichardson iterations failed to converge\n";
+        throw std::logic_error ( ex.str() );
+    }
+    else // if status == 0 NonLinearrRichardson converges
+    {
+        // std::cout << std::endl;
+
+        // std::cout <<" Number of inner iterations       : " << maxiter <<  std::endl;
+
+        // std::cout <<" We are at the time step          : "  << M_data->dataTime()->time() << std::endl;
+        if ( this->M_data->verbose() )
+        {
+        	this->M_out_iter << time << " " << maxiter << std::endl;
+        }
+    }
+}
 
 
 

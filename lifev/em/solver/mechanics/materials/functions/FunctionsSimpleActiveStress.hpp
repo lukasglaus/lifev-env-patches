@@ -102,7 +102,7 @@ public:
 
     void showMe()
     {
-    	std::cout << "Activa Tension = " << M_Tmax << "\n";
+    	std::cout << "Active Tension = " << M_Tmax << "\n";
     }
 
 private:

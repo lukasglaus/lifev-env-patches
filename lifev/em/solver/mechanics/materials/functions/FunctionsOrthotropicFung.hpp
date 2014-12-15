@@ -1179,7 +1179,7 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto f0 = eval (normalize0, f_0);
     auto s_0 = _v0 (dispETFESpace, sheets);
-    auto s_00 = s_0 - dot (f0, s_0) * s_0;
+    auto s_00 = s_0 + value(-1.0) * dot (f0, s_0) * f0;
     auto s0 = eval (normalize1, s_00);
 
     auto n0 = eval (cross, f0, s0);
@@ -1278,7 +1278,7 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
 	auto f_0 = _v0(dispETFESpace, fibers);
 	auto f0 = eval(normalize0, f_0);
 	auto s_0 = _v0(dispETFESpace, sheets);
-    auto s_00 = s_0 - dot(f0, s_0) * s_0;
+    auto s_00 = s_0 - dot(f0, s_0) * f0;
     auto s0 = eval(normalize1, s_00);
 
     auto n0 = eval(cross, f0, s0);
