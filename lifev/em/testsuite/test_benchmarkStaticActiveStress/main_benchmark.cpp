@@ -1,4 +1,14 @@
 #include <lifev/core/LifeV.hpp>
+
+#include <lifev/bc_interface/3D/bc/BCInterface3D.hpp>
+#include <lifev/core/fem/GradientRecovery.hpp>
+
+#include <lifev/core/mesh/MeshLoadingUtility.hpp>
+#include <lifev/core/fem/BCManage.hpp>
+
+#include <lifev/eta/fem/ETFESpace.hpp>
+#include <lifev/eta/expression/Integrate.hpp>
+
 #include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
 #include <lifev/electrophysiology/solver/IonicModels/IonicMinimalModel.hpp>
 
@@ -34,8 +44,25 @@
 
 using namespace LifeV;
 
+void createListFromGetPot (Teuchos::ParameterList& solverList, const GetPot& dataFile);
 
 
+Real pos (const Real& /*t*/, const Real& x, const Real& y, const Real& z, const ID& i)
+{
+	if (i == 0)
+		return x;
+	else if ( i == 1)
+		return y;
+	else if (i == 2)
+		return z;
+	else
+		return 0.0;
+}
+
+template <typename T> int sgn(T val)
+{
+    return (  (T(0) < val) - (val < T(0)) );
+}
 
 
 template<typename space> void ComputeBC( const boost::shared_ptr<RegionMesh<LinearTetra> > localMesh,
@@ -58,6 +85,23 @@ int main (int argc, char** argv)
     {
         cout << "% using MPI" << std::endl;
     }
+
+    typedef BCHandler                                           bc_Type;
+    typedef boost::shared_ptr< bc_Type >                        bcPtr_Type;
+
+    typedef StructuralOperator< RegionMesh<LinearTetra> >      physicalSolver_Type;
+    typedef BCInterface3D< bc_Type, physicalSolver_Type >      bcInterface_Type;
+    typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
+
+
+//    typedef boost::shared_ptr< bcInterface_Type >                  bcInterfacePtr_Type;
+//    typedef MeshUtility::MeshTransformer<mesh_Type>                meshTransformer_Type;
+
+    typedef boost::function < Real (const Real&  t,
+                                    const Real&  x,
+                                    const Real&  y,
+                                    const Real&  z,
+                                    const ID&    i ) >   function_Type;
 
     //===========================================================
     //===========================================================
@@ -122,17 +166,174 @@ int main (int argc, char** argv)
     typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 3 >       solidETFESpace_Type;
     typedef boost::shared_ptr<solidETFESpace_Type>                      solidETFESpacePtr_Type;
 
+    typedef ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 1 >       scalarETFESpace_Type;
+    typedef boost::shared_ptr<scalarETFESpace_Type>                      scalarETFESpacePtr_Type;
 
 
     std::string dOrder =  dataFile ( "solid/space_discretization/order", "P1");
     solidFESpacePtr_Type dFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 3, comm) );
-    solidFESpacePtr_Type aFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 1, comm) );
+    solidFESpacePtr_Type uFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 1, comm) );
     solidETFESpacePtr_Type dETFESpace ( new solidETFESpace_Type (localSolidMesh, & (dFESpace->refFE() ), & (dFESpace->fe().geoMap() ), comm) );
+    scalarETFESpacePtr_Type uETFESpace ( new scalarETFESpace_Type (localSolidMesh, & (uFESpace->refFE() ), & (uFESpace->fe().geoMap() ), comm) );
 
     if ( comm->MyPID() == 0 )
     {
         std::cout << " Done!" << std::endl;
     }
+
+
+    /// STEP I
+    /// CREATE FIBERS
+
+
+    //compute x, y, z
+    function_Type coords = &pos;
+    vectorPtr_Type position( new vector_Type ( dFESpace -> map() ) );
+    dFESpace->interpolate ( static_cast<FESpace<RegionMesh<LinearTetra>, MapEpetra>::function_Type> (coords),*position, 0.0);
+    //*************************************************************//
+    // We asseble the stiffness matrix using expression template.
+    // For more details, look at the ETA tutorial.
+    //*************************************************************//
+
+    boost::shared_ptr<matrix_Type> systemMatrix (new matrix_Type ( uFESpace->map() ) );
+
+    *systemMatrix *= 0.0;
+    {
+        using namespace ExpressionAssembly;
+
+
+        integrate (  elements (uETFESpace->mesh() ),
+                     quadRuleTetra4pt,
+                     uETFESpace,
+                     uETFESpace,
+                     dot ( grad (phi_i) , grad (phi_j) )
+                  )
+                >> systemMatrix;
+    }
+
+    systemMatrix->globalAssemble();
+
+    //set bc
+    bcInterfacePtr_Type                     BC ( new bcInterface_Type() );
+    BC->createHandler();
+    BC->fillHandler ( data_file_name, "problem" );
+    BC->handler()->bcUpdate ( *uFESpace->mesh(), uFESpace->feBd(), uFESpace->dof() );
+    //preconditioner
+    typedef LifeV::Preconditioner             basePrec_Type;
+    typedef boost::shared_ptr<basePrec_Type>  basePrecPtr_Type;
+    typedef LifeV::PreconditionerIfpack           prec_Type;
+    typedef boost::shared_ptr<prec_Type>      precPtr_Type;
+
+    prec_Type* precRawPtr;
+    basePrecPtr_Type precPtr;
+    precRawPtr = new prec_Type;
+    precRawPtr->setDataFromGetPot ( dataFile, "prec" );
+    precPtr.reset ( precRawPtr );
+    Teuchos::ParameterList solverList;
+    createListFromGetPot (solverList, dataFile);
+
+    LinearSolver linearSolver;
+    linearSolver.setCommunicator (comm);
+    linearSolver.setParameters ( solverList );
+    linearSolver.setPreconditioner ( precPtr );
+
+    vectorPtr_Type rhs (new vector_Type ( uFESpace -> map() ) );
+    *rhs *= 0.0;
+    rhs -> globalAssemble();
+
+    bcManage ( *systemMatrix, *rhs, *uFESpace->mesh(), uFESpace->dof(), *BC -> handler(), uFESpace->feBd(), 1.0, 0.0 );
+    vectorPtr_Type solution ( new vector_Type ( uFESpace -> map() ) );
+
+
+    linearSolver.setOperator (systemMatrix);
+    linearSolver.setRightHandSide (rhs);
+    linearSolver.solve (solution);
+
+
+    vectorPtr_Type sx (new vector_Type ( uFESpace -> map() ) );
+    vectorPtr_Type sy (new vector_Type ( uFESpace -> map() ) );
+    vectorPtr_Type sz (new vector_Type ( uFESpace -> map() ) );
+
+    *sx = GradientRecovery::ZZGradient (uFESpace, *solution, 0);
+    *sy = GradientRecovery::ZZGradient (uFESpace, *solution, 1);
+    *sz = GradientRecovery::ZZGradient (uFESpace, *solution, 2);
+
+    vectorPtr_Type rbFiber ( new vector_Type ( dFESpace -> map(), Repeated ) );
+    vectorPtr_Type rbSheet ( new vector_Type ( dFESpace -> map(), Repeated ) );
+    UInt d =  rbFiber->epetraVector().MyLength();
+    UInt nComponentLocalDof = d / 3;
+
+    for ( int l (0); l < nComponentLocalDof; l++)
+	{
+		UInt iGID = rbFiber->blockMap().GID (l);
+        UInt jGID = rbFiber->blockMap().GID (l + nComponentLocalDof);
+        UInt kGID = rbFiber->blockMap().GID (l + 2 * nComponentLocalDof);
+
+//        meshFull->point(iGID).MeshVertex::showMe(true);
+		Real x = (*position)[iGID];
+		Real y = (*position)[jGID];
+		Real z = (*position)[kGID];
+
+		//		std::cout << "x: " << x << ", y: " << y << ", z: " << z << "\n";
+
+		Real t = (*solution)[iGID];
+
+		Real alpha_degrees = 90.0 - 180 * t;
+		Real alpha = (alpha_degrees * 3.1415 ) / 180.0;
+
+		Real rl = 1.7 + 0.3 * t;
+		Real rs =  0.7 + 0.3 * t;
+
+		Real CosU = z / rl;
+		Real SinU = std::sqrt(1.0 - CosU * CosU );
+
+		Real CosV(1.);
+		if( x*x + y*y >= 1e-12 )
+		{
+			Real TgV = y / x;
+			Real V = std::atan(TgV);
+			CosV = sgn(x) * std::cos(V);
+		}
+
+
+		Real SinV = sgn(y) * std::sqrt(1.0 - CosV * CosV );
+
+		Real dxdu1 = rs * CosU * CosV;
+		Real dxdu2 = rs * CosU * SinV;
+		Real dxdu3 = - rl * SinU;
+		Real norm1 = std::sqrt( dxdu1 * dxdu1 + dxdu2 * dxdu2 + dxdu3 * dxdu3 );
+
+		Real dxdv1 = - SinV;
+		Real dxdv2 = CosV;
+		Real dxdv3 = 0.0;
+		Real norm2 = 1.0;
+
+		Real SinA = std::sin(alpha);
+		Real CosA = std::cos(alpha);
+
+		if(norm1 >= 1e-13 && norm2 >= 1e-13)
+		{
+			(*rbFiber)[iGID] = dxdu1 * SinA / norm1 + dxdv1 * CosA / norm2;
+			(*rbFiber)[jGID] = dxdu2 * SinA / norm1 + dxdv2 * CosA / norm2;
+			(*rbFiber)[kGID] = dxdu3 * SinA / norm1 + dxdv3 * CosA / norm2;
+		}
+		else
+		{
+			(*rbFiber)[iGID] = 1.0;
+			(*rbFiber)[jGID] = 0.0;
+			(*rbFiber)[kGID] = 0.0;
+		}
+
+		Real cdot = (*sx) [iGID] * (*rbFiber)[iGID] + (*sy) [iGID] * (*rbFiber)[jGID]  + (*sz) [iGID] * (*rbFiber)[kGID] ;
+        (*rbSheet) [iGID] = (*sx) [iGID] - cdot * (*rbFiber)[iGID];
+        (*rbSheet) [jGID] = (*sy) [iGID] - cdot * (*rbFiber)[jGID];
+        (*rbSheet) [kGID] = (*sz) [iGID] - cdot * (*rbFiber)[kGID];
+
+
+
+	}
+
+    ElectrophysiologyUtility::normalize(*rbSheet);
 
     //===========================================================
     //===========================================================
@@ -144,11 +345,6 @@ int main (int argc, char** argv)
         std::cout << "setup bc ... ";
     }
 
-    typedef BCHandler                                          bc_Type;
-    typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
-    typedef StructuralOperator< RegionMesh<LinearTetra> >      physicalSolver_Type;
-    typedef BCInterface3D< bc_Type, physicalSolver_Type >      bcInterface_Type;
-    typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
 
     bcInterfacePtr_Type                     solidBC ( new bcInterface_Type() );
     solidBC->createHandler();
@@ -194,14 +390,19 @@ int main (int argc, char** argv)
     solid.setDataFromGetPot (dataFile);
     solid.EMMaterial()->setParameters(emdata);
     solid.EMMaterial()->showMaterialParameters();
-    solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
-    std::string fiberFile ( dataFile ( "solid/Fibers/FileName", "FiberDirection") );
-    std::string fiberField ( dataFile ( "solid/Fibers/FileField", "fibers") );
-    std::string sheetFile ( dataFile ( "solid/Sheets/FileName", "SheetsDirection") );
-    std::string sheetField ( dataFile ( "solid/Sheets/FileField", "sheets") );
-    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->fiberVectorPtr(),  fiberFile,  fiberField, localSolidMesh, "./", dOrder);
-    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->sheetVectorPtr(),  sheetFile,  sheetField, localSolidMesh, "./", dOrder);
 
+    solid.EMMaterial()->setFiberVectorPtr(rbFiber);
+    solid.EMMaterial()->setSheetVectorPtr(rbSheet);
+//    solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
+//    std::string fiberFile ( dataFile ( "solid/Fibers/FileName", "FiberDirection") );
+//    std::string fiberField ( dataFile ( "solid/Fibers/FileField", "fibers") );
+//    std::string sheetFile ( dataFile ( "solid/Sheets/FileName", "SheetsDirection") );
+//    std::string sheetField ( dataFile ( "solid/Sheets/FileField", "sheets") );
+//    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->fiberVectorPtr(),  fiberFile,  fiberField, localSolidMesh, "./", dOrder);
+//    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->sheetVectorPtr(),  sheetFile,  sheetField, localSolidMesh, "./", dOrder);
+
+    std::cout << "\nSheets norm = " << solid.EMMaterial()->sheetVectorPtr()->norm2();
+    std::cout << "\nFibers norm = " << solid.EMMaterial()->fiberVectorPtr()->norm2();
 //    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
     if(solid.EMMaterial()->sheetVectorPtr()) std::cout << "I have sheets!\n";
     else
@@ -288,9 +489,19 @@ int main (int argc, char** argv)
     exporter->setPostDir ( problemFolder );
     exporter->setMeshProcId ( localSolidMesh, comm->MyPID() );
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
-    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "activation", aFESpace, solid.EMMaterial()->activationPtr(), UInt (0) );
-     //    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
+//    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "activation", aFESpace, solid.EMMaterial()->activationPtr(), UInt (0) );
+	exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
     exporter->postProcess ( 0 );
+
+    vectorPtr_Type dispRep( new vector_Type( solid.displacement(), Repeated ) );
+    ExporterVTK< mesh_Type > exporterVTK;
+    exporterVTK.setMeshProcId ( localSolidMesh, comm -> MyPID() );
+    exporterVTK.setPostDir (problemFolder);
+    exporterVTK.setPrefix ("DeformedConfiguration");
+    exporterVTK.addVariable ( ExporterData<mesh_Type>::VectorField,  "Displacement", dFESpace, dispRep, UInt (0) );
+//    exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "activation", aFESpace, solid.EMMaterial()->activationPtr(), UInt (0) );
+	exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
+    exporterVTK.postProcess ( 0 );
 
     //===========================================================
     //===========================================================
@@ -299,6 +510,7 @@ int main (int argc, char** argv)
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
     Real endTime = dataFile ( "solid/time_discretization/endtime", 1.0);
+    UInt activeRamp = dataFile ( "importer/activeramp", 1);
 
 
     if ( comm->MyPID() == 0 )
@@ -309,6 +521,8 @@ int main (int argc, char** argv)
     }
 
     Real time(importTime);
+    if(0 == activeRamp) time = 0.0;
+
     Int iter = 0;
     Int itermax = static_cast<Int>( endTime / dt );
     std::cout << "Starting from time: " << importTime << ", and finishing at: " << endTime << ", with " << itermax << " iterations\n";
@@ -316,14 +530,16 @@ int main (int argc, char** argv)
     for ( ; iter < itermax ; iter++ )
     {
 
-        emdata.setParameter("MaxActiveTension", Tmax * time );
+    	time += dt;
+    	if( 1 == activeRamp ) emdata.setParameter("MaxActiveTension", Tmax * time );
+    	else  emdata.setParameter("MaxActiveTension", Tmax );
+
         solid.EMMaterial()->setParameters(emdata);
     	if( comm ->MyPID() == 0)
     	{
         solid.EMMaterial()->showMaterialParameters();
     	}
 
-    	time += dt;
 //    	solid.data() -> dataTime() -> updateTime();
 
     	if( comm ->MyPID() == 0)
@@ -340,7 +556,8 @@ int main (int argc, char** argv)
 //	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
     	/////
         solid.setPressureBC(FinalPressure * time);
-    	solid.iterate ( solidBC -> handler() );
+//    	solid.iterate ( solidBC -> handler() );
+    	solid.iterate ( solidBC -> handler(), true );
 
         exporter->postProcess ( time );
 
@@ -487,12 +704,8 @@ int main (int argc, char** argv)
     // We save the potential field just computed on a file
     // using VTK.
     //*************************************************************//
-    ExporterVTK< mesh_Type > exporterVTK;
-    exporterVTK.setMeshProcId ( localSolidMesh, comm -> MyPID() );
-    exporterVTK.setPostDir (problemFolder);
-    exporterVTK.setPrefix ("DeformedConfiguration");
-    exporterVTK.addVariable ( ExporterData<mesh_Type>::VectorField,  "Displacement", solid.dispFESpacePtr(), solid.displacementPtr(), UInt (0) );
-    exporterVTK.postProcess (0);
+    dispRep.reset( new vector_Type( solid.displacement(), Repeated ) );
+    exporterVTK.postProcess (10);
     exporterVTK.closeFile();
 
 
@@ -542,3 +755,40 @@ int main (int argc, char** argv)
 //
 //	}
 //}
+//Implementation of the predeclared functions:
+//
+//Read the parameters from a datafile and
+// put them in a Teuchos:ParameterList
+void createListFromGetPot (Teuchos::ParameterList& solverList, const GetPot& dataFile)
+{
+    std::string solverName   = dataFile ( "problem/solver/solver_name", "AztecOO");
+    std::string solver       = dataFile ( "problem/solver/solver", "gmres");
+    std::string conv         = dataFile ( "problem/solver/conv", "rhs");
+    std::string scaling      = dataFile ( "problem/solver/scaling", "none");
+    std::string output       = dataFile ( "problem/solver/output", "all");
+    Int maxIter              = dataFile ( "problem/solver/max_iter", 200);
+    Int maxIterForReuse      = dataFile ( "problem/solver/max_iter_reuse", 250);
+    Int kspace               = dataFile ( "problem/solver/kspace", 100);
+    Int orthog               = dataFile ( "problem/solver/orthog", 0);
+    Int auxvec               = dataFile ( "problem/solver/aux_vec", 0);
+    double tol               = dataFile ( "problem/solver/tol", 1e-10);
+    bool reusePreconditioner = dataFile ( "problem/solver/reuse", true);
+    bool quitOnFailure       = dataFile ( "problem/solver/quit", false);
+    bool silent              = dataFile ( "problem/solver/silent", false);
+
+    solverList.set ("Solver Type", solverName);
+    solverList.set ("Maximum Iterations", maxIter);
+    solverList.set ("Max Iterations For Reuse", maxIterForReuse);
+    solverList.set ("Reuse Preconditioner", reusePreconditioner);
+    solverList.set ("Quit On Failure", quitOnFailure);
+    solverList.set ("Silent", silent);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("solver", solver);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("conv", conv);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("scaling", scaling);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("output", output);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("tol", tol);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("max_iter", maxIter);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("kspace", kspace);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("orthog", orthog);
+    solverList.sublist ("Solver: Operator List").sublist ("Trilinos: AztecOO List").set ("aux_vec", auxvec);;
+}
