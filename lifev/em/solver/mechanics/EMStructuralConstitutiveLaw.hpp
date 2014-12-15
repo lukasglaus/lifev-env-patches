@@ -458,16 +458,16 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     this->M_dataMaterial                = dataMaterial;
     this->M_displayer                   = displayer;
 
-    M_residualVectorPtr.reset ( new vector_Type (*this->M_localMap) );
+    M_residualVectorPtr.reset ( new vector_Type (*this->M_localMap, Repeated) );
     //   M_identity = EMUtility::identity();
 
-    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap) );
-    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap) );
+    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
+    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
     M_scalarETFESpacePtr.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
-                                                                    &feTetraP1,
+    																&( dETFESpace -> refFE() ),
                                                                     dFESpace->map().commPtr() ) );
 
-    M_activationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map() ) );
+    M_activationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map(), Repeated ) );
 
     std::string passiveMaterialType ( dataMaterial -> passiveType() );
     std::string activeStressMaterialType (dataMaterial -> activeStressType() );
@@ -498,11 +498,6 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 			std::cout << "\nCreated Passive Material!\n";
         }
     }
-
-    if(M_passiveMaterialPtr)
-    	std::cout << "Passive Material has been created\n";
-    else
-    	std::cout << "Passive Material has not been created\n";
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
     //    // another way would be to set up the number of constitutive parameters of the law
@@ -562,10 +557,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                                                                const displayerPtr_Type& displayer )
 {
     displayer->leaderPrint (" \n******************************************************************\n  ");
-    displayer->leaderPrint (" Non-Linear S-  Computing the EM material  residual vector"     );
+    displayer->leaderPrint (" Non-Linear S-  Computing the EM material residual vector"     );
     displayer->leaderPrint (" \n******************************************************************\n  ");
     * (M_residualVectorPtr) *= 0.0;
     vectorPtr_Type vec (new vector_Type ( M_residualVectorPtr -> map() ) );
+    Real passive_residual(0.0);
     if (M_passiveMaterialPtr)
     {
         M_passiveMaterialPtr -> computeResidual (disp,
@@ -573,17 +569,24 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                                                  *M_fiberVectorPtr,
                                                  *M_sheetVectorPtr,
                                                  M_residualVectorPtr);
-
+        passive_residual = M_residualVectorPtr -> norm2();
+        if(vec->map().commPtr() ->MyPID() == 0)
+        {
+        	std::cout << "\nPassive Residual: " << passive_residual << "\n";
+        }
     }
     if (M_activeStressMaterialPtr)
-        M_activeStressMaterialPtr -> computeResidual ( disp,
-                                                       super::M_dispETFESpace,
+	{
+    	M_activeStressMaterialPtr -> computeResidual ( disp,
+                                                   super::M_dispETFESpace,
                                                        *M_fiberVectorPtr,
                                                        *M_sheetVectorPtr,
                                                        *M_activationPtr,
                                                        M_scalarETFESpacePtr,
                                                        M_residualVectorPtr);
 
+    	std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
+	}
     //  computeResidual(disp);
     this->M_residualVectorPtr->globalAssemble();
 }

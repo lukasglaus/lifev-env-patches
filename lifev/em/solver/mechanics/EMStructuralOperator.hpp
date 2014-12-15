@@ -166,8 +166,10 @@ public:
 
     void evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter);
 
-    void iterate ( const bcHandler_Type& bch );
+    void iterate ( const bcHandler_Type& bch, bool pressureBC = false );
 
+
+    void updateJacobian ( const vector_Type& sol, matrixPtr_Type& jacobian  );
 protected:
 
     //! Material class
@@ -179,6 +181,7 @@ protected:
     ID								M_LVPressureFlag;
     vectorPtr_Type M_boundaryVectorPtr;
     boost::shared_ptr<BCVector>  M_bcVectorPtr;
+    bool M_pressureBC;
 };
 
 //====================================
@@ -257,19 +260,21 @@ template <typename Mesh>
 void
 EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter)
 {
-	if(M_LVPressure != 0 && M_LVPressureFlag != 0)
-	{
-		this->M_Displayer->leaderPrint ("\n    S- Updating the pressure boundary conditions: pressure = ", M_LVPressure);
-		computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
-	    M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
-		this-> M_BCh -> modifyBC(M_LVPressureFlag, *M_bcVectorPtr);
+    if(M_pressureBC)
+    {
+		if(M_LVPressure != 0 && M_LVPressureFlag != 0)
+		{
+			this->M_Displayer->leaderPrint ("\n    S- Updating the pressure boundary conditions: pressure = ", M_LVPressure, "\n");
+			computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
+			M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
+			this-> M_BCh -> modifyBC(M_LVPressureFlag, *M_bcVectorPtr);
 
-	}
-	else
-	{
-		this->M_Displayer->leaderPrint ("\n    S- Not Updating the pressure boundary conditions\n");
-	}
-
+		}
+		else
+		{
+			this->M_Displayer->leaderPrint ("\n    S- Not Updating the pressure boundary conditions\n");
+		}
+    }
     super::evalResidual(residual, solution, iter);
 }
 
@@ -279,8 +284,11 @@ template <typename Mesh>
 void EMStructuralOperator<Mesh>::
 solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol)
 {
-    this->updateJacobian ( *this->M_disp, this->M_jacobian );
+	*this->M_jacobian *= 0.0;
+    if(M_pressureBC)
     computePressureBCJacobian(*this->M_disp, this->M_jacobian, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
+    updateJacobian ( *this->M_disp, this->M_jacobian );
+    this->M_jacobian -> globalAssemble();
     this->solveJacobian (step,  res, linear_rel_tol, this->M_BCh);
 }
 
@@ -295,7 +303,7 @@ void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& d
 	{
 		if(disp.comm().MyPID() == 0)
 		{
-			std::cout << "\nUpdating the pressure BC Jacobian: pressure = " << M_LVPressure << "\n";
+			std::cout << "\nUpdating the pressure BC Jacobian: pressure = " << pressure << "\n";
 		}
 
 		MatrixSmall<3,3> Id;
@@ -303,7 +311,6 @@ void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& d
 		Id(1,0) = 0.; Id(1,1) = 1., Id(1,2) = 0.;
 		Id(2,0) = 0.; Id(2,1) = 0., Id(2,2) = 1.;
 
-		matrixPtr_Type BCjacPtr(new matrix_Type (*this->M_localMap) );
 
 		{
 			using namespace ExpressionAssembly;
@@ -322,29 +329,26 @@ void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& d
 
 			QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
 
+			Real normJac1 = jacobian -> norm1();
+			jacobian->spy("Jac1");
 			jacobian -> openCrsMatrix();
 			integrate ( boundary ( dETFESpace->mesh(), bdFlag),
 						myBDQR,
 						dETFESpace,
 						dETFESpace,
-						dot( dF * Nface,  phi_i )
+						dot( dP * Nface,  phi_i )
 					  ) >> jacobian;
 
-			jacobian -> globalAssemble();
+			Real normJac = jacobian -> norm1();
 
-
+			if(disp.comm().MyPID() == 0)
+			{
+				std::cout << "\nNormJac 1: " << normJac1 << ",\tNormJac 1: " << normJac << "\n";
+			}
 		}
 
-//		Real normJac1 = jacobian -> norm2();
-//		*jacobian += *BCjacPtr;
-//
-//		Real normJacBC = BCjacPtr -> norm2();
-//		Real normJac = jacobian -> norm2();
-//
-//		if(disp.comm().MyPID() == 0)
-//		{
-//			std::cout << "\nUpdating the pressure BC Jacobian: pressure = " << M_LVPressure << "\n";
-//		}
+
+
 
 	}
 	else
@@ -360,10 +364,11 @@ void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& d
 
 template <typename Mesh>
 void
-EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch )
+EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch, bool pressureBC )
 {
     LifeChrono chrono;
 
+    M_pressureBC = pressureBC;
     // matrix and vector assembling communication
     this->M_Displayer->leaderPrint ("  EMSolver -  Solving the system ... \n");
 
@@ -425,6 +430,34 @@ EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch )
     }
 }
 
+
+
+//Method UpdateJacobian
+template <typename Mesh>
+void
+EMStructuralOperator<Mesh>::updateJacobian ( const vector_Type& sol, matrixPtr_Type& jacobian  )
+{
+    this->M_Displayer->leaderPrint ("  S-  Solid: Updating JACOBIAN... ");
+
+    LifeChrono chrono;
+    chrono.start();
+
+    this->M_material->updateJacobianMatrix (sol, this->M_data, this->M_mapMarkersVolumes, this->M_mapMarkersIndexes,  this->M_Displayer);
+
+    *jacobian += * (this->M_material->jacobian() );
+
+    //Spying the static part of the Jacobian to check if it is symmetric
+    // M_material->jacobian()->spy("staticJacobianMatrix");
+
+    // std::cout << "spyed" << std::endl;
+    // int n;
+    // std::cin >> n ;
+
+
+    chrono.stop();
+    this->M_Displayer->leaderPrintMax ("   ... done in ", chrono.diff() );
+
+}
 
 
 }
