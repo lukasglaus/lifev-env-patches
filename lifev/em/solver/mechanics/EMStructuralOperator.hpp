@@ -315,23 +315,37 @@ void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& d
 			auto FmT = minusT(F);
 			auto J = det(F);
 			auto p = value(pressure);
-			auto dP = p * J * ( value(-1.0) * dot(FmT, dF) * I + FmT * transpose( dF ) ) * FmT;
+			auto dFmT = value(-1.0) * FmT * transpose( dF ) * FmT;
+			auto dJ   = J * dot( FmT, dF ) * I;
+			//since it's on the left side we put a minus
+			auto dP = value(-1.0) * p * (dJ * FmT + J * dFmT );
 
 			QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
 
-
+			jacobian -> openCrsMatrix();
 			integrate ( boundary ( dETFESpace->mesh(), bdFlag),
 						myBDQR,
 						dETFESpace,
 						dETFESpace,
 						dot( dF * Nface,  phi_i )
-					  ) >> BCjacPtr;
+					  ) >> jacobian;
 
-			BCjacPtr -> globalAssemble();
+			jacobian -> globalAssemble();
 
 
 		}
-		*jacobian += *BCjacPtr;
+
+//		Real normJac1 = jacobian -> norm2();
+//		*jacobian += *BCjacPtr;
+//
+//		Real normJacBC = BCjacPtr -> norm2();
+//		Real normJac = jacobian -> norm2();
+//
+//		if(disp.comm().MyPID() == 0)
+//		{
+//			std::cout << "\nUpdating the pressure BC Jacobian: pressure = " << M_LVPressure << "\n";
+//		}
+
 	}
 	else
 	{
