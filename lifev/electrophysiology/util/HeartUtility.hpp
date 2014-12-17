@@ -409,8 +409,15 @@ inline void rescaleVectorOnBoundary ( VectorEpetra& vector, boost::shared_ptr<  
 /*!
  * @param vector      VectorEpetra object that contains the vector field
  */
-inline void normalize ( VectorEpetra& vector )
+inline void normalize ( VectorEpetra& vector, int component = 0 )
 {
+	if(vector.comm().MyPID() == 0)
+	{
+		std::cout << "\n==============================================================";
+		std::cout << "\n=========   NORMALIZING";
+		std::cout << "\n==============================================================";
+	}
+
     int n1 = vector.epetraVector().MyLength();
     int d1 = n1 / 3;
     int i (0);
@@ -423,7 +430,7 @@ inline void normalize ( VectorEpetra& vector )
         j = vector.blockMap().GID (l + d1);
         k = vector.blockMap().GID (l + 2 * d1);
         Real norm = std::sqrt ( vector[i] * vector[i] + vector[j] * vector[j] + vector[k] * vector[k] );
-        if ( norm != 0 )
+        if ( norm > 1e-13 )
         {
             (vector) [i] = (vector) [i] / norm;
             (vector) [j] = (vector) [j] / norm;
@@ -431,14 +438,27 @@ inline void normalize ( VectorEpetra& vector )
         }
         else
         {
-            std::cout << "\n\nThe vector in the node: " << i << " has component:";
-            std::cout << "\nx: " <<  vector[i];
-            std::cout << "\ny: " <<  vector[j];
-            std::cout << "\nz: " <<  vector[k];
-            std::cout << "\nI will put it to: (v_x, v_y, v_z) = (1, 0, 0)\n\n";
+        	if(vector.comm().MyPID() == 0)
+        	{
+        		std::cout << "\nNormalize function: I am about to change the value to (1,0,0)!\n";
+        	}
+        	(vector)[i] = 0.0;
+			(vector)[j] = 0.0;
+			(vector)[k] = 0.0;
+			if(0 == component)(vector)[i] = 1.0;
+        	if(1 == component)(vector)[j] = 1.0;
+        	if(2 == component)(vector)[k] = 1.0;
+
         }
 
     }
+
+	if(vector.comm().MyPID() == 0)
+	{
+		std::cout << "\n=========   DONE !!!";
+		std::cout << "\n==============================================================";
+	}
+
 }
 
 
