@@ -242,7 +242,7 @@ int main (int argc, char** argv)
     rhs -> globalAssemble();
 
     bcManage ( *systemMatrix, *rhs, *uFESpace->mesh(), uFESpace->dof(), *BC -> handler(), uFESpace->feBd(), 1.0, 0.0 );
-    vectorPtr_Type solution ( new vector_Type ( uFESpace -> map() ) );
+    vectorPtr_Type solution ( new vector_Type ( uFESpace -> map()) );
 
 
     linearSolver.setOperator (systemMatrix);
@@ -258,16 +258,19 @@ int main (int argc, char** argv)
     *sy = GradientRecovery::ZZGradient (uFESpace, *solution, 1);
     *sz = GradientRecovery::ZZGradient (uFESpace, *solution, 2);
 
-    vectorPtr_Type rbFiber ( new vector_Type ( dFESpace -> map(), Repeated ) );
-    vectorPtr_Type rbSheet ( new vector_Type ( dFESpace -> map(), Repeated ) );
+    vectorPtr_Type rbFiber ( new vector_Type ( dFESpace -> map() ) );
+    vectorPtr_Type rbSheet ( new vector_Type ( dFESpace -> map() ) );
     UInt d =  rbFiber->epetraVector().MyLength();
     UInt nComponentLocalDof = d / 3;
 
+    std::cout << "\nNum dof: " << nComponentLocalDof;
     for ( int l (0); l < nComponentLocalDof; l++)
 	{
 		UInt iGID = rbFiber->blockMap().GID (l);
         UInt jGID = rbFiber->blockMap().GID (l + nComponentLocalDof);
         UInt kGID = rbFiber->blockMap().GID (l + 2 * nComponentLocalDof);
+
+    	std::cout<< "\nLID: " << l << ", iGID: " <<  iGID << ",jGID: " << jGID << ", kGID: " << kGID ;
 
 //        meshFull->point(iGID).MeshVertex::showMe(true);
 		Real x = (*position)[iGID];
@@ -288,11 +291,19 @@ int main (int argc, char** argv)
 		Real SinU = std::sqrt(1.0 - CosU * CosU );
 
 		Real CosV(1.);
-		if( x*x + y*y >= 1e-12 )
+		if( std::abs(x) >= 1e-16 )
 		{
 			Real TgV = y / x;
 			Real V = std::atan(TgV);
 			CosV = sgn(x) * std::cos(V);
+		}
+		else if(std::abs(x) < 1e-16 && std::abs(y) > 1e-16)
+		{
+			CosV = sgn(x);
+		}
+		else
+		{
+			CosV = 1.0;
 		}
 
 
@@ -311,11 +322,17 @@ int main (int argc, char** argv)
 		Real SinA = std::sin(alpha);
 		Real CosA = std::cos(alpha);
 
-		if(norm1 >= 1e-13 && norm2 >= 1e-13)
+
+		(*rbFiber)[iGID] = dxdu1 * SinA / norm1 + dxdv1 * CosA / norm2;
+		(*rbFiber)[jGID] = dxdu2 * SinA / norm1 + dxdv2 * CosA / norm2;
+		(*rbFiber)[kGID] = dxdu3 * SinA / norm1 + dxdv3 * CosA / norm2;
+
+		Real fiberNorm = std::sqrt( (*rbFiber)[iGID] * (*rbFiber)[iGID] + (*rbFiber)[jGID] * (*rbFiber)[jGID] + (*rbFiber)[kGID] * (*rbFiber)[kGID]);
+		if(fiberNorm >= 1e-13 )
 		{
-			(*rbFiber)[iGID] = dxdu1 * SinA / norm1 + dxdv1 * CosA / norm2;
-			(*rbFiber)[jGID] = dxdu2 * SinA / norm1 + dxdv2 * CosA / norm2;
-			(*rbFiber)[kGID] = dxdu3 * SinA / norm1 + dxdv3 * CosA / norm2;
+			(*rbFiber)[iGID] = (*rbFiber)[iGID] / fiberNorm;
+			(*rbFiber)[jGID] = (*rbFiber)[jGID] / fiberNorm;
+			(*rbFiber)[kGID] = (*rbFiber)[kGID] / fiberNorm;
 		}
 		else
 		{
@@ -324,16 +341,16 @@ int main (int argc, char** argv)
 			(*rbFiber)[kGID] = 0.0;
 		}
 
+
 		Real cdot = (*sx) [iGID] * (*rbFiber)[iGID] + (*sy) [iGID] * (*rbFiber)[jGID]  + (*sz) [iGID] * (*rbFiber)[kGID] ;
         (*rbSheet) [iGID] = (*sx) [iGID] - cdot * (*rbFiber)[iGID];
         (*rbSheet) [jGID] = (*sy) [iGID] - cdot * (*rbFiber)[jGID];
         (*rbSheet) [kGID] = (*sz) [iGID] - cdot * (*rbFiber)[kGID];
 
-
-
 	}
 
-    ElectrophysiologyUtility::normalize(*rbSheet);
+    rbFiber->spy("vector");
+    ElectrophysiologyUtility::normalize(*rbSheet,1);
 
     //===========================================================
     //===========================================================
@@ -393,17 +410,10 @@ int main (int argc, char** argv)
 
     solid.EMMaterial()->setFiberVectorPtr(rbFiber);
     solid.EMMaterial()->setSheetVectorPtr(rbSheet);
-//    solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
-//    std::string fiberFile ( dataFile ( "solid/Fibers/FileName", "FiberDirection") );
-//    std::string fiberField ( dataFile ( "solid/Fibers/FileField", "fibers") );
-//    std::string sheetFile ( dataFile ( "solid/Sheets/FileName", "SheetsDirection") );
-//    std::string sheetField ( dataFile ( "solid/Sheets/FileField", "sheets") );
-//    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->fiberVectorPtr(),  fiberFile,  fiberField, localSolidMesh, "./", dOrder);
-//    ElectrophysiologyUtility::importVectorField (solid.EMMaterial()->sheetVectorPtr(),  sheetFile,  sheetField, localSolidMesh, "./", dOrder);
 
     std::cout << "\nSheets norm = " << solid.EMMaterial()->sheetVectorPtr()->norm2();
     std::cout << "\nFibers norm = " << solid.EMMaterial()->fiberVectorPtr()->norm2();
-//    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
+
     if(solid.EMMaterial()->sheetVectorPtr()) std::cout << "I have sheets!\n";
     else
     {
@@ -491,16 +501,22 @@ int main (int argc, char** argv)
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
 //    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "activation", aFESpace, solid.EMMaterial()->activationPtr(), UInt (0) );
 	exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
-    exporter->postProcess ( 0 );
+	exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "sheets", dFESpace, solid.EMMaterial()->sheetVectorPtr(), UInt (0) );
+        exporter->postProcess ( 0 );
 
     vectorPtr_Type dispRep( new vector_Type( solid.displacement(), Repeated ) );
+    vectorPtr_Type solRep( new vector_Type( *solution, Repeated) );
+    vectorPtr_Type fiberRep( new vector_Type( *solid.EMMaterial()->fiberVectorPtr(), Repeated ) );
+    vectorPtr_Type sheetRep( new vector_Type( *solid.EMMaterial()->sheetVectorPtr(), Repeated ) );
+
     ExporterVTK< mesh_Type > exporterVTK;
     exporterVTK.setMeshProcId ( localSolidMesh, comm -> MyPID() );
     exporterVTK.setPostDir (problemFolder);
     exporterVTK.setPrefix ("DeformedConfiguration");
     exporterVTK.addVariable ( ExporterData<mesh_Type>::VectorField,  "Displacement", dFESpace, dispRep, UInt (0) );
-//    exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "activation", aFESpace, solid.EMMaterial()->activationPtr(), UInt (0) );
-	exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
+    exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "potential", uFESpace, solRep, UInt (0) );
+	exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace,fiberRep, UInt (0) );
+	exporterVTK.addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "sheets", dFESpace, sheetRep, UInt (0) );
     exporterVTK.postProcess ( 0 );
 
     //===========================================================
@@ -704,10 +720,7 @@ int main (int argc, char** argv)
     // We save the potential field just computed on a file
     // using VTK.
     //*************************************************************//
-    dispRep.reset( new vector_Type( solid.displacement(), Repeated ) );
-    exporterVTK.postProcess (10);
     exporterVTK.closeFile();
-
 
 #ifdef HAVE_MPI
     MPI_Finalize();
