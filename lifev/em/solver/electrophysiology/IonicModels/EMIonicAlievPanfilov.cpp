@@ -35,7 +35,7 @@
   @last update 01-2013
  */
 
-#include <lifev/electrophysiology/solver/IonicModels/IonicAlievPanfilov.hpp>
+#include <lifev/em/solver/electrophysiology/IonicModels/EMIonicAlievPanfilov.hpp>
 
 
 #include <Teuchos_RCP.hpp>

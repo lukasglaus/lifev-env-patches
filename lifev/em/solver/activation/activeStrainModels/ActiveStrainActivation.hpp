@@ -8,13 +8,9 @@
 #ifndef ACTIVESTRAINACTIVATION_HPP_
 #define ACTIVESTRAINACTIVATION_HPP_
 
-#include <lifev/core/array/VectorEpetra.hpp>
-#include <lifev/core/array/MapEpetra.hpp>
-
-#include <lifev/em/util/EMUtility.hpp>
 
 
-
+#include <lifev/em/solver/activation/Activation.hpp>
 
 
 
@@ -22,36 +18,36 @@ namespace LifeV
 {
 
 
-namespace ActiveStrain
-{
+//namespace ActiveStrain
+//{
+//
+//void transversilyIsotropicActiveStrain( VectorEpetra& gf,
+//										VectorEpetra& gs,
+//										VectorEpetra& gn )
+//{
+//    gs = 1.0;
+//    gs /= (1.0 + gf);
+//    EMUtility::EpetraSqrt (gs);
+//    gs -= 1.0;
+//	gn = gs;
+//}
+//
+//void orthotropicActiveStrain( VectorEpetra& gf,
+//							  VectorEpetra& gs,
+//							  VectorEpetra& gn,
+//							  Real factor)
+//{
+//     gn = factor * gf;
+//     gs = 1.0;
+//     gs /= (1.0 + gf);
+//     gs /= (1.0 + gn);
+//     gs -= 1.0;
+//}
+//
+//}//namespace ActiveStrain
 
-void transversilyIsotropicActiveStrain( VectorEpetra& gf,
-										VectorEpetra& gs,
-										VectorEpetra& gn )
-{
-    gs = 1.0;
-    gs /= (1.0 + gf);
-    EMUtility::EpetraSqrt (gs);
-    gs -= 1.0;
-	gn = gs;
-}
 
-void orthotropicActiveStrain( VectorEpetra& gf,
-							  VectorEpetra& gs,
-							  VectorEpetra& gn,
-							  Real factor)
-{
-     gn = factor * gf;
-     gs = 1.0;
-     gs /= (1.0 + gf);
-     gs /= (1.0 + gn);
-     gs -= 1.0;
-}
-
-}//namespace ActiveStrain
-
-
-class ActiveStrainActivation
+class ActiveStrainActivation : public virtual Activation
 {
 public:
     //! Distributed vector // For parallel usage
@@ -59,97 +55,90 @@ public:
 
     typedef boost::shared_ptr<VectorEpetra>                             vectorPtr_Type;
 
-    ActiveStrainActivation (MapEpetra& map) :
-    	                  M_gammafPtr ( new vector_Type (map) ),
-    	                  M_gammasPtr ( new vector_Type (map) ),
-    	                  M_gammanPtr ( new vector_Type (map) ) {}
+    typedef Activation super;
 
-    ActiveStrainActivation (const MapEpetra& map) :
-						M_gammafPtr ( new vector_Type (map) ),
-						M_gammasPtr ( new vector_Type (map) ),
-						M_gammanPtr ( new vector_Type (map) ) {}
+    enum ActiveStrainType { Anisotropic, Orthotropic, TransverselyIsotropic };
 
-    ActiveStrainActivation (ActiveStrainActivation& activation) :
-    	                M_gammafPtr ( new vector_Type (activation.gammaf() ) ),
-    	                M_gammasPtr ( new vector_Type (activation.gammas() ) ),
-    	                M_gammanPtr ( new vector_Type (activation.gamman() ) ) {}
+    ActiveStrainActivation () :
+    	M_activeStrainType(),
+    	M_activeStrainOrthotropicParameter(-666.0)
+        {}
 
-    ActiveStrainActivation& operator= (ActiveStrainActivation& activation)
+
+    void init(const MapEpetra& map)
     {
-        M_gammafPtr.reset ( new vector_Type (activation.gammaf() ) );
-        M_gammasPtr.reset ( new vector_Type (activation.gammas() ) );
-        M_gammanPtr.reset ( new vector_Type (activation.gamman() ) );
-        return *this;
+    	switch(M_activeStrainType)
+    	{
+    		case TransverselyIsotropic:
+    		case Orthotropic:
+    			 M_fiberActivationPtr.reset( new vector_Type (map) );
+    			 break;
+    		case Anisotropic:
+    		default:
+    			M_fiberActivationPtr.reset( new vector_Type (map) );
+    			M_sheetActivationPtr.reset( new vector_Type (map) );
+    			M_normalActivationPtr.reset( new vector_Type (map) );
+				 break;
+    	}
     }
 
     virtual ~ActiveStrainActivation() {}
 
-    VectorEpetra& gammaf()
+    virtual void setup(EMData& data,  const MapEpetra& map)
     {
-        return *M_gammafPtr;
+    	M_activeStrainOrthotropicParameter = data.activationParameter<Real>("EMActiveStrainOrthotropicParameter");
+    	init(map);
     }
 
-    vectorPtr_Type gammafPtr()
+
+
+//
+
+
+    ActiveStrainType activeStrainType()
     {
-        return M_gammafPtr;
+    	return M_activeStrainType;
     }
 
-    void setGammaf (VectorEpetra& activation)
+    void setupActivationPtrs(	vectorPtr_Type& fiberActivationPtr,
+								vectorPtr_Type& sheetActivationPtr,
+								vectorPtr_Type& normalActivationPtr )
     {
-        *M_gammafPtr = activation;
+     	switch(M_activeStrainType)
+     	{
+ 			case TransverselyIsotropic:
+ 			case Orthotropic:
+ 				fiberActivationPtr  = this->M_fiberActivationPtr;
+ 				sheetActivationPtr.reset();
+ 				normalActivationPtr.reset();
+ 				break;
+ 			case Anisotropic:
+ 			default:
+ 				fiberActivationPtr = this->M_fiberActivationPtr;
+ 				sheetActivationPtr = this->M_sheetActivationPtr;
+ 				normalActivationPtr = this->M_normalActivationPtr;
+ 				break;
+     	}
+     }
+
+    void updateActivation(	vectorPtr_Type& fiberActivationPtr,
+							vectorPtr_Type& sheetActivationPtr,
+							vectorPtr_Type& normalActivationPtr )
+    {
+    	setupActivationPtrs(fiberActivationPtr, sheetActivationPtr, normalActivationPtr);
     }
 
-    void setGammafPtr (vectorPtr_Type activationPtr)
-    {
-        M_gammafPtr = activationPtr;
-    }
-
-    VectorEpetra& gammas()
-    {
-        return *M_gammasPtr;
-    }
-
-    vectorPtr_Type gammasPtr()
-    {
-        return M_gammasPtr;
-    }
-
-    void setGammas (VectorEpetra& activation)
-    {
-        *M_gammasPtr = activation;
-    }
-
-    void setGammasPtr (vectorPtr_Type activationPtr)
-    {
-        M_gammasPtr = activationPtr;
-    }
-
-    VectorEpetra& gamman()
-    {
-        return *M_gammanPtr;
-    }
-
-    vectorPtr_Type gammanPtr()
-    {
-        return M_gammanPtr;
-    }
-
-    void setGamman (VectorEpetra& activation)
-    {
-        *M_gammanPtr = activation;
-    }
-
-    void setGammanPtr (vectorPtr_Type activationPtr)
-    {
-        M_gammanPtr = activationPtr;
-    }
-
-    virtual void solveModel() {}
 
 protected:
-    vectorPtr_Type M_gammafPtr;
-    vectorPtr_Type M_gammasPtr;
-    vectorPtr_Type M_gammanPtr;
+
+    ActiveStrainType M_activeStrainType;
+
+//    vectorPtr_Type M_gammafPtr;
+//    vectorPtr_Type M_gammasPtr;
+//    vectorPtr_Type M_gammanPtr;
+
+    Real M_activeStrainOrthotropicParameter;
+
 
 };
 

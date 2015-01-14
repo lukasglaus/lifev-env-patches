@@ -423,7 +423,7 @@ int main (int argc, char** argv)
 
 
 
-    *( solid.EMMaterial()->activationPtr() ) = 1.0;
+    *( solid.EMMaterial()->fiberActivationPtr() ) = 1.0;
 
     solid.buildSystem (1.0);
 
@@ -547,8 +547,8 @@ int main (int argc, char** argv)
     {
 
     	time += dt;
-    	if( 1 == activeRamp ) emdata.setParameter("MaxActiveTension", Tmax * time );
-    	else  emdata.setParameter("MaxActiveTension", Tmax );
+    	if( 1 == activeRamp ) emdata.setSolidParameter("MaxActiveTension", Tmax * time );
+    	else  emdata.setSolidParameter("MaxActiveTension", Tmax );
 
         solid.EMMaterial()->setParameters(emdata);
     	if( comm ->MyPID() == 0)

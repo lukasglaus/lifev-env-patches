@@ -12,4 +12,6 @@ ADD_SUBDIRECTORIES(
 	test_benchmarkBar	
 	test_benchmarkStaticActiveStress
 	test_benchmarkIsotropicVentricle
+	test_HDF5toVTK
+	test_EMSolver
 )

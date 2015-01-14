@@ -1,3 +1,43 @@
+//@HEADER
+/*
+*******************************************************************************
+
+    Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
+    Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
+
+    This file is part of LifeV.
+
+    LifeV is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    LifeV is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
+
+*******************************************************************************
+*/
+//@HEADER
+
+
+/*!
+    @file
+    @brief Simple test using the electromechanical passive constitutive laws
+
+
+    @date 12-2014
+    @author Simone Rossi <simone.rossi@epfl.ch>
+
+    @contributor
+    @mantainer Simone Rossi <simone.rossi@epfl.ch>
+ */
+
+
 #include <lifev/core/LifeV.hpp>
 #include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
 #include <lifev/electrophysiology/solver/IonicModels/IonicMinimalModel.hpp>
@@ -52,6 +92,9 @@ int main (int argc, char** argv)
     GetPot command_line (argc, argv);
     const string data_file_name = command_line.follow ("data", 2, "-f", "--file");
     GetPot dataFile (data_file_name);
+
+    EMData emdata;
+    emdata.setup (dataFile);
 
     //When launching the executable use the flag:  -o OutputFolderName
     std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
@@ -165,10 +208,15 @@ int main (int argc, char** argv)
         std::cout << "setup structural operator ... " << std::endl;
     }
     //! 1. Constructor of the structuralSolver
-    StructuralOperator< RegionMesh<LinearTetra> > solid;
+    EMStructuralOperator< RegionMesh<LinearTetra> > solid;
 
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
+    solid.EMMaterial()->setParameters(emdata);
+
+    solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
+    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
+
     solid.setNewtonParameters(dataFile);
     solid.buildSystem (1.0);
 

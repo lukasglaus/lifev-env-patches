@@ -43,7 +43,7 @@ public:
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         auto I1bar = Elasticity::I1bar (F);
-        return M_a / 2.0 * std::exp ( M_b * ( I1bar - 3 ) );
+        return 0.5 * M_a * std::exp ( M_b * ( I1bar - 3 ) );
     }
 
     //    IsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
@@ -82,8 +82,8 @@ public:
 
     void setParameters (data_Type& data)
     {
-    	M_a = data.parameter("a");
-    	M_b = data.parameter("b");
+    	M_a = data.solidParameter<Real>("a");
+    	M_b = data.solidParameter<Real>("b");
     }
 
 
@@ -101,7 +101,7 @@ public:
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         auto I1bar = Elasticity::I1bar (F);
-        return M_a * M_b / 2.0 * std::exp ( M_b * ( I1bar - 3 ) );
+        return 0.5 * M_a * M_b * std::exp ( M_b * ( I1bar - 3 ) );
     }
 
     //    dIsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
@@ -112,7 +112,6 @@ public:
         M_b = dIsotropicExponential.M_b;
     }
     virtual ~dIsotropicExponential() {}
-
 
     inline virtual void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
@@ -134,8 +133,8 @@ public:
 
     void setParameters (data_Type& data)
     {
-    	M_a = data.parameter("a");
-    	M_b = data.parameter("b");
+    	M_a = data.solidParameter<Real>("a");
+    	M_b = data.solidParameter<Real>("b");
     }
 
 private:

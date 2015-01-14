@@ -56,38 +56,53 @@ public:
 
     virtual ~SimpleActiveStress() {}
 
-    inline void computeJacobian ( const vector_Type& disp,
+    void computeJacobian ( const vector_Type& disp,
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                   const vector_Type& fibers,
                                   const vector_Type& sheets,
-                                  const vector_Type& activation,
+                                  const vectorPtr_Type& fiberActivation,
+                                  const vectorPtr_Type& sheetActivation,
+                                  const vectorPtr_Type& normalActivation,
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                   matrixPtr_Type           jacobianPtr)
     {
-        //      EMAssembler::computeFiberActiveStressJacobianTerms(disp, dispETFESpace, fibers, sheets, activation, activationETFESpace,jacobianPtr, this->getMe() );
         EMAssembler::computeFiberActiveStressJacobianTerms (disp,
                                                             dispETFESpace,
                                                             fibers,
-                                                            sheets,
-                                                            activation,
+                                                            *fiberActivation,
                                                             activationETFESpace,
                                                             jacobianPtr,
                                                             this->getMe() );
+//        EMAssembler::computeModifiedFiberActiveStressJacobianTerms (disp,
+//                                                            dispETFESpace,
+//                                                            fibers,
+//                                                            *fiberActivation,
+//                                                            activationETFESpace,
+//                                                            jacobianPtr,
+//                                                            this->getMe() );
     }
 
-    inline virtual void computeResidual ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
-                                          const vector_Type& activation,
+                                          const vectorPtr_Type& fiberActivation,
+                                          const vectorPtr_Type& sheetActivation,
+                                          const vectorPtr_Type& normalActivation,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                           vectorPtr_Type           residualVectorPtr)
     {
+//        EMAssembler::computeModifiedFiberActiveStressResidualTerms (disp,
+//                                                            dispETFESpace,
+//                                                            fibers,
+//                                                            *fiberActivation,
+//                                                            activationETFESpace,
+//                                                            residualVectorPtr,
+//                                                            this->getMe() );
         EMAssembler::computeFiberActiveStressResidualTerms (disp,
                                                             dispETFESpace,
                                                             fibers,
-                                                            sheets,
-                                                            activation,
+                                                            *fiberActivation,
                                                             activationETFESpace,
                                                             residualVectorPtr,
                                                             this->getMe() );
@@ -97,7 +112,7 @@ public:
     typedef EMData          data_Type;
     void setParameters (data_Type& data)
     {
-    	M_Tmax = data.parameter("MaxActiveTension");
+    	M_Tmax = data.solidParameter<Real>("MaxActiveTension");
     }
 
     void showMe()

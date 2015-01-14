@@ -19,7 +19,6 @@
 
 #include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
 
-#include <lifev/em/util/EMUtility.hpp>
 #include <lifev/em/solver/EMETAFunctors.hpp>
 
 
@@ -47,14 +46,17 @@ computeVolumetricJacobianTerms ( const vector_Type& disp,
         using namespace ExpressionAssembly;
         //
     	if(disp.comm().MyPID() == 0)
-        std::cout << "Computing Volumetric jacobian terms  ... \n";
+    		std::cout << "EMETA - Computing Volumetric jacobian terms  ... \n";
 
         //      BOOST_AUTO_TPL (dP, eval(Wvol, _F) * (_d2JdF) );
+
+
+    	auto dP = eval (Wvol, _F (dispETFESpace, disp, 0) ) * (_d2JdF (dispETFESpace, disp, 0) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
                     dispETFESpace,
-                    dot ( eval (Wvol, _F (dispETFESpace, disp, 0) ) * (_d2JdF (dispETFESpace, disp, 0) ), grad (phi_i) )
+                    dot ( dP, grad (phi_i) )
                   ) >> jacobianPtr;
 
     }
@@ -72,7 +74,7 @@ computeVolumetricJacobianTermsSecondDerivative ( const vector_Type& disp,
 
         //
     	if(disp.comm().MyPID() == 0)
-        std::cout << "Computing Volumetric jacobian terms with second derivative of the energy ... \n";
+    		std::cout << "EMETA - Computing Volumetric jacobian terms with second derivative of the energy ... \n";
 
         auto dP = eval (dWvol, _F (dispETFESpace, disp, 0) ) * (_dJdF (dispETFESpace, disp, 0) ) * (_dJ (dispETFESpace, disp, 0) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -94,7 +96,7 @@ computeLinearizedVolumetricJacobianTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-    auto I = value (EMUtility::identity() );
+    auto I = _I;
     auto dF = _dF;
     auto dFT = transpose (dF);
     auto dP = eval (W, I ) * (dF + dFT) * value (1. / 2.);
@@ -118,7 +120,7 @@ computeLinearizedDeviatoricJacobianTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-    auto I = value (EMUtility::identity() );
+    auto I = _I;
     auto dF = _dF;
     auto dFT = transpose (dF);
     auto dP = eval (W, I) * trace (dF + dFT) * value (1. / 2.) * I;
@@ -144,14 +146,34 @@ computeI1JacobianTerms ( const vector_Type& disp,
 
     //
 	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I1 jacobian terms  ... \n";
+		std::cout << "Computing I1 jacobian terms  ... \n";
+
+	auto I = _I;
+	auto dF = grad(phi_j);
+	auto GradU = _Grad_u(dispETFESpace, disp, 0);
+	auto F = I + GradU;
+	auto FmT = minusT(F);
+	auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
+	auto J = det(F);
+	auto Jm23 = pow(J, - 2. / 3.);
+	auto dJm23 = value(- 2. / 3. ) * Jm23 * FmT;
+	auto d2Jm23dF = value( -2. / 3. ) * ( dot( dJm23, dF ) * FmT + Jm23 * dFmTdF );
+	auto I1 = dot(F, F);
+	auto dI1 = value(2.0) * F;
+	auto d2I1 = value(2.0) * dF;
+	auto I1bar = Jm23 * I1;
+	auto dI1bar = dJm23 * I1 + Jm23 * dI1;
+	auto d2I1bardF = dot(dJm23, dF) * dI1 + Jm23 * d2I1 + dJm23 * dot(dI1, dF) + d2Jm23dF * I1;
+	auto P = eval (W1, _F (dispETFESpace, disp, 0) ) * dI1bar ;
+
+	auto dPdF = eval (W1, _F (dispETFESpace, disp, 0) ) * d2I1bardF;
 
     auto dP = eval (W1, _F (dispETFESpace, disp, 0) ) * (_d2I1bardF (dispETFESpace, disp, 0) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
                 dispETFESpace,
-                dot ( dP , grad (phi_i) )
+                dot ( dPdF , grad (phi_i) )
               ) >> jacobianPtr;
 }
 
@@ -166,14 +188,32 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     using namespace ExpressionAssembly;
     //
 	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I1 jacobian terms with second derivative of the energy ... \n";
+		std::cout << "Computing I1 jacobian terms with second derivative of the energy ... \n";
 
-    auto dP = eval (dW1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
+	auto I = _I;
+	auto dF = grad(phi_j);
+	auto GradU = _Grad_u(dispETFESpace, disp, 0);
+	auto F = I + GradU;
+	auto FmT = minusT(F);
+	auto dFmTdF = value(-1.0) * FmT * transpose(dF) * FmT;
+	auto J = det(F);
+	auto Jm23 = pow(J, 2 / (-3.) );
+	auto dJm23 = value(2/(-3.)) * pow(J, 2 / (-3.) ) * FmT;
+	auto d2Jm23dF = value( 2/(-3.) ) * ( dot( dJm23, dF ) * FmT + pow(J, 2 / (-3.) ) * dFmTdF );
+	auto I1 = dot(F, F);
+	auto dI1 = value(2.0) * F;
+	auto I1bar = Jm23 * I1;
+	auto dI1bar = dJm23 * I1 + Jm23 * dI1;
+	auto d2I1bardF = dot(dJm23, dF) * dI1 + Jm23 * dF + dJm23 * dot(dI1, dF) + d2Jm23dF * I1;
+	auto P = eval (dW1, _F (dispETFESpace, disp, 0) ) * dI1bar ;
+
+//	auto dPdF = eval (dW1, _F (dispETFESpace, disp, 0) ) * dot(dI1bar, dF) * dI1bar;
+    auto dPdF = eval (dW1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
                 dispETFESpace,
-                dot ( dP , grad (phi_i) )
+                dot ( dPdF , grad (phi_i) )
               ) >> jacobianPtr;
 }
 

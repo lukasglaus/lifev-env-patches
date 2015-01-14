@@ -78,48 +78,21 @@ public:
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      const vector_Type& activation,
+                      const vector_Type& fiberActivation,
+                      const vector_Type& sheetActivation,
+                      const vector_Type& normalActivation,
                       scalarETFESpacePtr_Type  activationETFESpace,
                       matrixPtr_Type     jacobianPtr)
     {
     	std::cout << "\nEMMaterial: wrong call to computeJacobian";
     }
 
-
-    virtual void
-    computeJacobian ( const vector_Type&       disp,
-                      const vector_Type&       activation,
-                      scalarETFESpacePtr_Type  aETFESpace,
-                      ETFESpacePtr_Type        dispETFESpace,
-                      FESpacePtr_Type          dispFESpace,
-                      matrixPtr_Type           jacobianPtr)
-    {
-    	std::cout << "\nEMMaterial: wrong call to computeJacobian";
-    }
-    //
-
-
-
-    virtual void
-    computeResidual ( const vector_Type&       disp,
-                      const vector_Type&       activation,
-                      scalarETFESpacePtr_Type  aETFESpace,
-                      ETFESpacePtr_Type        dispETFESpace,
-                      FESpacePtr_Type          dispFESpace,
-                      vectorPtr_Type           residualVectorPtr)
-    {
-    	std::cout << "\nEMMaterial: wrong call to computeResidual";
-    }
-    //
-
-
-
     virtual void
     computeResidual ( const vector_Type& disp,
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      vectorPtr_Type           residualVectorPtr)
+                      vectorPtr_Type     residualVectorPtr)
     {
     	std::cout << "\nEMMaterial: wrong call to computeResidual";
     }
@@ -129,7 +102,9 @@ public:
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      const vector_Type& activation,
+                      const vector_Type& fiberActivation,
+                      const vector_Type& sheetActivation,
+                      const vector_Type& normalActivation,
                       scalarETFESpacePtr_Type  activationETFESpace,
                       vectorPtr_Type     residualVectorPtr)
     {
@@ -142,8 +117,11 @@ public:
         int n = M_materialFunctionList.size();
         for (int j (0); j < n; j++)
         {
+            std::cout << "\nShowing material function: " << j << std::endl;
             M_materialFunctionList[j]->showMe();
         }
+        std::cout << "\nDebug Output: end EMMaterial_TYpe::showMe()\n";
+
     }
 
 
@@ -152,7 +130,7 @@ public:
     	setParameters(*data);
     }
 
-    void setParameters(data_Type& data)
+    virtual void setParameters(data_Type& data)
     {
         int n = M_materialFunctionList.size();
         for (int j (0); j < n; j++)

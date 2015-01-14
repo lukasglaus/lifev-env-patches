@@ -1124,13 +1124,13 @@ public:
     typedef EMData          data_Type;
     void setParameters (data_Type& data)
     {
-        M_a   = data.parameter("C");
-        M_bff = data.parameter("bff");
-        M_bss = data.parameter("bss");
-        M_bnn = data.parameter("bnn");
-        M_bfs = data.parameter("bfs");
-        M_bfn = data.parameter("bfn");
-        M_bsn = data.parameter("bsn");
+        M_a   = data.solidParameter<Real>("C");
+        M_bff = data.solidParameter<Real>("bff");
+        M_bss = data.solidParameter<Real>("bss");
+        M_bnn = data.solidParameter<Real>("bnn");
+        M_bfs = data.solidParameter<Real>("bfs");
+        M_bfn = data.solidParameter<Real>("bfn");
+        M_bsn = data.solidParameter<Real>("bsn");
     }
 
     void showMe()

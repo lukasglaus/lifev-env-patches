@@ -17,7 +17,7 @@ class ActiveStrainRossiModel14 : public virtual ActiveStrainActivation
 {
 public:
 
-	enum ActivationAnisotropy { TransversilyIsotropic, Orthotropic };
+//	enum ActivationAnisotropy { TransversilyIsotropic, Orthotropic };
     //! Distributed vector // For parallel usage
     typedef VectorEpetra                                                vector_Type;
 
@@ -25,12 +25,7 @@ public:
 
     typedef ActiveStrainActivation                                      super;
 
-    ActiveStrainRossiModel14 ( MapEpetra& map,
-    		                   Real inverseViscosity = 0.0001,
-    		                   Real coefficient = 1.,
-    		                   Real threshold = 0.21 );
-    ActiveStrainRossiModel14 ( const MapEpetra& map,
-    		                   Real inverseViscosity = 0.0001,
+    ActiveStrainRossiModel14 ( Real inverseViscosity = 0.0001,
     		                   Real coefficient = 1.,
     		                   Real threshold = 0.21  );
 
@@ -38,9 +33,7 @@ public:
 
 //    void solveModel (VectorEpetra& ActiveStress, Real timeStep);
 
-    void solveModel (VectorEpetra& displacement, VectorEpetra& Calcium, Real timeStep, ActivationAnisotropy type = Orthotropic);
-
-    void computeTransversalActivation( ActivationAnisotropy  anisotropy = Orthotropic );
+    void solveModel ( Real& timeStep);
 
     Real computeActiveStress(Real i4f, Real Calcium);
 
@@ -65,13 +58,38 @@ public:
         M_activeForceCoefficient = coefficient;
     }
 
+    void setParameters( EMData& data);
+    void setup( EMData& data, const MapEpetra& map)
+    {
+    	setParameters(data);
+    	super::setup(data, map);
+    }
+
+    void computeI4f();
 
 private:
 
     Real M_inverseViscosity;
     Real M_activeForceCoefficient;
     Real M_chemicalThreshold;
+    UInt M_calciumIndex;
+
 };
+
+
+
+
+inline Activation* createActiveStrainRossiModel14()
+{
+    return new ActiveStrainRossiModel14();
+}
+
+namespace
+{
+static bool registerActivation_ActiveStrainRossi14 = Activation::EMActivationFactory::instance().registerProduct ("ActiveStrainRossi14", &createActiveStrainRossiModel14 );
+}
+
+
 
 } /* namespace LifeV */
 

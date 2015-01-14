@@ -9,27 +9,14 @@
 #include <lifev/em/util/EMUtility.hpp>
 
 
-
 namespace LifeV
 {
 
-ActiveStrainRossiModel14::ActiveStrainRossiModel14 (  const MapEpetra& map,
-		                                              Real inverseViscosity,
-		                                              Real coefficient,
-                                  		              Real threshold ) :
-    super (map),
-    M_inverseViscosity (inverseViscosity),
-    M_activeForceCoefficient(coefficient),
-    M_chemicalThreshold(threshold)
 
-{
-}
 
-ActiveStrainRossiModel14::ActiveStrainRossiModel14 (  MapEpetra& map,
-		                                              Real inverseViscosity,
+ActiveStrainRossiModel14::ActiveStrainRossiModel14 (  Real inverseViscosity,
 		                                              Real coefficient,
-                                  		              Real threshold ) :
-    super (map),
+                                  		              Real threshold) :
     M_inverseViscosity (inverseViscosity),
     M_activeForceCoefficient(coefficient),
     M_chemicalThreshold(threshold)
@@ -48,25 +35,26 @@ ActiveStrainRossiModel14::computeActiveStress( Real i4f, Real Calcium)
     else return 0.0;
 }
 
-
 void
-ActiveStrainRossiModel14::solveModel ( VectorEpetra& I4f,
-									   VectorEpetra& Calcium,
-									   Real timeStep,
-									   ActivationAnisotropy type )
+ActiveStrainRossiModel14::solveModel ( Real& timeStep)
 {
-    Int nLocalDof = I4f.epetraVector().MyLength();
+	if(!M_I4fPtr)
+	{
+		ASSERT(false, " Cannot solve Active Strain Rossi model without I4f. ")
+		exit(-1);
+	}
+    Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
 
     for (int ik (0); ik < nLocalDof; ik++)
     {
-        int iGID = I4f.blockMap().GID (ik);
+        int iGID = M_I4fPtr->blockMap().GID (ik);
         Real Pa, dW;
-        Real i4f = I4f[iGID];
-        Real Ca = Calcium[iGID];
+        Real i4f = (*M_I4fPtr)[iGID];
+        Real Ca = (*this->M_electroSolution.at(M_calciumIndex) )[iGID];
 
         Pa = computeActiveStress(i4f, Ca);
 
-        Real g = (*M_gammafPtr) [iGID];
+        Real g = (*M_fiberActivationPtr) [iGID];
         Real g2 = g * g;
         Real g3 = g * g2;
         Real g4 = g * g3;
@@ -75,27 +63,19 @@ ActiveStrainRossiModel14::solveModel ( VectorEpetra& I4f,
         dW = 2.0 * i4f * ( 3.0 * g - 6.0 * g2 + 10.0 * g3 - 15.0 * g4  + 21.0 * g5 );
         Real grhs = M_inverseViscosity * ( Pa - dW ) / Ca / Ca;
         grhs *= timeStep;
-        (*M_gammafPtr) [iGID] += grhs;
+        (*M_fiberActivationPtr) [iGID] += grhs;
     }
-
-    computeTransversalActivation(type);
-
 
 }
 
 
 void
-ActiveStrainRossiModel14::computeTransversalActivation( ActivationAnisotropy  anisotropy )
+ActiveStrainRossiModel14::setParameters(EMData& data)
 {
-
-	switch ( anisotropy )
-	{
-	case TransversilyIsotropic:
-		ActiveStrain::transversilyIsotropicActiveStrain( *M_gammafPtr, *M_gammasPtr, *M_gammanPtr);
-		break;
-	default:
-		ActiveStrain::orthotropicActiveStrain(*M_gammafPtr, *M_gammasPtr, *M_gammanPtr, 3.0);
-	}
+    M_inverseViscosity = data.activationParameter<Real>("InverseViscosity");
+    M_activeForceCoefficient = data.activationParameter<Real>("ActiveForceCoefficient");
+    M_chemicalThreshold = data.activationParameter<Real>("ChemicalThreshold");
+    M_calciumIndex = data.activationParameter<UInt>("CalciumIndex");
 }
 
 } /* namespace LifeV */

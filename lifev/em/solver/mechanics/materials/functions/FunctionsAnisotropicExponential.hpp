@@ -55,10 +55,73 @@ public:
         return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
     }
 
+//    class W4
+//    {
+//    public:
+//        typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+//
+//        virtual return_Type operator() (const VectorSmall<3>& f)
+//        {
+//
+//            LifeV::Real I4 = f.dot (f);
+//            LifeV::Real I4m1 = I4 - 1.0;
+//            return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+//        }
+//
+//        virtual return_Type operator() (const LifeV::Real& I4)
+//        {
+//            LifeV::Real I4m1 = I4 - 1.0;
+//            return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+//        }
+//
+//        W4(Real a = 185350, Real b = 15.972) : M_a(a), M_b(b) {}
+//        W4(const W4& W4)
+//        {
+//        	M_a = W4.M_a;
+//        	M_b = W4.M_b;
+//        }
+//
+//        Real M_a;
+//        Real M_b;
+//
+//    };
 
-    AnisotropicExponential (Real a = 185350, Real b = 15.972, Field fibers = Fibers ) : M_a (a),
-        M_b (b),
-        M_anisotropyField (fibers) {} // 0.33 KPa
+
+//    class dW4 : public W4
+//    {
+//    public:
+//        typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+//        typedef W4 super;
+//
+//        return_Type operator() (const VectorSmall<3>& f)
+//        {
+//            LifeV::Real I4 = f.dot (f);
+//            LifeV::Real I4m1 = I4 - 1.0;
+//            return this->M_a * std::exp ( this->M_b * I4m1 * I4m1 )
+//                   * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+////                   + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
+//        }
+//
+//        return_Type operator() (const LifeV::Real& I4)
+//        {
+//            LifeV::Real I4m1 = I4 - 1.0;
+//            return this->M_a * std::exp ( this->M_b * I4m1 * I4m1 )
+//                   * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+////                   + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
+//        }
+//
+//        dW4(Real a = 185350, Real b = 15.972) : super(a,b) {}
+//        dW4(const dW4& dW4) : super(dW4) {}
+//
+//
+//
+//    };
+
+    AnisotropicExponential (Real a = 185350, Real b = 15.972, Field fibers = Fibers ) :
+        M_anisotropyField (fibers),
+        M_a(a), M_b(b) {}
+//        M_W4 ( new W4(a, b)),
+//        M_dW4 ( new dW4(a, b)){} // 0.33 KPa
     AnisotropicExponential (const AnisotropicExponential& AnisotropicExponential)
     {
         M_a = AnisotropicExponential.M_a;
@@ -67,7 +130,7 @@ public:
     }
     virtual ~AnisotropicExponential() {}
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
+    virtual void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -76,14 +139,16 @@ public:
         if (M_anisotropyField == Fibers)
         {
             EMAssembler::computeI4JacobianTerms (disp, dispETFESpace, fibers, jacobianPtr, this->getMe() );
+//            EMAssembler::computeI4JacobianTermsSecondDerivative (disp, dispETFESpace, fibers, jacobianPtr, M_dW4 );
         }
         else
         {
             EMAssembler::computeI4JacobianTerms (disp, dispETFESpace, fibers,  sheets, jacobianPtr, this->getMe() );
+//            EMAssembler::computeI4JacobianTermsSecondDerivative (disp, dispETFESpace, fibers, sheets, jacobianPtr, M_dW4 );
         }
     }
 
-    inline virtual void computeResidual ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -91,7 +156,7 @@ public:
     {
         if (M_anisotropyField == Fibers)
         {
-            EMAssembler::computeI4ResidualTerms (disp, dispETFESpace, fibers, residualVectorPtr, this->getMe() );
+            EMAssembler::computeI4ResidualTerms (disp, dispETFESpace, fibers, residualVectorPtr, this->getMe());
         }
         else
         {
@@ -102,6 +167,8 @@ public:
     void showMe()
     {
         std::cout << "Anisotropic Exponential Function\n";
+//        std::cout << "Coefficient a: " << M_W4  -> M_a;
+//        std::cout << ", coefficient b: " << M_W4  -> M_b;
         std::cout << "Coefficient a: " << M_a;
         std::cout << ", coefficient b: " << M_b;
         if(M_anisotropyField == Fibers)
@@ -112,32 +179,47 @@ public:
 
     void setParametersFromGetPot (GetPot& data)
     {
-        M_a = data ( "solid/physics/af", 185350);
-        M_b = data ( "solid/physics/bf", 15.972);
-        M_anisotropyField = data ( "solid/physics/fibers", 0);
+//        M_a = data ( "solid/physics/af", 185350);
+//        M_b = data ( "solid/physics/bf", 15.972);
     }
 
     void setParameters (data_Type& data)
     {
         if(M_anisotropyField == Fibers)
 		{
-        	M_a = data.parameter("af");
-        	M_b = data.parameter("bf");
+//        	M_W4  -> M_a = data.solidParameter<Real>("af");
+//        	M_W4  -> M_b = data.solidParameter<Real>("bf");
+//        	M_dW4 -> M_a = data.solidParameter<Real>("af");
+//        	M_dW4 -> M_b = data.solidParameter<Real>("bf");
+        	M_a = data.solidParameter<Real>("af");
+        	M_b = data.solidParameter<Real>("bf");
 		}
         else
 		{
-        	M_a = data.parameter("as");
-        	M_b = data.parameter("bs");
+//        	M_W4  -> M_a = data.solidParameter<Real>("as");
+//        	M_W4  -> M_b = data.solidParameter<Real>("bs");
+//        	M_dW4 -> M_a = data.solidParameter<Real>("as");
+//        	M_dW4 -> M_b = data.solidParameter<Real>("bs");
+        	M_a = data.solidParameter<Real>("as");
+        	M_b = data.solidParameter<Real>("bs");
 		}
 
     }
 
 protected:
+    Field M_anisotropyField; //use fiber vector if true,  else uses sheets
     Real M_a;
     Real M_b;
-    Field M_anisotropyField; //use fiber vector if true,  else uses sheets
+//    boost::shared_ptr< W4 >   M_W4;
+//    boost::shared_ptr< dW4 >   M_dW4;
+
 
 };
+
+
+
+
+
 
 template <class Mesh>
 class dAnisotropicExponential : public virtual AnisotropicExponential<Mesh>
@@ -151,16 +233,16 @@ public:
         LifeV::Real I4 = f.dot (f);
         LifeV::Real I4m1 = I4 - 1.0;
         return this->M_a * std::exp ( this->M_b * I4m1 * I4m1 )
-               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1)
-               + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
+               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+//               + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
     }
 
     virtual return_Type operator() (const LifeV::Real& I4)
     {
         LifeV::Real I4m1 = I4 - 1.0;
         return this->M_a * std::exp ( this->M_b * I4m1 * I4m1 )
-               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1)
-               + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
+               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+//               + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
     }
 
     //    dAnisotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
@@ -174,7 +256,16 @@ public:
     }
     virtual ~dAnisotropicExponential() {}
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
+                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                          const vector_Type& fibers,
+                                          const vector_Type& sheets,
+                                          vectorPtr_Type     residualVectorPtr)
+    {
+
+    }
+
+    virtual void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,

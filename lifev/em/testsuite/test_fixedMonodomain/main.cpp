@@ -794,9 +794,9 @@ int main (int argc, char** argv)
     }
 
     exporter2.closeFile();
+    monodomain.setMechanicsModifiesConductivity (true);
     monodomain.setupMatrices();
     monodomain.setInitialConditions();
-    monodomain.setMechanicsModifiesConductivity (true);
 
     t = 0;
     for (int k (0); k <= 2000; k++)

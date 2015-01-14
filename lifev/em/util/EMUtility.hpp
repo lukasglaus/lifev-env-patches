@@ -36,7 +36,7 @@
  */
 
 #ifndef EMUTILITY_H
-#define EMUTILITY_H 1
+#define EMUTILITY_H
 
 #include <lifev/core/LifeV.hpp>
 //#include <lifev/core/array/VectorEpetra.hpp>
@@ -73,23 +73,7 @@ namespace EMUtility
  *
  */
 
-std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
-{
-    //  std::string problemFolder = "Output";//command_line.follow("Output", 2, "-o","--output");//) command_line.follow ( "Output", 2, "-o", "--output" );
-    std::string problemFolder = command_line.follow ("Output", 2, "-o", "--output"); //) command_line.follow ( "Output", 2, "-o", "--output" );
-    // Create the problem folder
-    std::cout << "EMU - creating output folder: " << problemFolder << "\n";
-    if ( problemFolder.compare ("./") )
-    {
-        problemFolder += "/";
-
-        if ( comm.MyPID() == 0 )
-        {
-            mkdir ( problemFolder.c_str(), 0777 );
-        }
-    }
-    return problemFolder;
-}
+std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm);
 
 template<class Mesh>
 void setupExporter ( ExporterHDF5<Mesh>& exporter,
@@ -112,31 +96,10 @@ void setupExporter ( ExporterHDF5<Mesh>& exporter,
 
 
 
-void EpetraSqrt ( VectorEpetra& vec)
-{
-    Int size = vec.epetraVector().MyLength();
-    for (int j (0); j < size; j++ )
-    {
-        int gid = vec.blockMap().GID (j);
-        vec[gid] = std::sqrt (vec[gid]);
-    }
-}
+void EpetraSqrt ( VectorEpetra& vec);
 
 
-MatrixSmall<3, 3> identity()
-{
-    MatrixSmall<3, 3> I;
-    I (0, 0) = 1.0;
-    I (0, 1) = 0.0;
-    I (0, 2) = 0.0;
-    I (1, 0) = 0.0;
-    I (1, 1) = 1.0;
-    I (1, 2) = 0.0;
-    I (2, 0) = 0.0;
-    I (2, 1) = 0.0;
-    I (2, 2) = 1.0;
-    return I;
-}
+MatrixSmall<3, 3> identity();
 
 
 
@@ -145,58 +108,13 @@ MatrixSmall<3, 3> identity()
 //  normalize(v, static_cast<int>(component) );
 //}
 
-void normalize (VectorSmall<3>& v, int component = 0)
-{
-    LifeV::Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if ( norm >= 1e-13 )
-    {
-        v[0] = v[0] / norm;
-        v[1] = v[1] / norm;
-        v[2] = v[2] / norm;
-    }
-    else
-    {
-        v *= 0.0;
-        v[component] = 1.0;
-    }
-}
+void normalize (VectorSmall<3>& v, int component = 0);
 
-void orthonormalize (VectorSmall<3>& s, VectorSmall<3>& f, int component = 1)
-{
-    EMUtility::normalize (f);
-    s = s - s.dot (f) *  f;
-    EMUtility::normalize (s, component);
-}
+void orthonormalize (VectorSmall<3>& s, VectorSmall<3>& f, int component = 1);
 
 
+Real FLRelationship(Real I4f);
 
-Real FLRelationship(Real I4f)
-{
-    if (I4f > 0.87277 && I4f < 1.334)
-    {
-        Real d0 = -4.333618335582119e3;
-        Real d1 = 2.570395355352195e3;
-        Real e1 = -2.051827278991976e3;
-        Real d2 = 1.329536116891330e3;
-        Real e2 = 0.302216784558222e3;
-        Real d3 = 0.104943770305116e3;
-        Real e3 = 0.218375174229422e3;
-        Real l0 = 1.95;
-
-        Real Force = d0 / 2
-        		   + d1 * std::sin (I4f * l0)
-                   + e1 * std::cos (I4f * l0)
-                   + d2 * std::sin (2 * I4f * l0)
-                   + e2 * std::cos (2 * I4f * l0)
-                   + d3 * std::sin (3 * I4f * l0)
-                   + e3 * std::cos (3 * I4f * l0);
-        return Force;
-    }
-    else
-    {
-        return 0.0;
-    }
-}
 
 template<typename DispVectorPtr, typename FESpaceType>
 void computeZZGradient(VectorEpetra& displacement, std::vector<DispVectorPtr> gradientPtr, boost::shared_ptr<FESpaceType>  dFESpace)
@@ -211,6 +129,10 @@ template< typename FESpaceType >
 void computeI4 ( VectorEpetra& I4, VectorEpetra& displacement, VectorEpetra& fibers, boost::shared_ptr<FESpaceType> dFESpace )
 {
 
+	if( 0 == I4.comm().MyPID() )
+	{
+		std::cout << "\nEMUtility - Evaluating I4 ";
+	}
 //    VectorEpetra sx = GradientRecovery::ZZGradient (dFESpace, displacement, 0);
 //    VectorEpetra sy = GradientRecovery::ZZGradient (dFESpace, displacement, 1);
 //    VectorEpetra sz = GradientRecovery::ZZGradient (dFESpace, displacement, 2);
@@ -254,16 +176,7 @@ void computeI4 ( VectorEpetra& I4, VectorEpetra& displacement, VectorEpetra& fib
 
 }
 
-template<class FESpace>
-QuadratureRule chooseQR(FESpace& fespace)
-{
-	QuadratureRule qr;
-	if( fespace.refFE().type() == FE_P2_3D)
-		qr = quadRuleTetra15pt;
-	else
-		qr = quadRuleTetra4pt;
-	return qr;
-}
+
 
 } // namespace EMUtility
 

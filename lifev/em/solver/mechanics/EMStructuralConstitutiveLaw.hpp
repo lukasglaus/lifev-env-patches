@@ -43,12 +43,11 @@
 #include <lifev/structure/solver/StructuralConstitutiveLaw.hpp>
 //#include <lifev/em/solver/mechanics/materials/EMMaterial.hpp>
 //#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
-#include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
 #include <lifev/em/solver/mechanics/materials/EMMaterialType.hpp>
 //#include <lifev/em/solver/mechanics/materials/EMActiveStressMaterial.hpp>
 //#include <lifev/em/solver/mechanics/materials/EMActiveStrainMaterial.hpp>
 
-#include <lifev/em/util/EMUtility.hpp>
+//#include <lifev/em/util/EMUtility.hpp>
 #include <lifev/electrophysiology/util/HeartUtility.hpp>
 #include <lifev/em/solver/mechanics/materials/MaterialsList.hpp>
 //#include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
@@ -111,13 +110,13 @@ public:
     typedef std::map< UInt, vectorIndexes_Type>           mapMarkerIndexes_Type;
     typedef boost::shared_ptr<mapMarkerIndexes_Type>      mapMarkerIndexesPtr_Type;
 
-    typedef EMMaterialType<MeshType>                             material_Type;
-    typedef boost::shared_ptr<material_Type>        materialPtr_Type;
+    typedef EMMaterialType<MeshType>                      material_Type;
+    typedef boost::shared_ptr<material_Type>              materialPtr_Type;
 
-    typedef EMPassiveMaterialType<MeshType>                passiveMaterial_Type;
-    typedef boost::shared_ptr<passiveMaterial_Type>        passiveMaterialPtr_Type;
+    typedef EMPassiveMaterialType<MeshType>               passiveMaterial_Type;
+    typedef boost::shared_ptr<passiveMaterial_Type>       passiveMaterialPtr_Type;
 
-    typedef EMActiveMaterialType<MeshType>                             activeMaterial_Type;
+    typedef EMActiveMaterialType<MeshType>                activeMaterial_Type;
     typedef boost::shared_ptr<activeMaterial_Type>        activeMaterialPtr_Type;
 
     //@}
@@ -232,37 +231,18 @@ public:
         ElectrophysiologyUtility::normalize (*M_sheetVectorPtr);
     }
 
-    inline virtual vectorPtr_Type gammaf()
+    inline virtual vectorPtr_Type& fiberActivationPtr()
     {
-        //        vectorPtr_Type k;
-        //        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
-        //        return k;
+    	return M_fiberActivationPtr;
     }
-    inline virtual vectorPtr_Type gammas()
+    inline virtual vectorPtr_Type& sheetActivationPtr()
     {
-        //        vectorPtr_Type k;
-        //        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
-        //        return k;
+    	return M_sheetActivationPtr;
     }
-    inline virtual vectorPtr_Type gamman()
+    inline virtual vectorPtr_Type& normalActivationPtr()
     {
-        //        vectorPtr_Type k;
-        //        k.reset ( new vector_Type ( this -> M_dispFESpace -> map() ) );
-        //        return k;
+    	return M_normalActivationPtr;
     }
-
-    inline virtual void setGammaf (const vector_Type& /*gammaf*/) {}
-    inline virtual void setGammas (const vector_Type& /*gammas*/) {}
-    inline virtual void setGamman (const vector_Type& /*gamman*/) {}
-
-    //Compute Jacobian
-    //     virtual void computeJacobian(const vector_Type& disp);
-    //     virtual void computeVolumetricJacobianTerms(const vector_Type& disp);
-    //     virtual void computeI1JacobianTerms(const vector_Type& disp);
-    //
-    //     virtual void computeResidual(const vector_Type& disp);
-    //     virtual void computeVolumetricResidualTerms(const vector_Type& disp);
-    //     virtual void computeI1ResidualTerms(const vector_Type& disp);
 
 
     //! Setup the created object of the class StructuralConstitutiveLaw
@@ -361,32 +341,37 @@ public:
 
 
 
-    inline vectorPtr_Type activationPtr()
+//    inline vectorPtr_Type activationPtr()
+//    {
+//        return M_fiberActivationPtr;
+//    }
+
+    inline void setFiberActivationPtr (vectorPtr_Type activationPtr)
     {
-        return M_activationPtr;
+        M_fiberActivationPtr = activationPtr;
+    }
+    inline void setFiberActivation (vector_Type& activation)
+    {
+        *M_fiberActivationPtr = activation;
+    }
+    inline void setSheetActivationPtr (vectorPtr_Type activationPtr)
+    {
+        M_sheetActivationPtr = activationPtr;
+    }
+    inline void setSheetActivation (vector_Type& activation)
+    {
+        *M_sheetActivationPtr = activation;
+    }
+    inline void setNormalActivationPtr (vectorPtr_Type activationPtr)
+    {
+        M_normalActivationPtr = activationPtr;
+    }
+    inline void setNormalActivation (vector_Type& activation)
+    {
+        *M_normalActivationPtr = activation;
     }
 
-    inline void setActivationPtr (vectorPtr_Type activationPtr)
-    {
-        M_activationPtr = activationPtr;
-    }
-    inline void setActivation (vector_Type& activation)
-    {
-        *M_activationPtr = activation;
-    }
 
-    inline vectorPtr_Type activeStress()
-    {
-        return activationPtr();
-    }
-    inline void setActiveStressPtr (vectorPtr_Type activationPtr)
-    {
-        setActivationPtr (activationPtr);
-    }
-    inline void setActiveStress (vector_Type& activation)
-    {
-        setActivation (activation);
-    }
 
     void setParameters(EMData& data);
 
@@ -398,6 +383,8 @@ public:
     }
 
     //@}
+
+
 
 protected:
     virtual void setupVectorsParameters ( void ) {}
@@ -419,7 +406,9 @@ protected:
     passiveMaterialPtr_Type                               M_passiveMaterialPtr;
     activeMaterialPtr_Type                               M_activeStressMaterialPtr;
 
-    vectorPtr_Type                                 M_activationPtr;
+    vectorPtr_Type                                 M_fiberActivationPtr;
+    vectorPtr_Type                                 M_sheetActivationPtr;
+    vectorPtr_Type                                 M_normalActivationPtr;
 
 
 
@@ -434,7 +423,7 @@ EMStructuralConstitutiveLaw<MeshType>::EMStructuralConstitutiveLaw() :
     M_passiveMaterialPtr            ( ),
     M_activeStressMaterialPtr       ( ),
     M_residualVectorPtr             ( ),
-    M_activationPtr                 ( )
+    M_fiberActivationPtr                 ( )
 {}
 
 template <typename MeshType>
@@ -461,13 +450,15 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_residualVectorPtr.reset ( new vector_Type (*this->M_localMap, Repeated) );
     //   M_identity = EMUtility::identity();
 
-    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
-    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
+//    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
+//    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
+    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
+    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
     M_scalarETFESpacePtr.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
     																&( dETFESpace -> refFE() ),
                                                                     dFESpace->map().commPtr() ) );
 
-    M_activationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map(), Repeated ) );
+    M_fiberActivationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map() ) );
 
     std::string passiveMaterialType ( dataMaterial -> passiveType() );
     std::string activeStressMaterialType (dataMaterial -> activeStressType() );
@@ -494,7 +485,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         if(dFESpace->map().commPtr() ->MyPID() == 0)
         {
 			std::cout << "\nCreated Passive Material!\n";
-			M_passiveMaterialPtr-> showMe();
+			M_passiveMaterialPtr -> showMe();
 			std::cout << "\nCreated Passive Material!\n";
         }
     }
@@ -536,7 +527,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                                                        this->M_dispETFESpace,
                                                        *M_fiberVectorPtr,
                                                        *M_sheetVectorPtr,
-                                                       *M_activationPtr,
+                                                       M_fiberActivationPtr,
+                                                       M_sheetActivationPtr,
+                                                       M_normalActivationPtr,
                                                        M_scalarETFESpacePtr,
                                                        this->M_jacobian);
 
@@ -578,10 +571,12 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     if (M_activeStressMaterialPtr)
 	{
     	M_activeStressMaterialPtr -> computeResidual ( disp,
-                                                   super::M_dispETFESpace,
+                                                      super::M_dispETFESpace,
                                                        *M_fiberVectorPtr,
                                                        *M_sheetVectorPtr,
-                                                       *M_activationPtr,
+                                                       M_fiberActivationPtr,
+                                                       M_sheetActivationPtr,
+                                                       M_normalActivationPtr,
                                                        M_scalarETFESpacePtr,
                                                        M_residualVectorPtr);
 

@@ -1,10 +1,11 @@
-ADD_SUBDIRECTORY(activeStressModels)
-ADD_SUBDIRECTORY(activeStrainModels)
-
-
+ADD_SUBDIRECTORIES(
+activeStressModels
+activeStrainModels
+)
 
 SET( solver_activation_HEADERS
-#  solver/mechanics/materials/EMMaterialType.hpp
+  solver/activation/Activation.hpp
+  solver/activation/ActivationModelsList.hpp
 CACHE INTERNAL "")
 
 SET( solver_activation_SOURCES

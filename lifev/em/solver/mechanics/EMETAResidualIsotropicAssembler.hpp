@@ -18,7 +18,6 @@
 
 #include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
 
-#include <lifev/em/util/EMUtility.hpp>
 #include <lifev/em/solver/EMETAFunctors.hpp>
 
 namespace LifeV
@@ -45,7 +44,7 @@ computeLinearizedVolumetricResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-    auto I = value (EMUtility::identity() );
+    auto I = _I;
     auto GradU = _Grad_u (dispETFESpace, disp, 0);
     auto GradUT = transpose (GradU);
     auto P = eval (W, I) * (GradU + GradUT) * value (1. / 2.);
@@ -68,7 +67,7 @@ computeLinearizedDeviatoricResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-    auto I = value (EMUtility::identity() );
+    auto I = _I;
     auto GradU = _Grad_u (dispETFESpace, disp, 0);
     auto GradUT = transpose (GradU);
     auto P = eval (W, I) * trace (GradU + GradUT) * value (1. / 2.) * I;
@@ -92,11 +91,23 @@ computeI1ResidualTerms ( const vector_Type& disp,
     using namespace ExpressionAssembly;
 
 	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I1 residual terms ... \n";
-    integrate ( elements ( dispETFESpace->mesh() ) ,
+		std::cout << "EMETA - Computing I1 residual terms ... \n";
+//	auto P = eval (W1, _F (dispETFESpace, disp, 0) ) * _dI1bar (dispETFESpace, disp, 0);
+	auto I = _I;
+	auto GradU = _Grad_u(dispETFESpace, disp, 0);
+	auto F = I + GradU;
+	auto J = det(F);
+	auto Jm23 = pow(J, 2 / (-3.) );
+	auto FmT = minusT(F);
+	auto H = J * FmT;
+	auto I1 = dot(F, F);
+	auto dI1bar = value(2.0) * ( Jm23 * F + value(1/(-3.)) * I1 * FmT );
+	auto P = eval (W1, _F (dispETFESpace, disp, 0) ) * dI1bar ;
+
+	integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
-                dot ( eval (W1, _F (dispETFESpace, disp, 0) ) * _dI1bar (dispETFESpace, disp, 0), grad (phi_i) )
+                dot ( P, grad (phi_i) )
               ) >> residualVectorPtr;
 }
 
@@ -133,11 +144,11 @@ computeVolumetricResidualTerms ( const vector_Type& disp,
 
     using namespace ExpressionAssembly;
 
-
+    auto P = eval (Wvol, _F (dispETFESpace, disp, 0) ) * _dJ (dispETFESpace, disp, 0);
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
-                dot ( eval (Wvol, _F (dispETFESpace, disp, 0) ) * _dJ (dispETFESpace, disp, 0), grad (phi_i) )
+                dot ( P , grad (phi_i) )
               ) >> residualVectorPtr;
 
 }

@@ -43,7 +43,8 @@ public:
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         Real J = Elasticity::J (F);
-        return M_bulk * ( (J - 1) + std::log (J) / J );
+//        return M_bulk * ( (J - 1) + std::log (J) / J );
+        return ( M_bulk * ( J + J * std::log(J) - 1. ) ) / ( 2 * J );
     }
 
     Volumetric (Real bulk = 2000.0) : M_bulk (bulk) {}
@@ -53,7 +54,7 @@ public:
     }
     virtual ~Volumetric() {}
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
+    virtual void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -62,7 +63,7 @@ public:
         EMAssembler::computeVolumetricJacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
     }
 
-    inline virtual void computeResidual ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -74,7 +75,7 @@ public:
     typedef EMData          data_Type;
     void setParameters (data_Type& data)
     {
-    	M_bulk = data.parameter("BulkModulus");
+    	M_bulk = data.solidParameter<Real>("BulkModulus");
     }
     void showMe()
     {
@@ -93,7 +94,8 @@ public:
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         Real J = Elasticity::J (F);
-        return M_bulk  / J / J * ( 1 + J * J - std::log (J) ) ;
+//        return M_bulk  / J / J * ( 1 + J * J - std::log (J) ) ;
+        return ( M_bulk * ( J + 1. ) ) / ( 2. * J * J);
     }
 
     dVolumetric (Real bulk = 2000.0) : M_bulk (bulk) {}
@@ -103,7 +105,7 @@ public:
     }
     virtual ~dVolumetric() {}
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
+    void computeJacobian ( const vector_Type& disp,
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
@@ -115,7 +117,7 @@ public:
     typedef EMData          data_Type;
     void setParameters (data_Type& data)
     {
-    	M_bulk = data.parameter("BulkModulus");
+    	M_bulk = data.solidParameter<Real>("BulkModulus");
     }
     void showMe()
     {

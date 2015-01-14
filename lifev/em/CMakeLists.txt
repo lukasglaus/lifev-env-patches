@@ -34,7 +34,8 @@ SET(HEADERS ${HEADERS}
             ${solver_mechanics_materials_passive_HEADERS}
             ${solver_mechanics_materials_activeStress_HEADERS}
             ${solver_activation_HEADERS}
-            ${solver_activation_activeStressModels_HEADERS})
+            ${solver_activation_activeStressModels_HEADERS}
+            ${solver_activation_activeStrainModels_HEADERS})
             
 SET(SOURCES ${SOURCES} 
             ${solver_SOURCES} 
@@ -46,6 +47,7 @@ SET(SOURCES ${SOURCES}
             ${solver_mechanics_materials_activeStress_SOURCES}
             ${solver_activation_SOURCES}
             ${solver_activation_activeStressModels_SOURCES}
+            ${solver_activation_activeStrainModels_SOURCES}
             )
 
 ADD_SUBDIRECTORY(util)

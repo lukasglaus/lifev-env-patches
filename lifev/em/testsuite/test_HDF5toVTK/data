@@ -1,0 +1,173 @@
+###################################################################################################
+#
+#                       This file is part of the LifeV Library
+#                Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
+#                Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
+#
+#      Author(s): Umberto Villa <uvilla@emory.edu>
+#                 Tiziano Passerini <tiziano@mathcs.emory.edu>
+#           Date: 10-12-2010
+#  License Terms: GNU LGPL
+#
+###################################################################################################
+### TESTSUITE: STRUCTURE MECHANICS ################################################################
+###################################################################################################
+#-------------------------------------------------
+#      Data file for Structure Solver
+#-------------------------------------------------
+
+[exporter]
+type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+multimesh  = false
+start      = 0
+save       = 1
+
+[importer]
+import = true
+import_time = 1.0
+prefix = structure
+postDir = ./
+
+[solid]
+
+	[./physics]
+	density   	= 0
+	material_flag  = 1000
+	young     	= 9920
+	poisson   	= 0
+	bulk		= 100000 
+	solidType 	= EMMaterial #neoHookean #EMMaterial 
+	lawType     = nonlinear
+	#Passive material available types for EM
+	#PNH   = Passive NeoHookean
+	#PNHL  = Passive NeoHookean Linearized
+	#PIE   = Passive Isoptropic Exponential
+	#PTIE  = Passive Transversely Isoptropic Exponential
+	#PIEWS = Passive Isoptropic Exponential With Shear
+	#PHO   = Passive Holzapfel Ogden
+	#POF   = Passive Orthotropic Fung
+	#PTIF  = Passive Transversely Isotropic Fung
+	#SFAS  = Simple Fiber Active Stress
+	EMPassiveMaterialType = PIF
+
+
+   [../boundary_conditions]
+   flag = 100
+   pressure = -100000.
+   list = 'Base'
+
+        [./Base]
+        type       = Essential
+        flag       = 1024
+        mode       = Full #Component #Full
+        component  = 3
+    	function  = '0.0'
+
+        [../]
+
+	[../time_discretization]
+	initialtime 	= 0
+	endtime     	= 1
+	timestep    	= 0.025
+	theta       	= 0.35
+	zeta        	= 0.75
+	BDF_order   	= 2
+	
+	[../space_discretization]
+	mesh_type = .mesh
+	mesh_dir  	= ./
+	mesh_file 	= ellipsoid_015mm.mesh
+	order     	= P2
+	
+	
+	[../miscellaneous]
+	factor    	= 1
+	verbose   	= 1
+	
+	
+	[../newton]
+	maxiter 	= 1
+	reltol  	= 1.e-7
+	abstol  	= 1.e-7
+	
+	
+	[../solver]
+	solver          = cg
+	scaling         = none
+	output          = all 			# none
+	conv            = rhs
+	max_iter        = 500
+	reuse           = true
+	max_iter_reuse  = 250
+	kspace          = 800
+	tol             = 1.e-10    		# AztecOO tolerance
+	
+	[../prec]
+	prectype        = Ifpack #Ifpack	 		# Ifpack or ML
+	displayList     = true
+	xmlName         = ParamList.xml 
+	
+	[./ifpack]
+	overlap  	= 3
+	
+		[./fact]
+		ilut_level-of-fill 	= 1
+		drop_tolerance          = 1.e-5
+		relax_value             = 0
+	
+		[../amesos]
+		solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+	
+		[../partitioner]
+		overlap 		= 4
+	
+	
+		[../schwarz]
+		reordering_type 	= none 			# metis, rcm, none
+		filter_singletons 	= true
+		
+		[../]
+	
+	
+	[../ML] 
+
+	default_parameter_list = NSSA  # Domain-decomposition
+	prec_type =  MGV               # Multigrid, single V-cycle
+	max_levels = 10
+	inc_or_dec = increasing
+
+		[./energy_minimization]
+		enable = true
+		type   = 3
+
+		[../repartition]
+		enable              = 1
+        max_min_ratio       = 1.3
+        min_per_proc        = 500
+        partitioner         = ParMETIS #Zoltan: to be implemented
+
+        [../aggregation]
+        threshold            = 0.01
+        nodes_per_aggregate = 32
+
+        [../coarse]
+        max_size            = 10
+        type                = 'self' 
+
+        [../smoother]
+        type        = 'symmetric Gauss-Seidel'           # Gauss-Seidel smoother
+        sweeps      = 1
+        pre_or_post = both
+        [../] #smoother
+
+    [../] # ML
+	
+[../]
+
+
+
+
+	# -*- getpot -*- (GetPot mode activation for emacs)
+#----------------------------------------------------------------
+#      Data file for heart test
+#----------------------------------------------------------------

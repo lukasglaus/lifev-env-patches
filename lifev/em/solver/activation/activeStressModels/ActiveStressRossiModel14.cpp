@@ -12,31 +12,58 @@
 namespace LifeV
 {
 
-ActiveStressRossiModel14::ActiveStressRossiModel14 (const MapEpetra& map, Real beta, Real mu, Real Tmax) :
-    super (map),
+ActiveStressRossiModel14::ActiveStressRossiModel14 (Real beta, Real mu, Real Tmax) :
     M_coefficientBeta (beta),
     M_coefficientMu (mu),
     M_maximumActiveTenstion (Tmax)
 {
 }
 
-ActiveStressRossiModel14::ActiveStressRossiModel14 (MapEpetra& map, Real beta, Real mu, Real Tmax) :
-    super (map),
-    M_coefficientBeta (beta),
-    M_coefficientMu (mu),
-    M_maximumActiveTenstion (Tmax)
+
+
+void
+ActiveStressRossiModel14::setParameters( EMData& data )
 {
+	M_maximumActiveTenstion = data.activationParameter<Real>("MaxActiveTension");
+	M_coefficientBeta = data.activationParameter<Real>("ActiveStress_Beta");
+	M_coefficientMu = data.activationParameter<Real>("ActiveStress_Mu");
 }
 
-void ActiveStressRossiModel14::solveModel (VectorEpetra& potential, Real timeStep)
+void
+ActiveStressRossiModel14::setup(EMData& data, const MapEpetra& map)
 {
-    VectorEpetra rhs ( potential.map() );
-    rhs = potential;
+	setParameters(data);
+    this->M_fiberActivationPtr.reset ( new vector_Type ( map ) );
+    super::setup(data, map);
+
+}
+
+void
+ActiveStressRossiModel14::setupActivationPtrs(	vectorPtr_Type& fiberActivationPtr,
+												vectorPtr_Type& sheetActivationPtr,
+												vectorPtr_Type& normalActivationPtr )
+{
+	fiberActivationPtr = 	this->M_fiberActivationPtr;
+	sheetActivationPtr.reset();
+	normalActivationPtr.reset();
+}
+
+void
+ActiveStressRossiModel14::updateActivation(	vectorPtr_Type& fiberActivationPtr,
+											vectorPtr_Type& sheetActivationPtr,
+											vectorPtr_Type& normalActivationPtr )
+{
+	setupActivationPtrs(fiberActivationPtr, sheetActivationPtr, normalActivationPtr);
+}
+
+void ActiveStressRossiModel14::solveModel (Real& timeStep)
+{
+    VectorEpetra rhs ( *( this->M_electroSolution.at(0) ) );
     rhs *= rhs.operator > (0.0);
     rhs *= M_coefficientBeta;
-    rhs -= 2.0 * *super::M_activationPtr;
+    rhs -= 2.0 * *super::M_fiberActivationPtr;
     rhs *= (timeStep * M_maximumActiveTenstion / M_coefficientMu);
-    *super::M_activationPtr += rhs;
+    *super::M_fiberActivationPtr += rhs;
 }
 
 } /* namespace LifeV */

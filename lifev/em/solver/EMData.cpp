@@ -15,62 +15,161 @@ void
 EMData::setup(GetPot& dataFile)
 {
 	setupSolver(dataFile);
-	setupMaterialParamters(dataFile);
+	setupSolidParameters(dataFile);
+	setupActivationParameters(dataFile);
+	setupElectrophysiologyParameters(dataFile);
 }
 
 void
-EMData::setupMaterialParamters(GetPot& dataFile, const std::string& section)
+EMData::setupSolidParameters(GetPot& dataFile, const std::string& section)
 {
     std::string EMpassiveMaterialType = dataFile ( ( section + "/physics/EMPassiveMaterialType" ).data(), "NO_DEFAULT_PASSIVE_TYPE" );
-    M_materialParametersList.set ("EMPassiveMaterialType", EMpassiveMaterialType);
+    M_solidParametersList.set ("EMPassiveMaterialType", EMpassiveMaterialType);
 
-    double bulkModulus = dataFile ( ( section + "/physics/BulkModulus" ).data(), 0.0 );
-    M_materialParametersList.set ("BulkModulus", bulkModulus);
+    double bulkModulus = dataFile ( ( section + "/physics/BulkModulus" ).data(), 35000.0 );
+    M_solidParametersList.set ("BulkModulus", bulkModulus);
 
-    double A = dataFile ( ( section + "/physics/a" ).data(), 0.0 );
-    double B = dataFile ( ( section + "/physics/b" ).data(), 0.0 );
-    double Af = dataFile ( ( section + "/physics/af" ).data(), 0.0 );
-    double Bf = dataFile ( ( section + "/physics/bf" ).data(), 0.0 );
-    double As = dataFile ( ( section + "/physics/as" ).data(), 0.0 );
-    double Bs = dataFile ( ( section + "/physics/bs" ).data(), 0.0 );
-    double Afs = dataFile ( ( section + "/physics/afs" ).data(), 0.0 );
-    double Bfs = dataFile ( ( section + "/physics/bfs" ).data(), 0.0 );
-    M_materialParametersList.set ("a", A);
-    M_materialParametersList.set ("b", B);
-    M_materialParametersList.set ("af", Af);
-    M_materialParametersList.set ("bf", Bf);
-    M_materialParametersList.set ("as", As);
-    M_materialParametersList.set ("bs", Bs);
-    M_materialParametersList.set ("afs", Afs);
-    M_materialParametersList.set ("bfs", Bfs);
+    double A = dataFile ( ( section + "/physics/a" ).data(), 3330.0 );
+    double B = dataFile ( ( section + "/physics/b" ).data(), 9.242 );
+    double Af = dataFile ( ( section + "/physics/af" ).data(), 185350.0 );
+    double Bf = dataFile ( ( section + "/physics/bf" ).data(), 15.972 );
+    double As = dataFile ( ( section + "/physics/as" ).data(), 25640.0 );
+    double Bs = dataFile ( ( section + "/physics/bs" ).data(), 10.446 );
+    double Afs = dataFile ( ( section + "/physics/afs" ).data(), 4170.0 );
+    double Bfs = dataFile ( ( section + "/physics/bfs" ).data(),11.602 );
+    M_solidParametersList.set ("a", A);
+    M_solidParametersList.set ("b", B);
+    M_solidParametersList.set ("af", Af);
+    M_solidParametersList.set ("bf", Bf);
+    M_solidParametersList.set ("as", As);
+    M_solidParametersList.set ("bs", Bs);
+    M_solidParametersList.set ("afs", Afs);
+    M_solidParametersList.set ("bfs", Bfs);
 
-    double C = dataFile ( ( section + "/physics/C" ).data(), 0.0 );
-    double bff = dataFile ( ( section + "/physics/bff" ).data(), 0.0 );
-    double bss = dataFile ( ( section + "/physics/bss" ).data(), 0.0 );
-    double bnn = dataFile ( ( section + "/physics/bnn" ).data(), 0.0 );
-    double bfs = dataFile ( ( section + "/physics/bfs" ).data(), 0.0 );
-    double bfn = dataFile ( ( section + "/physics/bfn" ).data(), 0.0 );
-    double bsn = dataFile ( ( section + "/physics/bsn" ).data(), 0.0 );
-    M_materialParametersList.set ("C", C);
-    M_materialParametersList.set ("bff", bff);
-    M_materialParametersList.set ("bss", bss);
-    M_materialParametersList.set ("bnn", bnn);
-    M_materialParametersList.set ("bfs", bfs);
-    M_materialParametersList.set ("bfn", bfn);
-    M_materialParametersList.set ("bsn", bsn);
+    double C = dataFile ( ( section + "/physics/C" ).data(), 2000.0 );
+    double bff = dataFile ( ( section + "/physics/bff" ).data(), 35.7 );
+    double bss = dataFile ( ( section + "/physics/bss" ).data(), 18.9 );
+    double bnn = dataFile ( ( section + "/physics/bnn" ).data(), 13.0 );
+    double bfs = dataFile ( ( section + "/physics/bfs" ).data(), 10.5 );
+    double bfn = dataFile ( ( section + "/physics/bfn" ).data(), 11.4 );
+    double bsn = dataFile ( ( section + "/physics/bsn" ).data(), 8.35 );
+    M_solidParametersList.set ("C", C);
+    M_solidParametersList.set ("bff", bff);
+    M_solidParametersList.set ("bss", bss);
+    M_solidParametersList.set ("bnn", bnn);
+    M_solidParametersList.set ("bfs", bfs);
+    M_solidParametersList.set ("bfn", bfn);
+    M_solidParametersList.set ("bsn", bsn);
 
 
-    double mu = dataFile ( ( section + "/physics/mu" ).data(), 0.0 );
-    double lambda = dataFile ( ( section + "/physics/lambda" ).data(), 0.0 );
-    M_materialParametersList.set ("mu", mu);
-    M_materialParametersList.set ("lambda", lambda);
+    double mu = dataFile ( ( section + "/physics/mu" ).data(), 4960.0 );
+    double lambda = dataFile ( ( section + "/physics/lambda" ).data(), 2000.0 );
+    M_solidParametersList.set ("mu", mu);
+    M_solidParametersList.set ("lambda", lambda);
 
 
     std::string EMactiveStressMaterialType = dataFile ( ( section + "/physics/EMActiveStressMaterialType" ).data(), "NO_DEFAULT_ACTIVESTRESS_TYPE" );
-    M_materialParametersList.set ("EMActiveStressMaterialType", EMactiveStressMaterialType);
+    M_solidParametersList.set ("EMActiveStressMaterialType", EMactiveStressMaterialType);
 
-    double Tmax = dataFile ( ( section + "/physics/Tmax" ).data(), 0.0 );
-    M_materialParametersList.set ("MaxActiveTension", Tmax);
+    std::string EMactiveStrainMaterialType = dataFile ( ( section + "/physics/EMActiveStrainMaterialType" ).data(), "NO_DEFAULT_ACTIVESTRAIN_TYPE" );
+    M_solidParametersList.set ("EMActiveStrainMaterialType", EMactiveStrainMaterialType);
+
+
+    double Tmax = dataFile ( ( section + "/physics/Tmax" ).data(), 50.0 );
+    M_solidParametersList.set ("MaxActiveTension", Tmax);
+
+    double endtime = dataFile ( ( section + "/time_discretization/endtime" ).data(), 1.0 );
+    M_solidParametersList.set ("endtime", endtime);
+    double timestep = dataFile ( ( section + "/time_discretization/timestep" ).data(), 0.1 );
+    M_solidParametersList.set ("timestep", timestep);
+
+
+
+}
+
+void
+EMData::setupActivationParameters(GetPot& dataFile, const std::string& section)
+{
+    std::string  ActivationModel = dataFile ( ( section + "/physics/ActivationModel" ).data(), "NO_DEFAULT_ACTIVATION_MODEL" );
+    M_activationParametersList.set ("ActivationModel", ActivationModel );
+
+    double  ActiveStressBeta = dataFile ( ( section + "/physics/ActiveStress_Beta" ).data(), 2.279 );
+    M_activationParametersList.set ("ActiveStress_Beta", ActiveStressBeta );
+    double ActiveStressMu = dataFile ( ( section + "/physics/ActiveStress_Beta" ).data(), 1000.0 );
+    M_activationParametersList.set ("ActiveStress_Mu", ActiveStressMu);
+
+    //Devil Number, in case you do not put anything ...
+    double EMactiveStrainOrthotropicParameter = dataFile ( ( section + "/physics/EMActiveStrainOrthotropicParameter" ).data(), -666. );
+    M_activationParametersList.set ("EMactiveStrainOrthotropicParameter", EMactiveStrainOrthotropicParameter);
+
+    std::string EMactiveStrainType = dataFile ( ( section + "/physics/EMActiveStrainType" ).data(), "Anisotropic" );
+    M_activationParametersList.set ("EMActiveStrainType", EMactiveStrainType);
+    double Tmax = dataFile ( ( section + "/physics/Tmax" ).data(), 50.0 );
+    M_activationParametersList.set ("MaxActiveTension", Tmax);
+
+    UInt calciumIndex = dataFile ( ( section + "/physics/CalciumIndex" ).data(), 2 );
+    M_activationParametersList.set("CalciumIndex", calciumIndex);
+
+    double inverseViscosity = dataFile ( ( section + "/physics/InverseViscosity" ).data(), 0.0001 );
+    M_activationParametersList.set ("InverseViscosity", inverseViscosity);
+
+    double activeForceCoefficient = dataFile ( ( section + "/physics/ActiveForceCoefficient" ).data(), 1.0 );
+    M_activationParametersList.set ("ActiveForceCoefficient", activeForceCoefficient);
+
+    double chemicalThreshold = dataFile ( ( section + "/physics/ChemicalThreshold" ).data(), 0.21 );
+    M_activationParametersList.set ("ChemicalThreshold", chemicalThreshold);
+
+
+    double kTa = dataFile ( ( section + "/physics/kTa" ).data(), 49.7 );
+    M_activationParametersList.set ("kTa", kTa);
+
+    double epsilon0 = dataFile ( ( section + "/physics/epsilon0" ).data(), 1.0 );
+    M_activationParametersList.set ("epsilon0", epsilon0);
+
+
+    double endtime = dataFile ( ( section + "/time_discretization/endtime" ).data(), 1.0 );
+    M_activationParametersList.set ("endtime", endtime);
+
+    double timestep = dataFile ( ( section + "/time_discretization/timestep" ).data(), 0.1 );
+    M_activationParametersList.set ("timestep", timestep);
+
+}
+
+
+void
+EMData::setupElectrophysiologyParameters(GetPot& dataFile, const std::string& section)
+{
+    double surfaceVolumeRatio = dataFile ( ( section + "/physics/surfaceVolumeRatio" ).data(), 1400.0 );
+    M_electroParametersList.set ("surfaceVolumeRatio", surfaceVolumeRatio);
+
+    double fiberDiffusion = dataFile ( ( section + "/physics/fiberDiffusion" ).data(), 3.0 );
+    M_electroParametersList.set ("fiberDiffusion", fiberDiffusion);
+
+    double sheetDiffusion = dataFile ( ( section + "/physics/sheetDiffusion" ).data(), 3.0 );
+    M_electroParametersList.set ("sheetDiffusion", sheetDiffusion);
+
+    double normalDiffusion = dataFile ( ( section + "/physics/normalDiffusion" ).data(), 3.0 );
+    M_electroParametersList.set ("normalDiffusion", normalDiffusion);
+
+    std::string IonicModel = dataFile ( ( section + "/physics/IonicModel" ).data(), "NO_DEFAULT_IONIC_MODEL" );
+    M_electroParametersList.set ("IonicModel", IonicModel);
+
+    double initialtime = dataFile ( ( section + "/time_discretization/initialtime" ).data(), 1.0 );
+    M_electroParametersList.set ("initialtime", initialtime);
+
+    double endtime = dataFile ( ( section + "/time_discretization/endtime" ).data(), 1.0 );
+    M_electroParametersList.set ("endtime", endtime);
+
+    double timestep = dataFile ( ( section + "/time_discretization/timestep" ).data(), 0.1 );
+    M_electroParametersList.set ("timestep", timestep);
+
+    std::string elementsOrder = dataFile ( ( section + "/discretization/elementsOrder" ).data(), "P1" );
+    M_electroParametersList.set ("elementsOrder", elementsOrder);
+
+    bool LumpedMass = dataFile ( ( section + "/discretization/LumpedMass" ).data(), false);
+    M_electroParametersList.set ("LumpedMass", LumpedMass);
+
+
 }
 
 void

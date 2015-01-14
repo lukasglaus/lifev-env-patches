@@ -28,16 +28,34 @@ public:
 		M_solverParametersList = list;
 	}
 
-	void setMaterialParameterList(Teuchos::ParameterList& list)
+	void setSolidParameterList(Teuchos::ParameterList& list)
 	{
-		M_materialParametersList = list;
+		M_solidParametersList = list;
+	}
+	void setActivationParameterList(Teuchos::ParameterList& list)
+	{
+		M_activationParametersList = list;
+	}
+	void setElectroParameterList(Teuchos::ParameterList& list)
+	{
+		M_electroParametersList = list;
 	}
 
-	void setupMaterialParamters(GetPot& dataFile, const std::string& section = "solid");
+	void setupSolidParameters(GetPot& dataFile, const std::string& section = "solid");
+	void setupActivationParameters(GetPot& dataFile, const std::string& section = "activation");
+	void setupElectrophysiologyParameters(GetPot& dataFile, const std::string& section = "electrophysiology");
 
-    const Teuchos::ParameterList& parametersList()
+    const Teuchos::ParameterList& solidParametersList()
     {
-    	return M_materialParametersList;
+    	return M_solidParametersList;
+    }
+    const Teuchos::ParameterList& activationParametersList()
+    {
+    	return M_activationParametersList;
+    }
+    const Teuchos::ParameterList& electroParametersList()
+    {
+    	return M_electroParametersList;
     }
 
     const Teuchos::ParameterList& solverParametersList()
@@ -45,21 +63,51 @@ public:
     	return M_solverParametersList;
     }
 
-    Real parameter(std::string parameterName)
+    template< class Type >
+    Type solidParameter(std::string parameterName)
     {
-    	return M_materialParametersList.get(parameterName, 0.0);
+    	return M_solidParametersList.get(parameterName, Type() );
+    }
+
+
+    template< class Type >
+    void setSolidParameter(std::string parameterName, Type type)
+    {
+    	M_solidParametersList.set(parameterName, type);
     }
 
     template< class Type >
-    void setParameter(std::string parameterName, Type type)
+    Type activationParameter(std::string parameterName)
     {
-    	M_materialParametersList.set(parameterName, type);
+    	return M_activationParametersList.get(parameterName, Type() );
+    }
+
+
+    template< class Type >
+    void setActivationParameter(std::string parameterName, Type type)
+    {
+    	M_activationParametersList.set(parameterName, type);
+    }
+
+
+    template< class Type >
+    Type electroParameter(std::string parameterName)
+    {
+    	return M_electroParametersList.get(parameterName, Type() );
+    }
+
+    template< class Type >
+    void setElectroParameter(std::string parameterName, Type type)
+    {
+    	M_electroParametersList.set(parameterName, type);
     }
 
 private:
 	void setupSolver(GetPot& dataFile);
+	Teuchos::ParameterList M_solidParametersList;
+	Teuchos::ParameterList M_activationParametersList;
+	Teuchos::ParameterList M_electroParametersList;
 	Teuchos::ParameterList M_solverParametersList;
-	Teuchos::ParameterList M_materialParametersList;
 };
 
 } /* namespace LifeV*/

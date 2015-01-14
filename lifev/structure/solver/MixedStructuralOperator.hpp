@@ -34,6 +34,8 @@
 #include <lifev/structure/solver/StructuralConstitutiveLaw.hpp>
 #include <lifev/structure/solver/StructuralConstitutiveLawData.hpp>
 
+#include <memory>
+#include <boost/pointer_cast.hpp>
 
 namespace LifeV {
 
@@ -104,9 +106,28 @@ public:
 
 	void setup( GetPot& datafile, std::string problemFolder = "./");
 
-	void evalResidual( vectorBlock_Type& residual, vectorBlock_Type& solution, UInt iter);
+	void evalResidual( vectorBlockPtr_Type& residual, vectorBlockPtr_Type& solution, UInt iter);
 
-	void solveJac( vectorBlock_Type& step, vectorBlock_Type& residual, Real linearRelTol);
+	void solveJac( vectorBlockPtr_Type& step, vectorBlockPtr_Type& residual, Real linearRelTol);
+
+	void evalResidual( vector_Type& residual, vector_Type& solution, UInt iter)
+	{
+		vectorPtr_Type pres(&residual);
+		vectorBlockPtr_Type resPtr = boost::dynamic_pointer_cast<vectorBlock_Type> (pres);
+		vectorPtr_Type psol(&solution);
+		vectorBlockPtr_Type solPtr = boost::dynamic_pointer_cast<vectorBlock_Type> (psol);
+		evalResidual(resPtr, solPtr, iter);
+	}
+
+	void solveJac( vector_Type& step, vector_Type& residual, Real linearRelTol)
+	{
+		vectorPtr_Type pres(&residual);
+		vectorBlockPtr_Type resPtr = boost::dynamic_pointer_cast<vectorBlock_Type> (pres);
+		vectorPtr_Type pstep(&step);
+		vectorBlockPtr_Type stepPtr = boost::dynamic_pointer_cast<vectorBlock_Type> (pstep);
+		solveJac(stepPtr, resPtr, linearRelTol);
+	}
+
 
 	void assembleVelocityMassMatrix ();
 	void assemblePressureMassMatrix ();
@@ -393,13 +414,13 @@ MixedStructuralOperator<Mesh>::assemblePressureBlock21()
 
 template< typename Mesh >
 void
-MixedStructuralOperator<Mesh>::solveJac( vectorBlock_Type& step, vectorBlock_Type& residual, Real linearRelTol)
+MixedStructuralOperator<Mesh>::solveJac( vectorBlockPtr_Type& step, vectorBlockPtr_Type& residual, Real linearRelTol)
 {
 
 	*M_systemMatrixPtr *= 0.0;
 	M_systemMatrixPtr->openCrsMatrix();
-    vectorBlockPtr_Type pointerToRes ( new vectorBlock_Type (residual) );
-    vectorBlockPtr_Type pointerToStep ( new vectorBlock_Type (step) );
+    vectorBlockPtr_Type pointerToRes ( new vectorBlock_Type (*residual) );
+    vectorBlockPtr_Type pointerToStep ( new vectorBlock_Type (*step) );
 
 	assembleVelocityMassMatrix ();
 	assemblePressureMassMatrix ();
@@ -442,20 +463,20 @@ MixedStructuralOperator<Mesh>::solveJac( vectorBlock_Type& step, vectorBlock_Typ
 	M_linearSolverPtr->setRightHandSide (pointerToRes);
 	M_linearSolverPtr->solve (pointerToStep);
 
-	step = *pointerToStep;
+	*step = *pointerToStep;
 }
 
 template< typename Mesh >
 void
-MixedStructuralOperator<Mesh>::evalResidual( vectorBlock_Type& residual,
-											 vectorBlock_Type& solution,
+MixedStructuralOperator<Mesh>::evalResidual( vectorBlockPtr_Type& residual,
+											 vectorBlockPtr_Type& solution,
 											 UInt iter)
 {
 	Real dt = M_dataTimePtr->timeStep();
 
-	M_velocityPtr->subset(solution);
+	M_velocityPtr->subset(*solution);
 	UInt offset = M_velocityPtr->size();
-	M_pressurePtr->subset(solution, offset);
+	M_pressurePtr->subset(*solution, offset);
 	vectorPtr_Type oldVelocity(new vector_Type( M_velocityPtr->map() ) );
 	vectorPtr_Type residualVelocity( new vector_Type( M_velocityPtr->map(), Repeated ) );
 	vectorPtr_Type oldPressure( new vector_Type( M_pressurePtr->map() ) ) ;
@@ -531,13 +552,13 @@ MixedStructuralOperator<Mesh>::evalResidual( vectorBlock_Type& residual,
 
 	vector_Type resV(*residualVelocity, Unique);
 	vector_Type resP(*residualPressure, Unique);
-	residual.replace(resV, 0);
-	residual.replace(resP, offset);
+	(*residual).replace(resV, 0);
+	(*residual).replace(resP, offset);
 
 
 
-    vectorBlock_Type solRep (solution, Repeated);
-    vectorBlock_Type rhs(solution);
+    vectorBlock_Type solRep (*solution, Repeated);
+    vectorBlock_Type rhs(*solution);
     rhs *= 0.0;
 
     if ( !M_bchandlerPtr->bcUpdateDone() )
@@ -545,7 +566,7 @@ MixedStructuralOperator<Mesh>::evalResidual( vectorBlock_Type& residual,
      M_bchandlerPtr->bcUpdate ( *M_meshPtr, M_velocityFESpacePtr->feBd(), M_velocityFESpacePtr->dof() );
     }
 //    M_bchandlerPtr -> showMe();
-    bcManageResidual ( residual,
+    bcManageResidual ( *residual,
     		           rhs,
     		           solRep,
     		           *M_meshPtr,
@@ -555,7 +576,7 @@ MixedStructuralOperator<Mesh>::evalResidual( vectorBlock_Type& residual,
     		           M_dataTimePtr->time(),
     		           1.0 );
 
-	residual -= rhs;
+	*residual -= rhs;
 }
 
 
