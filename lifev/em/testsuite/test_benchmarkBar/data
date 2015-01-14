@@ -80,27 +80,6 @@ postDir = ./
         mode       = Full
         component  = 3
     	function  = '0.0'
-    	
-    	[../Black]
-        type       = Essential
-        flag       = 1024
-        mode       = Full #Component #Full
-        component  = 3
-    	function  = '0.0'
-        
-        [../Back]
-        type       = Essential
-        flag       = 303
-        mode       = Component
-        component  = 1
-	    function  = '0.0'
-
-        [../Right]
-        type       = Essential
-        flag       = 909
-        mode       = Component
-        component  = 0
-    	function  = '0.0'
 
         [../]
 
