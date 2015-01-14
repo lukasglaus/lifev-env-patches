@@ -49,26 +49,34 @@ postDir = ./
 	#POF   = Passive Orthotropic Fung
 	#PTIF  = Passive Transversely Isotropic Fung
 	#SFAS  = Simple Fiber Active Stress
-	EMPassiveMaterialType = PTIF
+	EMPassiveMaterialType = PIE
 	    
-	C = 20000.0
+    C = 20000.0
     bff = 8.0
-    bss = 3.0
-    bnn = 3.0
+    bss = 2.0
+    bnn = 2.0
     bfs = 4.0
     bfn = 4.0
-    bsn = 3.0
-    BulkModulus = 3500.0
+    bsn = 2.0
+    BulkModulus = 3500000.0
+    a           = 3330
+    af          = 185350
+    as          = 25640
+    afs         = 4170
+    b           = 9.242
+    bf          = 15.972
+    bs          = 10.446
+    bfs         = 11.602
 
 
    [../boundary_conditions]
    flag = 200
-   pressure = 1000
+   pressure = -1
    list = 'Top'
 
         [./Top]
         type       = Essential
-        flag       = 900
+        flag       = 1024
         mode       = Full
         component  = 3
     	function  = '0.0'
@@ -99,7 +107,7 @@ postDir = ./
 	[../time_discretization]
 	initialtime 	= 0
 	endtime     	= 1
-	timestep    	= 0.025
+	timestep    	= 0.2
 	theta       	= 0.35
 	zeta        	= 0.75
 	BDF_order   	= 2
@@ -107,7 +115,7 @@ postDir = ./
 	[../space_discretization]
 	mesh_type = .mesh
 	mesh_dir  	= ./
-	mesh_file 	= bar_02mm.mesh
+	mesh_file 	= bar_05mm.mesh
 	order     	= P2
 
 

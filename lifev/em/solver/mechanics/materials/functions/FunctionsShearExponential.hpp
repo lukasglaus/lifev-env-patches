@@ -39,17 +39,23 @@ public:
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
     typedef EMData          data_Type;
 
+    void showValue(Real v, std::string name = "variable")
+    {
+    	std::cout << name << " : " << v << std::endl;
+    }
 
     return_Type operator() (const VectorSmall<3>& f, const VectorSmall<3>& s)
     {
         LifeV::Real I8fs = f.dot (s);
-        return M_a * I8fs * std::exp ( M_b * I8fs * I8fs );
+		return M_a * I8fs * std::exp ( M_b * I8fs * I8fs );
     }
 
     return_Type operator() (const Real& I8)
     {
         return M_a * I8 * std::exp ( M_b * I8 * I8 );
     }
+
+
     //    ShearExponential() : M_a(4170), M_b(11.602) {} // 0.33 KPa
     ShearExponential (Real a = 4170, Real b = 11.602) : M_a (a), M_b (b) {} // 0.33 KPa
     ShearExponential (const ShearExponential& ShearExponential)
@@ -59,7 +65,7 @@ public:
     }
     virtual ~ShearExponential() {}
 
-    inline void computeJacobian ( const vector_Type& disp,
+    virtual void computeJacobian ( const vector_Type& disp,
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                   const vector_Type& fibers,
                                   const vector_Type& sheets,
@@ -68,7 +74,7 @@ public:
         EMAssembler::computeI8JacobianTerms (disp, dispETFESpace, fibers, sheets, jacobianPtr, this->getMe() );
     }
 
-    inline void computeResidual ( const vector_Type& disp,
+    virtual void computeResidual ( const vector_Type& disp,
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                   const vector_Type& fibers,
                                   const vector_Type& sheets,
@@ -86,8 +92,8 @@ public:
 
     void setParameters (data_Type& data)
     {
-		M_a = data.parameter("afs");
-		M_b = data.parameter("bfs");
+		M_a = data.solidParameter<Real>("afs");
+		M_b = data.solidParameter<Real>("bfs");
     }
 
 private:
@@ -122,7 +128,15 @@ public:
     }
     virtual ~dShearExponential() {}
 
-    inline void computeJacobian ( const vector_Type& disp,
+    void computeResidual ( const vector_Type& disp,
+                                  boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                  const vector_Type& fibers,
+                                  const vector_Type& sheets,
+                                  vectorPtr_Type           residualVectorPtr)
+    {
+    }
+
+    void computeJacobian ( const vector_Type& disp,
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
                                   const vector_Type& fibers,
                                   const vector_Type& sheets,
@@ -141,8 +155,8 @@ public:
     typedef EMData data_Type;
     void setParameters (data_Type& data)
     {
-		M_a = data.parameter("afs");
-		M_b = data.parameter("bfs");
+		M_a = data.solidParameter<Real>("afs");
+		M_b = data.solidParameter<Real>("bfs");
     }
 
 private:

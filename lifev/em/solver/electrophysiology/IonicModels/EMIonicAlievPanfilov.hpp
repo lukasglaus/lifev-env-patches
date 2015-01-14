@@ -47,6 +47,9 @@
 
 #include <lifev/electrophysiology/solver/IonicModels/IonicAlievPanfilov.hpp>
 
+//#include <lifev/em/solver/electrophysiology/IonicModels/EMIonicModel.hpp>
+
+
 namespace LifeV
 {
 //! IonicModel - This class implements an ionic model.
@@ -58,7 +61,8 @@ class EMIonicAlievPanfilov : public virtual IonicAlievPanfilov
 public:
     //! @name Type definitions
     //@{
-    typedef IonicAlievPanfilov  super;
+    typedef ElectroIonicModel  super;
+    typedef IonicAlievPanfilov ionicModel;
     typedef boost::shared_ptr<VectorEpetra> vectorPtr_Type;
     typedef RegionMesh<LinearTetra> mesh_Type;
     //@}
@@ -75,12 +79,12 @@ public:
      * @param Epetra communicator
      * @param list of parameters in an xml file
      */
-    EMIonicAlievPanfilov ( Teuchos::ParameterList& parameterList );
+    EMIonicAlievPanfilov ( Teuchos::ParameterList& parameterList ) : ionicModel(parameterList) {}
 
     /*!
      * @param IonicAlievPanfilov object
      */
-    EMIonicAlievPanfilov ( const EMIonicAlievPanfilov& model );
+    EMIonicAlievPanfilov ( const EMIonicAlievPanfilov& model ) : ionicModel(model) {}
     //! Destructor
     virtual ~EMIonicAlievPanfilov() {}
 
@@ -89,7 +93,10 @@ public:
     //! @name Overloads
     //@{
 
-    EMIonicAlievPanfilov& operator= ( const EMIonicAlievPanfilov& model );
+    EMIonicAlievPanfilov& operator= ( const EMIonicAlievPanfilov& model )
+    {
+    	return ionicModel::operator =(model);
+    }
 
     //@}
 
@@ -144,6 +151,17 @@ private:
     //@}
 
 }; // class EMIonicAlievPanfilov
+
+
+inline ElectroIonicModel* createEMIonicAlievPanfilov()
+{
+    return new EMIonicAlievPanfilov();
+}
+
+namespace
+{
+static bool register_EMIonicAlievPanfilov = ElectroIonicModel::IonicModelFactory::instance().registerProduct ("EMAlievPanfilov", &createEMIonicAlievPanfilov );
+}
 
 
 }

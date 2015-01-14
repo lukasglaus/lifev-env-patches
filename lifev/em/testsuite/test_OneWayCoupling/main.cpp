@@ -1,20 +1,8 @@
 #include <lifev/core/LifeV.hpp>
-#include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
 #include <lifev/electrophysiology/solver/IonicModels/IonicMinimalModel.hpp>
-#include <lifev/electrophysiology/solver/IonicModels/ElectroIonicModel.hpp>
 #include <lifev/electrophysiology/solver/IonicModels/IonicAlievPanfilov.hpp>
 
-
-#include <lifev/structure/solver/StructuralConstitutiveLawData.hpp>
-
-#include <lifev/structure/solver/StructuralConstitutiveLaw.hpp>
-#include <lifev/structure/solver/StructuralOperator.hpp>
-
 #include <lifev/em/solver/mechanics/EMStructuralOperator.hpp>
-#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
-#include <lifev/em/solver/EMETAFunctors.hpp>
-
-
 #include <lifev/em/solver/electrophysiology/EMMonodomainSolver.hpp>
 
 #include <lifev/core/filter/ExporterEnsight.hpp>
@@ -26,7 +14,6 @@
 #include <lifev/eta/fem/ETFESpace.hpp>
 #include <lifev/eta/expression/Integrate.hpp>
 
-//#include <lifev/em/solver/mechanics/materials/EMMaterial.hpp>
 
 #include <lifev/bc_interface/3D/bc/BCInterface3D.hpp>
 
@@ -359,12 +346,17 @@ int main (int argc, char** argv)
     Real dt = 0.02;
     Real t = 0;
 
-    ActiveStressRossiModel14 activationModel (monodomain.potentialPtr()->map() );
+    EMData emdata;
+    emdata.setup(dataFile);
+    ActiveStressRossiModel14 activationModel;
+    activationModel.setup(emdata, monodomain.potentialPtr()->map() );
+    activationModel.setVariablesPtr(monodomain);
     std::cout << "Activation Model set!\n";
 
-    vectorPtr_Type activationPtr (&activationModel.activation() );
+    vectorPtr_Type activationPtr ( activationModel.fiberActivationPtr() );
 
-    solid.EMMaterial()->setActivationPtr (activationPtr);
+
+   solid.EMMaterial()->setFiberActivationPtr ( activationPtr);
 
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
     exporter2.addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField, "Activation", monodomain.feSpacePtr(), activationPtr, UInt (0) );
@@ -386,7 +378,7 @@ int main (int argc, char** argv)
         monodomain.solveOneStepGatingVariablesFE();
         monodomain.solveOneICIStep();
 
-        activationModel.solveModel (* (monodomain.potentialPtr() ), dt);
+        activationModel.solveModel ( dt );
         t += dt;
 
     }
@@ -394,7 +386,7 @@ int main (int argc, char** argv)
     exporter2.closeFile();
     monodomain.setupMatrices();
     monodomain.setInitialConditions();
-    activationModel.activation() *= 0.0;
+//    activationModel.activation() *= 0.0;
     monodomain.setMechanicsModifiesConductivity (true);
 
     t = 0;
@@ -409,7 +401,7 @@ int main (int argc, char** argv)
         monodomain.solveOneStepGatingVariablesFE();
         monodomain.solveOneICIStep();
 
-        activationModel.solveModel (* (monodomain.potentialPtr() ), dt);
+        activationModel.solveModel ( dt );
         t += dt;
 
     }

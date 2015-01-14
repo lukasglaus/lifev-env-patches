@@ -1323,11 +1323,12 @@ public:
 
     //@}
 
-private:
+public:
 
     //! Set default parameters
     void setParameters();
 
+public:
     //! initialization in constructor
     void init();
 
@@ -1348,6 +1349,20 @@ private:
     @param model pointer to the ionic model
      */
     void init (ionicModelPtr_Type model);
+
+
+    void showParameters()
+    {
+		std::cout << "\nM_surfaceVolumeRatio =" << M_surfaceVolumeRatio;
+		std::cout << "\nM_diffusionTensor[0] =" << M_diffusionTensor[0];
+		std::cout << "\nM_diffusionTensor[1] =" << M_diffusionTensor[1];
+		std::cout << "\nM_diffusionTensor[2] =" << M_diffusionTensor[2];
+		std::cout << "\nM_initialTime =" << M_initialTime;
+		std::cout << "\nM_endTime =" << M_endTime;
+		std::cout << "\nM_timeStep =" << M_timeStep;
+		std::cout << "\nM_elementsOrder =" << M_elementsOrder;
+		std::cout << "\nM_lumpedMassMatrix =" << M_lumpedMassMatrix;
+    }
 
 protected:
     //surface to volume ratio
@@ -1765,8 +1780,7 @@ void ElectroETAMonodomainSolver<Mesh, IonicModel>::setupGlobalMatrix()
 }
 
 template<typename Mesh, typename IonicModel>
-void ElectroETAMonodomainSolver<Mesh, IonicModel>::setupLinearSolver (
-    GetPot dataFile)
+void ElectroETAMonodomainSolver<Mesh, IonicModel>::setupLinearSolver ( GetPot dataFile )
 {
     prec_Type* precRawPtr;
     basePrecPtr_Type precPtr;

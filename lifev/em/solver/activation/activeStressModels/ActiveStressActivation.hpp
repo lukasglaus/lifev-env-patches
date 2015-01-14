@@ -8,58 +8,20 @@
 #ifndef ACTIVESTRESSACTIVATION_HPP_
 #define ACTIVESTRESSACTIVATION_HPP_
 
-#include <lifev/core/array/VectorEpetra.hpp>
-#include <lifev/core/array/MapEpetra.hpp>
-
+#include <lifev/em/solver/activation/Activation.hpp>
 
 namespace LifeV
 {
 
-class ActiveStressActivation
+class ActiveStressActivation : public virtual Activation
 {
 public:
-    //! Distributed vector // For parallel usage
-    typedef VectorEpetra                                                vector_Type;
 
-    typedef boost::shared_ptr<VectorEpetra>                             vectorPtr_Type;
+	virtual void setup(const EMData& data, const MapEpetra& map)
+	{
 
-    ActiveStressActivation (MapEpetra& map) : M_activationPtr ( new vector_Type (map) ) {}
-    ActiveStressActivation (const MapEpetra& map) : M_activationPtr ( new vector_Type (map) ) {}
+	}
 
-    ActiveStressActivation (ActiveStressActivation& activation) : M_activationPtr ( new vector_Type (activation.activation() ) ) {}
-
-    ActiveStressActivation& operator= (ActiveStressActivation& activation)
-    {
-        M_activationPtr.reset ( new vector_Type (activation.activation() ) );
-        return *this;
-    }
-
-    virtual ~ActiveStressActivation() {}
-
-    VectorEpetra& activation()
-    {
-        return *M_activationPtr;
-    }
-
-    vectorPtr_Type activationPtr()
-    {
-        return M_activationPtr;
-    }
-
-    void setActivation (VectorEpetra& activation)
-    {
-        *M_activationPtr = activation;
-    }
-
-    void setActivationPtr (vectorPtr_Type activationPtr)
-    {
-        M_activationPtr = activationPtr;
-    }
-
-    virtual void solveModel() {};
-
-protected:
-    vectorPtr_Type M_activationPtr;
 
 };
 

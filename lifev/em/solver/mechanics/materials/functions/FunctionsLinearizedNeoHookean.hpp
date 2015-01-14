@@ -71,7 +71,7 @@ public:
     typedef EMData          data_Type;
     void setParameters (data_Type& data)
     {
-    	M_mu= data.parameter("mu");
+    	M_mu= data.solidParameter<Real>("mu");
     }
 
 private:
@@ -120,8 +120,8 @@ public:
     typedef EMData          data_Type;
     void setParameters (data_Type& data)
     {
-    	M_mu= data.parameter("mu");
-    	M_bulk = data.parameter("BulkModulus");
+    	M_mu= data.solidParameter<Real>("mu");
+    	M_bulk = data.solidParameter<Real>("BulkModulus");
     }
 
 private:

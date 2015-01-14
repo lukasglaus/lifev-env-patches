@@ -1,9 +1,9 @@
 SET( solver_electrophysiology_ionicModels_HEADERS
- # solver/electrophysiology/ionicModels/EMIonicAlievPanfilov.hpp
+# solver/electrophysiology/ionicModels/EMIonicAlievPanfilov.hpp
 CACHE INTERNAL "")
 
 SET( solver_electrophysiology_ionicModels_SOURCES
- # solver/electrophysiology/ionicModels/EMIonicAlievPanfilov.cpp
+# solver/electrophysiology/ionicModels/EMIonicAlievPanfilov.cpp
  CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)

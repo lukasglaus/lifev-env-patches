@@ -305,7 +305,6 @@ public:
     {
         auto a (v);
         auto b (w);
-        EMUtility::normalize (a);
         EMUtility::orthonormalize (b, a);
         return b;
     }

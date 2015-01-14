@@ -150,7 +150,9 @@ EMPassiveMaterialType<Mesh>::computeResidual ( const vector_Type& disp,
     int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
+    	std::cout << "Passive residual function " << j << " = " << residualVectorPtr->norm2() << "\n";
     	this->M_materialFunctionList[j]->computeResidual (disp, dispETFESpace, fibers, sheets, residualVectorPtr);
+
     }
 }
 

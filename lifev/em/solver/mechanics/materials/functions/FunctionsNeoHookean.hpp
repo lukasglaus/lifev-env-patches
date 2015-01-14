@@ -98,18 +98,21 @@ public:
         EMAssembler::computeI1ResidualTerms ( disp, dispETFESpace, residualVectorPtr, M_W1 );
     }
 
-    void setParameters (data_Type& data)
+    virtual void setParameters (data_Type& data)
     {
-    	M_W1->setMu( data.parameter("mu") );
+    	M_W1->setMu( data.solidParameter<Real>("mu") );
     }
 
     void showMe()
     {
     	std::cout << "Shear Modulus = " << M_W1->mu << "\n";
     }
-private:
+
+protected:
     boost::shared_ptr<NeoHookean::W1> M_W1;
 };
+
+
 
 
 } //EMMaterialFunctions

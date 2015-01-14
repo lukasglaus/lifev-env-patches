@@ -26,31 +26,52 @@ save       = 1
 [solid]
 
 	[./physics]
-	density   	= 0
-	material_flag  = 1000
-	young     	= 9920
-	poisson   	= 0
-	bulk		= 100000 
-	solidType 	= EMMaterial #EMMaterial #neoHookean #EMMaterial 
-	lawType     = nonlinear
-	#Passive material available types for EM
-	#PNH   = Passive NeoHookean
-	#PNHL  = Passive NeoHookean Linearized
-	#PIE   = Passive Isoptropic Exponential
-	#PTIE  = Passive Transversely Isoptropic Exponential
-	#PIEWS = Passive Isoptropic Exponential With Shear
-	EMPassiveMaterialType = PNH #PIEWS
+    density     = 0
+    material_flag  = 1000
+    young       = 9920
+    poisson     = 0
+    bulk        = 100000
+    solidType   = EMMaterial #neoHookean #EMMaterial
+    lawType     = nonlinear
+    #Passive material available types for EM
+    #PNH   = Passive NeoHookean
+    #PNHL  = Passive NeoHookean Linearized
+    #PIE   = Passive Isoptropic Exponential
+    #PTIE  = Passive Transversely Isoptropic Exponential
+    #PIEWS = Passive Isoptropic Exponential With Shear
+    #PHO   = Passive Holzapfel Ogden
+    #POF   = Passive Orthotropic Fung
+    #PTIF  = Passive Transversely Isotropic Fung
+    #SFAS  = Simple Fiber Active Stress
+    EMPassiveMaterialType = PTIE
+        
+    C = 20000.0
+    bff = 8.0
+    bss = 2.0
+    bnn = 2.0
+    bfs = 4.0
+    bfn = 4.0
+    bsn = 2.0
+    BulkModulus = 3500000.0
+    a           = 3330
+    af          = 185350
+    as          = 25640
+    afs         = 4170
+    b           = 9.242
+    bf          = 15.972
+    bs          = 10.446
+    bfs         = 11.602
 
 
    [../boundary_conditions]
    list = 'Top Bottom Back Right'
-
+#   list = 'Top fixed'
         [./Top]
         type       = Natural
         flag       = 400
         mode       = Full
         component  = 3
-    	function  = '[0.0, 0.0, -5000.0*sin(t)]'
+    	function  = '[0.0, 0.0, 5000.0*sin(t)]'
 
         [../Bottom]
         type       = Essential
@@ -58,6 +79,13 @@ save       = 1
         mode       = Component #Full
         component  = 2
     	function  = '0.0'
+    	
+        [../fixed]
+        type       = Essential
+        flag       = 200
+        mode       = Full
+        component  = 3
+        function  = '0.0'
         
         [../Back]
         type       = Essential
@@ -77,8 +105,8 @@ save       = 1
         
 	[../time_discretization]
 	initialtime 	= 0.
-	endtime     	= 1.
-	timestep    	= 1.1
+	endtime     	= 6.5
+	timestep    	= 0.02
 	theta       	= 0.35
 	zeta        	= 0.75
 	BDF_order   	= 2
@@ -98,7 +126,7 @@ save       = 1
 	[../newton]
     abstol  = 1.e-7
     reltol  = 1.e-7
-    maxiter = 2
+    maxiter = 40
     etamax  = 1e-7
     NonLinearLineSearch = 0
 	

@@ -24,14 +24,13 @@ public:
 
     typedef ActiveStressActivation                                      super;
 
-    ActiveStressNashPanfilovModel04 (MapEpetra& map, Real kTa = 49.7, Real epsilon0 = 1.0);
-    ActiveStressNashPanfilovModel04 (const MapEpetra& map, Real kTa = 49.7, Real epsilon0 = 1.0);
+    ActiveStressNashPanfilovModel04 (Real kTa = 49.7, Real epsilon0 = 1.0);
 
     virtual ~ActiveStressNashPanfilovModel04() {}
 
-    void solveModel (VectorEpetra& potential, Real timeStep);
+    void solveModel (Real& timeStep);
 
-    void multiplyByEpsilon (VectorEpetra& potential, VectorEpetra& rhs);
+    void multiplyByEpsilon (VectorEpetra& rhs);
 
     inline Real kTa()
     {
@@ -50,12 +49,44 @@ public:
     {
         M_epsilon0 = epsilon0;
     }
+
+
+    void setParameters( EMData& data);
+    void setup( EMData& data, const MapEpetra& map)
+    {
+    	setParameters(data);
+        this->M_fiberActivationPtr.reset ( new vector_Type ( map ) );
+        super::setup(data, map);
+    }
+
+
+    void setupActivationPtrs(	vectorPtr_Type& fiberActivationPtr,
+								vectorPtr_Type& sheetActivationPtr,
+								vectorPtr_Type& normalActivationPtr );
+
+    void updateActivation(	vectorPtr_Type& fiberActivationPtr,
+							vectorPtr_Type& sheetActivationPtr,
+							vectorPtr_Type& normalActivationPtr );
+
 private:
 
     Real M_kTa;
     Real M_epsilon0;
 
 };
+
+
+
+
+inline Activation* createActiveStressNashPanfilovModel04()
+{
+    return new ActiveStressNashPanfilovModel04();
+}
+
+namespace
+{
+static bool registerActivation_ActiveStressNashPanfilov04 = Activation::EMActivationFactory::instance().registerProduct ("ActiveStressNashPanfilov04", &createActiveStressNashPanfilovModel04);
+}
 
 } /* namespace LifeV */
 

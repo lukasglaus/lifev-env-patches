@@ -42,45 +42,34 @@ public:
 
     typedef EMMaterialType<Mesh> super;
 
-
     EMActiveMaterialType (std::string materialName = "None", UInt n = 0);
     virtual ~EMActiveMaterialType() {}
 
-
-    void
-    computeJacobian ( const vector_Type&       disp,
-                      const vector_Type&       activation,
-                      scalarETFESpacePtr_Type  aETFESpace,
-                      ETFESpacePtr_Type        dispETFESpace,
-                      FESpacePtr_Type          dispFESpace,
-                      matrixPtr_Type           jacobianPtr) {}
 
     void
     computeJacobian ( const vector_Type& disp,
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      const vector_Type& activation,
+                      const vectorPtr_Type& fiberActivation,
+                      const vectorPtr_Type& sheetActivation,
+                      const vectorPtr_Type& normalActivation,
                       scalarETFESpacePtr_Type  activationETFESpace,
                       matrixPtr_Type     jacobianPtr);
     //
 
 
 
-    void
-    computeResidual ( const vector_Type&       disp,
-                      const vector_Type&       activation,
-                      scalarETFESpacePtr_Type  aETFESpace,
-                      ETFESpacePtr_Type        dispETFESpace,
-                      FESpacePtr_Type          dispFESpace,
-                      vectorPtr_Type           residualVectorPtr) {}
+
 
     void
     computeResidual ( const vector_Type& disp,
                       ETFESpacePtr_Type  dispETFESpace,
                       const vector_Type& fibers,
                       const vector_Type& sheets,
-                      const vector_Type& activation,
+                      const vectorPtr_Type& fiberActivation,
+                      const vectorPtr_Type& sheetActivation,
+                      const vectorPtr_Type& normalActivation,
                       scalarETFESpacePtr_Type  activationETFESpace,
                       vectorPtr_Type     residualVectorPtr);
 
@@ -88,9 +77,15 @@ public:
 //    {
 //        std::cout << "Material Type: " << M_materialName << "\n";
 //    }
+//    virtual void setParameters(super::data_Type& data)
+//    {
+//        int n = M_materialFunctionList.size();
+//        for (int j (0); j < n; j++)
+//        {
+//            M_materialFunctionList[j]->setParameters(data);
+//        }
+//    }
 
-protected:
-    vectorPtr_Type          M_activeStressPtr;
 
 };
 
@@ -110,20 +105,64 @@ EMActiveMaterialType<Mesh>::computeJacobian ( const vector_Type& disp,
 												ETFESpacePtr_Type  dispETFESpace,
 												const vector_Type& fibers,
 												const vector_Type& sheets,
-												const vector_Type& activation,
-												scalarETFESpacePtr_Type  activationETFESpace,
+							                    const vectorPtr_Type& fiberActivation,
+							                    const vectorPtr_Type& sheetActivation,
+							                    const vectorPtr_Type& normalActivation,
+							                    scalarETFESpacePtr_Type  activationETFESpace,
 												matrixPtr_Type     jacobianPtr)
 {
     int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-    	this->M_materialFunctionList[j]->computeJacobian ( disp,
-    			                                           dispETFESpace,
-    			                                           fibers,
-    			                                           sheets,
-    			                                           activation,
-    			                                           activationETFESpace,
-    			                                           jacobianPtr);
+//    	if(sheetActivation && normalActivation)
+//    	{
+			this->M_materialFunctionList[j]->computeJacobian ( disp,
+															   dispETFESpace,
+															   fibers,
+															   sheets,
+															   fiberActivation,
+															   sheetActivation,
+															   normalActivation,
+															   activationETFESpace,
+															   jacobianPtr);
+//    	}
+//    	else
+//    	{
+//    		if(sheetActivation)
+//    		{
+//    			this->M_materialFunctionList[j]->computeJacobian ( disp,
+//    															   dispETFESpace,
+//    															   fibers,
+//    															   sheets,
+//    															   *fiberActivation,
+//    															   *sheetActivation,
+//    															   activationETFESpace,
+//    															   jacobianPtr);
+//
+//    		}
+//    		else if(normalActivation)
+//    		{
+//    			this->M_materialFunctionList[j]->computeJacobian ( disp,
+//    															   dispETFESpace,
+//    															   fibers,
+//    															   sheets,
+//    															   *fiberActivation,
+//    															   *normalActivation,
+//    															   activationETFESpace,
+//    															   jacobianPtr);
+//
+//    		}
+//    		else
+//    		{
+//    			this->M_materialFunctionList[j]->computeJacobian ( disp,
+//    															   dispETFESpace,
+//    															   fibers,
+//    															   sheets,
+//    															   *fiberActivation,
+//    															   activationETFESpace,
+//    															   jacobianPtr);
+//    		}
+//    	}
     }
 }
 
@@ -133,20 +172,62 @@ EMActiveMaterialType<Mesh>::computeResidual  (  const vector_Type& disp,
 												ETFESpacePtr_Type  dispETFESpace,
 												const vector_Type& fibers,
 												const vector_Type& sheets,
-												const vector_Type& activation,
-												scalarETFESpacePtr_Type  activationETFESpace,
+							                    const vectorPtr_Type& fiberActivation,
+							                    const vectorPtr_Type& sheetActivation,
+							                    const vectorPtr_Type& normalActivation,
+							                    scalarETFESpacePtr_Type  activationETFESpace,
 												vectorPtr_Type     residualVectorPtr)
 {
     int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-    	this->M_materialFunctionList[j]->computeResidual (disp,
-    													  dispETFESpace,
-    													  fibers,
-    													  sheets,
-    													  activation,
-    													  activationETFESpace,
-    													  residualVectorPtr );
+//    	if(sheetActivation && normalActivation)
+//    	{
+			this->M_materialFunctionList[j]->computeResidual ( disp,
+															   dispETFESpace,
+															   fibers,
+															   sheets,
+															   fiberActivation,
+															   sheetActivation,
+															   normalActivation,
+															   activationETFESpace,
+															   residualVectorPtr );
+//    	}
+//    	else
+//    	{
+//    		if(sheetActivation)
+//    		{
+//    			this->M_materialFunctionList[j]->computeResidual ( disp,
+//    															   dispETFESpace,
+//    															   fibers,
+//    															   sheets,
+//    															   *fiberActivation,
+//    															   *sheetActivation,
+//    															   activationETFESpace,
+//    															   residualVectorPtr );
+//    		}
+//    		else if (normalActivation)
+//    		{
+//    			this->M_materialFunctionList[j]->computeResidual ( disp,
+//    															   dispETFESpace,
+//    															   fibers,
+//    															   sheets,
+//    															   *fiberActivation,
+//    															   *normalActivation,
+//    															   activationETFESpace,
+//    															   residualVectorPtr );
+//    		}
+//    		else
+//    		{
+//    			this->M_materialFunctionList[j]->computeResidual ( disp,
+//    															   dispETFESpace,
+//    															   fibers,
+//    															   sheets,
+//    															   *fiberActivation,
+//    															   activationETFESpace,
+//    															   residualVectorPtr );
+//    		}
+//    	}
     }
 }
 

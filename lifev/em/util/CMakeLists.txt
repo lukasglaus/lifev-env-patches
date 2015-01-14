@@ -3,6 +3,7 @@ SET(util_HEADERS
 CACHE INTERNAL "")
 
 SET(util_SOURCES
+  util/EMUtility.cpp
 CACHE INTERNAL "")
 
 

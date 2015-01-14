@@ -3,7 +3,7 @@ INCLUDE(TribitsAddExecutableAndTest)
 INCLUDE(AddSubdirectories)
 
 ADD_SUBDIRECTORIES(
- # basicExample
+  basicExample
   example_InflationExtension
   example_applyForcingTermOnDeformedConfiguration/
   example_CookMembrane

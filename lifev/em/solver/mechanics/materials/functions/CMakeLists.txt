@@ -1,5 +1,7 @@
 SET( solver_mechanics_materials_functions_HEADERS
  solver/mechanics/materials/functions/EMMaterialFunctions.hpp
+ solver/mechanics/materials/functions/EMActiveStrainMaterialFunctions.hpp
+ solver/mechanics/materials/functions/EMActiveStrainNeoHookean.hpp
  solver/mechanics/materials/functions/FunctionsAnisotropicExponential.hpp
  solver/mechanics/materials/functions/FunctionsIsotropicExponential.hpp
  solver/mechanics/materials/functions/FunctionsLinearizedNeoHookean.hpp

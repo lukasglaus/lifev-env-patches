@@ -96,8 +96,8 @@ Real RegularizedHeaviside (const LifeV::Real x)
 
 Real dRegularizedHeaviside (const LifeV::Real x)
 {
-    Real a = 1.0 / std::cosh (1000.0 * x);
-    return 0.5 * 1000.0 *  a * a;
+    Real sech = 1.0 / std::cosh (1000.0 * x);
+    return 0.5 * 1000.0 *  sech * sech;
 }
 
 Real Heaviside (const LifeV::Real x)

@@ -20,7 +20,6 @@
 #include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
 //#include <lifev/em/solver/mechanics/materials/EMMaterialFunctions.hpp>
 
-#include <lifev/em/util/EMUtility.hpp>
 #include <lifev/em/solver/EMETAFunctors.hpp>
 
 //#include <boost/typeof/typeof.hpp>
@@ -43,7 +42,6 @@ void
 computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
                                         const vector_Type& fibers,
-                                        const vector_Type& sheets,
                                         const vector_Type& activation,
                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > activationETFESpace,
                                         matrixPtr_Type           jacobianPtr,
@@ -56,7 +54,7 @@ computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
     using namespace ExpressionAssembly;
 
     auto dF = _dF;
-    auto I = value (EMUtility::identity() );
+    auto I = _I;
 
     auto F = _F (dispETFESpace, disp, 0);
     auto f0 = value (dispETFESpace, fibers);
@@ -67,6 +65,45 @@ computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
     auto Wm = eval (W, I);
     //    auto dP = Wa * Wm * dfxf0;
     auto dP = Wa * Wm * dfxf0;
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+                quadRuleTetra4pt,
+                dispETFESpace,
+                dispETFESpace,
+                dot ( dP, grad (phi_i) )
+              ) >> jacobianPtr;
+
+}
+
+
+template <typename Mesh, typename FunctorPtr >
+void
+computeModifiedFiberActiveStressJacobianTerms ( const vector_Type& disp,
+                                        boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
+                                        const vector_Type& fibers,
+                                        const vector_Type& activation,
+                                        boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > activationETFESpace,
+                                        matrixPtr_Type           jacobianPtr,
+                                        FunctorPtr               W)
+{
+    //
+	if(disp.comm().MyPID() == 0)
+    std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
+
+    using namespace ExpressionAssembly;
+
+    auto dF = _dF;
+    auto I = _I;
+
+    auto F = _F (dispETFESpace, disp, 0);
+    auto f0 = value (dispETFESpace, fibers);
+    auto df = dF * f0;//dot( grad(phi_j) * outerProduct( fiber0, fiber0 ), grad(phi_i) ) )
+    auto dfxf0 = outerProduct (df, f0);
+    auto H = value (activationETFESpace, activation);
+    auto Wa = eval (W, H);
+    auto Wm = eval (W, I);
+    //    auto dP = Wa * Wm * dfxf0;
+//    auto dP = Wa * Wm * dfxf0;
+  auto dP = Wa * Wm *  _d2I4bardF ( dispETFESpace, disp, 0, f0 );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -93,9 +130,12 @@ computeI4JacobianTerms ( const vector_Type& disp,
     auto f0 = eval (normalize0, f_0);
 
     auto dP = eval (W4, _I4 ( dispETFESpace, disp, 0, f0 ) )
-              *  _d2I4dF (dispETFESpace, f0 );
+              *  _d2I4dF ( f0 );
 
-	if(disp.comm().MyPID() == 0)
+//    auto dP = eval (W4, _I4bar ( dispETFESpace, disp, 0, f0 ) )
+//              *  _d2I4bardF ( dispETFESpace, disp, 0, f0 );
+
+    if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
 
 	integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -129,6 +169,10 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
               *  _dI4dF ( dispETFESpace, disp, 0, f0 )
               *  _dI4 ( dispETFESpace, disp, 0, f0 );
 
+//    auto dP = eval (dW4, _I4bar ( dispETFESpace, disp, 0, f0 ) )
+//              *  _dI4bardF ( dispETFESpace, disp, 0, f0 )
+//              *  _dI4bar ( dispETFESpace, disp, 0, f0 );
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -160,8 +204,11 @@ computeI4JacobianTerms ( const vector_Type& disp,
 
     auto s0 = eval (normalize1, s_00);
 
-    auto dP = eval (W4, _I4 ( dispETFESpace, disp, 0, s0 ) )
-              *  _d2I4dF (dispETFESpace, s0 );
+//    auto dP = eval (W4, _I4 ( dispETFESpace, disp, 0, s0 ) )
+//              *  _d2I4dF (s0 );
+
+    auto dP = eval (W4, _I4bar ( dispETFESpace, disp, 0, s0 ) )
+              *  _d2I4bardF (dispETFESpace, disp, 0, s0 );
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 f jacobian terms ... \n";

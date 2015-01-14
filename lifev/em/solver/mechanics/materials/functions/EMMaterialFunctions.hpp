@@ -43,12 +43,16 @@
 
 #include <lifev/em/solver/mechanics/EMETAJacobianAssembler.hpp>
 #include <lifev/em/solver/mechanics/EMETAResidualAssembler.hpp>
+#include <lifev/em/solver/mechanics/EMETAActiveStrainResidualAssembler.hpp>
 #include <lifev/em/solver/mechanics/EMETAJacobianIsotropicAssembler.hpp>
 #include <lifev/em/solver/mechanics/EMETAResidualIsotropicAssembler.hpp>
+#include <lifev/em/solver/mechanics/EMETAActiveStrainJacobianAssembler.hpp>
 
 //namespace MaterialFunctions
 namespace LifeV
 {
+
+class EMData;
 //! EMMaterialFunctions
 /*!
  *  @author Simone Rossi
@@ -158,7 +162,9 @@ public:
                                           ETFESpacePtr_Type  dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
-                                          const vector_Type& activation,
+                                          const vectorPtr_Type& fiberActivation,
+                                          const vectorPtr_Type& sheetActivation,
+                                          const vectorPtr_Type& normalActivation,
                                           scalarETFESpacePtr_Type activationETFESpace,
                                           matrixPtr_Type     jacobianPtr) {}
 
@@ -174,7 +180,9 @@ public:
                                           ETFESpacePtr_Type dispETFESpace,
                                           const vector_Type& fibers,
                                           const vector_Type& sheets,
-                                          const vector_Type& activation,
+                                          const vectorPtr_Type& fiberActivation,
+                                          const vectorPtr_Type& sheetActivation,
+                                          const vectorPtr_Type& normalActivation,
                                           scalarETFESpacePtr_Type  activationETFESpace,
                                           vectorPtr_Type           residualVectorPtr) {}
 

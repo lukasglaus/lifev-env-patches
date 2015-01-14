@@ -268,6 +268,13 @@ int main (int argc, char** argv)
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
     exporter->postProcess ( 0 );
 
+    EMData emdata;
+    emdata.setup (dataFile);
+
+    std::cout << "\nNumber DOF: " << solid.displacement().size() << std::endl;
+    solid.EMMaterial()->setParameters(emdata);
+    solid.EMMaterial()->showMaterialParameters();
+
     //===========================================================
     //===========================================================
     //         SOLVE
@@ -311,7 +318,60 @@ int main (int argc, char** argv)
     	solid.iterate ( solidBC -> handler() );
 
         exporter->postProcess ( time );
+
+        //===========================================================
+        //         SOLVE PART II: Iterate till convergence
+        //===========================================================
+        if ( comm->MyPID() == 0 )
+        {
+    		std::cout << "\n=====================================================\n";
+    		std::cout << "============= SOLVING PART II" ;
+    		std::cout << "\n=====================================================\n";
+        }
+
+        Real tolN = 1e-8;
+        Real resN = 2*tolN;
+        int iterationN(0);
+        Real timeN(time);
+        Real dtN(dt/50.);
+        while( resN > tolN )
+        {
+        	iterationN++;
+        	timeN += dtN;
+
+            if ( comm->MyPID() == 0 )
+            {
+    			std::cout << "\n=====================================================\n";
+    			std::cout << "============= TIME: " << timeN << ", Iteration: " << iterationN;
+    			std::cout << "\n=====================================================\n";
+            }
+        	VectorEpetra disp_tn(solid.displacement());
+
+            ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
+            *boundaryVectorPtr *= (FinalPressure * time);
+            Real norm = boundaryVectorPtr -> norm2();
+            std::cout << "Norm BC: " << norm << ", Pressure: " << FinalPressure * time << "\n";
+            bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
+    	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
+
+        	solid.iterate ( solidBC -> handler() );
+
+            exporter->postProcess ( timeN );
+
+            disp_tn -= solid.displacement();
+
+            resN = disp_tn.norm2();
+
+            if ( comm->MyPID() == 0 )
+            {
+    			std::cout << "\n============= Residual: " << resN ;
+    			std::cout << "\n=====================================================\n";
+            }
+        }
+
     }
+
+
 
     //===========================================================
     //         SOLVE PART II: Iterate till convergence
@@ -319,22 +379,24 @@ int main (int argc, char** argv)
     if ( comm->MyPID() == 0 )
     {
 		std::cout << "\n=====================================================\n";
-		std::cout << "============= SOLVING PART II" ;
+		std::cout << "============= SOLVING PART III" ;
 		std::cout << "\n=====================================================\n";
     }
 
-    Real tol = 1e-8;
-    Real res = 2*tol;
-    int iteration(0);
-    while( res > tol )
+    Real tolN = 1e-8;
+    Real resN = 2*tolN;
+    int iterationN(0);
+    Real timeN(time+dt);
+    Real dtN(dt/50.);
+    while( resN > tolN )
     {
-    	iteration++;
-    	time += dt;
+    	iterationN++;
+    	timeN += dtN;
 
         if ( comm->MyPID() == 0 )
         {
 			std::cout << "\n=====================================================\n";
-			std::cout << "============= TIME: " << time << ", Iteration: " << iteration;
+			std::cout << "============= TIME: " << timeN << ", Iteration: " << iterationN;
 			std::cout << "\n=====================================================\n";
         }
     	VectorEpetra disp_tn(solid.displacement());
@@ -348,15 +410,15 @@ int main (int argc, char** argv)
 
     	solid.iterate ( solidBC -> handler() );
 
-        exporter->postProcess ( time );
+        exporter->postProcess ( timeN );
 
         disp_tn -= solid.displacement();
 
-        res = disp_tn.norm2();
+        resN = disp_tn.norm2();
 
         if ( comm->MyPID() == 0 )
         {
-			std::cout << "\n============= Residual: " << res ;
+			std::cout << "\n============= Residual: " << resN ;
 			std::cout << "\n=====================================================\n";
         }
     }

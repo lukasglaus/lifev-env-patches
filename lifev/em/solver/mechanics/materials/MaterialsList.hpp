@@ -16,9 +16,12 @@
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveIsotropicExponentialWithShear.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveIsotropicFung.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveLinearizedNeoHookean.hpp>
-#include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
+#include <lifev/em/solver/mechanics/materials/passive_materials/PassiveVolumetric.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicExponential.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicFung.hpp>
 
+#include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
+
+#include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveNeoHookean.hpp>
 
 #endif /* PASSIVEMATERIALSLIST_HPP_ */

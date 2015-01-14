@@ -1,7 +1,7 @@
 ADD_SUBDIRECTORY(functions)
 ADD_SUBDIRECTORY(passive_materials)
-#ADD_SUBDIRECTORY(active_strain_materials)
-#ADD_SUBDIRECTORY(active_stress_materials)
+ADD_SUBDIRECTORY(active_strain_materials)
+ADD_SUBDIRECTORY(active_stress_materials)
 
 SET( solver_mechanics_materials_HEADERS
   solver/mechanics/materials/EMMaterialType.hpp

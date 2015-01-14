@@ -47,6 +47,7 @@
 
 #include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
 #include <lifev/core/fem/GradientRecovery.hpp>
+#include <lifev/em/solver/EMData.hpp>
 
 namespace LifeV
 {
@@ -411,6 +412,9 @@ public:
     {
         M_mechanicsModifiesConductivity = modifiesConductivity;
     }
+
+    void setParametersFromEMData(EMData& data);
+
     //@}
 
 private:
@@ -616,10 +620,10 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrixWithMehcanicalFeedback
         {
             std::cout << "Mass Matrix available\n";
         }
-        BOOST_AUTO_TPL (I, value (super::M_identity) );
-        BOOST_AUTO_TPL (Grad_u, grad (M_displacementETFESpacePtr, *M_displacementPtr) );
-        BOOST_AUTO_TPL (F, (Grad_u + I) );
-        BOOST_AUTO_TPL (J, det (F) );
+        auto I  = value (super::M_identity);
+        auto Grad_u = grad (M_displacementETFESpacePtr, *M_displacementPtr);
+        auto F = Grad_u + I;
+        auto J = det (F);
 
         integrate (elements (super::M_localMeshPtr),
                    this->M_feSpacePtr->qr(),
@@ -733,18 +737,17 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrixWithMehcanicalFee
     {
         using namespace ExpressionAssembly;
 
-        BOOST_AUTO_TPL (I, value (this->M_identity) );
-        BOOST_AUTO_TPL (Grad_u, grad (M_displacementETFESpacePtr, *M_displacementPtr) );
-        BOOST_AUTO_TPL (F, (Grad_u + I) );
-        BOOST_AUTO_TPL (FmT, minusT (F) );
-        BOOST_AUTO_TPL (Fm1, transpose (FmT) );
-        BOOST_AUTO_TPL (J, det (F) );
-        BOOST_AUTO_TPL (Jm23, pow (J, -2. / 3) );
-        BOOST_AUTO_TPL (f0, value (M_displacementETFESpacePtr, *this->M_fiberPtr) );
-        BOOST_AUTO_TPL (D,
-                        value (sigmat) * I
+        auto I = value (this->M_identity);
+        auto Grad_u = grad (M_displacementETFESpacePtr, *M_displacementPtr);
+        auto F = Grad_u + I;
+        auto FmT =  minusT (F);
+        auto Fm1 = transpose (FmT);
+        auto J = det (F);
+        auto Jm23 = pow (J, -2. / 3);
+        auto f0 = value (M_displacementETFESpacePtr, *this->M_fiberPtr);
+        auto D =  value (sigmat) * I
                         + (value (sigmal) - value (sigmat) )
-                        * outerProduct (f0, f0) );
+                        * outerProduct (f0, f0);
 
         integrate ( elements (this->M_localMeshPtr),
                     this->M_feSpacePtr->qr(),
@@ -923,6 +926,29 @@ void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep()
     this->M_linearSolverPtr->setRightHandSide (this->M_rhsPtrUnique);
     this->M_linearSolverPtr->solve (this->M_potentialPtr);
 }
+
+
+
+
+template<typename Mesh, typename IonicModel>
+void EMMonodomainSolver<Mesh, IonicModel>::setParametersFromEMData ( EMData& data)
+{
+    this->M_surfaceVolumeRatio = data.electroParameter<Real>("surfaceVolumeRatio");
+    this->M_diffusionTensor[0] = data.electroParameter<Real> ("fiberDiffusion");
+    this->M_diffusionTensor[1] = data.electroParameter<Real> ("sheetDiffusion");
+    this->M_diffusionTensor[2] = data.electroParameter<Real> ("normalDiffusion");
+    this->M_initialTime        = data.electroParameter<Real> ("initialtime");
+    this->M_endTime            = data.electroParameter<Real> ("endTime");
+    this->M_timeStep           = data.electroParameter<Real> ("timestep");
+    this->M_elementsOrder      = data.electroParameter<std::string> ("elementsOrder");
+    this->M_lumpedMassMatrix   = data.electroParameter<bool>("LumpedMass");
+
+}
+
+
+
+
+
 //
 //template<typename Mesh, typename IonicModel>
 //void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep (matrix_Type& mass)

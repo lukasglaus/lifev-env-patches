@@ -45,6 +45,7 @@ along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
 #include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
 #include <lifev/core/fem/BCVector.hpp>
 #include <lifev/structure/solver/StructuralOperator.hpp>
+#include <lifev/em/util/EMUtility.hpp>
 #include <memory>
 
 
@@ -170,6 +171,23 @@ public:
 
 
     void updateJacobian ( const vector_Type& sol, matrixPtr_Type& jacobian  );
+
+    void setI4fPtr(vectorPtr_Type ptr)
+    {
+    	M_I4fPtr = ptr;
+    }
+
+
+    void setI4f(vector_Type& i4f)
+    {
+    	*M_I4fPtr = i4f;
+    }
+
+    vectorPtr_Type I4fPtr()
+    {
+    	return M_I4fPtr;
+    }
+
 protected:
 
     //! Material class
@@ -181,7 +199,10 @@ protected:
     ID								M_LVPressureFlag;
     vectorPtr_Type M_boundaryVectorPtr;
     boost::shared_ptr<BCVector>  M_bcVectorPtr;
-    bool M_pressureBC;
+    bool M_LVpressureBC;
+
+
+    vectorPtr_Type  M_I4fPtr;
 };
 
 //====================================
@@ -212,6 +233,8 @@ EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
     this->super::setup (data, dFESpace, dETFESpace, BCh, comm);
     M_EMMaterial = boost::dynamic_pointer_cast<material_Type> (this -> material() );
     M_boundaryVectorPtr.reset(new vector_Type ( this->M_disp->map(), Repeated ) );
+    M_I4fPtr.reset(new vector_Type ( M_EMMaterial->scalarETFESpacePtr()->map() ) );
+    *M_I4fPtr += 1.0;
 
 }
 
@@ -260,7 +283,7 @@ template <typename Mesh>
 void
 EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter)
 {
-    if(M_pressureBC)
+    if(M_LVpressureBC)
     {
 		if(M_LVPressure != 0 && M_LVPressureFlag != 0)
 		{
@@ -285,7 +308,7 @@ void EMStructuralOperator<Mesh>::
 solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol)
 {
 	*this->M_jacobian *= 0.0;
-    if(M_pressureBC)
+    if(M_LVpressureBC)
     computePressureBCJacobian(*this->M_disp, this->M_jacobian, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
     updateJacobian ( *this->M_disp, this->M_jacobian );
     this->M_jacobian -> globalAssemble();
@@ -368,7 +391,7 @@ EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch, bool pressureBC
 {
     LifeChrono chrono;
 
-    M_pressureBC = pressureBC;
+    M_LVpressureBC = pressureBC;
     // matrix and vector assembling communication
     this->M_Displayer->leaderPrint ("  EMSolver -  Solving the system ... \n");
 
@@ -413,7 +436,7 @@ EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch, bool pressureBC
     if ( status == 1 )
     {
         std::ostringstream ex;
-        ex << "StructuralOperator::iterate() Inners nonLinearRichardson iterations failed to converge\n";
+        ex << "EMStructuralOperator::iterate() Inners nonLinearRichardson iterations failed to converge\n";
         throw std::logic_error ( ex.str() );
     }
     else // if status == 0 NonLinearrRichardson converges
@@ -428,6 +451,7 @@ EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch, bool pressureBC
         	this->M_out_iter << time << " " << maxiter << std::endl;
         }
     }
+
 }
 
 
