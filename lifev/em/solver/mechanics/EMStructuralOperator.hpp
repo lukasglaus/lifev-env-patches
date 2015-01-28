@@ -133,12 +133,12 @@ public:
         return super::M_dispFESpace;
     }
 
-    void setPressureBC( Real p )
+    void setLVPressureBC( Real p )
     {
     	M_LVPressure = p;
     }
 
-    Real pressureBC() const
+    Real LVpressureBC() const
     {
     	return M_LVPressure;
     }
@@ -285,18 +285,32 @@ EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_T
 {
     if(M_LVpressureBC)
     {
-		if(M_LVPressure != 0 && M_LVPressureFlag != 0)
-		{
-			this->M_Displayer->leaderPrint ("\n    S- Updating the pressure boundary conditions: pressure = ", M_LVPressure, "\n");
-			computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
-			M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
-			this-> M_BCh -> modifyBC(M_LVPressureFlag, *M_bcVectorPtr);
+        if(M_LVPressure != 0 && M_LVPressureFlag != 0)
+        {
+            this->M_Displayer->leaderPrint ("\n    S- Updating the pressure boundary conditions: pressure = ", M_LVPressure, "\n");
+            computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
+            M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
 
-		}
-		else
-		{
-			this->M_Displayer->leaderPrint ("\n    S- Not Updating the pressure boundary conditions\n");
-		}
+            // std::cout << "BC flag: " << this->M_BCh -> findBCWithFlag( M_LVPressureFlag ).flag() << std::endl;
+            // Check if there is already a BC with the same flag
+            if ( this->M_BCh -> findBCWithFlag( M_LVPressureFlag ).flag() == M_LVPressureFlag )
+            {
+                // if there is: change it
+                std::cout << "Modify BC: \n";
+                this-> M_BCh -> modifyBC(M_LVPressureFlag, *M_bcVectorPtr);
+            }
+            else
+            {
+                // otherwise: add it
+                std::cout << "Add BC: \n";
+                this-> M_BCh -> addBC( static_cast<std::string>("LV_pressure_endocardium"),
+                                       M_LVPressureFlag, Natural, Normal, *M_bcVectorPtr );
+            }
+        }
+        else
+        {
+            this->M_Displayer->leaderPrint ("\n    S- Not Updating the pressure boundary conditions\n");
+        }
     }
     super::evalResidual(residual, solution, iter);
 }
