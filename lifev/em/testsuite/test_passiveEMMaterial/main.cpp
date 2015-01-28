@@ -167,7 +167,6 @@ int main (int argc, char** argv)
     }
 
     typedef BCHandler                                          bc_Type;
-    typedef boost::shared_ptr< bc_Type >                       bcPtr_Type;
     typedef StructuralOperator< RegionMesh<LinearTetra> >      physicalSolver_Type;
     typedef BCInterface3D< bc_Type, physicalSolver_Type >      bcInterface_Type;
     typedef boost::shared_ptr< bcInterface_Type >              bcInterfacePtr_Type;
@@ -210,6 +209,9 @@ int main (int argc, char** argv)
     //! 1. Constructor of the structuralSolver
     EMStructuralOperator< RegionMesh<LinearTetra> > solid;
 
+    // solidBC is copied inside the StructuralOperator
+    // any changes to it don't affect the M_BCh inside the solver
+    // after a change in solidBC add it in the solver!
     solid.setup ( dataStructure, dFESpace, dETFESpace, solidBC -> handler(), comm);
     solid.setDataFromGetPot (dataFile);
     solid.EMMaterial()->setParameters(emdata);
@@ -245,7 +247,11 @@ int main (int argc, char** argv)
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
     Real endTime =  dataFile ( "solid/time_discretization/endtime", 1.0);
-
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 1);
+    Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 1.0);
+    
+    solid.setBCFlag( LVFlag );
+    
     for (Real time (0.0); time < endTime;)
     {
         time += dt;
@@ -253,12 +259,18 @@ int main (int argc, char** argv)
 
         solidBC -> updatePhysicalSolverVariables();
 
-        solid.iterate ( solidBC -> handler() );
+        solid.bcH() = solidBC -> handler();
+        
+        solid.setLVPressureBC( time*LVPreloadPressure );
+
+        // solid.EMMaterial()->showMaterialParameters();
+        // solid.iterate ( solidBC -> handler() , true );
+        
+        // passing the updated BC where we added the pressure
+        solid.iterate ( solid.bcHandler(), true );
 
         exporter->postProcess ( time );
     }
-
-    Real t = 1.0;
 
     //===========================================================
     //===========================================================
