@@ -317,7 +317,7 @@ int main (int argc, char** argv)
 //	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
 
 //    	solid.iterate ( solidBC -> handler() );
-        solid.setPressureBC(FinalPressure * time);
+        solid.setLVPressureBC(FinalPressure * time);
     	solid.iterate ( solidBC -> handler(), true );
 
     	exporter->postProcess ( time );

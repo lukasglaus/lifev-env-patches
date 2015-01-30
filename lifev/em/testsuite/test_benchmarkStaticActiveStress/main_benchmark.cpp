@@ -571,7 +571,7 @@ int main (int argc, char** argv)
 //        bcVectorPtr.reset( new BCVector (*boundaryVectorPtr, dFESpace -> dof().numTotalDof(), 0 ) );
 //	    solidBC -> handler() -> modifyBC(flag, *bcVectorPtr);
     	/////
-        solid.setPressureBC(FinalPressure * time);
+        solid.setLVPressureBC(FinalPressure * time);
 //    	solid.iterate ( solidBC -> handler() );
     	solid.iterate ( solidBC -> handler(), true );
 

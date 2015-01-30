@@ -264,10 +264,10 @@ int main (int argc, char** argv)
         solid.setLVPressureBC( time*LVPreloadPressure );
 
         // solid.EMMaterial()->showMaterialParameters();
-        // solid.iterate ( solidBC -> handler() , true );
+        solid.iterate ( solidBC -> handler() , true );
         
         // passing the updated BC where we added the pressure
-        solid.iterate ( solid.bcHandler(), true );
+        // solid.iterate ( solid.bcHandler(), true );
 
         exporter->postProcess ( time );
     }
