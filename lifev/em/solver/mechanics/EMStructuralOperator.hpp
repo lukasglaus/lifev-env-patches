@@ -48,7 +48,6 @@ along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
 #include <lifev/em/util/EMUtility.hpp>
 #include <memory>
 
-
 namespace LifeV
 {
 
@@ -274,7 +273,6 @@ EMStructuralOperator<Mesh>::computePressureBC(  const VectorEpetra& disp,
 
         bcVectorPtr -> globalAssemble();
 
-
 	}
 }
 
@@ -291,7 +289,6 @@ EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_T
             computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
             M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
 
-            // std::cout << "BC flag: " << this->M_BCh -> findBCWithFlag( M_LVPressureFlag ).flag() << std::endl;
             // Check if there is already a BC with the same flag
             if ( this->M_BCh -> findBCWithFlag( M_LVPressureFlag ).flag() == M_LVPressureFlag )
             {
@@ -304,8 +301,9 @@ EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_T
                 // otherwise: add it
                 std::cout << "Add BC: \n";
                 this-> M_BCh -> addBC( static_cast<std::string>("LV_pressure_endocardium"),
-                                       M_LVPressureFlag, Natural, Normal, *M_bcVectorPtr );
+                                       M_LVPressureFlag, Natural, Full, *M_bcVectorPtr, 3 );
             }
+            this->M_BCh->bcUpdate ( *(this->M_dispFESpace->mesh()), this->M_dispFESpace->feBd(), this->M_dispFESpace->dof() );
         }
         else
         {
