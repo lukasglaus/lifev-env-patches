@@ -41,6 +41,7 @@
 #include <lifev/core/LifeV.hpp>
 #include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
 #include <lifev/electrophysiology/solver/IonicModels/IonicMinimalModel.hpp>
+#include <lifev/electrophysiology/util/HeartUtility.hpp>
 
 #include <lifev/structure/solver/StructuralConstitutiveLawData.hpp>
 
@@ -216,8 +217,46 @@ int main (int argc, char** argv)
     solid.setDataFromGetPot (dataFile);
     solid.EMMaterial()->setParameters(emdata);
 
-    solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
-    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
+    // load fibers and sheets fields
+    std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_file_name", "fiber");
+    std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_file_name", "sheet");
+    std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_field_name", "fiber");
+    std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_field_name", "sheet");
+    std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
+    std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
+
+    if ( comm->MyPID() == 0 )
+    {
+        std::cout << "Importing fibers field\n";
+        std::cout << "Fibers file name: " << fiberFileName  << "\n";
+        std::cout << "Fibers file name: " << fiberFieldName << "\n";
+        std::cout << "Fibers file name: " << fiberDir       << "\n";
+    }
+    ElectrophysiologyUtility::importVectorField (  solid.EMMaterial()->fiberVectorPtr(),
+                                                   fiberFileName,
+                                                   fiberFieldName,
+                                                   localSolidMesh,
+                                                   fiberDir,
+                                                   dOrder );
+    if ( comm->MyPID() == 0 )
+    {
+        std::cout << "Importing sheets field\n";
+        std::cout << "Sheets file name: " << fiberFileName  << "\n";
+        std::cout << "Sheets file name: " << fiberFieldName << "\n";
+        std::cout << "Sheets file name: " << fiberDir       << "\n";
+    }
+    ElectrophysiologyUtility::importVectorField (  solid.EMMaterial()->sheetVectorPtr(),
+                                                   sheetFileName,
+                                                   sheetFieldName,
+                                                   localSolidMesh,
+                                                   sheetDir,
+                                                   dOrder );
+
+// solid.EMMaterial() -> setFiberVector ( solid.EMMaterial()->fiberVectorPtr() );
+// solid.EMMaterial() -> setSheetVector ( solid.EMMaterial()->sheetVectorPtr() );
+
+// solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
+// solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
 
     solid.setNewtonParameters(dataFile);
     solid.buildSystem (1.0);
