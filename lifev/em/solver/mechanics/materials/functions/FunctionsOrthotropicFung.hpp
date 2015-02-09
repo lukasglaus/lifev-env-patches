@@ -127,7 +127,6 @@ public:
     	Real I4f = Elasticity::I4(F, f0);
     	Real I4fm1 = I4f - 1;
     	Real I4s = Elasticity::I4(F, s0);
-//    	Real I1bar = Elasticity::I1bar(F);
     	Real I1bar = Elasticity::I1(F);
     	return 0.5 * ( M_bff * I4fm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
     }
@@ -158,7 +157,6 @@ public:
     	Real I4f = Elasticity::I4(F, f0);
     	Real I4s = Elasticity::I4(F, s0);
     	Real I4sm1 = I4s - 1;
-//    	Real I1bar = Elasticity::I1bar(F);
     	Real I1bar = Elasticity::I1(F);
     	return 0.5 * ( M_bss * I4sm1  - M_bnn * (I1bar - I4f - I4s - 1.0) );
     }
@@ -1186,7 +1184,7 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
 
     auto W1bar = eval(W1_bar, F, f0, s0);
 //    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
-    auto dI1bar = _dI1(dispETFESpace, disp, 0);
+    auto dI1bar = _dI1(F);
 	auto P1bar = W1bar * dI1bar;
 
     auto W4F = eval (W4_f, F, f0, s0);
@@ -1198,15 +1196,15 @@ void OrthotropicFung<Mesh>::computeResidual (  const vector_Type& disp,
     auto P4S = W4S * dI4S;
 
     auto W8FS = eval (W8_fs, F, f0, s0);
-    auto dI8FS = _dI8 (dispETFESpace, disp, 0, f0, s0);
+    auto dI8FS = _dI8 (F, f0, s0);
     auto P8FS = W8FS * dI8FS;
 
     auto W8FN = eval (W8_fn, F, f0, s0);
-    auto dI8FN = _dI8 (dispETFESpace, disp, 0, f0, n0);
+    auto dI8FN = _dI8 (F, f0, n0);
     auto P8FN = W8FN * dI8FN;
 
     auto W8SN = eval (W8_sn, F, f0, s0);
-    auto dI8SN = _dI8 (dispETFESpace, disp, 0, s0, n0);
+    auto dI8SN = _dI8 (F, s0, n0);
     auto P8SN = W8SN * dI8SN;
 
     auto P = P4F + P4S + P1bar + P8FS + P8FN + P8SN;
@@ -1294,8 +1292,8 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
 //    auto dI1bar = _dI1bar(dispETFESpace, disp, 0);
 //    auto dI1bardF = _dI1bardF(dispETFESpace, disp, 0);
 //	auto d2I1bardF= _d2I1bardF(dispETFESpace, disp, 0);
-    auto dI1bar = _dI1(dispETFESpace, disp, 0);
-    auto dI1bardF = _dI1dF(dispETFESpace, disp, 0);
+    auto dI1bar = _dI1(F);
+    auto dI1bardF = _dI1dF(F);
 	auto d2I1bardF= _d2I1dF;
 
     auto W4F = eval(W4_f, F, f0, s0);
@@ -1327,9 +1325,9 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
     auto dW8FSdI8FS=eval(dW8fs_dI8fs,F, f0, s0);
     auto dW8FSdI8FN=eval(dW8fs_dI8fn,F, f0, s0);
     auto dW8FSdI8SN=eval(dW8fs_dI8sn,F, f0, s0);
-	auto dI8FS= _dI8(dispETFESpace, disp, 0, f0, s0);
-	auto dI8FSdF= _dI8dF(dispETFESpace, disp, 0, f0, s0);
-	auto d2I8FSdF= _d2I8dF(dispETFESpace, f0, s0);
+	auto dI8FS= _dI8(F, f0, s0);
+	auto dI8FSdF= _dI8dF(F, f0, s0);
+	auto d2I8FSdF= _d2I8dF(f0, s0);
 
 	auto W8FN     = eval(W8_fn, F, f0, s0);
     auto dW8FNdI1 = eval(dW1_dI8fn,F, f0, s0);
@@ -1338,9 +1336,9 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
     auto dW8FNdI8FS=eval(dW8fs_dI8fn,F, f0, s0);
     auto dW8FNdI8FN=eval(dW8fn_dI8fn,F, f0, s0);
     auto dW8FNdI8SN=eval(dW8fn_dI8sn,F, f0, s0);
-	auto dI8FN= _dI8(dispETFESpace, disp, 0, f0, n0);
-	auto dI8FNdF= _dI8dF(dispETFESpace, disp, 0, f0, n0);
-	auto d2I8FNdF= _d2I8dF(dispETFESpace, f0, n0);
+	auto dI8FN= _dI8(F, f0, n0);
+	auto dI8FNdF= _dI8dF(F, f0, n0);
+	auto d2I8FNdF= _d2I8dF( f0, n0);
 
 	auto W8SN     = eval(W8_sn, F, f0, s0);
     auto dW8SNdI1 = eval(dW1_dI8sn,F, f0, s0);
@@ -1349,9 +1347,9 @@ void OrthotropicFung<Mesh>::computeJacobian (  const vector_Type& disp,
     auto dW8SNdI8FS=eval(dW8fs_dI8sn,F, f0, s0);
     auto dW8SNdI8FN=eval(dW8fn_dI8sn,F, f0, s0);
     auto dW8SNdI8SN=eval(dW8sn_dI8sn,F, f0, s0);
-	auto dI8SN= _dI8(dispETFESpace, disp, 0, s0, n0);
-	auto dI8SNdF= _dI8dF(dispETFESpace, disp, 0, s0, n0);
-	auto d2I8SNdF= _d2I8dF(dispETFESpace, s0, n0);
+	auto dI8SN= _dI8( F, s0, n0);
+	auto dI8SNdF= _dI8dF(F, s0, n0);
+	auto d2I8SNdF= _d2I8dF( s0, n0);
 
 	auto dP1bar = W1bar * d2I1bardF
 			    + ( dW1bardI1 * dI1bardF
