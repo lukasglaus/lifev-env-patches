@@ -62,7 +62,11 @@ public:
     ActiveStrainActivation () :
     	M_activeStrainType(),
     	M_activeStrainOrthotropicParameter(-666.0)
-        {}
+       {
+    		M_activeStrainMap["Anisotropic"] = Anisotropic;
+    		M_activeStrainMap["Orthotropic"] = Orthotropic;
+    		M_activeStrainMap["TransverselyIsotropic"] = TransverselyIsotropic;
+       }
 
 
     void init(const MapEpetra& map)
@@ -87,6 +91,8 @@ public:
     virtual void setup(EMData& data,  const MapEpetra& map)
     {
     	M_activeStrainOrthotropicParameter = data.activationParameter<Real>("EMActiveStrainOrthotropicParameter");
+    	std::string activeStrainType = data.activationParameter<std::string>("EMActiveStrainType");
+    	M_activeStrainType = M_activeStrainMap.find(activeStrainType)->second;
     	init(map);
     }
 
@@ -128,10 +134,21 @@ public:
     	setupActivationPtrs(fiberActivationPtr, sheetActivationPtr, normalActivationPtr);
     }
 
+    void showMe()
+    {
+    	if(M_fiberActivationPtr->comm().MyPID() == 0)
+    	{
+    		std::cout << "Activation - Using ActiveStrainActivation with the following setup: " << std::endl;
+    		std::cout << "Active strain type = " << M_activeStrainType << std::endl;
+    		std::cout << "Active Strain orthotropic coefficient = " << M_activeStrainOrthotropicParameter << std::endl;
+    	}
+    }
+
 
 protected:
 
     ActiveStrainType M_activeStrainType;
+    std::map<std::string, ActiveStrainType> M_activeStrainMap;
 
 //    vectorPtr_Type M_gammafPtr;
 //    vectorPtr_Type M_gammasPtr;

@@ -67,6 +67,19 @@ public:
 
     void computeI4f();
 
+    void showMe()
+    {
+    	ActiveStrainActivation::showMe();
+    	if(M_fiberActivationPtr->comm().MyPID() == 0)
+    	{
+    		std::cout << "Activation - Using ActiveStrainRossiModel14 with the following setup: " << std::endl;
+    		std::cout << "Inverse of the viscosity = " << M_inverseViscosity << std::endl;
+    		std::cout << "IActive Force coefficient = " << M_activeForceCoefficient << std::endl;
+    		std::cout << "Threshold of the chemical species = " << M_chemicalThreshold << std::endl;
+    		std::cout << "Calcium index in the electrophysiology vector = " << M_calciumIndex << std::endl;
+    	}
+    }
+
 private:
 
     Real M_inverseViscosity;

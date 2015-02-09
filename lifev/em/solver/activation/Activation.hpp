@@ -181,6 +181,14 @@ public:
     	}
     }
 
+    virtual void showMe()
+    {
+    	if(M_fiberActivationPtr->comm().MyPID() == 0)
+    	{
+    		std::cout << "Activation - Overload the showMe() method to get information about the activation solver you are currently using!" << std::endl;
+    	}
+    }
+
 
 protected:
     vectorPtr_Type M_fiberActivationPtr;
