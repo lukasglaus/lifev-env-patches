@@ -56,16 +56,30 @@ public:
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                   matrixPtr_Type           jacobianPtr)
     {
-        EMAssembler::computeActiveStrainI1JacobianTerms (disp,
-														dispETFESpace,
-														fibers,
-														sheets,
-														fiberActivation,
-														sheetActivation,
-														normalActivation,
-														activationETFESpace,
-														jacobianPtr,
-														this->M_W1 );
+//        EMAssembler::computeActiveStrainI1JacobianTerms (disp,
+//														dispETFESpace,
+//														fibers,
+//														sheets,
+//														fiberActivation,
+//														sheetActivation,
+//														normalActivation,
+//														activationETFESpace,
+//														jacobianPtr,
+//														this->M_W1 );
+    	using namespace ExpressionAssembly;
+    	auto F = _F(dispETFESpace, disp, 0);
+    	auto gf = value(activationETFESpace, *fiberActivation);
+    	auto f0 = value(dispETFESpace, fibers);
+    	auto FAinv = _FAinv(gf, f0);
+    	auto W1 = eval(this->M_W1, F);
+    	auto FE = F * FAinv;
+		auto dP = W1 * _d2I1bardF (FE) * FAinv;
+	    integrate ( elements ( dispETFESpace->mesh() ) ,
+	                quadRuleTetra4pt,
+	                dispETFESpace,
+	                dispETFESpace,
+	                dot ( dP , grad (phi_i) )
+	              ) >> jacobianPtr;
     }
 
     virtual void computeResidual ( const vector_Type& disp,
@@ -78,16 +92,34 @@ public:
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                           vectorPtr_Type           residualVectorPtr)
     {
-    	EMAssembler::computeActiveStrainI1ResidualTerms(  disp,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 dispETFESpace,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 fibers,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 sheets,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 fiberActivation,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 sheetActivation,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 normalActivation,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 activationETFESpace,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 residualVectorPtr,
-    			 	 	 	 	 	 	 	 	 	 	 	 	 this->M_W1 );
+//    	EMAssembler::computeActiveStrainI1ResidualTerms(  disp,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 dispETFESpace,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 fibers,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 sheets,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 fiberActivation,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 sheetActivation,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 normalActivation,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 activationETFESpace,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 residualVectorPtr,
+//    			 	 	 	 	 	 	 	 	 	 	 	 	 this->M_W1 );
+    	using namespace ExpressionAssembly;
+    	auto F = _F(dispETFESpace, disp, 0);
+    	auto gf = value(activationETFESpace, *fiberActivation);
+    	auto f0 = value(dispETFESpace, fibers);
+    	auto FAinv = _FAinv(gf, f0);
+    	auto W1 = eval(this->M_W1, F);
+    	auto FE = F * FAinv;
+		auto P = W1 * _dI1bar (FE) * FAinv;
+
+
+
+		integrate ( elements ( dispETFESpace->mesh() ) ,
+					quadRuleTetra4pt,
+					dispETFESpace,
+					dot ( P, grad (phi_i) )
+				  ) >> residualVectorPtr;
+
+
     }
 
     virtual void setParameters (data_Type& data)
