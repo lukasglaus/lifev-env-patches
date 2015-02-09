@@ -92,7 +92,7 @@ computeI1ResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
 		std::cout << "EMETA - Computing I1 residual terms ... \n";
-//	auto P = eval (W1, _F (dispETFESpace, disp, 0) ) * _dI1bar (dispETFESpace, disp, 0);
+
 	auto I = _I;
 	auto GradU = _Grad_u(dispETFESpace, disp, 0);
 	auto F = I + GradU;
@@ -101,8 +101,10 @@ computeI1ResidualTerms ( const vector_Type& disp,
 	auto FmT = minusT(F);
 	auto H = J * FmT;
 	auto I1 = dot(F, F);
-	auto dI1bar = value(2.0) * ( Jm23 * F + value(1/(-3.)) * I1 * FmT );
+	auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
 	auto P = eval (W1, _F (dispETFESpace, disp, 0) ) * dI1bar ;
+//	auto F = _F (dispETFESpace, disp, 0);
+//	auto P = eval (W1, F ) * _dI1bar(F) ;
 
 	integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -123,10 +125,12 @@ computeI2ResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I2 residual terms ... \n";
+	auto F = _F (dispETFESpace, disp, 0);
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
-                dot ( eval (W2, _F (dispETFESpace, disp, 0) ) * _dI2bar (dispETFESpace, disp, 0), grad (phi_i) )
+                dot ( eval (W2, F) * _dI2bar (F), grad (phi_i) )
               ) >> residualVectorPtr;
 }
 
@@ -143,8 +147,9 @@ computeVolumetricResidualTerms ( const vector_Type& disp,
 		std::cout << "EMETA - Computing Volumetric residual terms ... \n";
 
     using namespace ExpressionAssembly;
+	auto F = _F (dispETFESpace, disp, 0);
 
-    auto P = eval (Wvol, _F (dispETFESpace, disp, 0) ) * _dJ (dispETFESpace, disp, 0);
+    auto P = eval (Wvol, F ) * _dJ (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -177,10 +182,12 @@ computeI1ResidualTerms ( const vector_Type& disp,
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I1 residual terms ... \n";
+	auto F = _F (dispETFESpace, disp, 0);
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
-                dot ( eval (W1, _F (dispETFESpace, disp, 0), f0, s0) * _dI1bar (dispETFESpace, disp, 0), grad (phi_i) )
+                dot ( eval (W1, F, f0, s0) * _dI1bar (F), grad (phi_i) )
               ) >> residualVectorPtr;
 }
 

@@ -95,7 +95,7 @@ computeModifiedFiberActiveStressResidualTerms ( const vector_Type& disp,
     auto Wm = eval (W, I);
 //    auto P = Wa /* Wm */ *  fxf0;
 
-    auto P = Wa /* Wm */ * _dI4bar (dispETFESpace, disp, 0, f0);
+    auto P = Wa /* Wm */ * _dI4bar (F, f0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
@@ -124,9 +124,10 @@ computeI4ResidualTerms ( const vector_Type& disp,
     boost::shared_ptr<ShowValue> sv ( new ShowValue() );
 
     auto f0 = eval (normalize0, f_0);
+	auto F = _F (dispETFESpace, disp, 0);
 
-    auto P = eval (W4, _I4 ( dispETFESpace, disp, 0, f0 ) )
-             * _dI4 (dispETFESpace, disp, 0, f0);
+    auto P = eval (W4, _I4 ( F, f0 ) )
+             * _dI4 (F, f0);
 //
 //    auto P = eval (W4, _I4bar ( dispETFESpace, disp, 0, f0 ) )
 //             * _dI4bar (dispETFESpace, disp, 0, f0);
@@ -164,8 +165,10 @@ computeI4ResidualTerms ( const vector_Type& disp,
 
     auto s0 = eval (normalize1, s_00);
 
-    auto P = eval (W4, _I4 ( dispETFESpace, disp, 0, s0 ) )
-             * _dI4 (dispETFESpace, disp, 0, s0);
+	auto F = _F (dispETFESpace, disp, 0);
+
+    auto P = eval (W4, _I4 ( F, s0 ) )
+             * _dI4 ( F, s0);
 
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -201,11 +204,12 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
     auto s_00 = s_0 - dot (f0, s_0) * f0;
 
     auto s0 = eval (normalize1, s_00);
+	auto F = _F (dispETFESpace, disp, 0);
 
     if (Case == 0)
     {
-        auto P = eval (W4, _F ( dispETFESpace, disp, 0 ), f0, s0 )
-                 * _dI4 (dispETFESpace, disp, 0, f0);
+        auto P = eval (W4, F, f0, s0 )
+                 * _dI4 (F, f0);
 
 
         integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -216,8 +220,8 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
     }
     else
     {
-        auto P = eval (W4, _F ( dispETFESpace, disp, 0 ), f0, s0 )
-                 * _dI4 (dispETFESpace, disp, 0, s0);
+        auto P = eval (W4, F, f0, s0 )
+                 * _dI4 ( F, s0);
 
 
         integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -241,6 +245,8 @@ computeI8ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
 
+	auto F = _F (dispETFESpace, disp, 0);
+
     if (orthonormalize)
     {
         auto f_0 = _v0 (dispETFESpace, fibers);
@@ -252,8 +258,8 @@ computeI8ResidualTerms ( const vector_Type& disp,
         boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
         auto s0 = eval (normalize1, f0, s_0);
 
-        auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
-                 * _dI8 (dispETFESpace, disp, 0, f0, s0);
+        auto P = eval (W8, _I8 ( F, f0, s0 ) )
+                 * _dI8 ( F, f0, s0);
 
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 residual terms while orthonormalizing ... \n";
@@ -276,8 +282,8 @@ computeI8ResidualTerms ( const vector_Type& disp,
         auto f0 = eval (normalize0, f_0);
         auto s0 = eval (normalize1, s_0);
 
-        auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
-                 * _dI8 (dispETFESpace, disp, 0, f0, s0);
+        auto P = eval (W8, _I8 ( F, f0, s0 ) )
+                 * _dI8 (F, f0, s0);
 
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 residual terms ... \n";
@@ -304,6 +310,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
                              bool orthonormalize = true)
 {
     using namespace ExpressionAssembly;
+	auto F = _F (dispETFESpace, disp, 0);
 
     if (orthonormalize)
     {
@@ -320,8 +327,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
         if (Case == 0)
         {
-            auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
-                     * _dI8 (dispETFESpace, disp, 0, f0, s0);
+            auto P = eval (W8, _I8 ( F, f0, s0 ) )
+                     * _dI8 ( F, f0, s0);
 
         	if(disp.comm().MyPID() == 0)
             std::cout << "EMETA - Computing I8 fs residual terms Fung orthonormalize... \n";
@@ -340,8 +347,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
             if (Case == 1)
             {
-                auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
-                         * _dI8 (dispETFESpace, disp, 0, f0, n0);
+                auto P = eval (W8, F, f0, s0 )
+                         * _dI8 ( F, f0, n0);
 
             	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 fn residual terms Fung orthonormalize ... \n";
@@ -355,8 +362,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             }
             else
             {
-                auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
-                         * _dI8 (dispETFESpace, disp, 0, s0, n0);
+                auto P = eval (W8, F, f0, s0 )
+                         * _dI8 (F, s0, n0);
 
             	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 sn residual terms Fung orthonormalize ... \n";
@@ -386,8 +393,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
         if (Case == 0)
         {
-            auto P = eval (W8, _I8 ( dispETFESpace, disp, 0, f0, s0 ) )
-                     * _dI8 (dispETFESpace, disp, 0, f0, s0);
+            auto P = eval (W8, _I8 (F, f0, s0 ) )
+                     * _dI8 (F, f0, s0);
 
         	if(disp.comm().MyPID() == 0)
             std::cout << "EMETA - Computing I8 fs residual terms Fung ... \n";
@@ -408,8 +415,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
             if (Case == 1)
             {
-                auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
-                         * _dI8 (dispETFESpace, disp, 0, f0, n0);
+                auto P = eval (W8, F , f0, s0 )
+                         * _dI8 (F, f0, n0);
 
             	if(disp.comm().MyPID() == 0)
                 std::cout << "EMETA - Computing I8 fn residual terms Fung ... \n";
@@ -423,8 +430,8 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
             }
             else
             {
-                auto P = eval (W8, _F ( dispETFESpace, disp, 0), f0, s0 )
-                         * _dI8 (dispETFESpace, disp, 0, s0, n0);
+                auto P = eval (W8, F, f0, s0 )
+                         * _dI8 (F, s0, n0);
 
             	if(disp.comm().MyPID() == 0)
             		std::cout << "EMETA - Computing I8 sn residual terms Fung ... \n";

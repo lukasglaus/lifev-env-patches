@@ -58,8 +58,10 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
 
     using namespace ExpressionAssembly;
 
-    auto F = _F (dispETFESpace, disp, 0);
-    auto I = value (EMUtility::identity() );
+	auto I = _I;
+	auto dF = grad(phi_j);
+	auto GradU = _Grad_u(dispETFESpace, disp, 0);
+	auto F = I + GradU;
 
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto s_0 = _v0 (dispETFESpace, sheets);
@@ -85,11 +87,9 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
 
 
 		auto FAinv = _FAinv(gf, gs, gn, f0, s0, n0);
-		auto CAinv = _CAinv(gf, gs, gn, f0, s0, n0);
-
 		auto FE =  F * FAinv;
 
-		auto dP = eval (W1, FE ) * (_d2I1bardF (dispETFESpace, disp, 0) ) * CAinv;
+		auto dP = eval (W1, FE ) * (_d2I1bardF (FE) ) * FAinv;
 
 	    integrate ( elements ( dispETFESpace->mesh() ) ,
 	                quadRuleTetra4pt,
@@ -109,10 +109,9 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
 
     		auto k = value(orthotropicParameter);
     		auto FAinv = _FAinv(gf, k, f0, s0, n0);
-    		auto CAinv = _CAinv(gf, k, f0, s0, n0);
 
     		auto FE =  F * FAinv;
-    		auto dP = eval (W1, FE ) * (_d2I1bardF (dispETFESpace, disp, 0) ) * CAinv;
+    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE) ) * FAinv;
 
     	    integrate ( elements ( dispETFESpace->mesh() ) ,
     	                quadRuleTetra4pt,
@@ -127,10 +126,32 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
             std::cout << " Transversely isotropic case ... \n";
 
     		auto FAinv = _FAinv(gf, f0, s0, n0);
-    		auto CAinv = _CAinv(gf, f0, s0, n0);
 
     		auto FE =  F * FAinv;
-    		auto dP = eval (W1, FE ) * (_d2I1bardF (dispETFESpace, disp, 0) ) * CAinv;
+    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE) ) * FAinv;
+
+//    		auto dFE = dF * FAinv;
+//    		auto dFET = FAinv * transpose(dF)
+//
+//    		auto mu = value(1000.);
+//
+//    		auto J = det(F);
+//    		auto Jm23 = pow(J, -2./3.);
+//    		auto FmT = minusT(F);
+//    		auto FEmT = minusT(FE);
+//    		auto dF = _dF;
+//    		auto I1E = dot(FE, FE);
+//
+//    		auto varPE = mu * (FE + value(-1./3.) * I1E * FEmT);
+//    		auto P = varPE * FAinv;
+//
+//    		auto dJm23dF = value(-2./3.) * Jm23 * dot( FmT, dF );
+//
+//    		auto dFEmTdFE = value(-1.) * FEmT * dFET * FEmT;
+//    		auto dI1EdFE  = value(2.) * dot(FE, dFE);
+//
+//    		auto dP = dJm23dF * P + Jm23 * ( dFE + value(-1./3.) * ( dI1EdFE * FEmT + I1E * dFEmTdFE )  ) * FAinv;
+//
 
     	    integrate ( elements ( dispETFESpace->mesh() ) ,
     	                quadRuleTetra4pt,

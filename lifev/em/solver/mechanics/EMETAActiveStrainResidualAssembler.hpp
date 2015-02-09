@@ -32,6 +32,35 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 namespace EMAssembler
 {
 
+
+class Display
+{
+public:
+    typedef Real return_Type;
+
+    return_Type operator() (const VectorSmall<3>& position)
+    {
+    	std::cout << "(" << position[0] << ", " << position[1] << ", " << position[2] << ")" << std::endl;
+        return 1.0;
+    }
+    return_Type operator() (const MatrixSmall<3, 3>& position)
+    {
+    	std::cout << "[" << position[0][0] << ", " << position[0][1] << ", " << position[0][2] << ")" << std::endl;
+    	std::cout << "(" << position[1][0] << ", " << position[1][1] << ", " << position[1][2] << ")" << std::endl;
+    	std::cout << "(" << position[2][0] << ", " << position[2][1] << ", " << position[2][2] << "]" << std::endl;
+        return 1.0;
+    }
+    return_Type operator() (const Real& value)
+    {
+    	std::cout << "(" << value << ")" << std::endl;
+        return 1.0;
+    }
+
+    Display() {}
+    Display (const Display&) {}
+    ~Display() {}
+};
+
 template <typename Mesh, typename FunctorPtr >
 void
 computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
@@ -52,11 +81,13 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
 
     using namespace ExpressionAssembly;
 
-    auto F = _F (dispETFESpace, disp, 0);
-    auto I = _I;
-
+	auto I = _I;
+	auto GradU = _Grad_u(dispETFESpace, disp, 0);
+	auto F = I + GradU;
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto s_0 = _v0 (dispETFESpace, sheets);
+
+    boost::shared_ptr<Display> display (new Display);
 
     boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
     auto f0 = eval (normalize0, f_0);
@@ -79,10 +110,9 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
 
 
 		auto FAinv = _FAinv(gf, gs, gn, f0, s0, n0);
-		auto CAinv = _CAinv(gf, gs, gn, f0, s0, n0);
 
 		auto FE =  F * FAinv;
-		auto P = eval (W1, FE ) * _dI1bar (dispETFESpace, disp, 0) * CAinv;
+		auto P = eval (W1, FE ) * _dI1bar (FE) * FAinv;
 
 		integrate ( elements ( dispETFESpace->mesh() ) ,
 					quadRuleTetra4pt,
@@ -94,17 +124,16 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
     {
 		auto gf = value (activationETFESpace, *gammaf);
 
-    	if(orthotropicParameter < 0 )
+    	if(orthotropicParameter > 0 )
     	{
         	if(disp.comm().MyPID() == 0)
             std::cout << " Orthotropic case ... \n";
 
     		auto k = value(orthotropicParameter);
     		auto FAinv = _FAinv(gf, k, f0, s0, n0);
-    		auto CAinv = _CAinv(gf, k, f0, s0, n0);
 
     		auto FE =  F * FAinv;
-    		auto P = eval (W1, FE ) * _dI1bar (dispETFESpace, disp, 0) * CAinv;
+    		auto P = eval (W1, FE ) * _dI1bar (FE) * FAinv;
 
     		integrate ( elements ( dispETFESpace->mesh() ) ,
     					quadRuleTetra4pt,
@@ -117,11 +146,30 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
         	if(disp.comm().MyPID() == 0)
             std::cout << " Transversely isotropic case ... \n";
 
+    		using namespace ExpressionAssembly;
     		auto FAinv = _FAinv(gf, f0, s0, n0);
-    		auto CAinv = _CAinv(gf, f0, s0, n0);
 
     		auto FE =  F * FAinv;
-    		auto P = eval (W1, FE ) * _dI1bar (dispETFESpace, disp, 0) * CAinv;
+    		auto W1A = eval (W1, FE );
+    		auto P = W1A * _dI1bar (FE) * FAinv;
+
+//    		auto PE = W1A * _dI1Ebar (FE, FAinv);
+//    		auto P = PE * FAinv;
+//    		auto sv = eval(display, P);
+//    		auto mu = value(1000.);
+//
+//    		auto J = det(F);
+//    		auto Jm23 = pow(J, -2./3.);
+//    		auto FmT = minusT(F);
+//    		auto FEmT = minusT(FE);
+//    		auto dF = _dF;
+//    		auto dFE = _dFE(FAinv);
+//    		auto I1E = dot(FE, FE);
+//
+//    		auto PE = mu * Jm23 * (FE + value(-1./3.) * I1E * FEmT);
+//    		auto P = PE * FAinv;
+//    		auto dJm23dF = value(-2./3.) * Jm23;
+
 
     		integrate ( elements ( dispETFESpace->mesh() ) ,
     					quadRuleTetra4pt,
@@ -130,6 +178,8 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
     				  ) >> residualVectorPtr;
     	}
     }
+
+    std::cout << "Active Strain NH: Residual: " << residualVectorPtr->norm2() << std::endl;
 
 }
 

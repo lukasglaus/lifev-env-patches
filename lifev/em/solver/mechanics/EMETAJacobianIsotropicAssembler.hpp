@@ -48,10 +48,10 @@ computeVolumetricJacobianTerms ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
     		std::cout << "EMETA - Computing Volumetric jacobian terms  ... \n";
 
-        //      BOOST_AUTO_TPL (dP, eval(Wvol, _F) * (_d2JdF) );
+    	auto F = _F (dispETFESpace, disp, 0);
 
 
-    	auto dP = eval (Wvol, _F (dispETFESpace, disp, 0) ) * (_d2JdF (dispETFESpace, disp, 0) );
+    	auto dP = eval (Wvol, F ) * _d2JdF (F);
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
@@ -76,7 +76,9 @@ computeVolumetricJacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
     		std::cout << "EMETA - Computing Volumetric jacobian terms with second derivative of the energy ... \n";
 
-        auto dP = eval (dWvol, _F (dispETFESpace, disp, 0) ) * (_dJdF (dispETFESpace, disp, 0) ) * (_dJ (dispETFESpace, disp, 0) );
+    	auto F = _F (dispETFESpace, disp, 0);
+
+        auto dP = eval (dWvol, F ) * _dJdF (F) * _dJ (F);
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
@@ -147,7 +149,6 @@ computeI1JacobianTerms ( const vector_Type& disp,
     //
 	if(disp.comm().MyPID() == 0)
 		std::cout << "Computing I1 jacobian terms  ... \n";
-
 	auto I = _I;
 	auto dF = grad(phi_j);
 	auto GradU = _Grad_u(dispETFESpace, disp, 0);
@@ -168,7 +169,9 @@ computeI1JacobianTerms ( const vector_Type& disp,
 
 	auto dPdF = eval (W1, _F (dispETFESpace, disp, 0) ) * d2I1bardF;
 
-    auto dP = eval (W1, _F (dispETFESpace, disp, 0) ) * (_d2I1bardF (dispETFESpace, disp, 0) );
+//	auto F = _F (dispETFESpace, disp, 0);
+//	auto dPdF = eval (W1, F ) * _d2I1bardF(F);
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -199,16 +202,20 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 	auto J = det(F);
 	auto Jm23 = pow(J, 2 / (-3.) );
 	auto dJm23 = value(2/(-3.)) * pow(J, 2 / (-3.) ) * FmT;
-	auto d2Jm23dF = value( 2/(-3.) ) * ( dot( dJm23, dF ) * FmT + pow(J, 2 / (-3.) ) * dFmTdF );
+	auto d2Jm23dF = value( 2/(-3.) ) * ( dot( dJm23, dF ) * FmT + Jm23 * dFmTdF );
 	auto I1 = dot(F, F);
 	auto dI1 = value(2.0) * F;
 	auto I1bar = Jm23 * I1;
 	auto dI1bar = dJm23 * I1 + Jm23 * dI1;
-	auto d2I1bardF = dot(dJm23, dF) * dI1 + Jm23 * dF + dJm23 * dot(dI1, dF) + d2Jm23dF * I1;
+	auto dI1bardF = dot( dI1bar, dF);
+//	auto d2I1bardF = dot(dJm23, dF) * dI1 + Jm23 * dF + dJm23 * dot(dI1, dF) + d2Jm23dF * I1;
 	auto P = eval (dW1, _F (dispETFESpace, disp, 0) ) * dI1bar ;
 
-//	auto dPdF = eval (dW1, _F (dispETFESpace, disp, 0) ) * dot(dI1bar, dF) * dI1bar;
-    auto dPdF = eval (dW1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
+    auto dPdF = eval (dW1, _F (dispETFESpace, disp, 0) ) * ( dI1bardF ) * ( dI1bar );
+
+//	auto F = _F (dispETFESpace, disp, 0);
+//    auto dPdF = eval (dW1, F ) * _dI1bardF (F) * _dI1bar (F) ;
+
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -230,7 +237,9 @@ computeI1JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing I1 jacobian mixed terms with second derivative of the energy  (derivative on I2)... \n";
 
-    auto dP = eval (dW1dI2, _F (dispETFESpace, disp, 0) ) * (_dI2bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
+	auto F = _F (dispETFESpace, disp, 0);
+
+    auto dP = eval (dW1dI2, F ) * _dI2bardF (F)  * dI1bar (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -252,8 +261,9 @@ computeI2JacobianTerms ( const vector_Type& disp,
     //
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing I2 jacobian terms  ... \n";
+	auto F = _F (dispETFESpace, disp, 0);
 
-    auto dP = eval (W2, _F (dispETFESpace, disp, 0) ) * (_d2I2bardF (dispETFESpace, disp, 0) );
+    auto dP = eval (W2, F ) * _d2I2bardF (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -273,8 +283,9 @@ computeI2JacobianTermsSecondDerivative ( const vector_Type& disp,
     //
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing I2 jacobian terms with second derivative of the energy ... \n";
+	auto F = _F (dispETFESpace, disp, 0);
 
-    auto dP = eval (dW2, _F (dispETFESpace, disp, 0) ) * (_dI2bardF (dispETFESpace, disp, 0) ) * (_dI2bar (dispETFESpace, disp, 0) );
+    auto dP = eval (dW2, F ) * _dI2bardF (F)  * _dI2bar (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -296,8 +307,9 @@ computeI2JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
     //
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing I2 jacobian mixed terms with second derivative of the energy (derivative on I1 ) ... \n";
+	auto F = _F (dispETFESpace, disp, 0);
 
-    auto dP = eval (dW2dI1, _F (dispETFESpace, disp, 0) ) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI2bar (dispETFESpace, disp, 0) );
+    auto dP = eval (dW2dI1, F ) * (_dI1bardF (F) ) * (_dI2bar (F) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -305,41 +317,6 @@ computeI2JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
                 dot ( dP , grad (phi_i) )
               ) >> jacobianPtr;
 }
-
-//template <typename Mesh, typename FunctorPtr >
-//void
-//computeI1JacobianTerms ( const vector_Type& disp,
-//                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-//                         const vector_Type& fibers,
-//                         const vector_Type& sheets,
-//                         matrixPtr_Type           jacobianPtr,
-//                         FunctorPtr                 W1)
-//{
-//    using namespace ExpressionAssembly;
-//
-//    auto f_0 = _v0 (dispETFESpace, fibers);
-//    auto s_0 = _v0 (dispETFESpace, sheets);
-//
-//    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
-//    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
-//    auto f0 = eval (normalize0, f_0);
-//
-//    auto s_00 = s_0 - dot (f0, s_0) * s_0;
-//
-//    auto s0 = eval (normalize1, s_00);
-//
-//    //
-//    std::cout << "Computing I1 jacobian terms (Fung) ... \n";
-//
-//    auto dP = eval (W1, _F (dispETFESpace, disp, 0), f0, s0) * (_d2I1bardF (dispETFESpace, disp, 0) );
-//    integrate ( elements ( dispETFESpace->mesh() ) ,
-//                quadRuleTetra4pt,
-//                dispETFESpace,
-//                dispETFESpace,
-//                dot ( dP , grad (phi_i) )
-//              ) >> jacobianPtr;
-//}
-
 
 
 
@@ -370,7 +347,9 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing I1 jacobian terms with second derivative of the energy  (Fung)... \n";
 
-    auto dP = eval (dW1, _F (dispETFESpace, disp, 0), f0, s0) * (_dI1bardF (dispETFESpace, disp, 0) ) * (_dI1bar (dispETFESpace, disp, 0) );
+	auto F = _F (dispETFESpace, disp, 0);
+
+    auto dP = eval (dW1, F, f0, s0) * ( _dI1bardF (F) ) * ( _dI1bar (F) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -403,13 +382,14 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
     auto n0 = eval ( wedge, f0, s0);
 
+	auto F = _F (dispETFESpace, disp, 0);
 
     if (Case == 0)
     {
     	if(disp.comm().MyPID() == 0)
         std::cout << "Computing I1 jacobian terms with second derivative of the energy dI4 f (Fung)... \n";
 
-        auto dP = eval (dW1, _F (dispETFESpace, disp, 0), f0, s0) * ( _dI4dF ( dispETFESpace, disp, 0, f0 ) ) * (_dI1bar (dispETFESpace, disp, 0) );
+        auto dP = eval (dW1, F, f0, s0) * ( _dI4dF ( F, f0 ) ) * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
@@ -422,7 +402,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "Computing I1 jacobian terms with second derivative of the energy dI4 s (Fung)... \n";
 
-        auto dP = eval (dW1, _F (dispETFESpace, disp, 0), f0, s0) * ( _dI4dF ( dispETFESpace, disp, 0, s0 ) ) * (_dI1bar (dispETFESpace, disp, 0) );
+        auto dP = eval (dW1, F, f0, s0) * ( _dI4dF ( F, s0 ) ) * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
@@ -435,9 +415,9 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "Computing I1 jacobian terms with second derivative of the energy dI8 fs (Fung)... \n";
 
-        auto dP = eval (dW1, _F (dispETFESpace, disp, 0), f0, s0)
-                  * ( _dI8dF ( dispETFESpace, disp, 0, f0, s0 ) )
-                  * (_dI1bar (dispETFESpace, disp, 0) );
+        auto dP = eval (dW1, F, f0, s0)
+                  * ( _dI8dF ( F, f0, s0 ) )
+                  * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
@@ -450,9 +430,9 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "Computing I1 jacobian terms with second derivative of the energy dI8 fn (Fung)... \n";
 
-        auto dP = eval (dW1, _F (dispETFESpace, disp, 0), f0, s0)
-                  * ( _dI8dF ( dispETFESpace, disp, 0, f0, n0 ) )
-                  * (_dI1bar (dispETFESpace, disp, 0) );
+        auto dP = eval (dW1, F, f0, s0)
+                  * ( _dI8dF ( F, f0, n0 ) )
+                  * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
@@ -465,9 +445,9 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "Computing I1 jacobian terms with second derivative of the energy dI8 sn (Fung)... \n";
 
-        auto dP = eval (dW1, _F (dispETFESpace, disp, 0), f0, s0)
-                  * ( _dI8dF ( dispETFESpace, disp, 0, s0, n0 ) )
-                  * (_dI1bar (dispETFESpace, disp, 0) );
+        auto dP = eval (dW1, F, f0, s0)
+                  * ( _dI8dF ( F, s0, n0 ) )
+                  * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRuleTetra4pt,
                     dispETFESpace,
