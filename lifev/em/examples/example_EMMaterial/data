@@ -32,8 +32,8 @@ save       = 1
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 50.
-    timestep        = 0.01
+    endtime         = 40.
+    timestep        = 0.05
     
     [../discretization]
     LumpedMass = false
@@ -55,21 +55,22 @@ save       = 1
     #     InverseViscosity
     #     ActiveForceCoefficient
     #     ChemicalThreshold
-    ActivationModel = ActiveStressRossi14
+    ActivationModel = ActiveStrainRossi14
     CalciumIndex = 0
+    ActiveForceCoefficient = -4.0
     
 
     
     EMActiveStrainOrthotropicParameter = -666.0
     #Active Strain types Available
     # Anisotropic
-    #Orthotropic
+    # Orthotropic
     # TransverselyIsotropic
     EMActiveStrainType = TransverselyIsotropic
 
     [../time_discretization]
-    endtime         = 50.
-    timestep        = 0.01
+    endtime         = 40.
+    timestep        = 0.05
     [../]
 
 
@@ -101,8 +102,8 @@ lawType     = nonlinear
     #ANH   = Active (Strain) Neo Hookean
     #SimpleActiveStress  = Simple Fiber Active Stress
 
-EMPassiveMaterialType =  POF
-EMActiveStressMaterialType = SimpleActiveStress #SFAS
+EMPassiveMaterialType =  PV
+EMActiveStressMaterialType = ANH #SFAS
 
     Tmax = 497000
     mu = 4960
@@ -114,7 +115,7 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
     bf          = 15.972
     bs          = 10.446
     bfs         = 11.602
-    BulkModulus = 500000
+    BulkModulus = 35000
     C = 20000.0
     bff = 8.0
     bss = 2.0
@@ -173,8 +174,8 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
 [../time_discretization]
 initialtime 	= 0.
-endtime     	= 50
-timestep    	= 0.1
+endtime         = 40.
+timestep        = 0.2
 theta       	= 0.35
 zeta        	= 0.75
 BDF_order   	= 2
