@@ -7,6 +7,7 @@ ADD_SUBDIRECTORIES(
 #  EMVentricle
 #  EMMyocyte
 	test_passiveEMMaterial
+	test_activeNeoHook
 	test_OneWayCoupling
 	test_fixedMonodomain
 	test_benchmarkBar	
