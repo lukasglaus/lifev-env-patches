@@ -217,41 +217,49 @@ int main (int argc, char** argv)
     solid.setDataFromGetPot (dataFile);
     solid.EMMaterial()->setParameters(emdata);
 
-    // load fibers and sheets fields
-    std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_file_name", "fiber");
-    std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_file_name", "sheet");
-    std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_field_name", "fiber");
-    std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_field_name", "sheet");
-    std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
-    std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
-
-    if ( comm->MyPID() == 0 )
+    std::string passiveMaterialType  =  dataFile ( "solid/physics/EMPassiveMaterialType", "");
+    if ( passiveMaterialType == "PHO" )
     {
-        std::cout << "Importing fibers field\n";
-        std::cout << "Fibers file name: " << fiberFileName  << "\n";
-        std::cout << "Fibers file name: " << fiberFieldName << "\n";
-        std::cout << "Fibers file name: " << fiberDir       << "\n";
-    }
-    ElectrophysiologyUtility::importVectorField (  solid.EMMaterial()->fiberVectorPtr(),
-                                                   fiberFileName,
-                                                   fiberFieldName,
-                                                   localSolidMesh,
-                                                   fiberDir,
-                                                   dOrder );
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "Importing sheets field\n";
-        std::cout << "Sheets file name: " << fiberFileName  << "\n";
-        std::cout << "Sheets file name: " << fiberFieldName << "\n";
-        std::cout << "Sheets file name: " << fiberDir       << "\n";
-    }
-    ElectrophysiologyUtility::importVectorField (  solid.EMMaterial()->sheetVectorPtr(),
-                                                   sheetFileName,
-                                                   sheetFieldName,
-                                                   localSolidMesh,
-                                                   sheetDir,
-                                                   dOrder );
+        // load fibers and sheets fields
+        std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_file_name", "fiber");
+        std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_file_name", "sheet");
+        std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_field_name", "fiber");
+        std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_field_name", "sheet");
+        std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
+        std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
 
+        if ( comm->MyPID() == 0 )
+        {
+            std::cout << "Importing fibers field\n";
+            std::cout << "Fibers file name: " << fiberFileName  << "\n";
+            std::cout << "Fibers field name: " << fiberFieldName << "\n";
+            std::cout << "Fibers dir name: " << fiberDir       << "\n";
+        }
+        ElectrophysiologyUtility::importVectorField (  solid.EMMaterial()->fiberVectorPtr(),
+                                                       fiberFileName,
+                                                       fiberFieldName,
+                                                       localSolidMesh,
+                                                       fiberDir,
+                                                       dOrder );
+        if ( comm->MyPID() == 0 )
+        {
+            std::cout << "Importing sheets field\n";
+            std::cout << "Sheets file name: " << fiberFileName  << "\n";
+            std::cout << "Sheets field name: " << fiberFieldName << "\n";
+            std::cout << "Sheets dir name: " << fiberDir       << "\n";
+        }
+        ElectrophysiologyUtility::importVectorField (  solid.EMMaterial()->sheetVectorPtr(),
+                                                       sheetFileName,
+                                                       sheetFieldName,
+                                                       localSolidMesh,
+                                                       sheetDir,
+                                                       dOrder );
+    }
+    else
+    {
+        solid.EMMaterial() -> setupFiberVector( 1.0, 0.0, 0.0);
+        solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
+    }
 // solid.EMMaterial() -> setFiberVector ( solid.EMMaterial()->fiberVectorPtr() );
 // solid.EMMaterial() -> setSheetVector ( solid.EMMaterial()->sheetVectorPtr() );
 
@@ -279,6 +287,16 @@ int main (int argc, char** argv)
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
     exporter->postProcess ( 0 );
 
+    boost::shared_ptr< Exporter<RegionMesh<LinearTetra> > > fibers_exporter;
+    fibers_exporter.reset ( new ExporterHDF5<RegionMesh<LinearTetra> > ( dataFile, "fibers" ) );
+    fibers_exporter->setPostDir ( problemFolder );
+    fibers_exporter->setMeshProcId ( localSolidMesh, comm->MyPID() );
+    fibers_exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
+    fibers_exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "sheets", dFESpace, solid.EMMaterial()->sheetVectorPtr(), UInt (0) );
+    fibers_exporter->postProcess ( 0 );
+
+    std::cout << "Displacement vector size: " << solid.displacementPtr()->size() << std::endl;
+    std::cout << "Fiber vector size: " << solid.EMMaterial()->fiberVectorPtr()->size() << std::endl;
     //===========================================================
     //===========================================================
     //         SOLVE
@@ -288,23 +306,33 @@ int main (int argc, char** argv)
     Real endTime =  dataFile ( "solid/time_discretization/endtime", 1.0);
     ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 1);
     Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 1.0);
-    
+    bool deformedPressure =  dataFile ( "solid/boundary_conditions/deformed_pressure", 1 );
+
+    if ( deformedPressure)
+    {
+        std::cout << "Setting pressure in the deformed configuration\n";
+    }
+    else
+    {
+        std::cout << "Setting pressure in the reference configuration\n";
+    }
     solid.setBCFlag( LVFlag );
-    
+
     for (Real time (0.0); time < endTime;)
     {
         time += dt;
+        std::cout << "\nTime: " << time << std::endl;
         solid.data() -> dataTime() -> updateTime();
 
         solidBC -> updatePhysicalSolverVariables();
 
         solid.bcH() = solidBC -> handler();
-        
-        solid.setLVPressureBC( time*LVPreloadPressure );
+
+        solid.setLVPressureBC( -time*LVPreloadPressure );
 
         // solid.EMMaterial()->showMaterialParameters();
-        solid.iterate ( solidBC -> handler() , true );
-        
+        solid.iterate ( solidBC -> handler() , deformedPressure );
+
         // passing the updated BC where we added the pressure
         // solid.iterate ( solid.bcHandler(), true );
 
@@ -317,7 +345,7 @@ int main (int argc, char** argv)
     //===========================================================
     //===========================================================
     exporter -> closeFile();
-
+    fibers_exporter->closeFile();
 
 #ifdef HAVE_MPI
     MPI_Finalize();
