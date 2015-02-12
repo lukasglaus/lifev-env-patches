@@ -481,6 +481,27 @@ public:
     //! Set the data fields with the Getpot data file for preconditioners and solver
     void setDataFromGetPot ( const GetPot& dataFile );
 
+    //! Set the file related to the ofstream given in input
+    void setOutputStream ( std::ofstream & os, std::string const & dirName, std::string const & fileName)
+    {
+        if ( os.is_open() )
+        {
+            os.close();
+        }
+        os.open(dirName+fileName);
+    }
+
+    //! Set the file where to write iteration output
+    void setOutputIterStream ( std::string const & dirName, std::string const & fileName="out_iter_solid")
+    {
+        setOutputStream( M_out_iter, dirName, fileName );
+    }
+    //! Set the file where to write residual output
+    void setOutputResStream ( std::string const & dirName, std::string const & fileName="out_res_solid")
+    {
+        setOutputStream( M_out_res, dirName, fileName );
+    }
+
     void setTimeAdvance ( const timeAdvancePtr_Type& timeAdvancePtr )
     {
         M_timeAdvance = timeAdvancePtr;
