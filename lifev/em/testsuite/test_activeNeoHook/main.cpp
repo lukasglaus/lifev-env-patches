@@ -306,11 +306,8 @@ int main (int argc, char** argv)
             *(solid.EMMaterial()->fiberActivationPtr())  = gammaf;
             // *(solid.EMMaterial()->sheetActivationPtr())  = gammas;
             // *(solid.EMMaterial()->normalActivationPtr()) = gamman;
-            // solid.EMMaterial()->showMaterialParameters();
+
             solid.iterate ( solidBC -> handler() , deformedPressure );
-        
-            // passing the updated BC where we added the pressure
-            // solid.iterate ( solid.bcHandler(), true );
         
             exporter->postProcess ( solid.data() -> dataTime() -> time() + i*dt );
         }

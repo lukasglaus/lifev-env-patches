@@ -304,8 +304,8 @@ int main (int argc, char** argv)
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
     Real endTime =  dataFile ( "solid/time_discretization/endtime", 1.0);
-    ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 1);
-    Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 1.0);
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 0);
+    Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 0.0);
     bool deformedPressure =  dataFile ( "solid/boundary_conditions/deformed_pressure", 1 );
 
     if ( deformedPressure)
@@ -331,11 +331,7 @@ int main (int argc, char** argv)
 
         solid.setLVPressureBC( -time*LVPreloadPressure );
 
-        // solid.EMMaterial()->showMaterialParameters();
         solid.iterate ( solidBC -> handler() , deformedPressure );
-
-        // passing the updated BC where we added the pressure
-        // solid.iterate ( solid.bcHandler(), true );
 
         exporter->postProcess ( time );
     }

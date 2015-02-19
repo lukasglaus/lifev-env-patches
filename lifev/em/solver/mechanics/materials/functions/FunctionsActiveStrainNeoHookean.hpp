@@ -142,12 +142,12 @@ public:
     	// auto FE = F * FAinv;
 	// auto dP = W1 * _d2I1bardF (FE) * FAinv;
         
-	    integrate ( elements ( dispETFESpace->mesh() ) ,
-	                quadRuleTetra4pt,
-	                dispETFESpace,
-	                dispETFESpace,
-	                dot ( dP , grad (phi_i) )
-	              ) >> jacobianPtr;
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+		    quadRuleTetra4pt,
+		    dispETFESpace,
+		    dispETFESpace,
+		    dot ( dP , grad (phi_i) )
+		    ) >> jacobianPtr;
     }
 
     virtual void computeResidual ( const vector_Type& disp,
@@ -221,7 +221,6 @@ public:
 		    dispETFESpace,
 		    dot ( P, grad (phi_i) )
 		    ) >> residualVectorPtr;
-	
 
     }
 
