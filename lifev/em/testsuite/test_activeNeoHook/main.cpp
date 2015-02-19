@@ -150,6 +150,8 @@ int main (int argc, char** argv)
     std::string dOrder =  dataFile ( "solid/space_discretization/order", "P1");
     solidFESpacePtr_Type dFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 3, comm) );
     solidETFESpacePtr_Type dETFESpace ( new solidETFESpace_Type (localSolidMesh, & (dFESpace->refFE() ), & (dFESpace->fe().geoMap() ), comm) );
+    solidFESpacePtr_Type activationFESpace ( new solidFESpace_Type (localSolidMesh, dOrder, 1, comm) );
+    solidETFESpacePtr_Type activationETFESpace ( new solidETFESpace_Type (localSolidMesh, & (activationFESpace->refFE() ), & (activationFESpace->fe().geoMap() ), comm) );
 
     if ( comm->MyPID() == 0 )
     {
@@ -250,43 +252,47 @@ int main (int argc, char** argv)
     //===========================================================
     Real dt =  dataFile ( "solid/time_discretization/timestep", 0.1);
     Real endTime =  dataFile ( "solid/time_discretization/endtime", 1.0);
-    ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 1);
-    Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 1.0);
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 0);
+    Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 0.);
     
     solid.setBCFlag( LVFlag );
 
-    LifeV::VectorEpetra gammaf( dFESpace->map() );
-    LifeV::VectorEpetra gammas( dFESpace->map() );
-    LifeV::VectorEpetra gamman( dFESpace->map() );
+    LifeV::VectorEpetra gammaf( activationFESpace->map() );
+    // LifeV::VectorEpetra gammas( activationFESpace->map() );
+    // LifeV::VectorEpetra gamman( activationFESpace->map() );
 
-    if ( LVPreloadPressure != 0. )
+    std::cout << "Starting Preload Ramp\n";
+    // pressure ramp
+    for (Real time (0.0); time < endTime;)
     {
-        std::cout << "Starting Preload Ramp\n";
-        // pressure ramp
-        for (Real time (0.0); time < endTime;)
+        time += dt;
+        if ( time > endTime )
         {
-            time += dt;
-            if ( time > endTime )
-            {
-                break;
-            }
-            std::cout << "----- Preload Time: " << time << std::endl;
-            solid.data() -> dataTime() -> updateTime();
+            break;
+        }
+        std::cout << "----- Preload Time: " << time << std::endl;
+        solid.data() -> dataTime() -> updateTime();
 
-            solidBC -> updatePhysicalSolverVariables();
+        solidBC -> updatePhysicalSolverVariables();
 
-            // solid.bcH() = solidBC -> handler();
+        // solid.bcH() = solidBC -> handler();
+        if ( LVPreloadPressure != 0. )
+        {
             std::cout << "----- Preload Pressure: " << time/endTime*LVPreloadPressure << std::endl;
             solid.setLVPressureBC( time/endTime*LVPreloadPressure );
-
+                
             solid.iterate ( solidBC -> handler() , true );
-        
-            // passing the updated BC where we added the pressure
-            // solid.iterate ( solid.bcHandler(), true );
-
-            exporter->postProcess ( time );
         }
+        else
+        {
+            solid.iterate ( solidBC -> handler() , false );
+        }
+        // passing the updated BC where we added the pressure
+        // solid.iterate ( solid.bcHandler(), true );
+
+        exporter->postProcess ( time );
     }
+
 
     Real maxShortening   = dataFile ( "solid/activationphysics/max_shortening", -0.2);
     UInt activationSteps = dataFile ( "solid/activation/activation_steps", 20);

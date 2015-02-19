@@ -323,6 +323,7 @@ int main (int argc, char** argv)
         time += dt;
         std::cout << "\nTime: " << time << std::endl;
         solid.data() -> dataTime() -> updateTime();
+        std::cout << "----- Preload Time: " << time << std::endl;
 
         solidBC -> updatePhysicalSolverVariables();
 
