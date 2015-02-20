@@ -254,6 +254,7 @@ int main (int argc, char** argv)
     Real endTime =  dataFile ( "solid/time_discretization/endtime", 1.0);
     ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 0);
     Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 0.);
+    bool deformedPressure =  dataFile ( "solid/boundary_conditions/deformed_pressure", 0);
     
     solid.setBCFlag( LVFlag );
 
@@ -276,25 +277,18 @@ int main (int argc, char** argv)
         solidBC -> updatePhysicalSolverVariables();
 
         // solid.bcH() = solidBC -> handler();
-        if ( LVPreloadPressure != 0. )
+        if ( deformedPressure )
         {
             std::cout << "----- Preload Pressure: " << time/endTime*LVPreloadPressure << std::endl;
             solid.setLVPressureBC( time/endTime*LVPreloadPressure );
-                
-            solid.iterate ( solidBC -> handler() , true );
         }
-        else
-        {
-            solid.iterate ( solidBC -> handler() , false );
-        }
-        // passing the updated BC where we added the pressure
-        // solid.iterate ( solid.bcHandler(), true );
+	solid.iterate ( solidBC -> handler() , deformedPressure );
 
         exporter->postProcess ( time );
     }
 
 
-    Real maxShortening   = dataFile ( "solid/activationphysics/max_shortening", -0.2);
+    Real maxShortening   = dataFile ( "solid/activation/max_shortening", -0.2);
     UInt activationSteps = dataFile ( "solid/activation/activation_steps", 20);
 
     if ( maxShortening != 0. )
@@ -305,7 +299,7 @@ int main (int argc, char** argv)
         {
             std::cout << "----- Activation Step: " << i << std::endl;
             // activation
-            gammaf = i*maxShortening/activationSteps;
+            gammaf = i*maxShortening/static_cast<Real>(activationSteps);
             // gammas = 1/std::sqrt(time/endTime * maxShortening);
             // gamman = 1/std::sqrt(time/endTime * maxShortening);
             std::cout << "----- gamma_f: " << i*maxShortening/activationSteps << std::endl;
@@ -313,7 +307,7 @@ int main (int argc, char** argv)
             // *(solid.EMMaterial()->sheetActivationPtr())  = gammas;
             // *(solid.EMMaterial()->normalActivationPtr()) = gamman;
             // solid.EMMaterial()->showMaterialParameters();
-            solid.iterate ( solidBC -> handler() , true );
+            solid.iterate ( solidBC -> handler() , deformedPressure );
         
             // passing the updated BC where we added the pressure
             // solid.iterate ( solid.bcHandler(), true );

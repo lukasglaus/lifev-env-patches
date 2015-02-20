@@ -55,7 +55,7 @@ public:
                                   const vectorPtr_Type& normalActivation,
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                   matrixPtr_Type           jacobianPtr)
-    {
+  {
 //        EMAssembler::computeActiveStrainI1JacobianTerms (disp,
 //														dispETFESpace,
 //														fibers,
@@ -76,16 +76,16 @@ public:
         auto I = value(Id);
         auto F = I + grad(dispETFESpace, disp, 0);
         auto dF = grad( phi_j );
-        // auto gf = value(activationETFESpace, *fiberActivation);
-        auto gf = value(0.);
+        auto gf = value(activationETFESpace, *fiberActivation);
+        // auto gf = value(0.);
         // auto gs = value(activationETFESpace, *sheetActivation);
         // auto gn = value(activationETFESpace, *normalActivation);
     	auto f0 = value(dispETFESpace, fibers);
         auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
         auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
         auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
-    	// auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
-        auto FAinv = I;
+    	auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
+        // auto FAinv = I;
         // auto k  = value(1.e+5);
         // auto dW1 = eval(this->M_W1, F);
         auto J = det(F);
@@ -93,8 +93,8 @@ public:
         auto Fe = F * FAinv;
         auto Je = det(Fe);
         auto Jem23 = pow( Je, -2./3.);
-        auto FmT = transpose(F);
-        auto FemT = transpose(Fe);
+        auto FmT = minusT(F);
+        auto FemT = minusT(Fe);
         auto dJdF =  J * FmT;
         auto dJedF = Je * FemT;
         // // VOLUMETRIC PART
@@ -138,7 +138,7 @@ public:
     	// auto FAinv = _FAinv(gf, f0);
     	// auto W1 = eval(this->M_W1, F);
     	// auto FE = F * FAinv;
-		// auto dP = W1 * _d2I1bardF (FE) * FAinv;
+	// auto dP = W1 * _d2I1bardF (FE) * FAinv;
         
 	    integrate ( elements ( dispETFESpace->mesh() ) ,
 	                quadRuleTetra4pt,
@@ -178,22 +178,22 @@ public:
         auto I = value(Id);
         // auto k  = value(1.e+5);
         auto F = I + grad(dispETFESpace, disp, 0);
-        // auto gf = value(activationETFESpace, *fiberActivation);
-        auto gf = value(0.);
+        auto gf = value(activationETFESpace, *fiberActivation);
+        // auto gf = value(0.);
     	auto f0 = value(dispETFESpace, fibers);
-        // auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
-        // auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
-        // auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
-    	// auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
-        auto FAinv = I;
+        auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
+        auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
+        auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
+    	auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
+        // auto FAinv = I;
         auto dW1dI1e = eval(this->M_W1, F);
         // auto mu = value(10.);
         // auto dW1dI1e = value(0.5) * mu;
         auto J = det(F);
         auto Fe = F * FAinv;
         auto Je = det(Fe);
-        auto FmT = transpose(F);
-        auto FemT = transpose(Fe);
+        auto FmT = minusT(F);
+        auto FemT = minusT(Fe);
         // auto dWvol = value(0.5) * k * (J-value(1.)/J)* J * FmT;
         auto dI1e = value(2.0) * Fe;
         auto I1e  = dot( Fe, Fe );
@@ -213,12 +213,12 @@ public:
     	// // auto FE = F * FAinv;
 		// // auto P = W1 * _dI1bar (FE) * FAinv;
 
-		integrate ( elements ( dispETFESpace->mesh() ) ,
-					quadRuleTetra4pt,
-					dispETFESpace,
-					dot ( P, grad (phi_i) )
-				  ) >> residualVectorPtr;
-
+	integrate ( elements ( dispETFESpace->mesh() ) ,
+		    quadRuleTetra4pt,
+		    dispETFESpace,
+		    dot ( P, grad (phi_i) )
+		    ) >> residualVectorPtr;
+	
 
     }
 
