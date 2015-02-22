@@ -401,10 +401,6 @@ Int main ( Int argc, char** argv )
 	//We create a pointer to store a full mass matrix
 	matrixPtr_Type hlmass;
 
-	//if we are using ICI then we need to compute the fullMass matrix even
-	// if we are using lumping
-	bool lumpedMass = monodomainList.get ("LumpedMass", true);
-
 	if( lumpedMass )
     { 
         solver -> setLumpedMassMatrix(false);
