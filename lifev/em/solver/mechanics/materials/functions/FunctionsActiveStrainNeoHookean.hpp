@@ -81,11 +81,12 @@ public:
         // auto gs = value(activationETFESpace, *sheetActivation);
         // auto gn = value(activationETFESpace, *normalActivation);
     	auto f0 = value(dispETFESpace, fibers);
-        auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
-        auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
-        auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
-    	auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
-        // auto FAinv = I;
+        // auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
+        // auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
+        // auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
+    	// auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
+        // auto FA = I + (gf)*outerProduct(f0, f0);
+        auto FAinv = I - gf/(value(1.)+gf)*outerProduct(f0, f0);
         // auto k  = value(1.e+5);
         // auto dW1 = eval(this->M_W1, F);
         auto J = det(F);
@@ -115,6 +116,7 @@ public:
         auto dFe = dF * FAinv;
         auto dI1Ce = value(2.0) * Fe;
         auto dI1CedF = value(2.0) * dot( Fe, dF );
+        auto dI1CedFe = value(2.0) * dot( Fe, dFe );
         auto d2I1CedF = value(2.0) * dF;
         auto d2I1CedFe = value(2.0) * dFe;
         auto dJem23 = value(-2.0/3.0) * Jem23 * FemT;
@@ -128,7 +130,7 @@ public:
             dJem23dFe * dI1Ce // value(-4./3.) * Jem23 * dot( FemT, dF ) * Fe
             + Jem23 * d2I1CedFe // + value(2.) * Jem23 * dF
             + I1Ce * d2Jem23dFe // + value(-2./3.) * I1Ce * dJem23dF * FemT // + value(4./9.) * Jem23 * dot( FemT, dF ) * I1Ce * FemT + value(-2./3.) * I1Ce * Jem23 * dFemTdF // + value(2./3.) * I1Ce * Jem23 * FemT * transpose( dF ) * FemT
-            + dI1CedF * dJem23; // value(-2./3.) * Jem23 * FemT * dot( Fe, dF);
+            + dI1CedFe * dJem23; // value(-2./3.) * Jem23 * FemT * dot( Fe, dF);
         auto dP = dW1dI1e * d2I1CebardFe * FAinv; // + d2Wvold2F;
 
 
@@ -184,7 +186,8 @@ public:
         auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
         auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
         auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
-    	auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
+    	// auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
+        auto FAinv = I - gf/(value(1.)+gf)*outerProduct(f0, f0);
         // auto FAinv = I;
         auto dW1dI1e = eval(this->M_W1, F);
         // auto mu = value(10.);
