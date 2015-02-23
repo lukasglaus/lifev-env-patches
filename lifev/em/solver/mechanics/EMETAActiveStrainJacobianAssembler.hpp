@@ -102,7 +102,7 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
     {
 		auto gf = value (activationETFESpace, *gammaf);
 
-    	if(orthotropicParameter < 0 )
+    	if(orthotropicParameter > 0 )
     	{
         	if(disp.comm().MyPID() == 0)
             std::cout << " Orthotropic case ... \n";
