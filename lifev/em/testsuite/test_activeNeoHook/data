@@ -54,8 +54,8 @@ save       = 1
     bfn = 4.0
     bsn = 2.0
     #BulkModulus = 3500000.0
-    BulkModulus = 10.
-    mu          = 10.
+    BulkModulus = 1.e+6
+    mu          = 1.e+4
     a           = 3330
     af          = 185350
     as          = 25640
@@ -66,13 +66,14 @@ save       = 1
     bfs         = 11.602
 
     [../activation]
-        max_shortening   = -0.2
-    	activation_steps = 20
+        max_shortening   = -0.1
+    	activation_steps = 10
 
 
    [../boundary_conditions]
+      deformed_pressure = 0
       LV_flag = 400
-      LV_preload_pressure = 0.
+      LV_preload_pressure = 1.
 
       # list = 'Top Bottom Back Right'
       list = 'Top fixed'
@@ -81,7 +82,7 @@ save       = 1
         flag       = 400
         mode       = Full
         component  = 3
-    	function  = '[0.0, 0.0, 5000.0*sin(t)]'
+    	function  = '[0.0, 0.0, 1.e+2*t]'
 
         [../Bottom]
         type       = Essential
