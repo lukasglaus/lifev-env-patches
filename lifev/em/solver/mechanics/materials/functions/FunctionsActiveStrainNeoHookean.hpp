@@ -56,16 +56,18 @@ public:
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                   matrixPtr_Type           jacobianPtr)
   {
-//        EMAssembler::computeActiveStrainI1JacobianTerms (disp,
-//														dispETFESpace,
-//														fibers,
-//														sheets,
-//														fiberActivation,
-//														sheetActivation,
-//														normalActivation,
-//														activationETFESpace,
-//														jacobianPtr,
-//														this->M_W1 );
+        EMAssembler::computeActiveStrainI1JacobianTerms (disp,
+														dispETFESpace,
+														fibers,
+														sheets,
+														fiberActivation,
+														sheetActivation,
+														normalActivation,
+														activationETFESpace,
+														jacobianPtr,
+														this->M_W1 );
+    	std::cout << "Norm of the activation = " <<  fiberActivation->norm2() << std::endl;
+
     	using namespace ExpressionAssembly;
 
         MatrixSmall<3,3> Id;
@@ -81,14 +83,24 @@ public:
         // auto gs = value(activationETFESpace, *sheetActivation);
         // auto gn = value(activationETFESpace, *normalActivation);
     	auto f0 = value(dispETFESpace, fibers);
-        // auto _gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
+        auto gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
+        auto ggf = value(1.) - gtip1 - gf / (gf +value(1.));
         // auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
         // auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
     	// auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
         // auto FA = I + (gf)*outerProduct(f0, f0);
-        auto FAinv = I - gf/(value(1.)+gf)*outerProduct(f0, f0);
+
+        auto gn = pow( 1.+gf, -0.5 )+value(-1.);
+
+//		auto FAinv = gtip1* I + ggf * outerProduct(f0, f0);
+
+//        auto FAinv = ( 1 - gn / (gn + value(1.) ) ) * I + ( gn / (gn + value(1.) ) - gf/(value(1.)+gf) )* outerProduct(f0, f0);
+		auto FAinv = _FAinv(gf, f0);
+
+//        auto FAinv = I - gf/(value(1.)+gf)*outerProduct(f0, f0);
         // auto k  = value(1.e+5);
         // auto dW1 = eval(this->M_W1, F);
+
         auto J = det(F);
         auto Jm23 = pow( J, -2./3.);
         auto Fe = F * FAinv;
@@ -134,6 +146,7 @@ public:
         auto dP = dW1dI1e * d2I1CebardFe * FAinv; // + d2Wvold2F;
 
 
+
         // auto F = _F(dispETFESpace, disp, 0);
     	// auto gf = value(activationETFESpace, *fiberActivation);
     	// auto f0 = value(dispETFESpace, fibers);
@@ -142,12 +155,12 @@ public:
     	// auto FE = F * FAinv;
 	// auto dP = W1 * _d2I1bardF (FE) * FAinv;
         
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-		    quadRuleTetra4pt,
-		    dispETFESpace,
-		    dispETFESpace,
-		    dot ( dP , grad (phi_i) )
-		    ) >> jacobianPtr;
+//	integrate ( elements ( dispETFESpace->mesh() ) ,
+//		    quadRuleTetra4pt,
+//		    dispETFESpace,
+//		    dispETFESpace,
+//		    dot ( dP , grad (phi_i) )
+//		    ) >> jacobianPtr;
     }
 
     virtual void computeResidual ( const vector_Type& disp,
@@ -160,6 +173,8 @@ public:
                                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                           vectorPtr_Type           residualVectorPtr)
     {
+
+    	std::cout << "Norm of the activation = " <<  fiberActivation->norm2() << std::endl;
 //    	EMAssembler::computeActiveStrainI1ResidualTerms(  disp,
 //    			 	 	 	 	 	 	 	 	 	 	 	 	 dispETFESpace,
 //    			 	 	 	 	 	 	 	 	 	 	 	 	 fibers,
@@ -187,7 +202,16 @@ public:
         auto _gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
         auto _gti = pow( ( 1. + ( gf ) ), 0.5 ) - value(1.0);
     	// auto FAinv = ( _gtip1 * I + ( _gm - _gti ) * outerProduct(f0, f0) );
-        auto FAinv = I - gf/(value(1.)+gf)*outerProduct(f0, f0);
+        auto gtip1 = pow( ( 1. + ( gf ) ), 0.5 );
+		auto ggf = value(1.) - gtip1 - gf / (gf +value(1.));
+
+        auto gn = pow( 1.+gf, -0.5 )+value(-1.);
+
+
+//        auto FAinv = ( 1 - gn / (gn + value(1.) ) ) * I + ( gn / (gn + value(1.) ) - gf/(value(1.)+gf) )* outerProduct(f0, f0);
+		auto FAinv = gtip1* I + ggf * outerProduct(f0, f0);
+
+//        auto FAinv = I - gf/(value(1.)+gf)*outerProduct(f0, f0);
         // auto FAinv = I;
         auto dW1dI1e = eval(this->M_W1, F);
         // auto mu = value(10.);
@@ -216,12 +240,24 @@ public:
     	// // auto FE = F * FAinv;
 		// // auto P = W1 * _dI1bar (FE) * FAinv;
 
-	integrate ( elements ( dispETFESpace->mesh() ) ,
-		    quadRuleTetra4pt,
-		    dispETFESpace,
-		    dot ( P, grad (phi_i) )
-		    ) >> residualVectorPtr;
 
+
+//	integrate ( elements ( dispETFESpace->mesh() ) ,
+//		    quadRuleTetra4pt,
+//		    dispETFESpace,
+//		    dot ( P, grad (phi_i) )
+//		    ) >> residualVectorPtr;
+
+    EMAssembler::computeActiveStrainI1ResidualTerms( disp,
+													 dispETFESpace,
+													 fibers,
+													 sheets,
+	 												fiberActivation,
+	  												sheetActivation,
+		 											normalActivation,
+		 											activationETFESpace,
+		 											residualVectorPtr,
+													this->M_W1);
     }
 
     virtual void setParameters (data_Type& data)

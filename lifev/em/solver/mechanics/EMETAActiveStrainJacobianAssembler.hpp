@@ -88,8 +88,9 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
 
 		auto FAinv = _FAinv(gf, gs, gn, f0, s0, n0);
 		auto FE =  F * FAinv;
+		auto dFE = _dFE(FAinv);
 
-		auto dP = eval (W1, FE ) * (_d2I1bardF (FE) ) * FAinv;
+		auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
 
 	    integrate ( elements ( dispETFESpace->mesh() ) ,
 	                quadRuleTetra4pt,
@@ -111,7 +112,8 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
     		auto FAinv = _FAinv(gf, k, f0, s0, n0);
 
     		auto FE =  F * FAinv;
-    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE) ) * FAinv;
+    		auto dFE = _dFE(FAinv);
+    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
 
     	    integrate ( elements ( dispETFESpace->mesh() ) ,
     	                quadRuleTetra4pt,
@@ -125,10 +127,13 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
         	if(disp.comm().MyPID() == 0)
             std::cout << " Transversely isotropic case ... \n";
 
-    		auto FAinv = _FAinv(gf, f0, s0, n0);
+//    		auto FAinv = _FAinv(gf, f0, s0, n0);
+    		auto FAinv = _FAinv(gf, f0);
+
 
     		auto FE =  F * FAinv;
-    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE) ) * FAinv;
+    		auto dFE = _dFE(FAinv);
+    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
 
 //    		auto dFE = dF * FAinv;
 //    		auto dFET = FAinv * transpose(dF)

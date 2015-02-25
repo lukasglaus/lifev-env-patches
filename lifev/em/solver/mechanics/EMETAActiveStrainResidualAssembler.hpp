@@ -147,7 +147,8 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
             std::cout << " Transversely isotropic case ... \n";
 
     		using namespace ExpressionAssembly;
-    		auto FAinv = _FAinv(gf, f0, s0, n0);
+//    		auto FAinv = _FAinv(gf, f0, s0, n0);
+    		auto FAinv = _FAinv(gf, f0);
 
     		auto FE =  F * FAinv;
     		auto W1A = eval (W1, FE );

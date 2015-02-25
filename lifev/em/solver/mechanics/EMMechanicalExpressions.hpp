@@ -94,15 +94,15 @@
 #define _dF   ( grad (phi_j) )
 // dF = \delta \nabla u = variation of F
 //matrix
-#define _dFT   ( transpose( _dF ) )
+#define _dFT(dF)   ( transpose( dF ) )
 
 // dFmTdF = dFmT : dF = Derivative of FmT with respect to F in direction dF
 //matrix
-#define _dFmTdF(F)  ( value (-1.0) * ( _FmT(F) ) * ( _dFT ) * ( _FmT(F) ) )
+#define _dFmTdF(F, dF)  ( value (-1.0) * ( _FmT(F) ) * ( _dFT(dF) ) * ( _FmT(F) ) )
 
 // dBdF = dB : dF = Derivative of B with respect to F in direction dF
 //matrix
-#define _dBdF(F)  ( ( F * _dFT + _dF * _FT(F) )  )
+#define _dBdF(F, dF)  ( ( F * _dFT(dF) + dF * _FT(F) )  )
 ///////////////////////////////////////////////////////////////////////////
 // J terms
 ///////////////////////////////////////////////////////////////////////////
@@ -117,21 +117,21 @@
 #define _dJ(F)     ( _J(F) * _FmT(F) )
 // dJdF = dJ : dF = Derivative of J in direction dF
 //scalar
-#define _dJdF(F)   ( dot( _dJ(F), _dF ) )
+#define _dJdF(F, dF)   ( dot( _dJ(F), _dF ) )
 // d2JdF = d2J : dF = Second derivative of J in direction dF
 //matrix
-#define _d2JdF(F)  ( _dJdF(F) * _FmT(F)    \
-    			   + _J(F)    * _dFmTdF(F) )
+#define _d2JdF(F, dF)  ( _dJdF(F, dF) * _FmT(F)    \
+    			   + _J(F)    * _dFmTdF(F, dF) )
 // dJm23 = Derivative of J^{-2/3}
 //matrix
 #define _dJm23(F)  ( value(-2.0/3.0) * _Jm23(F) * _FmT(F) )
 // dJm23dF = dJm23 : dF = Derivative of Jm23 with respect to F in direction dF
 //scalar
-#define _dJm23dF(F)  ( dot( _dJm23(F), _dF)  )
+#define _dJm23dF(F, dF)  ( dot( _dJm23(F), dF)  )
 // d2Jm23dF = d2Jm23 : dF = Second derivative of Jm23 with respect to F in direction dF
 //matrix
-#define _d2Jm23dF(F)  ( value(-2.0/3.0) * ( _Jm23(F)    *  _dFmTdF(F) \
-                                          + _dJm23dF(F) *  _FmT(F)    ) )
+#define _d2Jm23dF(F, dF)  ( value(-2.0/3.0) * ( _Jm23(F)    *  _dFmTdF(F, dF) \
+                                              + _dJm23dF(F, dF) *  _FmT(F)    ) )
 
 
 // Jm43 = J^{-4/3}
@@ -142,11 +142,11 @@
 #define _dJm43(F)  ( value(-4.0/3.0) * _Jm43(F) * _FmT(F) )
 // dJm43dF = dJm43 : dF = Derivative of Jm43 with respect to F in direction dF
 //scalar
-#define _dJm43dF(F)  ( dot( _dJm43(F), _dF)  )
+#define _dJm43dF(F, dF)  ( dot( _dJm43(F), dF)  )
 // d2Jm43dF = d2Jm43 : dF = Second derivative of Jm43 with respect to F in direction dF
 //matrix
-#define _d2Jm43dF(F)  ( value(-4.0/3.0) * _Jm43(F) * ( _dFmTdF(F) \
-                                        + _dJm43dF(F) * _FmT(F) ) )
+#define _d2Jm43dF(F, dF)  ( value(-4.0/3.0) * _Jm43(F) * ( _dFmTdF(F, dF) \
+                                            + _dJm43dF(F, dF) * _FmT(F) ) )
 
 ///////////////////////////////////////////////////////////////////////////
 // VOLUMETRIC PART
@@ -184,21 +184,21 @@
 
 // dI1dF = dI1 : dF = Derivative of I_1 with respect to F in direction dF
 //scalar
-#define _dI1dF(F)        ( dot( _dI1(F), _dF ) )
+#define _dI1dF(F, dF)        ( dot( _dI1(F), dF ) )
 // dI1bardF = dI1bar : dF = Derivative of \bar{I}_1 with respect to F in direction dF
 //scalar
-#define _dI1bardF(F)     ( dot( _dI1bar(F), _dF ) )
+#define _dI1bardF(F, dF)     ( dot( _dI1bar(F), dF ) )
 
 // d2I1dF = d2I1 : dF = Second derivative of I_1 with respect to F in direction dF
 //matrix
-#define _d2I1dF       ( value(2.0) * _dF )
+#define _d2I1dF(dF)       ( value(2.0) * dF )
 
 // d2I1bardF = d2I1bar : dF = Second derivative of I1bar with respect to F in direction dF
 //matrix
-#define _d2I1bardF(F)    ( ( _dJm23dF(F) * _dI1(F) ) \
-						   + ( _Jm23(F) * _d2I1dF          ) \
-						   + ( _I1(F) * _d2Jm23dF(F) ) \
-						   + ( _dI1dF(F) * _dJm23(F) ) )
+#define _d2I1bardF(F, dF)    ( ( _dJm23dF(F, dF) * _dI1(F)          ) \
+						     + ( _Jm23(F)        * _d2I1dF(dF)      ) \
+						     + ( _I1(F)          * _d2Jm23dF(F, dF) ) \
+						     + ( _dI1dF(F, dF)   * _dJm23(F) )      )
 
 //// WI = Derivative of the energy W with respect to I1bar
 ////scalar
@@ -234,25 +234,25 @@
 
 // dI2dF = dI2 : dF = Derivative of I_2 with respect to F in direction dF
 //scalar
-#define _dI2dF(F)        ( dot( _dI2(F), _dF ) )
+#define _dI2dF(F, dF)        ( dot( _dI2(F), dF ) )
 // dI2bardF = dI2bar : dF = Derivative of \bar{I}_2 with respect to F in direction dF
 //scalar
-#define _dI2bardF(F)     ( dot( _dI2bar(F), _dF ) )
+#define _dI2bardF(F, dF)     ( dot( _dI2bar(F), dF ) )
 
 // d2I2dF = d2I2 : dF = Second derivative of I_2 with respect to F in direction dF
 //matrix
 //#define _d2I2dF(y, z, w)       ( value(2.0) * ( _dI1dF(y, z, w)  *  _F(y, z, w) + _I1(y, z, w) * _dF )     \
 //		                       + value(-1.0) * ( _dBdF(y, z, w) * _F(y, z, w)  + _B(y, z, w) * _dF  ) )
 
-#define _d2I2dF(F)       ( value(2.0) * ( (  _dI1dF(F) * F - _dBdF(F) * F )   \
-										+ (  _I1(F) * _I - _B(F) ) *  _dF )  )
+#define _d2I2dF(F, dF)       ( value(2.0) * ( (  _dI1dF(F, dF) * F - _dBdF(F, dF) * F )   \
+										    + (  _I1(F) * _I - _B(F) ) *  dF )  )
 
 // d2I2bardF = d2I2bar : dF = Second derivative of I2bar with respect to F in direction dF
 //matrix
-#define _d2I2bardF(F)    ( ( _dJm43dF(F) * _dI2(F) )  \
-						   + ( _Jm43(F) * _d2I2dF(F) )  \
-						   + ( _I2(F) * _d2Jm43dF(F) )  \
-						   + ( _dI2dF(F) * _dJm43(F) ) )
+#define _d2I2bardF(F, dF)  ( ( _dJm43dF(F, dF) * _dI2(F)          )  \
+						   + ( _Jm43(F)        * _d2I2dF(F, dF)   )  \
+						   + ( _I2(F)          * _d2Jm43dF(F, dF) )  \
+						   + ( _dI2dF(F, dF)   * _dJm43(F)        )  )
 
 //// W2 = Derivative of the energy W with respect to I2bar
 ////scalar
@@ -288,19 +288,19 @@
 #define _dI4bar(F, v0) ( _Jm23(F) * _dI4(F, v0) \
 					   + _dJm23(F) * _I4(F, v0) )
 
-#define _dv(v0)   ( _dF * v0 )
+#define _dv(v0, dF)   ( dF * v0 )
 
-#define _dI4dF(F, v0)   ( dot( ( _dI4(F, v0) ), ( _dF )  ) )
+#define _dI4dF(F, v0, dF)   ( dot( ( _dI4(F, v0) ), ( dF )  ) )
 
-#define _d2I4dF(v0)   ( value(2.0) * outerProduct( _dv(v0), v0 )  )
+#define _d2I4dF(v0, dF)   ( value(2.0) * outerProduct( _dv(v0, dF), v0 )  )
 
-#define _dI4bardF(F, v0)   ( dot( _dI4bar(F, v0), _dF  ) )
+#define _dI4bardF(F, v0, dF)   ( dot( _dI4bar(F, v0), dF  ) )
 
 
-#define _d2I4bardF(F, v0) ( ( _Jm23(F)     * _d2I4dF(v0)   ) \
-						  + ( _dJm23dF(F)  * _dI4(F, v0)   ) \
-						  + ( _dJm23(F)    * _dI4dF(F, v0) ) \
-						  + ( _d2Jm23dF(F) * _I4(F, v0)    ) )
+#define _d2I4bardF(F, v0, dF) ( ( _Jm23(F)         * _d2I4dF(v0, dF)   ) \
+						      + ( _dJm23dF(F, dF)  * _dI4(F, v0)       ) \
+						      + ( _dJm23(F)        * _dI4dF(F, v0, dF) ) \
+						      + ( _d2Jm23dF(F, dF) * _I4(F, v0)        ) )
 
 
 
@@ -319,15 +319,15 @@
 //matrix
 #define _dI8bar(F, v0, w0)       ( _Jm23(F) * _dI8(F, v0, w0) + _I8(F, v0, w0) * _dJm23(F) )
 
-#define _dI8dF(F, v0, w0)   ( dot( _dI8(F, v0, w0), _dF  ) )
-#define _dI8bardF(F, v0, w0)   ( dot( _dI8bar(F, v0, w0), _dF  ) )
+#define _dI8dF(F, v0, w0, dF)   ( dot( _dI8(F, v0, w0), dF  ) )
+#define _dI8bardF(F, v0, w0, dF)   ( dot( _dI8bar(F, v0, w0), dF  ) )
 
-#define _d2I8dF(v0, w0)   ( _dF * ( outerProduct( v0, w0 ) + outerProduct( w0, v0 ) ) )
+#define _d2I8dF(v0, w0, dF)   ( dF * ( outerProduct( v0, w0 ) + outerProduct( w0, v0 ) ) )
 
-#define _d2I8bardF(F, v0, w0) ( ( _Jm23(F) * _d2I8dF(v0, w0) )     \
-							  + ( _dJm23dF(F) * _dI8(F, v0, w0)  ) \
-							  + ( _dI8dF(F, v0, w0) * _dJm23(F)  ) \
-							  + ( _I8(F, v0, w0)    * _d2Jm23dF(F) ) )
+#define _d2I8bardF(F, v0, w0, dF) ( ( _Jm23(F)              * _d2I8dF(v0, w0, dF) ) \
+							      + ( _dJm23dF(F, dF)       * _dI8(F, v0, w0)     ) \
+							      + ( _dI8dF(F, v0, w0, dF) * _dJm23(F)           ) \
+							      + ( _I8(F, v0, w0)        * _d2Jm23dF(F, dF)    ) )
 
 
 ///////////////////////////////////////////////////////////////////////////

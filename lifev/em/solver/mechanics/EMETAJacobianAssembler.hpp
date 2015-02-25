@@ -103,7 +103,7 @@ computeModifiedFiberActiveStressJacobianTerms ( const vector_Type& disp,
     auto Wm = eval (W, I);
     //    auto dP = Wa * Wm * dfxf0;
 //    auto dP = Wa * Wm * dfxf0;
-  auto dP = Wa * Wm *  _d2I4bardF ( F, f0 );
+    auto dP = Wa * Wm *  _d2I4bardF ( F, f0, dF );
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRuleTetra4pt,
                 dispETFESpace,
@@ -131,7 +131,7 @@ computeI4JacobianTerms ( const vector_Type& disp,
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (W4, _I4 ( F, f0 ) )
-              *  _d2I4dF ( f0 );
+              *  _d2I4dF ( f0, _dF );
 
     if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
@@ -166,7 +166,7 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (dW4, _I4 ( F, f0 ) )
-              *  _dI4dF ( F, f0 )
+              *  _dI4dF ( F, f0, _dF )
               *  _dI4 ( F, f0 );
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -203,7 +203,7 @@ computeI4JacobianTerms ( const vector_Type& disp,
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (W4, _I4bar ( F, s0 ) )
-              *  _d2I4bardF (F, s0 );
+              *  _d2I4bardF (F, s0, _dF );
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
@@ -244,7 +244,7 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (dW4, _I4 ( F, s0 ) )
-              *  _dI4dF ( F, s0 )
+              *  _dI4dF ( F, s0, _dF )
               *  _dI4 ( F, s0 );
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -284,7 +284,7 @@ computeI8JacobianTerms ( const vector_Type& disp,
         auto s0 = eval (normalize1, s_00);
 
         auto dP = eval (W8, _I8 ( F, f0, s0 ) )
-                  *  _d2I8dF (f0, s0 );
+                  *  _d2I8dF (f0, s0, _dF );
 
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 jacobian terms orthonormalizing ... \n";
@@ -308,7 +308,7 @@ computeI8JacobianTerms ( const vector_Type& disp,
 
 
         auto dP = eval (W8, _I8 ( F, f0, s0 ) )
-                  *  _d2I8dF (f0, s0 );
+                  *  _d2I8dF (f0, s0, _dF );
 
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 jacobian terms ... \n";
@@ -350,7 +350,7 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
         auto s0 = eval (normalize1, s_00);
 
         auto dP = eval (dW8, _I8 ( F, f0, s0 ) )
-                  *  _dI8dF ( F, f0, s0 )
+                  *  _dI8dF ( F, f0, s0, _dF )
                   *  _dI8 ( F, f0, s0 );
 
     	if(disp.comm().MyPID() == 0)
@@ -375,7 +375,7 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
 
 
         auto dP = eval (dW8, _I8 ( F, f0, s0 ) )
-                  *  _dI8dF ( F, f0, s0 )
+                  *  _dI8dF ( F, f0, s0, _dF )
                   *  _dI8 ( F, f0, s0 );
 
     	if(disp.comm().MyPID() == 0)
