@@ -28,58 +28,58 @@
 namespace LifeV
 {
 
-typedef VectorEpetra           vector_Type;
-typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
+    typedef VectorEpetra           vector_Type;
+    typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
 
-typedef MatrixEpetra<Real>           matrix_Type;
-typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
-
-
-namespace EMAssembler
-{
-
-template <typename Mesh, typename FunctorPtr >
-void
-computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
-                                        boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
-                                        const vector_Type& fibers,
-                                        const vector_Type& sheets,
-										const vectorPtr_Type& gammaf,
-										const vectorPtr_Type& gammas,
-										const vectorPtr_Type& gamman,
-										boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
-										matrixPtr_Type           jacobianPtr,
-                                        FunctorPtr               W1,
-                                        Real orthotropicParameter = -666.)
-{
-    //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing Isotropic Active Strain jacobian terms: ";
-
-    using namespace ExpressionAssembly;
-
-	auto I = _I;
-	auto dF = grad(phi_j);
-	auto GradU = _Grad_u(dispETFESpace, disp, 0);
-	auto F = I + GradU;
-
-    auto f_0 = _v0 (dispETFESpace, fibers);
-    auto s_0 = _v0 (dispETFESpace, sheets);
-
-    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
-    auto f0 = eval (normalize0, f_0);
-
-    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
-    auto s0 = eval (normalize1, f0, s_0);
-
-    boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
-    auto n0 = eval ( wedge, f0, s0);
+    typedef MatrixEpetra<Real>           matrix_Type;
+    typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
 
-    if(gammas && gamman)
+    namespace EMAssembler
     {
-    	if(disp.comm().MyPID() == 0)
-        std::cout << " Anisotropic case ... \n";
+
+        template <typename Mesh, typename FunctorPtr >
+        void
+        computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
+                                                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
+                                                const vector_Type& fibers,
+                                                const vector_Type& sheets,
+                                                const vectorPtr_Type& gammaf,
+                                                const vectorPtr_Type& gammas,
+                                                const vectorPtr_Type& gamman,
+                                                boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                                matrixPtr_Type           jacobianPtr,
+                                                FunctorPtr               W1,
+                                                Real orthotropicParameter = -666.)
+        {
+            //
+            if(disp.comm().MyPID() == 0)
+                std::cout << "EMETA - Computing Isotropic Active Strain jacobian terms: ";
+
+            using namespace ExpressionAssembly;
+
+            auto I = _I;
+            auto dF = grad(phi_j);
+            auto GradU = _Grad_u(dispETFESpace, disp, 0);
+            auto F = I + GradU;
+
+            auto f_0 = _v0 (dispETFESpace, fibers);
+            auto s_0 = _v0 (dispETFESpace, sheets);
+
+            boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+            auto f0 = eval (normalize0, f_0);
+
+            boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+            auto s0 = eval (normalize1, f0, s_0);
+
+            boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+            auto n0 = eval ( wedge, f0, s0);
+
+
+            if(gammas && gamman)
+            {
+                if(disp.comm().MyPID() == 0)
+                    std::cout << " Anisotropic case ... \n";
 
 		auto gf = value (activationETFESpace, *gammaf);
 		auto gs = value (activationETFESpace, *gammas);
@@ -92,48 +92,48 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
 
 		auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
 
-	    integrate ( elements ( dispETFESpace->mesh() ) ,
-	                quadRuleTetra4pt,
-	                dispETFESpace,
-	                dispETFESpace,
-	                dot ( dP , grad (phi_i) )
-	              ) >> jacobianPtr;
-    }
-    else
-    {
+                integrate ( elements ( dispETFESpace->mesh() ) ,
+                            quadRuleTetra4pt,
+                            dispETFESpace,
+                            dispETFESpace,
+                            dot ( dP , grad (phi_i) )
+                    ) >> jacobianPtr;
+            }
+            else
+            {
 		auto gf = value (activationETFESpace, *gammaf);
 
-    	if(orthotropicParameter > 0 )
-    	{
-        	if(disp.comm().MyPID() == 0)
-            std::cout << " Orthotropic case ... \n";
+                if(orthotropicParameter > 0 )
+                {
+                    if(disp.comm().MyPID() == 0)
+                        std::cout << " Orthotropic case ... \n";
 
-    		auto k = value(orthotropicParameter);
-    		auto FAinv = _FAinv(gf, k, f0, s0, n0);
+                    auto k = value(orthotropicParameter);
+                    auto FAinv = _FAinv(gf, k, f0, s0, n0);
 
-    		auto FE =  F * FAinv;
-    		auto dFE = _dFE(FAinv);
-    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
+                    auto FE =  F * FAinv;
+                    auto dFE = _dFE(FAinv);
+                    auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
 
-    	    integrate ( elements ( dispETFESpace->mesh() ) ,
-    	                quadRuleTetra4pt,
-    	                dispETFESpace,
-    	                dispETFESpace,
-    	                dot ( dP , grad (phi_i) )
-    	              ) >> jacobianPtr;
-    	}
-    	else
-    	{
-        	if(disp.comm().MyPID() == 0)
-            std::cout << " Transversely isotropic case ... \n";
+                    integrate ( elements ( dispETFESpace->mesh() ) ,
+                                quadRuleTetra4pt,
+                                dispETFESpace,
+                                dispETFESpace,
+                                dot ( dP , grad (phi_i) )
+                        ) >> jacobianPtr;
+                }
+                else
+                {
+                    if(disp.comm().MyPID() == 0)
+                        std::cout << " Transversely isotropic case ... \n";
 
 //    		auto FAinv = _FAinv(gf, f0, s0, n0);
-    		auto FAinv = _FAinv(gf, f0);
+                    auto FAinv = _FAinv(gf, f0);
 
 
-    		auto FE =  F * FAinv;
-    		auto dFE = _dFE(FAinv);
-    		auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
+                    auto FE =  F * FAinv;
+                    auto dFE = _dFE(FAinv);
+                    auto dP = eval (W1, FE ) * (_d2I1bardF (FE, dFE) ) * FAinv;
 
 //    		auto dFE = dF * FAinv;
 //    		auto dFET = FAinv * transpose(dF)
@@ -158,21 +158,21 @@ computeActiveStrainI1JacobianTerms (    const vector_Type& disp,
 //    		auto dP = dJm23dF * P + Jm23 * ( dFE + value(-1./3.) * ( dI1EdFE * FEmT + I1E * dFEmTdFE )  ) * FAinv;
 //
 
-    	    integrate ( elements ( dispETFESpace->mesh() ) ,
-    	                quadRuleTetra4pt,
-    	                dispETFESpace,
-    	                dispETFESpace,
-    	                dot ( dP , grad (phi_i) )
-    	              ) >> jacobianPtr;
-    	}
-    }
+                    integrate ( elements ( dispETFESpace->mesh() ) ,
+                                quadRuleTetra4pt,
+                                dispETFESpace,
+                                dispETFESpace,
+                                dot ( dP , grad (phi_i) )
+                        ) >> jacobianPtr;
+                }
+            }
 
-}
-
-
+        }
 
 
-}//EMAssembler
+
+
+    }//EMAssembler
 
 }//LifeV
 

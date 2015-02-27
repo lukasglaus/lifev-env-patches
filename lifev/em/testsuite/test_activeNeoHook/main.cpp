@@ -259,9 +259,15 @@ int main (int argc, char** argv)
     solid.setBCFlag( LVFlag );
 
     LifeV::VectorEpetra gammaf( activationFESpace->map() );
-    // LifeV::VectorEpetra gammas( activationFESpace->map() );
-    // LifeV::VectorEpetra gamman( activationFESpace->map() );
-
+    LifeV::VectorEpetra gammas( activationFESpace->map() );
+    LifeV::VectorEpetra gamman( activationFESpace->map() );
+    std::string activationType = emdata.solidParameter<std::string>("EMactiveStrainType");
+    if (activationType != "TransverselyIsotropic" && activationType != "Orthotropic")
+    {
+        solid.EMMaterial()->sheetActivationPtr().reset(new VectorEpetra(gammaf));
+        solid.EMMaterial()->normalActivationPtr().reset(new VectorEpetra(gammaf));
+    }
+    
     std::cout << "Starting Preload Ramp\n";
     // pressure ramp
     for (Real time (0.0); time < endTime;)
@@ -299,14 +305,24 @@ int main (int argc, char** argv)
         {
             std::cout << "----- Activation Step: " << i << std::endl;
             // activation
-            gammaf = i*maxShortening/static_cast<Real>(activationSteps);
-            // gammas = 1/std::sqrt(time/endTime * maxShortening);
-            // gamman = 1/std::sqrt(time/endTime * maxShortening);
-            std::cout << "----- gamma_f: " << i*maxShortening/activationSteps << std::endl;
-            *(solid.EMMaterial()->fiberActivationPtr())  = gammaf;
-            // *(solid.EMMaterial()->sheetActivationPtr())  = gammas;
-            // *(solid.EMMaterial()->normalActivationPtr()) = gamman;
+            Real gf(0.), gs(0.), gn(0.);
+            gf = i*maxShortening/static_cast<Real>(activationSteps); 
+            gammaf = gf;
 
+            std::cout << "----- gamma_f: " << gf << std::endl;
+            *(solid.EMMaterial()->fiberActivationPtr())  = gammaf;
+            if (activationType != "TransverselyIsotropic" && activationType != "Orthotropic")
+            {
+                gs = std::sqrt(std::fabs(gf));
+                gn = 1./((1.+gf)*(1.+gs)) - 1.;
+                std::cout << "----- gamma_s: " << gs << std::endl;
+                std::cout << "----- gamma_n: " << gn << std::endl;
+                gammas = gs;
+                gamman = gn;
+                *(solid.EMMaterial()->sheetActivationPtr())  = gammas;
+                *(solid.EMMaterial()->normalActivationPtr()) = gamman;
+            }
+    
             solid.iterate ( solidBC -> handler() , deformedPressure );
         
             exporter->postProcess ( solid.data() -> dataTime() -> time() + i*dt );
