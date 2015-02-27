@@ -45,6 +45,8 @@ save       = 1
     #SFAS  = Simple Fiber Active Stress
     EMActiveStressMaterialType = ANH
     EMPassiveMaterialType = PV
+    EMActiveStrainOrthotropicParameter = 4
+    EMactiveStrainType = Anisotropic #TransverselyIsotropic #Orthotropic #anything else means anisotropic
     
     C = 20000.0
     bff = 8.0
@@ -66,8 +68,8 @@ save       = 1
     bfs         = 11.602
 
     [../activation]
-        max_shortening   = -0.1
-    	activation_steps = 10
+        max_shortening   = -0.2
+    	activation_steps = 20
 
 
    [../boundary_conditions]
@@ -75,16 +77,10 @@ save       = 1
       LV_flag = 400
       LV_preload_pressure = 1.
 
-      # list = 'Top Bottom Back Right'
-      list = 'Top fixed'
-        [./Top]
-        type       = Natural
-        flag       = 400
-        mode       = Full
-        component  = 3
-    	function  = '[0.0, 0.0, 1.e+2*t]'
+      list = 'Bottom Back Right'
+      # list = 'Top fixed'
 
-        [../Bottom]
+        [./Bottom]
         type       = Essential
         flag       = 200
         mode       = Component #Full
@@ -116,7 +112,7 @@ save       = 1
         
 	[../time_discretization]
 	initialtime 	= 0.
-	endtime     	= 1.
+	endtime     	= 0.
 	timestep    	= 0.1
 	theta       	= 0.35
 	zeta        	= 0.75
@@ -126,7 +122,7 @@ save       = 1
 	mesh_type = .mesh
 	mesh_dir  	= ./
 	mesh_file 	= cube4.mesh
-	order     	= P1
+	order     	= P2
 	
 	
 	[../miscellaneous]

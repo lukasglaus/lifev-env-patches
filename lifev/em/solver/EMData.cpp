@@ -72,8 +72,11 @@ EMData::setupSolidParameters(GetPot& dataFile, const std::string& section)
     M_solidParametersList.set ("EMActiveStressMaterialType", EMactiveStressMaterialType);
 
     std::string EMactiveStrainMaterialType = dataFile ( ( section + "/physics/EMActiveStrainMaterialType" ).data(), "NO_DEFAULT_ACTIVESTRAIN_TYPE" );
+    double EMActiveStrainOrthotropicParameter = dataFile ( ( section + "/physics/EMActiveStrainOrthotropicParameter" ).data(), -666. );
+    std::string EMactiveStrainType = dataFile ( ( section + "/physics/EMactiveStrainType" ).data(), "TransverselyIsotropic" );
     M_solidParametersList.set ("EMActiveStrainMaterialType", EMactiveStrainMaterialType);
-
+    M_solidParametersList.set ("EMActiveStrainOrthotropicParameter", EMActiveStrainOrthotropicParameter);
+    M_solidParametersList.set ("EMactiveStrainType", EMactiveStrainType);
 
     double Tmax = dataFile ( ( section + "/physics/Tmax" ).data(), 50.0 );
     M_solidParametersList.set ("MaxActiveTension", Tmax);
