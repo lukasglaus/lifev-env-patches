@@ -88,7 +88,7 @@ int main (int argc, char** argv)
     typedef ElectroIonicModel ionicModel_Type;
     typedef boost::shared_ptr<ionicModel_Type> ionicModelPtr_Type;
 
-    typedef EMMonodomainSolver<mesh_Type, ionicModel_Type>  monodomain_Type;
+    typedef EMMonodomainSolver<mesh_Type >  monodomain_Type;
 
 
 #ifdef HAVE_MPI

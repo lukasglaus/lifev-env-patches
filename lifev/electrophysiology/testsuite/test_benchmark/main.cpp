@@ -179,7 +179,7 @@ Int main ( Int argc, char** argv )
     typedef ElectroIonicModel                                           ionicModel_Type;
     typedef boost::shared_ptr<ionicModel_Type>                          ionicModelPtr_Type;
 
-    typedef ElectroETAMonodomainSolver< mesh_Type, ionicModel_Type >    monodomainSolver_Type;
+    typedef ElectroETAMonodomainSolver< mesh_Type>                      monodomainSolver_Type;
     typedef boost::shared_ptr< monodomainSolver_Type >                  monodomainSolverPtr_Type;
 
     // ---------------------------------------------------------------

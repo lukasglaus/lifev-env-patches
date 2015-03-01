@@ -54,8 +54,8 @@ namespace LifeV
 
 //! monodomainSolver - Class featuring the solver for monodomain equations
 
-template<typename Mesh, typename EMIonicModel>
-class EMMonodomainSolver : public virtual ElectroETAMonodomainSolver<Mesh, EMIonicModel>
+template<typename Mesh>
+class EMMonodomainSolver : public virtual ElectroETAMonodomainSolver<Mesh>
 {
 
     //!Monodomain Solver
@@ -139,7 +139,7 @@ public:
     typedef boost::shared_ptr<prec_Type>                                precPtr_Type;
 
     //! Ionic model
-    typedef EMIonicModel                                                    ionicModel_Type;
+    typedef ElectroIonicModel                                           ionicModel_Type;
 
     //! Base class of the ionic model
     typedef ElectroIonicModel                                           superIonicModel;
@@ -159,7 +159,7 @@ public:
     //! 3x3 matrix
     typedef MatrixSmall<3, 3>                                           matrixSmall_Type;
 
-    typedef ElectroETAMonodomainSolver<Mesh, EMIonicModel>              super;
+    typedef ElectroETAMonodomainSolver<Mesh>              super;
     //@}
 
     //! @name Constructors & Destructor
@@ -214,7 +214,7 @@ public:
     /*!
      * @param ElectroETAmonodomainSolver object
      */
-    EMMonodomainSolver<Mesh, EMIonicModel>& operator= ( const EMMonodomainSolver& solver);
+    EMMonodomainSolver<Mesh>& operator= ( const EMMonodomainSolver& solver);
 
     //! Destructor
     virtual ~EMMonodomainSolver() {}
@@ -438,8 +438,8 @@ private:
 //! Constructors
 // ===================================================
 //!Empty constructor
-template<typename Mesh, typename IonicModel>
-EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver() :
+template<typename Mesh>
+EMMonodomainSolver<Mesh >::EMMonodomainSolver() :
     super(),
     M_displacementETFESpacePtr(),
     M_oneWayCoupling (false),
@@ -453,8 +453,8 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver() :
 }
 
 
-template<typename Mesh, typename IonicModel>
-EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        meshName,
+template<typename Mesh>
+EMMonodomainSolver<Mesh>::EMMonodomainSolver (std::string        meshName,
                                                           std::string        meshPath,
                                                           GetPot&            dataFile,
                                                           ionicModelPtr_Type model) :
@@ -467,8 +467,8 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        mes
                                                                     this -> M_commPtr) );
 }
 
-template<typename Mesh, typename IonicModel>
-EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (GetPot&            dataFile,
+template<typename Mesh>
+EMMonodomainSolver<Mesh>::EMMonodomainSolver (GetPot&            dataFile,
                                                           ionicModelPtr_Type model,
                                                           meshPtr_Type       meshPtr) :
     super                           (dataFile, model, meshPtr),
@@ -480,8 +480,8 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (GetPot&            dat
                                                                     this -> M_commPtr) );
 }
 
-template<typename Mesh, typename IonicModel>
-EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        meshName,
+template<typename Mesh>
+EMMonodomainSolver<Mesh>::EMMonodomainSolver (std::string        meshName,
                                                           std::string        meshPath,
                                                           GetPot&            dataFile,
                                                           ionicModelPtr_Type model,
@@ -497,8 +497,8 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (std::string        mes
 
 
 //! Copy constructor
-template<typename Mesh, typename IonicModel>
-EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (
+template<typename Mesh>
+EMMonodomainSolver<Mesh>::EMMonodomainSolver (
     const EMMonodomainSolver& solver) :
     super::ElectroETAMonodomainSolver (solver)
 {
@@ -513,9 +513,8 @@ EMMonodomainSolver<Mesh, IonicModel>::EMMonodomainSolver (
 }
 
 //! Assignment operator
-template<typename Mesh, typename IonicModel>
-EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
-                   IonicModel >::operator= (const EMMonodomainSolver& solver)
+template<typename Mesh>
+EMMonodomainSolver<Mesh>& EMMonodomainSolver < Mesh >::operator= (const EMMonodomainSolver& solver)
 {
     super::operator = (solver);
     if (solver.M_displacementPtr)
@@ -532,8 +531,8 @@ EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
 
 /********* SETUP METHODS */ //////
 
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::setup (GetPot& dataFile,
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::setup (GetPot& dataFile,
 //                                                          short int ionicSize)
 //{
 //  super::setup(dataFile, ionicSize);
@@ -543,8 +542,8 @@ EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
 //                                                                 this -> M_commPtr) );
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::setup (std::string meshName, std::string meshPath, GetPot& dataFile,
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::setup (std::string meshName, std::string meshPath, GetPot& dataFile,
 //            short int ionicSize)
 //{
 //  super::setup(meshName, meshPath, dataFile, ionicSize);
@@ -556,8 +555,8 @@ EMMonodomainSolver<Mesh, IonicModel>& EMMonodomainSolver < Mesh,
 ///////////////////////////////////////////////////////////
 //                MATRICES SETUP
 ///////////////////////////////////////////////////////////
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setup ( GetPot& dataFile, short int ionicModelSize)
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setup ( GetPot& dataFile, short int ionicModelSize)
 {
     super::setup (dataFile, ionicModelSize);
     M_displacementETFESpacePtr.reset ( new ETFESpaceVectorial_Type (this->M_localMeshPtr,
@@ -571,8 +570,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setup ( GetPot& dataFile, short int i
 //!setup mass matrix
 // choose between the one with mechanical feedback
 // or the one from the monodomain model
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrix()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setupMassMatrix()
 {
     if (M_displacementPtr && !M_oneWayCoupling)
     {
@@ -592,8 +591,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrix()
 }
 
 //setup mass matrix with mechanical fedback
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrixWithMehcanicalFeedback ()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setupMassMatrixWithMehcanicalFeedback ()
 {
     if (this->M_verbose && this->M_commPtr->MyPID() == 0)
     {
@@ -636,8 +635,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMassMatrixWithMehcanicalFeedback
 }
 
 //setup lumped mass matrix with mechanical fedback
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFeedback ()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setupLumpedMassMatrixWithMehcanicalFeedback ()
 {
 
     *this->M_massMatrixPtr *= 0.0;
@@ -702,8 +701,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupLumpedMassMatrixWithMehcanicalFe
 ///////////////////////////////////////////////////////////
 
 //setup the stiffness matrix checking if we have mechano electrical feedback
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrix()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setupStiffnessMatrix()
 {
 
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
@@ -721,8 +720,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrix()
 }
 
 //setup the stiffness matrix modifying the conductivity
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrixWithMehcanicalFeedback ()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setupStiffnessMatrixWithMehcanicalFeedback ()
 {
     if (this->M_verbose && this->M_localMeshPtr->comm()->MyPID() == 0)
     {
@@ -764,8 +763,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupStiffnessMatrixWithMehcanicalFee
 }
 
 //update matrices
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setupMatrices()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setupMatrices()
 {
     setupMassMatrix();
     setupStiffnessMatrix();
@@ -774,8 +773,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setupMatrices()
 
 
 //update matrices
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::updateMatrices()
 {
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
     {
@@ -789,8 +788,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //
 //
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneDiffusionStepBE()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneDiffusionStepBE()
 //{
 //    if (M_displacementPtr)
 //    {
@@ -800,8 +799,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    M_linearSolverPtr->solve (M_potentialPtr);
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneSplittingStep()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneSplittingStep()
 //{
 //    solveOneReactionStepFE();
 //    (*M_rhsPtrUnique) *= 0;
@@ -809,16 +808,16 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    solveOneDiffusionStepBE();
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneSplittingStep (
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneSplittingStep (
 //    IOFile_Type& exporter, Real t)
 //{
 //    solveOneSplittingStep();
 //    exportSolution (exporter, t);
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveSplitting()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveSplitting()
 //{
 //    for (Real t = M_initialTime; t < M_endTime;)
 //    {
@@ -827,8 +826,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    }
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveSplitting (
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveSplitting (
 //    IOFile_Type& exporter)
 //{
 //    if (M_endTime > M_timeStep)
@@ -842,8 +841,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //}
 //
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneStepGatingVariablesFE()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneStepGatingVariablesFE()
 //{
 //    M_ionicModelPtr->superIonicModel::computeGatingRhs (M_globalSolution,
 //                                                        M_globalRhs);
@@ -854,8 +853,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //                                       + M_timeStep * (* (M_globalRhs.at (i) ) );
 //    }
 //}
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneStepGatingVariablesRL()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneStepGatingVariablesRL()
 //{
 //
 //    M_ionicModelPtr->superIonicModel::computeGatingVariablesWithRushLarsen (
@@ -870,24 +869,24 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    }
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::computeRhsICI()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::computeRhsICI()
 //{
 //    M_ionicModelPtr->superIonicModel::computePotentialRhsICI (M_globalSolution,
 //                                                              M_globalRhs, (*M_massMatrixPtr) );
 //    updateRhs();
 //}
 
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::computeRhsICIWithFullMass ()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::computeRhsICIWithFullMass ()
 //{
 //    M_ionicModelPtr->superIonicModel::computePotentialRhsICI (M_globalSolution,
 //                                                              M_globalRhs, *M_fullMassMatrixPtr);
 //    updateRhs();
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::computeRhsSVI()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::computeRhsSVI()
 //{
 //    if (M_displacementPtr)
 //    {
@@ -914,8 +913,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::updateMatrices()
 //    updateRhs();
 //}
 //
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep()
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::solveOneICIStep()
 {
     updateMatrices();
     if (M_displacementPtr  && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
@@ -930,8 +929,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep()
 
 
 
-template<typename Mesh, typename IonicModel>
-void EMMonodomainSolver<Mesh, IonicModel>::setParametersFromEMData ( EMData& data)
+template<typename Mesh>
+void EMMonodomainSolver<Mesh>::setParametersFromEMData ( EMData& data)
 {
     this->M_surfaceVolumeRatio = data.electroParameter<Real>("surfaceVolumeRatio");
     this->M_diffusionTensor[0] = data.electroParameter<Real> ("fiberDiffusion");
@@ -950,8 +949,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setParametersFromEMData ( EMData& dat
 
 
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneICIStep (matrix_Type& mass)
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneICIStep (matrix_Type& mass)
 //{
 //    computeRhsICI (mass);
 //    if (M_displacementPtr)
@@ -962,8 +961,8 @@ void EMMonodomainSolver<Mesh, IonicModel>::setParametersFromEMData ( EMData& dat
 //    M_linearSolverPtr->solve (M_potentialPtr);
 //}
 //
-//template<typename Mesh, typename IonicModel>
-//void EMMonodomainSolver<Mesh, IonicModel>::solveOneSVIStep()
+//template<typename Mesh>
+//void EMMonodomainSolver<Mesh>::solveOneSVIStep()
 //{
 //    computeRhsSVI();
 //    if (M_displacementPtr)

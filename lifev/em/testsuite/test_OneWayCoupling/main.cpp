@@ -308,7 +308,7 @@ int main (int argc, char** argv)
     ionicModelPtr_Type ionicModel (new IonicAlievPanfilov() );
 
     //    typedef ElectroETAMonodomainSolver<mesh_Type, ionicModel_Type>  monodomain_Type;
-    typedef EMMonodomainSolver<mesh_Type, ionicModel_Type>  monodomain_Type;
+    typedef EMMonodomainSolver<mesh_Type>  monodomain_Type;
     monodomain_Type monodomain ( meshName, meshPath, dataFile , ionicModel );
     std::cout << "Monodomain 1 Done!\n";
 

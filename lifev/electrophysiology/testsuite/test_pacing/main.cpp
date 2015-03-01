@@ -120,7 +120,7 @@ Int main ( Int argc, char** argv )
                                     const Real& /*z*/,
                                     const ID&   /*i*/ ) >   function_Type;
 
-    typedef ElectroETAMonodomainSolver< mesh_Type, IonicAlievPanfilov > monodomainSolver_Type;
+    typedef ElectroETAMonodomainSolver< mesh_Type >                    monodomainSolver_Type;
     typedef boost::shared_ptr< monodomainSolver_Type >                 monodomainSolverPtr_Type;
 
     typedef VectorEpetra                                               vector_Type;
