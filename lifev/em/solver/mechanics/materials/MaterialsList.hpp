@@ -1,5 +1,5 @@
 /*
- * PassiveMaterialsList.hpp
+ * MaterialsList.hpp
  *
  *  Created on: 30/apr/2014
  *      Author: srossi
@@ -23,5 +23,6 @@
 #include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
 
 #include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveNeoHookean.hpp>
+#include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveIsotropicExponential.hpp>
 
-#endif /* PASSIVEMATERIALSLIST_HPP_ */
+#endif /* MATERIALSLIST_HPP_ */

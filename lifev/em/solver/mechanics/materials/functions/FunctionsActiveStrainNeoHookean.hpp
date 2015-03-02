@@ -2,11 +2,11 @@
  * EMMaterialFunctions.hpp
  *
  *  Created on: 28/apr/2014
- *      Author: srossi
+ *      Author: srossi, Luca Barbarotta
  */
 
-#ifndef FUNCTIONActiveStrainNeoHookean_HPP_
-#define FUNCTIONActiveStrainNeoHookean_HPP_
+#ifndef FUNCTIONACTIVESTRAINNEOHOOKEAN_HPP_
+#define FUNCTIONACTIVESTRAINNEOHOOKEAN_HPP_
 
 #include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
 
@@ -67,7 +67,6 @@ public:
                                                        jacobianPtr,
                                                        this->M_W1,
                                                        this->M_activeStrainOrthotropicParameter);
-    	std::cout << "Norm of the activation = " <<  fiberActivation->norm2() << std::endl;
 
     	using namespace ExpressionAssembly;
 
@@ -276,4 +275,4 @@ private:
 } //EMMaterialFunctions
 
 } //LifeV
-#endif /* EMMATERIALFUNCTIONS_HPP_ */
+#endif /* FUNCTIONACTIVESTRAINNEOHOOKEAN_HPP_ */
