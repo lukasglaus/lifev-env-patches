@@ -239,6 +239,41 @@ public:
     }
 
 
+    void setupFiberVector( const std::string& fileName,
+						   const std::string& fieldName,
+						   const std::string& postDir = "./",
+						   const std::string& polynomialDegree = "P1"  )
+    {
+    	setupMechanicalFiberVector(fileName, fieldName, postDir, polynomialDegree);
+    	M_electroSolverPtr->setFiberPtr(getMechanicsFibers());
+    }
+
+    void setupMechanicalFiberVector( const std::string& fileName,
+    		                         const std::string& fieldName,
+									 const std::string& postDir = "./",
+                                     const std::string& polynomialDegree = "P1"  )
+    {
+        ElectrophysiologyUtility::importVectorField (getMechanicsFibers(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
+    }
+
+    void setupMechanicalSheetVector( const std::string& fileName,
+    		                         const std::string& fieldName,
+									 const std::string& postDir = "./",
+                                     const std::string& polynomialDegree = "P1"  )
+    {
+        ElectrophysiologyUtility::importVectorField (getMechanicsSheets(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
+    }
+
+    void setupElectroFiberVector( const std::string& fileName,
+								  const std::string& fieldName,
+								  const std::string& postDir = "./",
+								  const std::string& polynomialDegree = "P1"  )
+    {
+        ElectrophysiologyUtility::importVectorField (getElectroFibers(), fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
+    }
+
+
+
     void setupMechanicalFiberVector ( Real fx, Real fy, Real fz )
     {
         M_EMStructuralOperatorPtr -> EMMaterial() -> setupFiberVector ( fx, fy, fz);
@@ -335,6 +370,8 @@ public:
     {
     	M_commPtr = comm;
     }
+
+    void showMe() const {}
 
 protected:
 public:
