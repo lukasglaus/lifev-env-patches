@@ -182,10 +182,311 @@ computeActiveStrainI1ResidualTerms (  const vector_Type& disp,
 
 }
 
+template <typename Mesh, typename FunctorPtr >
+void
+computeActiveStrainI4FibersResidualTerms (  const vector_Type& disp,
+                                            boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                            const vector_Type& fibers,
+                                            const vector_Type& sheets,
+                                            const vectorPtr_Type& gammaf,
+                                            const vectorPtr_Type& gammas,
+                                            const vectorPtr_Type& gamman,
+                                            boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                            vectorPtr_Type           residualVectorPtr,
+                                            FunctorPtr               W4f,
+                                            Real orthotropicParameter = -666.)
+{
+    //
+    if(disp.comm().MyPID() == 0)
+        std::cout << "EMETA - Computing Anisotropic Fibers Active Strain residual terms: ";
+
+    using namespace ExpressionAssembly;
+
+    auto I = _I;
+    auto GradU = _Grad_u(dispETFESpace, disp, 0);
+    auto F = I + GradU;
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    auto s_0 = _v0 (dispETFESpace, sheets);
+
+    boost::shared_ptr<Display> display (new Display);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+    auto s0 = eval (normalize1, f0, s_0);
+
+    boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+    auto n0 = eval ( wedge, f0, s0);
 
 
+    if(gammas && gamman)
+    {
+    	if(disp.comm().MyPID() == 0)
+            std::cout << " Anisotropic case ... \n";
+        
+        auto gf = value (activationETFESpace, *gammaf);
+        auto gs = value (activationETFESpace, *gammas);
+        auto gn = value (activationETFESpace, *gamman);
 
 
+        auto FAinv = _FAinv(gf, gs, gn, f0, s0, n0);
+        
+        auto FE =  F * FAinv;
+        auto P = eval (W4f, FE ) * _dI4bar (FE, f0) * FAinv;
+                
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dot ( P, grad (phi_i) )
+            ) >> residualVectorPtr;
+    }
+    else
+    {
+        auto gf = value (activationETFESpace, *gammaf);
+
+    	if(orthotropicParameter > 0 )
+    	{
+            if(disp.comm().MyPID() == 0)
+                std::cout << " Orthotropic case ... \n";
+
+            auto k = value(orthotropicParameter);
+            auto FAinv = _FAinv(gf, k, f0, s0, n0);
+
+            auto FE =  F * FAinv;
+            auto P = eval (W4f, FE ) * _dI4bar (FE, f0) * FAinv;
+
+            integrate ( elements ( dispETFESpace->mesh() ) ,
+                        quadRuleTetra4pt,
+                        dispETFESpace,
+                        dot ( P, grad (phi_i) )
+                ) >> residualVectorPtr;
+    	}
+    	else
+    	{
+            if(disp.comm().MyPID() == 0)
+                std::cout << " Transversely isotropic case ... \n";
+
+            using namespace ExpressionAssembly;
+//    		auto FAinv = _FAinv(gf, f0, s0, n0);
+            auto FAinv = _FAinv(gf, f0);
+
+            auto FE =  F * FAinv;
+            auto P = eval (W4f, FE ) * _dI4bar (FE, f0) * FAinv;
+
+            integrate ( elements ( dispETFESpace->mesh() ) ,
+                        quadRuleTetra4pt,
+                        dispETFESpace,
+                        dot ( P, grad (phi_i) )
+                ) >> residualVectorPtr;
+    	}
+    }
+
+}
+
+template <typename Mesh, typename FunctorPtr >
+void
+computeActiveStrainI4SheetsResidualTerms (  const vector_Type& disp,
+                                            boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                            const vector_Type& fibers,
+                                            const vector_Type& sheets,
+                                            const vectorPtr_Type& gammaf,
+                                            const vectorPtr_Type& gammas,
+                                            const vectorPtr_Type& gamman,
+                                            boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                            vectorPtr_Type           residualVectorPtr,
+                                            FunctorPtr               W4s,
+                                            Real orthotropicParameter = -666.)
+{
+    //
+    if(disp.comm().MyPID() == 0)
+        std::cout << "EMETA - Computing Anisotropic Sheets Active Strain residual terms: ";
+
+    using namespace ExpressionAssembly;
+
+    auto I = _I;
+    auto GradU = _Grad_u(dispETFESpace, disp, 0);
+    auto F = I + GradU;
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    auto s_0 = _v0 (dispETFESpace, sheets);
+
+    boost::shared_ptr<Display> display (new Display);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+    auto s0 = eval (normalize1, f0, s_0);
+
+    boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+    auto n0 = eval ( wedge, f0, s0);
+
+
+    if(gammas && gamman)
+    {
+    	if(disp.comm().MyPID() == 0)
+            std::cout << " Anisotropic case ... \n";
+        
+        auto gf = value (activationETFESpace, *gammaf);
+        auto gs = value (activationETFESpace, *gammas);
+        auto gn = value (activationETFESpace, *gamman);
+
+
+        auto FAinv = _FAinv(gf, gs, gn, f0, s0, n0);
+        
+        auto FE =  F * FAinv;
+        auto P = eval (W4s, FE ) * _dI4bar (FE, s0) * FAinv;
+                
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dot ( P, grad (phi_i) )
+            ) >> residualVectorPtr;
+    }
+    else
+    {
+        auto gf = value (activationETFESpace, *gammaf);
+
+    	if(orthotropicParameter > 0 )
+    	{
+            if(disp.comm().MyPID() == 0)
+                std::cout << " Orthotropic case ... \n";
+
+            auto k = value(orthotropicParameter);
+            auto FAinv = _FAinv(gf, k, f0, s0, n0);
+
+            auto FE =  F * FAinv;
+            auto P = eval (W4s, FE ) * _dI4bar (FE, s0) * FAinv;
+
+            integrate ( elements ( dispETFESpace->mesh() ) ,
+                        quadRuleTetra4pt,
+                        dispETFESpace,
+                        dot ( P, grad (phi_i) )
+                ) >> residualVectorPtr;
+    	}
+    	else
+    	{
+            if(disp.comm().MyPID() == 0)
+                std::cout << " Transversely isotropic case ... \n";
+
+            using namespace ExpressionAssembly;
+//    		auto FAinv = _FAinv(gf, f0, s0, n0);
+            auto FAinv = _FAinv(gf, f0);
+
+            auto FE =  F * FAinv;
+            auto P = eval (W4s, FE ) * _dI4bar (FE, s0) * FAinv;
+
+            integrate ( elements ( dispETFESpace->mesh() ) ,
+                        quadRuleTetra4pt,
+                        dispETFESpace,
+                        dot ( P, grad (phi_i) )
+                ) >> residualVectorPtr;
+    	}
+    }
+
+}
+
+    template <typename Mesh, typename FunctorPtr >
+void
+computeActiveStrainI8ResidualTerms (  const vector_Type& disp,
+                                      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                      const vector_Type& fibers,
+                                      const vector_Type& sheets,
+                                      const vectorPtr_Type& gammaf,
+                                      const vectorPtr_Type& gammas,
+                                      const vectorPtr_Type& gamman,
+                                      boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                      vectorPtr_Type           residualVectorPtr,
+                                      FunctorPtr               W8fs,
+                                      Real orthotropicParameter = -666.)
+{
+    //
+    if(disp.comm().MyPID() == 0)
+        std::cout << "EMETA - Computing Anisotropic Shear Active Strain residual terms: ";
+
+    using namespace ExpressionAssembly;
+
+    auto I = _I;
+    auto GradU = _Grad_u(dispETFESpace, disp, 0);
+    auto F = I + GradU;
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    auto s_0 = _v0 (dispETFESpace, sheets);
+
+    boost::shared_ptr<Display> display (new Display);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
+
+    boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+    auto s0 = eval (normalize1, f0, s_0);
+
+    boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+    auto n0 = eval ( wedge, f0, s0);
+
+    if(gammas && gamman)
+    {
+    	if(disp.comm().MyPID() == 0)
+            std::cout << " Anisotropic case ... \n";
+        
+        auto gf = value (activationETFESpace, *gammaf);
+        auto gs = value (activationETFESpace, *gammas);
+        auto gn = value (activationETFESpace, *gamman);
+
+
+        auto FAinv = _FAinv(gf, gs, gn, f0, s0, n0);
+        
+        auto FE =  F * FAinv;
+        auto P = eval (W8fs, FE ) * _dI8bar (FE, f0, s0) * FAinv;
+                
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                    quadRuleTetra4pt,
+                    dispETFESpace,
+                    dot ( P, grad (phi_i) )
+            ) >> residualVectorPtr;
+    }
+    else
+    {
+        auto gf = value (activationETFESpace, *gammaf);
+
+    	if(orthotropicParameter > 0 )
+    	{
+            if(disp.comm().MyPID() == 0)
+                std::cout << " Orthotropic case ... \n";
+
+            auto k = value(orthotropicParameter);
+            auto FAinv = _FAinv(gf, k, f0, s0, n0);
+
+            auto FE =  F * FAinv;
+            auto P = eval (W8fs, FE ) * _dI8bar (FE, f0, s0) * FAinv;
+
+            integrate ( elements ( dispETFESpace->mesh() ) ,
+                        quadRuleTetra4pt,
+                        dispETFESpace,
+                        dot ( P, grad (phi_i) )
+                ) >> residualVectorPtr;
+    	}
+    	else
+    	{
+            if(disp.comm().MyPID() == 0)
+                std::cout << " Transversely isotropic case ... \n";
+
+            using namespace ExpressionAssembly;
+//    		auto FAinv = _FAinv(gf, f0, s0, n0);
+            auto FAinv = _FAinv(gf, f0);
+
+            auto FE =  F * FAinv;
+            auto P = eval (W8fs, FE ) * _dI8bar (FE, f0, s0) * FAinv;
+
+            integrate ( elements ( dispETFESpace->mesh() ) ,
+                        quadRuleTetra4pt,
+                        dispETFESpace,
+                        dot ( P, grad (phi_i) )
+                ) >> residualVectorPtr;
+    	}
+    }
+
+}
+    
 }//EMAssembler
 
 }//LifeV
