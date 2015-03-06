@@ -56,11 +56,12 @@ public:
     // }
 
     //    AnisotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    ActiveStrainAnisotropicExponential (Real a = 185350., Real b = 15.972, Field fibers = Field::Fibers) : super(a,b,fibers) {} // 0.33 KPa
+    ActiveStrainAnisotropicExponential (Real a = 185350., Real b = 15.972, Field fibers = Field::Fibers, bool NISplitting=true) : super(a,b,fibers), M_NISplitting(NISplitting) {} // 0.33 KPa
     ActiveStrainAnisotropicExponential (const ActiveStrainAnisotropicExponential& ActiveStrainAnisotropicExponential)
     {
         this->M_a = ActiveStrainAnisotropicExponential.M_a;
         this->M_b = ActiveStrainAnisotropicExponential.M_b;
+        M_NISplitting = ActiveStrainAnisotropicExponential.M_NISplitting;
         this->M_anisotropyField = ActiveStrainAnisotropicExponential.M_anisotropyField;
         this->M_activeStrainType = ActiveStrainAnisotropicExponential.M_activeStrainType;
         this->M_activeStrainOrthotropicParameter = ActiveStrainAnisotropicExponential.M_activeStrainOrthotropicParameter;
@@ -79,31 +80,67 @@ public:
     {
         if (this->M_anisotropyField == Field::Fibers)
         {
-            EMAssembler::computeActiveStrainI4FibersJacobianTerms (disp,
-                                                                   dispETFESpace,
-                                                                   fibers,
-                                                                   sheets,
-                                                                   fiberActivation,
-                                                                   sheetActivation,
-                                                                   normalActivation,
-                                                                   activationETFESpace,
-                                                                   jacobianPtr,
-                                                                   this->getMe(),
-                                                                   this->M_activeStrainOrthotropicParameter);
+            if ( M_NISplitting )
+            {
+                EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI4barFibersJacobianTerms
+                    (disp,
+                     dispETFESpace,
+                     fibers,
+                     sheets,
+                     fiberActivation,
+                     sheetActivation,
+                     normalActivation,
+                     activationETFESpace,
+                     jacobianPtr,
+                     this->getMe(),
+                     this->M_activeStrainOrthotropicParameter);
+            }
+            else
+            {
+                EMAssembler::ActiveStrain::computeActiveStrainI4FibersJacobianTerms (disp,
+                                                                                     dispETFESpace,
+                                                                                     fibers,
+                                                                                     sheets,
+                                                                                     fiberActivation,
+                                                                                     sheetActivation,
+                                                                                     normalActivation,
+                                                                                     activationETFESpace,
+                                                                                     jacobianPtr,
+                                                                                     this->getMe(),
+                                                                                     this->M_activeStrainOrthotropicParameter);
+            }
         }
         else
         {
-            EMAssembler::computeActiveStrainI4SheetsJacobianTerms (disp,
-                                                                   dispETFESpace,
-                                                                   fibers,
-                                                                   sheets,
-                                                                   fiberActivation,
-                                                                   sheetActivation,
-                                                                   normalActivation,
-                                                                   activationETFESpace,
-                                                                   jacobianPtr,
-                                                                   this->getMe(),
-                                                                   this->M_activeStrainOrthotropicParameter);
+            if ( M_NISplitting )
+            {
+                EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI4barSheetsJacobianTerms
+                    (disp,
+                     dispETFESpace,
+                     fibers,
+                     sheets,
+                     fiberActivation,
+                     sheetActivation,
+                     normalActivation,
+                     activationETFESpace,
+                     jacobianPtr,
+                     this->getMe(),
+                     this->M_activeStrainOrthotropicParameter);
+            }
+            else
+            {
+                EMAssembler::ActiveStrain::computeActiveStrainI4SheetsJacobianTerms (disp,
+                                                                                     dispETFESpace,
+                                                                                     fibers,
+                                                                                     sheets,
+                                                                                     fiberActivation,
+                                                                                     sheetActivation,
+                                                                                     normalActivation,
+                                                                                     activationETFESpace,
+                                                                                     jacobianPtr,
+                                                                                     this->getMe(),
+                                                                                     this->M_activeStrainOrthotropicParameter);
+            } 
         }
 
     }
@@ -120,31 +157,67 @@ public:
     {
         if (this->M_anisotropyField == Field::Fibers)
         {
-            EMAssembler::computeActiveStrainI4FibersResidualTerms (disp,
-                                                                   dispETFESpace,
-                                                                   fibers,
-                                                                   sheets,
-                                                                   fiberActivation,
-                                                                   sheetActivation,
-                                                                   normalActivation,
-                                                                   activationETFESpace,
-                                                                   residualVectorPtr,
-                                                                   this->getMe(),
-                                                                   this->M_activeStrainOrthotropicParameter);
+            if ( M_NISplitting )
+            {
+                EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI4barFibersResidualTerms
+                    (disp,
+                     dispETFESpace,
+                     fibers,
+                     sheets,
+                     fiberActivation,
+                     sheetActivation,
+                     normalActivation,
+                     activationETFESpace,
+                     residualVectorPtr,
+                     this->getMe(),
+                     this->M_activeStrainOrthotropicParameter);
+            }
+            else
+            {
+                EMAssembler::ActiveStrain::computeActiveStrainI4FibersResidualTerms (disp,
+                                                                                     dispETFESpace,
+                                                                                     fibers,
+                                                                                     sheets,
+                                                                                     fiberActivation,
+                                                                                     sheetActivation,
+                                                                                     normalActivation,
+                                                                                     activationETFESpace,
+                                                                                     residualVectorPtr,
+                                                                                     this->getMe(),
+                                                                                     this->M_activeStrainOrthotropicParameter);
+            }
         }
         else
         {
-            EMAssembler::computeActiveStrainI4SheetsResidualTerms (disp,
-                                                                   dispETFESpace,
-                                                                   fibers,
-                                                                   sheets,
-                                                                   fiberActivation,
-                                                                   sheetActivation,
-                                                                   normalActivation,
-                                                                   activationETFESpace,
-                                                                   residualVectorPtr,
-                                                                   this->getMe(),
-                                                                   this->M_activeStrainOrthotropicParameter);
+            if ( M_NISplitting )
+            {
+                EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI4barSheetsResidualTerms
+                    (disp,
+                     dispETFESpace,
+                     fibers,
+                     sheets,
+                     fiberActivation,
+                     sheetActivation,
+                     normalActivation,
+                     activationETFESpace,
+                     residualVectorPtr,
+                     this->getMe(),
+                     this->M_activeStrainOrthotropicParameter);
+            }
+            else
+            {
+                EMAssembler::ActiveStrain::computeActiveStrainI4SheetsResidualTerms (disp,
+                                                                                     dispETFESpace,
+                                                                                     fibers,
+                                                                                     sheets,
+                                                                                     fiberActivation,
+                                                                                     sheetActivation,
+                                                                                     normalActivation,
+                                                                                     activationETFESpace,
+                                                                                     residualVectorPtr,
+                                                                                     this->getMe(),
+                                                                                     this->M_activeStrainOrthotropicParameter);
+            }
         }
     }
 
@@ -162,12 +235,15 @@ public:
     }
 
 private:
-
+    // Used to include the Nearly-incompressible splitting inside the
+    // active strain formulation
+    bool const M_NISplitting;
+    
 };
 
 template <class Mesh>
 class dActiveStrainAnisotropicExponential : public virtual AnisotropicExponential<Mesh>,
-                                          public virtual EMActiveStrainMaterialFunctions<Mesh>
+                                            public virtual EMActiveStrainMaterialFunctions<Mesh>
 {
 public:
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
@@ -176,11 +252,12 @@ public:
     typedef EMActiveStrainMaterialFunctions<Mesh> activeStrain;
     typedef typename super::Field Field;
     
-    dActiveStrainAnisotropicExponential (Real a = 185350., Real b = 15.972, Field fibers = Field::Fibers) : super(a,b,fibers) {} // 0.33 KPa
+    dActiveStrainAnisotropicExponential (Real a = 185350., Real b = 15.972, Field fibers = Field::Fibers, bool NISplitting=true) : super(a,b,fibers), M_NISplitting(NISplitting) {} // 0.33 KPa
     dActiveStrainAnisotropicExponential (const dActiveStrainAnisotropicExponential& dActiveStrainAnisotropicExponential)
     {
         this->M_a = dActiveStrainAnisotropicExponential.M_a;
         this->M_b = dActiveStrainAnisotropicExponential.M_b;
+        M_NISplitting = dActiveStrainAnisotropicExponential.M_NISplitting;
         this->M_anisotropyField = dActiveStrainAnisotropicExponential.M_anisotropyField;
         this->M_activeStrainType = dActiveStrainAnisotropicExponential.M_activeStrainType;
         this->M_activeStrainOrthotropicParameter = dActiveStrainAnisotropicExponential.M_activeStrainOrthotropicParameter;
@@ -200,31 +277,68 @@ public:
     {
         if (this->M_anisotropyField == Field::Fibers)
         {
-            EMAssembler::computeActiveStrainI4FibersJacobianTermsSecondDerivative (disp,
-                                                                                   dispETFESpace,
-                                                                                   fibers,
-                                                                                   sheets,
-                                                                                   fiberActivation,
-                                                                                   sheetActivation,
-                                                                                   normalActivation,
-                                                                                   activationETFESpace,
-                                                                                   jacobianPtr,
-                                                                                   this->getMe(),
-                                                                                   this->M_activeStrainOrthotropicParameter);
+            if ( M_NISplitting )
+            {
+                EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI4barFibersJacobianTermsSecondDerivative
+                    (disp,
+                     dispETFESpace,
+                     fibers,
+                     sheets,
+                     fiberActivation,
+                     sheetActivation,
+                     normalActivation,
+                     activationETFESpace,
+                     jacobianPtr,
+                     this->getMe(),
+                     this->M_activeStrainOrthotropicParameter);
+            }
+            else
+            {
+                EMAssembler::ActiveStrain::computeActiveStrainI4FibersJacobianTermsSecondDerivative (disp,
+                                                                                                     dispETFESpace,
+                                                                                                     fibers,
+                                                                                                     sheets,
+                                                                                                     fiberActivation,
+                                                                                                     sheetActivation,
+                                                                                                     normalActivation,
+                                                                                                     activationETFESpace,
+                                                                                                     jacobianPtr,
+                                                                                                     this->getMe(),
+                                                                                                     this->M_activeStrainOrthotropicParameter);
+            }
+            
         }
         else
         {
-            EMAssembler::computeActiveStrainI4SheetsJacobianTermsSecondDerivative (disp,
-                                                                                   dispETFESpace,
-                                                                                   fibers,
-                                                                                   sheets,
-                                                                                   fiberActivation,
-                                                                                   sheetActivation,
-                                                                                   normalActivation,
-                                                                                   activationETFESpace,
-                                                                                   jacobianPtr,
-                                                                                   this->getMe(),
-                                                                                   this->M_activeStrainOrthotropicParameter);
+            if ( M_NISplitting )
+            {
+                EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI4barSheetsJacobianTermsSecondDerivative
+                    (disp,
+                     dispETFESpace,
+                     fibers,
+                     sheets,
+                     fiberActivation,
+                     sheetActivation,
+                     normalActivation,
+                     activationETFESpace,
+                     jacobianPtr,
+                     this->getMe(),
+                     this->M_activeStrainOrthotropicParameter);
+            }
+            else
+            {
+                EMAssembler::ActiveStrain::computeActiveStrainI4SheetsJacobianTermsSecondDerivative (disp,
+                                                                                                     dispETFESpace,
+                                                                                                     fibers,
+                                                                                                     sheets,
+                                                                                                     fiberActivation,
+                                                                                                     sheetActivation,
+                                                                                                     normalActivation,
+                                                                                                     activationETFESpace,
+                                                                                                     jacobianPtr,
+                                                                                                     this->getMe(),
+                                                                                                     this->M_activeStrainOrthotropicParameter);
+            }
         }
         
     }
@@ -243,7 +357,9 @@ public:
     }
 
 private:
-
+    // Used to include the Nearly-incompressible splitting inside the
+    // active strain formulation
+    bool const M_NISplitting;
 };
 
 

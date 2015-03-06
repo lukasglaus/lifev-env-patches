@@ -72,17 +72,17 @@ public:
                                     matrixPtr_Type           jacobianPtr)
     {
         // EMAssembler::computeI1JacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
-        EMAssembler::computeActiveStrainI1JacobianTerms (disp,
-                                                         dispETFESpace,
-                                                         fibers,
-                                                         sheets,
-                                                         fiberActivation,
-                                                         sheetActivation,
-                                                         normalActivation,
-                                                         activationETFESpace,
-                                                         jacobianPtr,
-                                                         this->getMe(),
-                                                         this->M_activeStrainOrthotropicParameter);
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barJacobianTerms (disp,
+                                                                                              dispETFESpace,
+                                                                                              fibers,
+                                                                                              sheets,
+                                                                                              fiberActivation,
+                                                                                              sheetActivation,
+                                                                                              normalActivation,
+                                                                                              activationETFESpace,
+                                                                                              jacobianPtr,
+                                                                                              this->getMe(),
+                                                                                              this->M_activeStrainOrthotropicParameter);
 
     }
 
@@ -96,17 +96,17 @@ public:
                                     boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                    vectorPtr_Type           residualVectorPtr)
     {
-        EMAssembler::computeActiveStrainI1ResidualTerms( disp,
-                                                         dispETFESpace,
-                                                         fibers,
-                                                         sheets,
-                                                         fiberActivation,
-                                                         sheetActivation,
-                                                         normalActivation,
-                                                         activationETFESpace,
-                                                         residualVectorPtr,
-                                                         this->getMe(),
-                                                         this->M_activeStrainOrthotropicParameter);
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barResidualTerms( disp,
+                                                                                              dispETFESpace,
+                                                                                              fibers,
+                                                                                              sheets,
+                                                                                              fiberActivation,
+                                                                                              sheetActivation,
+                                                                                              normalActivation,
+                                                                                              activationETFESpace,
+                                                                                              residualVectorPtr,
+                                                                                              this->getMe(),
+                                                                                              this->M_activeStrainOrthotropicParameter);
         
         // EMAssembler::computeI1ResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
     }
@@ -167,17 +167,17 @@ public:
                                     matrixPtr_Type           jacobianPtr)
     
     {
-        EMAssembler::computeActiveStrainI1JacobianTermsSecondDerivative (disp,
-                                                                         dispETFESpace,
-                                                                         fibers,
-                                                                         sheets,
-                                                                         fiberActivation,
-                                                                         sheetActivation,
-                                                                         normalActivation,
-                                                                         activationETFESpace,
-                                                                         jacobianPtr,
-                                                                         this->getMe(),
-                                                                         this->M_activeStrainOrthotropicParameter);
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barJacobianTermsSecondDerivative (disp,
+                                                                                                              dispETFESpace,
+                                                                                                              fibers,
+                                                                                                              sheets,
+                                                                                                              fiberActivation,
+                                                                                                              sheetActivation,
+                                                                                                              normalActivation,
+                                                                                                              activationETFESpace,
+                                                                                                              jacobianPtr,
+                                                                                                              this->getMe(),
+                                                                                                              this->M_activeStrainOrthotropicParameter);
         
     }
 

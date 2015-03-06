@@ -25,5 +25,6 @@
 #include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveNeoHookean.hpp>
 #include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveIsotropicExponential.hpp>
 #include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveHolzapfelOgden.hpp>
+#include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveHolzapfelOgdenNIIsotropicSplitting.hpp>
 
 #endif /* MATERIALSLIST_HPP_ */

@@ -56,17 +56,17 @@ public:
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                   matrixPtr_Type           jacobianPtr)
   {
-      EMAssembler::computeActiveStrainI1JacobianTerms (disp,
-                                                       dispETFESpace,
-                                                       fibers,
-                                                       sheets,
-                                                       fiberActivation,
-                                                       sheetActivation,
-                                                       normalActivation,
-                                                       activationETFESpace,
-                                                       jacobianPtr,
-                                                       this->M_W1,
-                                                       this->M_activeStrainOrthotropicParameter);
+      EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barJacobianTerms (disp,
+                                                                                            dispETFESpace,
+                                                                                            fibers,
+                                                                                            sheets,
+                                                                                            fiberActivation,
+                                                                                            sheetActivation,
+                                                                                            normalActivation,
+                                                                                            activationETFESpace,
+                                                                                            jacobianPtr,
+                                                                                            this->M_W1,
+                                                                                            this->M_activeStrainOrthotropicParameter);
 
     	using namespace ExpressionAssembly;
 
@@ -248,17 +248,17 @@ public:
 //		    dot ( P, grad (phi_i) )
 //		    ) >> residualVectorPtr;
 
-        EMAssembler::computeActiveStrainI1ResidualTerms( disp,
-                                                         dispETFESpace,
-                                                         fibers,
-                                                         sheets,
-                                                         fiberActivation,
-                                                         sheetActivation,
-                                                         normalActivation,
-                                                         activationETFESpace,
-                                                         residualVectorPtr,
-                                                         this->M_W1,
-                                                         this->M_activeStrainOrthotropicParameter);
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barResidualTerms( disp,
+                                                                                              dispETFESpace,
+                                                                                              fibers,
+                                                                                              sheets,
+                                                                                              fiberActivation,
+                                                                                              sheetActivation,
+                                                                                              normalActivation,
+                                                                                              activationETFESpace,
+                                                                                              residualVectorPtr,
+                                                                                              this->M_W1,
+                                                                                              this->M_activeStrainOrthotropicParameter);
     }
 
     virtual void setParameters (data_Type& data)
