@@ -1,0 +1,250 @@
+###################################################################################################
+#
+#                       This file is part of the LifeV Library
+#                Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
+#                Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
+#
+#      Author(s): Umberto Villa <uvilla@emory.edu>
+#                 Tiziano Passerini <tiziano@mathcs.emory.edu>
+#           Date: 10-12-2010
+#  License Terms: GNU LGPL
+#
+###################################################################################################
+### TESTSUITE: STRUCTURE MECHANICS ################################################################
+###################################################################################################
+#-------------------------------------------------
+#      Data file for Structure Solver
+#-------------------------------------------------
+
+
+[exporter]
+type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+multimesh  = false
+start      = 0
+save       = 1
+
+[electrophysiology]
+
+    [./physics]
+    IonicModel = AlievPanfilov
+    fiberDiffusion = 3.0
+    sheetDiffusion = 3.0
+    normalDiffusion = 3.0
+    
+    [../time_discretization]
+    endtime         = 40.
+    timestep        = 0.05
+    
+    [../discretization]
+    LumpedMass = false
+    
+    [../]
+
+[activation]
+    [./physics]
+    #ActivationModels available and relative required parameters 
+    # ActiveStressRossi14:
+    #     ActiveStress_Beta
+    #     ActiveStressMu
+    #     Tmax ( MaxActiveTension )
+    # ActiveStressNashPanfilov04
+    #     kTa
+    #     epsilon0
+    # ActiveStrainRossi14
+    #     calciumIndex
+    #     InverseViscosity
+    #     ActiveForceCoefficient
+    #     ChemicalThreshold
+    ActivationModel = ActiveStrainRossi14
+    CalciumIndex = 0
+    ActiveForceCoefficient = -4.0
+    
+
+    
+    EMActiveStrainOrthotropicParameter = -666.0
+    #Active Strain types Available
+    # Anisotropic
+    # Orthotropic
+    # TransverselyIsotropic
+    EMActiveStrainType = TransverselyIsotropic
+
+    [../time_discretization]
+    endtime         = 40.
+    timestep        = 0.05
+    [../]
+
+
+[solid]
+
+ 
+
+[./physics]
+density   	= 0
+material_flag   = 1000 #101 #1000
+young     	= 29760 #9920
+poisson   	= 0.5
+bulk		= 100000 #1.3333e+8
+alpha 		= 2.684564e+6
+gamma		= 1.0
+gammaf		= 0.0
+solidType 	= EMMaterial 
+lawType     = nonlinear
+    #Passive material available types for EM
+    #PNH   = Passive NeoHookean
+    #PNHL  = Passive NeoHookean Linearized
+    #PIE   = Passive Isoptropic Exponential
+    #PTIE  = Passive Transversely Isoptropic Exponential
+    #PIEWS = Passive Isoptropic Exponential With Shear
+    #PHO   = Passive Holzapfel Ogden
+    #POF   = Passive Orthotropic Fung
+    #PTIF  = Passive Transversely Isotropic Fung
+    #PV    = Passive Volumetric
+    #ANH   = Active (Strain) Neo Hookean
+    #SimpleActiveStress  = Simple Fiber Active Stress
+
+EMPassiveMaterialType =  PV
+EMActiveStressMaterialType = ANH #SFAS
+
+    Tmax = 497000
+    mu = 4960
+    a           = 3330
+    af          = 185350
+    as          = 25640
+    afs         = 4170
+    b           = 9.242
+    bf          = 15.972
+    bs          = 10.446
+    bfs         = 11.602
+    BulkModulus = 35000
+    C = 20000.0
+    bff = 8.0
+    bss = 2.0
+    bnn = 2.0
+    bfs = 4.0
+    bfn = 4.0
+    bsn = 2.0
+
+
+   [../boundary_conditions]
+    list = 'Top Bottom Front Back Left Right'
+
+        [./Top]
+        type       = Natural
+        flag       = 400
+        mode       = Full
+        component  = 3
+    	function  = '[0.0, 0.0, 0.0]'
+
+        [../Bottom]
+        type       = Essential
+        flag       = 200
+        mode       = Component
+        component  = 2
+    	function  = '0.0'
+        
+    	[../Front]
+        type       = Natural
+        flag       = 200
+        mode       = Full
+        component  = 3
+    	function  = '[0.0, 0.0, 0.0]'
+
+        [../Back]
+        type       = Essential
+        flag       = 300
+        mode       = Component
+        component  = 1
+    	function  = '0.0'
+
+        [../Left]
+        type       = Natural
+        flag       = 100
+        mode       = Full
+        component  = 3
+     	function  = '[0.0, 0.0, 0.0]'
+
+        [../Right]
+        type       = Essential
+        flag       = 900
+        mode       = Component
+        component  = 0
+	    function  = '0.0'
+
+        [../]
+
+[../time_discretization]
+initialtime 	= 0.
+endtime         = 40.
+timestep        = 0.2
+theta       	= 0.35
+zeta        	= 0.75
+BDF_order   	= 2
+
+[../space_discretization]
+mesh_type = .mesh
+mesh_dir  	= /usr/scratch/srossi/meshes/ 
+mesh_file 	= CoarseSymmCube.mesh 
+order     	= P1
+
+
+[../miscellaneous]
+factor    	= 1
+verbose   	= 1
+
+
+[../newton]
+maxiter 	= 1
+reltol  	= 1.e-7
+abstol  	= 1.e-7
+
+
+[../solver]
+solver          = cg #gmres
+scaling         = none
+output          = all 			# none
+conv            = rhs
+max_iter        = 500
+reuse           = true
+max_iter_reuse  = 250
+kspace          = 800
+tol             = 1.e-10    		# AztecOO tolerance
+
+[../prec]
+prectype        = Ifpack #Ifpack	 		# Ifpack or ML
+displayList     = true
+xmlName         = ParamList.xml #xmlParameters.xml
+
+[./ifpack]
+overlap  	= 3
+
+[./fact]
+ilut_level-of-fill 	= 1
+drop_tolerance          = 1.e-5
+relax_value             = 0
+
+[../amesos]
+solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+
+[../partitioner]
+overlap 		= 4
+
+
+[../schwarz]
+reordering_type 	= none 			# metis, rcm, none
+filter_singletons 	= true
+
+[../]
+[../]
+
+
+
+
+	# -*- getpot -*- (GetPot mode activation for emacs)
+#----------------------------------------------------------------
+#      Data file for heart test
+#----------------------------------------------------------------
+
+
+[electrophysiology]
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml

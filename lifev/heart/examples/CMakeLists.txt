@@ -3,5 +3,5 @@ INCLUDE(TribitsAddExecutableAndTest)
 INCLUDE(AddSubdirectories)
 
 ADD_SUBDIRECTORIES(
-  basic_example
+#  basic_example
 )
