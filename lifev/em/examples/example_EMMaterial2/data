@@ -25,6 +25,9 @@ save       = 1
 
 [electrophysiology]
 
+    monodomain_xml_path = ./
+    monodomain_xml_file = ParamList.xml
+
     [./physics]
     IonicModel = AlievPanfilov
     fiberDiffusion = 3.0
@@ -32,7 +35,7 @@ save       = 1
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 40.
+    endtime         = 1.
     timestep        = 0.05
     
     [../discretization]
@@ -182,8 +185,8 @@ BDF_order   	= 2
 
 [../space_discretization]
 mesh_type = .mesh
-mesh_dir  	= /usr/scratch/srossi/meshes/ 
-mesh_file 	= CoarseSymmCube.mesh 
+mesh_dir  	= ./
+mesh_file 	= cube4.mesh
 order     	= P1
 
 
@@ -244,7 +247,3 @@ filter_singletons 	= true
 #      Data file for heart test
 #----------------------------------------------------------------
 
-
-[electrophysiology]
-monodomain_xml_path = ./
-monodomain_xml_file = ParamList.xml

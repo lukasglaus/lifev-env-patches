@@ -10,6 +10,7 @@ SET( solver_IonicModels_HEADERS
   solver/IonicModels/IonicHodgkinHuxley.hpp
   solver/IonicModels/IonicNoblePurkinje.hpp
   solver/IonicModels/IonicGoldbeter.hpp
+#solver/IonicModels/IonicOharaRudy.hpp
 CACHE INTERNAL "")
 
 SET( solver_IonicModels_SOURCES
@@ -24,6 +25,7 @@ SET( solver_IonicModels_SOURCES
   solver/IonicModels/IonicHodgkinHuxley.cpp
   solver/IonicModels/IonicNoblePurkinje.cpp
   solver/IonicModels/IonicGoldbeter.cpp
+#solver/IonicModels/IonicOharaRudy.cpp
 CACHE INTERNAL "")
 
 

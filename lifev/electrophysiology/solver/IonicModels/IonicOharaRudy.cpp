@@ -25,18 +25,19 @@
 //@HEADER
 
 /*!
-  @file
-  @brief Ionic model Luo-Rudy I
-  @date 01-2013
-  @author Simone Rossi <simone.rossi@epfl.ch>
-
-  @contributors
-  @mantainer Simone Rossi <simone.rossi@epfl.ch>
-  @last update 01-2013
+ @file IonicOharaRudy
+ @brief Ionic model O'hara Rudy
+ 
+ @date 03-2015
+ @author Thomas Kummer <kummerth@ethz.ch>
+ 
+ @contributors
+ @mantainer Thomas Kummer <kummerth@ethz.ch>
+ @last update 03-2015
  */
 
 
-#include <lifev/electrophysiology/solver/IonicModels/IonicLuoRudyI.hpp>
+#include <lifev/electrophysiology/solver/IonicModels/IonicOharaRudy.hpp>
 
 
 namespace LifeV
@@ -45,132 +46,160 @@ namespace LifeV
 // ===================================================
 //! Constructors
 // ===================================================
-IonicLuoRudyI::IonicLuoRudyI()  :
-    super       (  8 , 6  ),
-    M_ENa       ( 54.4 ),
-    M_gNa       ( 23.0 ),
-    M_gsi       ( 0.09 ),
-    M_K0        (  5.4 ),
-    M_EK        (  -77 ),
-    M_EK1       ( -87.26),
-    M_EKp       ( M_EK1 ),
-    M_gKp       ( 0.0183),
-    M_gb        ( 0.03921)
+IonicOharaRudy::IonicOharaRudy()  :
+    super       ( 41 , 31 ),
+    M_nao       ( 140.0 ),
+    M_cao       ( 1.8 ),
+    M_ko        ( 5.4 ),
+    M_BSRmax    ( 0.047 ),
+    M_KmBSR     ( 0.00087 ),
+    M_BSLmax    ( 1.124 ),
+    M_KmBSL     ( 0.0087 ),
+    M_cmdnmax   ( 0.05 ),
+    M_kmcmdn    ( 0.00238 ),
+    M_trpnmax   ( 0.07 ),
+    M_kmtrpn    ( 0.0005 ),
+    M_csqnmax   ( 10.0 ),
+    M_kmcsqn    ( 0.8 ),
+    M_aCaMK     ( 0.05 ),
+    M_bCaMK     ( 0.00068 ),
+    M_CaMKo     ( 0.05 ),
+    M_KmCaM     ( 0.0015 ),
+    M_KmCaMK    ( 0.15 ),
+    M_R         ( 8314.0 ),
+    M_T         ( 310.0 ),
+    M_F         ( 96485.0 ),
+    M_L         ( 0.01 ),
+    M_rad       ( 0.0011 ),
+    M_vcell     ( 3.7994e-5 ),
+    M_Ageo      ( 7.66788e-5 ),
+    M_Acap      ( 1.533576e-4 ),
+    M_vmyo      ( 0.68*3.7994e-5 ),
+    M_vmito     ( 0.26*3.7994e-5 ),
+    M_vsr       ( 0.06*3.7994e-5 ),
+    M_vnsr      ( 0.0552*3.7994e-5 ),
+    M_vjsr      ( 0.0048*3.7994e-5 ),
+    M_vss       ( 0.02*3.7994e-5 ),
+    M_APD_flag  ( 0 ),
+    M_vo        ( -87.5 ),
+    M_dt        ( 0.005 ),
+    M_t0        ( 0 ),
+    M_t         ( 0 ),
+    M_vdot      ( 0 ),
+    M_p         ( 1 ),
+    M_n         ( 0 ),
+    M_count     ( 1 )
 {
-    M_gK = computeGK (M_K0);
-    M_gK1 = computeGK1 (M_K0);
-
-    //V
-    M_restingConditions.at (0) = -84.0;
-    //m
-    M_restingConditions.at (1) = minf ( M_restingConditions.at (0) );
-    //h
-    M_restingConditions.at (2) = hinf ( M_restingConditions.at (0) );
-    //j
-    M_restingConditions.at (3) = jinf ( M_restingConditions.at (0) );
-    //d
-    M_restingConditions.at (4) = dinf ( M_restingConditions.at (0) );
-    //f
-    M_restingConditions.at (5) = finf ( M_restingConditions.at (0) );
-    //X
-    M_restingConditions.at (6) = Xinf ( M_restingConditions.at (0) );
-    //Ca
-    M_restingConditions.at (7) = 2e-4;
+    M_restingConditions.at (0) = -87.5;                        // V
+    M_restingConditions.at (1) = 7;                            // nai
+    M_restingConditions.at (2) = M_restingConditions.at (1);   // nass
+    M_restingConditions.at (3) = 145;                          // ki
+    M_restingConditions.at (4) = M_restingConditions.at (3);   // kss
+    M_restingConditions.at (5) = 1.0e-4;                       // cai
+    M_restingConditions.at (6) = M_restingConditions.at (5);   // cass
+    M_restingConditions.at (7) = 1.2;                          // cans
+    M_restingConditions.at (8) = M_restingConditions.at (7);   // cajsr
+    M_restingConditions.at (9) = 0;                            // m
+    M_restingConditions.at (10) = 1;                           // hf
+    M_restingConditions.at (11) = 1;                           // hs
+    M_restingConditions.at (12) = 1;                           // j
+    M_restingConditions.at (13) = 1;                           // hsp
+    M_restingConditions.at (14) = 1;                           // jp
+    M_restingConditions.at (15) = 0;                           // mL
+    M_restingConditions.at (16) = 1;                           // hL
+    M_restingConditions.at (17) = 1;                           // hLp
+    M_restingConditions.at (18) = 0;                           // a
+    M_restingConditions.at (19) = 1;                           // iF
+    M_restingConditions.at (20) = 1;                           // iS
+    M_restingConditions.at (21) = 0;                           // ap
+    M_restingConditions.at (22) = 1;                           // iFp
+    M_restingConditions.at (23) = 1;                           // iSp
+    M_restingConditions.at (24) = 0;                           // d
+    M_restingConditions.at (25) = 1;                           // ff
+    M_restingConditions.at (26) = 1;                           // fs
+    M_restingConditions.at (27) = 1;                           // fcaf
+    M_restingConditions.at (28) = 1;                           // fcas
+    M_restingConditions.at (29) = 1;                           // jca
+    M_restingConditions.at (30) = 0;                           // nca
+    M_restingConditions.at (31) = 1;                           // ffp
+    M_restingConditions.at (32) = 1;                           // fcafp
+    M_restingConditions.at (33) = 0;                           // xrf
+    M_restingConditions.at (34) = 0;                           // xrs
+    M_restingConditions.at (35) = 0;                           // xs1
+    M_restingConditions.at (36) = 0;                           // xs2
+    M_restingConditions.at (37) = 1;                           // xk1
+    M_restingConditions.at (38) = 0;                           // Jrelnp
+    M_restingConditions.at (39) = 0;                           // Jrelp
+    M_restingConditions.at (40) = 0;                           // CaMKt
 }
 
-IonicLuoRudyI::IonicLuoRudyI ( Teuchos::ParameterList& parameterList     )   :
-    super       ( 8, 6 )
+IonicOharaRudy::IonicOharaRudy ( Teuchos::ParameterList& parameterList     )   :
+    super       ( 41, 31 )
 {
-    M_ENa        =  parameterList.get ("ENa", 54.4  );
-    M_gNa        =  parameterList.get ("gNa", 23.3  );
-    M_gsi        =  parameterList.get ("gsi", 0.09  );
-    M_K0        =  parameterList.get ("K0", 5.4  );
-    M_EK        =  parameterList.get ("EK", -77.0  );
-    M_EK1        =  parameterList.get ("EK1", -87.26  );
-    M_EKp        =  parameterList.get ("EKp", -87.26  );
-    M_gKp        =  parameterList.get ("gKp", 0.0183  );
-    M_gb        =  parameterList.get ("gb", 0.03921  );
 
-    M_gK = computeGK (M_K0);
-    M_gK1 = computeGK1 (M_K0);
-
-    //V
-    M_restingConditions.at (0) = parameterList.get ("V0", -84.0  );
-    //m
-    M_restingConditions.at (1) = minf ( M_restingConditions.at (0) );
-    //h
-    M_restingConditions.at (2) = hinf ( M_restingConditions.at (0) );
-    //j
-    M_restingConditions.at (3) = jinf ( M_restingConditions.at (0) );
-    //d
-    M_restingConditions.at (4) = dinf ( M_restingConditions.at (0) );
-    //f
-    M_restingConditions.at (5) = finf ( M_restingConditions.at (0) );
-    //X
-    M_restingConditions.at (6) = Xinf ( M_restingConditions.at (0) );
-    //Ca
-    M_restingConditions.at (7) = parameterList.get ("Ca0", 2e-4  );
 }
 
-IonicLuoRudyI::IonicLuoRudyI ( const IonicLuoRudyI& model )
+IonicOharaRudy::IonicOharaRudy ( const IonicOharaRudy& model )
 {
-    M_ENa        =  model.M_ENa;
-    M_gNa        =  model.M_gNa;
-    M_gsi        =  model.M_gsi;
-    M_K0        =  model.M_K0;
-    M_EK        =  model.M_EK;
-    M_EK1        =  model.M_EK1;
-    M_EKp        =  model.M_EKp;
-    M_gKp        =  model.M_gKp;
-    M_gb        =  model.M_gb;
-
-    M_gK = computeGK (M_K0);
-    M_gK1 = computeGK1 (M_K0);
-    M_numberOfEquations = model.M_numberOfEquations;
-    M_numberOfGatingVariables = model.M_numberOfGatingVariables;
-    M_restingConditions = model.M_restingConditions;
 
 }
 
 // ===================================================
 //! Operator
 // ===================================================
-IonicLuoRudyI& IonicLuoRudyI::operator= ( const IonicLuoRudyI& model )
+IonicOharaRudy& IonicOharaRudy::operator= ( const IonicOharaRudy& model )
 {
-    M_ENa        =  model.M_ENa;
-    M_gNa        =  model.M_gNa;
-    M_gsi        =  model.M_gsi;
-    M_K0        =  model.M_K0;
-    M_EK        =  model.M_EK;
-    M_EK1        =  model.M_EK1;
-    M_EKp        =  model.M_EKp;
-    M_gKp        =  model.M_gKp;
-    M_gb        =  model.M_gb;
 
-    M_gK = computeGK (M_K0);
-    M_gK1 = computeGK1 (M_K0);
-    M_numberOfEquations = model.M_numberOfEquations;
-    M_numberOfGatingVariables = model.M_numberOfGatingVariables;
-    M_restingConditions = model.M_restingConditions;
-
-    return      *this;
 }
-
 
 // ===================================================
 //! Methods
 // ===================================================
-void IonicLuoRudyI::computeGatingRhs ( const   std::vector<Real>&  v,
+void IonicOharaRudy::computeGatingRhs ( const   std::vector<Real>&  v,
                                        std::vector<Real>& rhs )
 {
     Real V = v[0];
-    Real m = v[1];
-    Real h = v[2];
-    Real j = v[3];
-    Real d = v[4];
-    Real f = v[5];
-    Real X = v[6];
-    Real Ca = v[7];
+    Real nai = v[1];
+    Real nass = v[2];
+    Real ki = v[3];
+    Real kss = v[4];
+    Real cai = v[5];
+    Real cass = v[6];
+    Real cansr = v[7];
+    Real cajsr = v[8];
+    Real m = v[9];
+    Real hf = v[10];
+    Real hs = v[11];
+    Real j = v[12];
+    Real hsp = v[13];
+    Real jp = v[14];
+    Real mL = v[15];
+    Real hL = v[16];
+    Real hLp = v[17];
+    Real a = v[18];
+    Real iF = v[19];
+    Real iS = v[20];
+    Real ap = v[21];
+    Real iFp = v[22];
+    Real iSp = v[23];
+    Real d = v[24];
+    Real ff = v[25];
+    Real fs = v[26];
+    Real fcaf = v[27];
+    Real fcas = v[28];
+    Real jca = v[29];
+    Real nca = v[30];
+    Real ffp = v[31];
+    Real fcafp = v[32];
+    Real xrf = v[33];
+    Real xrs = v[34];
+    Real xs1 = v[35];
+    Real xs2 = v[35];
+    Real xk1 = v[37];
+    Real Jrelnp = v[37];
+    Real Jrelp = v[39];
+    Real CaMKt = v[40];
+
 
     //m
     rhs[0] = dm (V, m);
@@ -188,7 +217,7 @@ void IonicLuoRudyI::computeGatingRhs ( const   std::vector<Real>&  v,
     rhs[6] = dCa (V, d, f, Ca);
 }
 
-void IonicLuoRudyI::computeNonGatingRhs ( const   std::vector<Real>&  v,
+void IonicOharaRudy::computeNonGatingRhs ( const   std::vector<Real>&  v,
                                           std::vector<Real>& rhs )
 {
     Real V = v[0];
@@ -200,17 +229,52 @@ void IonicLuoRudyI::computeNonGatingRhs ( const   std::vector<Real>&  v,
     rhs[0] = dCa (V, d, f, Ca);
 }
 
-void IonicLuoRudyI::computeRhs ( const   std::vector<Real>&  v,
+void IonicOharaRudy::computeRhs ( const   std::vector<Real>&  v,
                                  std::vector<Real>& rhs )
 {
     Real V = v[0];
-    Real m = v[1];
-    Real h = v[2];
-    Real j = v[3];
-    Real d = v[4];
-    Real f = v[5];
-    Real X = v[6];
-    Real Ca = v[7];
+    Real nai = v[1];
+    Real nass = v[2];
+    Real ki = v[3];
+    Real kss = v[4];
+    Real cai = v[5];
+    Real cass = v[6];
+    Real cansr = v[7];
+    Real cajsr = v[8];
+    Real m = v[9];
+    Real hf = v[10];
+    Real hs = v[11];
+    Real j = v[12];
+    Real hsp = v[13];
+    Real jp = v[14];
+    Real mL = v[15];
+    Real hL = v[16];
+    Real hLp = v[17];
+    Real a = v[18];
+    Real iF = v[19];
+    Real iS = v[20];
+    Real ap = v[21];
+    Real iFp = v[22];
+    Real iSp = v[23];
+    Real d = v[24];
+    Real ff = v[25];
+    Real fs = v[26];
+    Real fcaf = v[27];
+    Real fcas = v[28];
+    Real jca = v[29];
+    Real nca = v[30];
+    Real ffp = v[31];
+    Real fcafp = v[32];
+    Real xrf = v[33];
+    Real xrs = v[34];
+    Real xs1 = v[35];
+    Real xs2 = v[35];
+    Real xk1 = v[37];
+    Real Jrelnp = v[37];
+    Real Jrelp = v[39];
+    Real CaMKt = v[40];
+
+    revpots(nai, ki);
 
     //V
     rhs[0] = - Itot (V, m , h , j , d, f, X, Ca);
@@ -230,8 +294,9 @@ void IonicLuoRudyI::computeRhs ( const   std::vector<Real>&  v,
     rhs[7] = dCa (V, d, f, Ca);
 }
 
-void IonicLuoRudyI::computeGatingVariablesWithRushLarsen ( std::vector<Real>& v, const Real dt )
+void IonicOharaRudy::computeGatingVariablesWithRushLarsen ( std::vector<Real>& v, const Real dt )
 {
+    /*
     Real V = v[0];
     Real m = v[1];
     Real h = v[2];
@@ -246,10 +311,10 @@ void IonicLuoRudyI::computeGatingVariablesWithRushLarsen ( std::vector<Real>& v,
     v[4] = dinf (V) - ( dinf (V) - d ) * std::exp (- dt / td (V) );
     v[5] = finf (V) - ( finf (V) - f ) * std::exp (- dt / tf (V) );
     v[6] = Xinf (V) - ( Xinf (V) - X ) * std::exp (- dt / tX (V) );
-
+    */
 }
 
-Real IonicLuoRudyI::computeLocalPotentialRhs ( const std::vector<Real>& v )
+Real IonicOharaRudy::computeLocalPotentialRhs ( const std::vector<Real>& v )
 {
     Real dPotential (0.0);
 
@@ -268,7 +333,7 @@ Real IonicLuoRudyI::computeLocalPotentialRhs ( const std::vector<Real>& v )
 }
 
 
-void IonicLuoRudyI::showMe()
+void IonicOharaRudy::showMe()
 {
     std::cout << "\n\n************************************";
     std::cout << "\n\tHi, I'm the Luo Rudy Phase I model";
@@ -285,6 +350,137 @@ void IonicLuoRudyI::showMe()
     std::cout << "\n************************************\n\n";
 }
 
-
+    
+void IonicOharaRudy::revpots ( Real nai,
+                               Real ki )
+{
+    M_ENa=(M_R*M_T/M_F)*log(M_nao/nai);
+    M_EK=(M_R*M_T/M_F)*log(M_cko/ki);
+    M_EKs=(M_R*M_T/M_F)*log((M_ko+0.01833*M_nao)/(ki+0.01833*nai));
 }
 
+    
+Real IonicOharaRudy::dCaMKt ( Real CaMKt,
+                              Real cass )
+{
+    M_CaMKb=M_CaMKo*(1.0-CaMKt)/(1.0+M_KmCaM/cass);
+    M_CaMKa=M_CaMKb+CaMKt;
+    return (aCaMK*CaMKb*(CaMKb+CaMKt)-bCaMK*CaMKt);
+}
+    
+    
+
+
+// updateConstants
+    M_JdiffNa=(nass-nai)/2.0;
+    M_JdiffK=(kss-ki)/2.0;
+    M_Jdiff=(cass-cai)/0.2;
+
+// dJrelnp
+    double bt=4.75;
+    double a_rel=0.5*bt;
+    double Jrel_inf=a_rel*(-M_ICaL)/(1.0+pow(1.5/cajsr,8.0));
+
+
+    if (celltype==2) // ?
+    {
+        Jrel_inf*=1.7;
+    }
+
+    double tau_rel=bt/(1.0+0.0123/cajsr);
+
+
+    if (tau_rel<0.005)
+    {
+        tau_rel=0.005;
+    }
+
+    Jrelnp=Jrel_inf-(Jrel_inf-Jrelnp)*exp(-dt/tau_rel); // ?
+
+
+// dJrelp
+    double btp=1.25*bt;
+    double a_relp=0.5*btp;
+    double Jrel_infp=a_relp*(-M_ICaL)/(1.0+pow(1.5/cajsr,8.0));
+
+    if (celltype==2) // ?
+    {
+        Jrel_infp*=1.7;
+    }
+
+    double tau_relp=btp/(1.0+0.0123/cajsr);
+    if (tau_relp<0.005)
+    {
+        tau_relp=0.005;
+    }
+
+    Jrelp=Jrel_infp-(Jrel_infp-Jrelp)*exp(-dt/tau_relp); // ?
+
+
+// updateConstants
+    double fJrelp=(1.0/(1.0+KmCaMK/CaMKa));
+
+    Jrel=(1.0-fJrelp)*Jrelnp+fJrelp*Jrelp; // ?
+    
+    double Jupnp=0.004375*cai/(cai+0.00092);
+    double Jupp=2.75*0.004375*cai/(cai+0.00092-0.00017);
+
+    if (celltype==1) // ?
+    {
+        Jupnp*=1.3;
+        Jupp*=1.3;
+    }
+
+    double fJupp=(1.0/(1.0+KmCaMK/CaMKa));
+    M_Jleak=0.0039375*cansr/15.0;
+    Jup=(1.0-fJupp)*Jupnp+fJupp*Jupp-M_Jleak;
+    Jtr=(cansr-cajsr)/100.0;
+
+
+// dnai
+    nai+=dt*(-(INa+INaL+3.0*INaCa_i+3.0*INaK+INab)*Acap/(F*vmyo)+JdiffNa*vss/vmyo);
+
+// dnass
+    nass+=dt*(-(ICaNa+3.0*INaCa_ss)*Acap/(F*vss)-JdiffNa);
+
+// dki
+    ki+=dt*(-(Ito+IKr+IKs+IK1+IKb+Ist-2.0*INaK)*Acap/(F*vmyo)+JdiffK*vss/vmyo);
+
+// dkss
+    kss+=dt*(-(ICaK)*Acap/(F*vss)-JdiffK);
+
+
+
+// dcai
+    double Bcai;
+    if (celltype==1)
+    {
+        Bcai=1.0/(1.0+1.3*cmdnmax*kmcmdn/pow(kmcmdn+cai,2.0)+trpnmax*kmtrpn/pow(kmtrpn+cai,2.0));
+    }
+    else
+    {
+        Bcai=1.0/(1.0+cmdnmax*kmcmdn/pow(kmcmdn+cai,2.0)+trpnmax*kmtrpn/pow(kmtrpn+cai,2.0));
+    }
+    cai+=dt*(Bcai*(-(IpCa+ICab-2.0*INaCa_i)*Acap/(2.0*F*vmyo)-Jup*vnsr/vmyo+Jdiff*vss/vmyo));
+
+
+
+// dcass
+Real dcass
+    double Bcass=1.0/(1.0+M_BSRmax*M_KmBSR/pow(M_KmBSR+cass,2.0)+BSLmax*KmBSL/pow(KmBSL+cass,2.0));
+    cass+=dt*(Bcass*(-(ICaL-2.0*INaCa_ss)*Acap/(2.0*F*vss)+Jrel*vjsr/vss-Jdiff));
+
+
+Real dcansr IonicOharaRudy::dcansr ()
+{
+    return (M_Jup-M_Jtr*M_vjsr/M_vnsr);
+}
+
+    
+Real dcajsr IonicOharaRudy::dcajsr ( Real cajsr )
+{
+    double Bcajsr=1.0/(1.0+M_csqnmax*M_kmcsqn/pow(M_kmcsqn+cajsr,2.0));
+    return (Bcajsr*(M_Jtr-M_Jrel));
+}
+
+}

@@ -183,8 +183,13 @@ public:
                          std::string activationFileName  = "ActivationSolution",
                          std::string mechanicsFileName  = "MechanicalSolution");
 
-    void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list);
+    void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list)
+    {
+        setupElectroSolver (dataFile);
+    }
 
+    void setupElectroSolver ( GetPot& dataFile );
+    
     void setupMechanicalSolver ( GetPot& dataFile);
 
     void setupMechanicalBC (std::string data_file_name,
@@ -203,8 +208,13 @@ public:
         M_activationModelPtr->setI4fPtr( M_EMStructuralOperatorPtr -> I4fPtr() );
     }
 
-    void setup (GetPot& dataFile, Teuchos::ParameterList& list);
+    void setup (GetPot& dataFile, Teuchos::ParameterList& list)
+    {
+        setup (dataFile);
+    }
 
+    void setup (GetPot& dataFile );
+    
     void buildMechanicalSystem()
     {
     	//Here we call the buildSystem Of the Structural operator
@@ -449,12 +459,11 @@ EMSolver<Mesh, ElectroSolver>::EMSolver (const EMSolver& solver) :
 // Setting up the electrophysiology solver
 template<typename Mesh , typename ElectroSolver>
 void
-EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile,
-										Teuchos::ParameterList& list)
+EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
 {
     M_data.setup (dataFile);
     std::cout << "\nEMSolver - endtime = " << M_data.activationParameter<Real>("endtime");
-    setupElectroSolver ( dataFile, list );
+    setupElectroSolver ( dataFile );
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << "\nEMS - electro solver setup done! ";
@@ -468,7 +477,7 @@ EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile,
 
 template<typename Mesh , typename ElectroSolver>
 void
-EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list)
+EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
 {
     if (M_commPtr -> MyPID() == 0)
     {
