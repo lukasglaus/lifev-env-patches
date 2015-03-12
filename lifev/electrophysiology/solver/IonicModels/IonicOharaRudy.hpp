@@ -109,14 +109,53 @@ public:
 
     // Compute reversal potentials
     void revpots ( Real nai,
-                  Real ki );
-    
-    // CaMKt
-    Real dCaMKt ( Real CaMKt,
-                 Real cass );
-    
-    }
+                   Real ki );
    
+    // Update constants
+    void updateConstants( Real nass,
+                          Real nai,
+                          Real kss,
+                          Real ki,
+                          Real cass,
+                          Real cai,
+                          Real Jrelnp,
+                          Real Jrelp );
+    
+    // Functions for rhs
+    
+    Real dCaMKt ( Real CaMKt,
+                  Real cass );
+    
+    Real dJrelnp ( Real Jrelnp,
+                   Real cajsr );
+    
+    Real dJrelp ( Real Jrelp,
+                  Real cajsr );
+    
+    Real dnai ();
+
+    Real dnass ();
+    
+    Real dki ();
+    
+    Real dkss ();
+    
+    Real dcai ( Real cai );
+
+    Real dcass ( Real cass );
+
+    Real dcansr dcansr ();
+
+    Real dcajsr dcajsr ( Real cajsr );
+
+    
+    
+    
+    
+    
+    
+    
+    
     
        //Total current
     //=============

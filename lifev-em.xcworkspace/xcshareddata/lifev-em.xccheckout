@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>1DF34D31-C038-4001-9458-B53DAF11E65A</string>
+	<key>IDESourceControlProjectName</key>
+	<string>lifev-em</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D38DB74F40EF7AAED3633D413489ADC23CCADBF5</key>
+		<string>https://gitlab.com/simioftheclouds/LifeV_EM.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>lifev-em.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D38DB74F40EF7AAED3633D413489ADC23CCADBF5</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://gitlab.com/simioftheclouds/LifeV_EM.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D38DB74F40EF7AAED3633D413489ADC23CCADBF5</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D38DB74F40EF7AAED3633D413489ADC23CCADBF5</string>
+			<key>IDESourceControlWCCName</key>
+			<string>lifev-em</string>
+		</dict>
+	</array>
+</dict>
+</plist>

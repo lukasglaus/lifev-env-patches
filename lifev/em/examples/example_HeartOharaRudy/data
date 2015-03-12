@@ -31,16 +31,24 @@ save       = 1
     [./physics]
     IonicModel = AlievPanfilov
     fiberDiffusion = 3.0
-    sheetDiffusion = 3.0
-    normalDiffusion = 3.0
+    sheetDiffusion = 1.0
+    normalDiffusion = 1.0
     
     [../time_discretization]
-    endtime         = 1.
+    endtime         = 80.
     timestep        = 0.05
     
     [../discretization]
     LumpedMass = false
-    
+
+    [../fiber]
+foldername = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/fibers/
+    filename = FiberDirection
+    fieldname = fibers
+
+    [../flags]
+    lvendo = 36
+
     [../]
 
 [activation]
@@ -185,8 +193,8 @@ BDF_order   	= 2
 
 [../space_discretization]
 mesh_type = .mesh
-mesh_dir  	= ./
-mesh_file 	= cube4.mesh
+mesh_dir  	= ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/mesh/
+mesh_file 	= ventFine.mesh #idealized.mesh
 order     	= P1
 
 

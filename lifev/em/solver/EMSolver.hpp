@@ -382,7 +382,18 @@ public:
     }
 
     void showMe() const {}
+    
+    meshPtr_Type fullMeshPtr()
+    {
+        return M_fullMeshPtr;
+    }
+    
+    meshPtr_Type localMeshPtr()
+    {
+        return M_localMeshPtr;
+    }
 
+    
 protected:
 public:
     electroSolverPtr_Type                M_electroSolverPtr;

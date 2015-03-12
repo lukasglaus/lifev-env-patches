@@ -17,5 +17,5 @@ ADD_SUBDIRECTORIES(
 	test_pacing
 	test_restart
 	test_ventricle
-    biventricular_fibers
+    test_fibersHeart
 )
