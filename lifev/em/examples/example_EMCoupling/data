@@ -35,16 +35,11 @@ save       = 1
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 60
+    endtime         = 100
     timestep        = 0.05
     
     [../discretization]
     LumpedMass = false
-
-    [../fiber]
-    fiber_dir = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/fibers/
-    fiber_name = FiberDirection
-    fiber_fieldname = fibers
 
     [../flags]
     lvendo = 36
@@ -138,14 +133,22 @@ save       = 1
 
 
     [../boundary_conditions]
-    list = 'Top Bottom Front Back Left Right'
+    # list = 'Top Bottom Front Back Left Right' # Cube
+    list = 'Base'
 
-        [./Top]
+        [./Base]
+        type       = Essential
+        flag       = 34
+        mode       = Full
+        component  = 3
+        function  = '[0.0, 0.0, 0.0]'
+
+        [../Top]
         type       = Natural
         flag       = 400
         mode       = Full
         component  = 3
-    	function  = '[0.0, 0.0, 0]'
+    	function  = '[0.0, 0.0, 0.0]'
 
         [../Bottom]
         type       = Essential
@@ -196,11 +199,11 @@ BDF_order   	= 2
 
 [../space_discretization]
 mesh_type       = .mesh
-mesh_dir        = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/mesh/
-mesh_file       = cube4.mesh
-mesh_scaling    = 1.0
+mesh_dir        = ./
+mesh_file       = ventFine.mesh
+mesh_scaling    = 0.1
 order           = P1
-anisotropic     = false
+anisotropic     = true
 fiber_name      = FiberDirection
 fiber_fieldname = fibers
 fiber_dir       = ./

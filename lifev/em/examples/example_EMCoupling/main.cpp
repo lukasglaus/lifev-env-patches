@@ -36,7 +36,7 @@ using namespace LifeV;
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return ( X < 0.25 && Y < 0.25 && Z < 0.25 && t < 2 ? 10 : 0 );
+    return 0; // ( X < 0.25 && Y < 0.25 && Z < 0.25 && t < 2 ? 10 : 0 );
 }
 
 Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
@@ -125,8 +125,8 @@ int main (int argc, char** argv)
         std::cout << "Load mesh...\n";
     }
     
-    std::string meshName = dataFile("solid/space_discretization/mesh_file", "lid16.mesh");
-    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "lid16.mesh");
+    std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
+    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "cube4.mesh");
 
     solver.loadMesh (meshName, meshPath);
     
@@ -318,7 +318,7 @@ int main (int argc, char** argv)
         std::cout << "Setting pressure in the reference configuration\n";
     }
     
-    //solid.setBCFlag( LVFlag );
+    solver.structuralOperatorPtr() -> setBCFlag( LVFlag );
     
     
     UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
