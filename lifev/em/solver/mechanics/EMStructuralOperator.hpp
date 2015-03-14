@@ -280,7 +280,8 @@ EMStructuralOperator<Mesh>::computePressureBC(  const VectorEpetra& disp,
 template <typename Mesh>
 void
 EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_Type& solution, Int iter)
-{
+{// Loop here with *bcVectorPtr = 0
+ // or loop through computePressureBC(...)
     if(M_LVpressureBC)
     {
         if(M_LVPressure != 0 && M_LVPressureFlag != 0)

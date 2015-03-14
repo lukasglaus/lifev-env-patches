@@ -1,7 +1,13 @@
+//********************************************//
+// Includes
+//********************************************//
+
 #include <lifev/core/LifeV.hpp>
 
+// Solver
 #include <lifev/em/solver/EMSolver.hpp>
 
+// Exporter
 #include <lifev/core/filter/ExporterEnsight.hpp>
 #include <lifev/core/filter/ExporterVTK.hpp>
 #ifdef HAVE_HDF5
@@ -9,12 +15,16 @@
 #endif
 #include <lifev/core/filter/ExporterEmpty.hpp>
 
-
 // Resize mesh
 #include <lifev/core/mesh/MeshUtility.hpp>
 
-
+// Namespaces
 using namespace LifeV;
+
+
+//********************************************//
+// Functions
+//********************************************//
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
@@ -23,67 +33,87 @@ Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID
 
 Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return ( Y < 5 && Y > 4 ? 1.0 : 0.0 );
+    return ( Z > 0 && Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
 }
-
 
 
 int main (int argc, char** argv)
 {
-
+    //********************************************//
+    // Typedefs
+    //********************************************//
+    
     typedef RegionMesh<LinearTetra>                         mesh_Type;
     typedef boost::shared_ptr<mesh_Type>                    meshPtr_Type;
+    
     typedef boost::function < Real (const Real & t,
                                     const Real &   x,
                                     const Real &   y,
                                     const Real & z,
                                     const ID&   /*i*/ ) >   function_Type;
-    typedef VectorEpetra                                      vector_Type;
-    typedef boost::shared_ptr<vector_Type>                    vectorPtr_Type;
+    typedef VectorEpetra                                    vector_Type;
+    typedef boost::shared_ptr<vector_Type>                  vectorPtr_Type;
     
+    typedef EMMonodomainSolver<mesh_Type>                   monodomain_Type;
 
 
+    //********************************************//
+    // Declare comm and solver
+    //********************************************//
+    
 #ifdef HAVE_MPI
     MPI_Init ( &argc, &argv );
 #endif
 
-
-    //===========================================================
-    //===========================================================
-    //              ELECTROPHYSIOLOGY
-    //===========================================================
-    //===========================================================
-
-
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
     if ( comm->MyPID() == 0 )
     {
-        cout << "% using MPI" << endl;
+        cout << "% using MPI" << std::endl;
     }
+    //displayer->leaderPrint ("% using MPI");
 
-    typedef EMMonodomainSolver<mesh_Type>  monodomain_Type;
     EMSolver<mesh_Type, monodomain_Type> solver(comm);
 
 
     //********************************************//
-    // In the parameter list we need to specify   //
-    // the mesh name and the mesh path.           //
+    // Read data file and create output folder
     //********************************************//
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "Reading Mesh Name and Path...\n";
-    }
 
     GetPot command_line (argc, argv);
     const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
     GetPot dataFile (data_file_name);
+    std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
+
+    
+    //********************************************//
+    // Load mesh
+    //********************************************//
+    
+    if ( comm->MyPID() == 0 )
+    {
+        std::cout << "Load mesh...\n";
+    }
     
     std::string meshName = dataFile("solid/space_discretization/mesh_file", "lid16.mesh");
     std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "lid16.mesh");
 
     solver.loadMesh (meshName, meshPath);
     
-    // Resize mesh if necessary
+    if ( comm->MyPID() == 0 )
+    {
+        std::cout << " Done!" << endl;
+    }
+    
+    
+    //********************************************//
+    // Resize mesh
+    //********************************************//
+    
+    if ( comm->MyPID() == 0 )
+    {
+        std::cout << "Resizing mesh..." << endl;
+    }
+    
     std::vector<Real> scale (3, 0.1);
     std::vector<Real> rotate (3, 0.0);
     std::vector<Real> translate (3, 0.0);
@@ -97,14 +127,11 @@ int main (int argc, char** argv)
         std::cout << " Done!" << endl;
     }
 
- 
     
-
-    std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
-
-
-
-
+    //********************************************//
+    // Setup solver
+    //********************************************//
+    
     if( 0 == comm->MyPID() )
     {
     	std::cout << "Setting up EM solver ... ";
@@ -117,60 +144,52 @@ int main (int argc, char** argv)
     	std::cout << " done!" << std::endl;
     }
 
+    
+    //********************************************//
+    // Setup anisotropy vectors
+    //********************************************//
+    
     if( 0 == comm->MyPID() )
     {
     	std::cout << "Setting up anisotropy vectors ...";
     }
 
-//    VectorSmall<3> fibers;
-//    fibers[0] = 1;
-//    fibers[1] = 0;
-//    fibers[2] = 0;
-//    
-//    solver.setupElectroFiberVector(fibers);
     solver.setupFiberVector (1., 0., 0.);
-    string foldername = dataFile( "electrophysiology/fiber/foldername", "./" );
-    string filename = dataFile( "electrophysiology/fiber/filename", "FiberDirection" );
-    string fieldname = dataFile( "electrophysiology/fiber/fieldname", "fibers" );
-    solver.setupElectroFiberVector ( filename, fieldname, foldername );
-//    solver.setupSheetVector (0., 1., 0.);
+    string fiber_dir = dataFile( "electrophysiology/fiber/fiber_dir", "./" );
+    string fiber_name = dataFile( "electrophysiology/fiber/fiber_name", "FiberDirection" );
+    string fiber_fieldname = dataFile( "electrophysiology/fiber/fiber_fieldname", "fibers" );
+    solver.setupElectroFiberVector ( fiber_name, fiber_fieldname, fiber_dir );
+    // Or: VectorSmall<3> fibers; fibers[0] = 1; fibers[1] = 0; fibers[2] = 0; solver.setupElectroFiberVector(fibers);
 
     if( 0 == comm->MyPID() )
     {
     	std::cout << " done!" << std::endl;
     }
 
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << "Setting solver properties ... ";
-    }
-
-    //solver.oneWayCoupling();
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << " done!" << std::endl;
-    }
-
-    //Here we initialize the electrophysiology
-    //with given intial conditions
+    //********************************************//
+    // Initialize electrophysiology
+    //********************************************//
+    
     if( 0 == comm->MyPID() )
     {
     	std::cout << "Initialize electrophysiology ... ";
     }
     
-    UInt endoFlag = dataFile( "electrophysiology/flags/lvendo", 36 );
-    
     solver.initialize();
-    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, endoFlag );
     
-    // Create band
-    vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) );
-    // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );
+    // Set potential on certain flags
+    UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
+    UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
+    UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
+    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
+    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
     
+    // Restrict the potential set by a function
+    vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) ); // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );
     function_Type potMult = &potentialMultiplyerFcn;
     solver.electroSolverPtr()->feSpacePtr()->interpolate( potMult, *potentialMultiplyer, 0 );
-    
     *solver.electroSolverPtr()->potentialPtr() *= *potentialMultiplyer;
     
     if( 0 == comm->MyPID() )
@@ -178,12 +197,14 @@ int main (int argc, char** argv)
     	std::cout << " done!" << std::endl;
     }
 
-    //Here we are building the matrices
-    //mass matrix for mechanic and the others for electrophysiology
+    
+    //********************************************//
+    // Building Matrices
+    //********************************************//
 
     if( 0 == comm->MyPID() )
     {
-    	std::cout << "Buildin matrices ... ";
+    	std::cout << "Building matrices ... ";
     }
 
     solver.buildElectroSystem();
@@ -193,41 +214,29 @@ int main (int argc, char** argv)
     	std::cout << " done!" << std::endl;
     }
 
-
-    
-    
     function_Type stim = &Iapp;
 
-    Real dt_activation = solver.data().electroParameter<Real>("timestep");
-    Real endtime = solver.data().electroParameter<Real>("endtime");
-
-    UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
-    Real t = 0;
-
-    if( 0 == comm->MyPID() )
+    
+    //********************************************//
+    // Setup exporter for EMSolver
+    //********************************************//
+    
+    if ( 0 == comm->MyPID() )
     {
-    	std::cout << "Setting up exporters .. ";
+        std::cout << "Setting up exporters .. " << std::endl;
     }
 
     solver.setupExporters (problemFolder);
-
-    if( 0 == comm->MyPID() )
+    
+    if ( 0 == comm->MyPID() )
     {
-    	std::cout << " done!" << std::endl;
+        std::cout << " done!" << std::endl;
     }
     
     
-// Create vector to check activation times
-    // ---------------------------------------------------------------
-    // We want to save the activation times in the domains.
-    // Therefore, we create a vector which is initialized with the value -1.
-    // At every timestep, we will check if the nodes in the mesh have
-    // been activated, that is we check if the value of the potential
-    // is bigger than a given threshold (which was defined at the beninning
-    // when choosing the ionic model).
-    // Moreover, we want to export the activation time. We therefore create
-    // another HDF5 exporter to save the activation times on a separate file.
-    // ---------------------------------------------------------------
+    //********************************************//
+    // Setup vector and exporter for activation t.
+    //********************************************//
     
     vectorPtr_Type activationTimeVector ( new vector_Type ( solver.electroSolverPtr()->potentialPtr() -> map() ) );
     *activationTimeVector = -1.0;
@@ -240,6 +249,15 @@ int main (int argc, char** argv)
     activationTimeExporter.setPostDir (problemFolder);
     
     
+    //********************************************//
+    // Time loop
+    //********************************************//
+    
+    Real dt_activation = solver.data().electroParameter<Real>("timestep");
+    Real endtime = solver.data().electroParameter<Real>("endtime");
+    
+    UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
+    Real t = 0;
     solver.saveSolution (0.0);
 
     for (int k (1); k <= maxiter; k++)
@@ -257,6 +275,11 @@ int main (int argc, char** argv)
         activationTimeExporter.postProcess(t);// usually stored after time loop
     }
 
+    
+    //********************************************//
+    // Close all exporters
+    //********************************************//
+    
     solver.closeExporters();
     activationTimeExporter.closeFile();
 

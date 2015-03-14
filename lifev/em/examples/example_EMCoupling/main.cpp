@@ -4,6 +4,14 @@
 
 #include <lifev/core/LifeV.hpp>
 
+// Passive material
+#include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
+#include <lifev/electrophysiology/util/HeartUtility.hpp>
+#include <lifev/structure/solver/StructuralConstitutiveLawData.hpp>
+#include <lifev/em/solver/mechanics/EMStructuralOperator.hpp>
+#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
+#include <lifev/bc_interface/3D/bc/BCInterface3D.hpp>
+
 // Solver
 #include <lifev/em/solver/EMSolver.hpp>
 
@@ -28,7 +36,7 @@ using namespace LifeV;
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return 0;
+    return ( X < 0.25 && Y < 0.25 && Z < 0.25 && t < 2 ? 10 : 0 );
 }
 
 Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
@@ -51,14 +59,29 @@ int main (int argc, char** argv)
                                     const Real &   y,
                                     const Real & z,
                                     const ID&   /*i*/ ) >   function_Type;
+    
     typedef VectorEpetra                                    vector_Type;
     typedef boost::shared_ptr<vector_Type>                  vectorPtr_Type;
     
     typedef EMMonodomainSolver<mesh_Type>                   monodomain_Type;
 
+    typedef FESpace< mesh_Type, MapEpetra >                 solidFESpace_Type;
+    typedef boost::shared_ptr<solidFESpace_Type>            solidFESpacePtr_Type;
+    
+    typedef ETFESpace< mesh_Type, MapEpetra, 3, 3 >         solidETFESpace_Type;
+    typedef boost::shared_ptr<solidETFESpace_Type>          solidETFESpacePtr_Type;
+    
+    typedef StructuralConstitutiveLawData                   constitutiveLaw_Type;
+    typedef boost::shared_ptr<constitutiveLaw_Type>         constitutiveLawPtr_Type;
+    
+    typedef BCHandler                                       bc_Type;
+    typedef StructuralOperator< mesh_Type >                 physicalSolver_Type;
+    typedef BCInterface3D< bc_Type, physicalSolver_Type >   bcInterface_Type;
+    typedef boost::shared_ptr< bcInterface_Type >           bcInterfacePtr_Type;
+    
 
     //********************************************//
-    // Declare comm and solver
+    // Declare communicator and solver
     //********************************************//
     
 #ifdef HAVE_MPI
@@ -74,7 +97,7 @@ int main (int argc, char** argv)
 
     EMSolver<mesh_Type, monodomain_Type> solver(comm);
 
-
+    
     //********************************************//
     // Read data file and create output folder
     //********************************************//
@@ -84,6 +107,14 @@ int main (int argc, char** argv)
     GetPot dataFile (data_file_name);
     std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
 
+    
+    //********************************************//
+    // Setup material data
+    //********************************************//
+    
+    EMData emdata;
+    emdata.setup (dataFile);
+    
     
     //********************************************//
     // Load mesh
@@ -114,7 +145,8 @@ int main (int argc, char** argv)
         std::cout << "Resizing mesh..." << endl;
     }
     
-    std::vector<Real> scale (3, 0.1);
+    Real meshScaling = dataFile("solid/space_discretization/mesh_scaling", 1.0);
+    std::vector<Real> scale (3, meshScaling);
     std::vector<Real> rotate (3, 0.0);
     std::vector<Real> translate (3, 0.0);
     MeshUtility::MeshTransformer<mesh_Type> transformerFull (* (solver.fullMeshPtr() ) );
@@ -126,10 +158,10 @@ int main (int argc, char** argv)
     {
         std::cout << " Done!" << endl;
     }
-
+    
     
     //********************************************//
-    // Setup solver
+    // Setup solver (including fe-spaces & b.c.)
     //********************************************//
     
     if( 0 == comm->MyPID() )
@@ -153,14 +185,24 @@ int main (int argc, char** argv)
     {
     	std::cout << "Setting up anisotropy vectors ...";
     }
-
+ 
     solver.setupFiberVector (1., 0., 0.);
-    string fiber_dir = dataFile( "electrophysiology/fiber/fiber", "./" );
-    string fiber_name = dataFile( "electrophysiology/fiber/filename", "FiberDirection" );
-    string fiber_fieldname = dataFile( "electrophysiology/fiber/fieldname", "fibers" );
-    solver.setupElectroFiberVector ( fiber_name, fiber_fieldname, fiber_dir );
-    // Or: VectorSmall<3> fibers; fibers[0] = 1; fibers[1] = 0; fibers[2] = 0; solver.setupElectroFiberVector(fibers);
-
+    solver.setupSheetVector (0., 1., 0.);
+    
+    std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_name", "FiberDirection");
+    std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_name", "SheetsDirection");
+    std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_fieldname", "fibers");
+    std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
+    std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
+    std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
+    
+    bool anisotropy = dataFile ( "solid/space_discretization/anisotropic", false );
+    if ( anisotropy )
+    {
+        solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir );
+        solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir );
+    }
+    
     if( 0 == comm->MyPID() )
     {
     	std::cout << " done!" << std::endl;
@@ -206,15 +248,15 @@ int main (int argc, char** argv)
     {
     	std::cout << "Building matrices ... ";
     }
-
-    solver.buildElectroSystem();
+    
+    solver.twoWayCoupling();
+    solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
+    solver.buildSystem();
     
     if( 0 == comm->MyPID() )
     {
     	std::cout << " done!" << std::endl;
     }
-
-    function_Type stim = &Iapp;
 
     
     //********************************************//
@@ -253,13 +295,33 @@ int main (int argc, char** argv)
     // Time loop
     //********************************************//
     
+    function_Type stim = &Iapp;
+    
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
+    Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     Real endtime = solver.data().electroParameter<Real>("endtime");
+    UInt saveIter = static_cast<UInt>( dt_mechanics / dt_activation );
+    
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/LV_flag", 0);
+    Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 0.0);
+    bool deformedPressure =  dataFile ( "solid/boundary_conditions/deformed_pressure", 1 );
+
+    if ( deformedPressure)
+    {
+        std::cout << "Setting pressure in the deformed configuration\n";
+    }
+    else
+    {
+        std::cout << "Setting pressure in the reference configuration\n";
+    }
+    
+    //solid.setBCFlag( LVFlag );
+    
     
     UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
     Real t = 0;
     solver.saveSolution (0.0);
-
+    
     for (int k (1); k <= maxiter; k++)
     {
         solver.electroSolverPtr() -> registerActivationTime (*activationTimeVector, t, 0.9);
@@ -269,8 +331,17 @@ int main (int argc, char** argv)
         std::cout << "\n*********************\n";
 
         t = t + dt_activation;
+        
         solver.solveElectrophysiology (stim, t);
-
+        solver.solveActivation (dt_activation);
+        
+        if ( k % saveIter == 0 )
+        {
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            solver.solveMechanics();
+        }
+        
         solver.saveSolution(t);
         activationTimeExporter.postProcess(t);// usually stored after time loop
     }

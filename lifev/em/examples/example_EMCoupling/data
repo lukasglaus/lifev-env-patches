@@ -29,13 +29,13 @@ save       = 1
     monodomain_xml_file = ParamList.xml
 
     [./physics]
-    IonicModel = MinimalModel
+    IonicModel = AlievPanfilov
     fiberDiffusion = 10.0
     sheetDiffusion = 3.0
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 80.
+    endtime         = 60
     timestep        = 0.05
     
     [../discretization]
@@ -70,9 +70,10 @@ save       = 1
     #     InverseViscosity
     #     ActiveForceCoefficient
     #     ChemicalThreshold
-    ActivationModel = ActiveStrainRossi14
+    ActivationModel = ActiveStressRossi14
     CalciumIndex = 0
     ActiveForceCoefficient = -4.0
+#    Tmax = 250
 
     EMActiveStrainOrthotropicParameter = -666.0
     #Active Strain types Available
@@ -113,10 +114,10 @@ save       = 1
         #ANH   = Active (Strain) Neo Hookean
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType =  PV
-    EMActiveStressMaterialType = ANH #SFAS
+    EMPassiveMaterialType =  PNH
+    EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
-        Tmax = 497000
+        Tmax = 500000
         mu = 4960
         a           = 3330
         af          = 185350
@@ -144,7 +145,7 @@ save       = 1
         flag       = 400
         mode       = Full
         component  = 3
-    	function  = '[0.0, 0.0, 0.0]'
+    	function  = '[0.0, 0.0, 0]'
 
         [../Bottom]
         type       = Essential
@@ -155,7 +156,7 @@ save       = 1
         
     	[../Front]
         type       = Natural
-        flag       = 200
+        flag       = 500
         mode       = Full
         component  = 3
     	function  = '[0.0, 0.0, 0.0]'
@@ -187,16 +188,25 @@ save       = 1
 [../time_discretization]
 initialtime 	= 0.
 endtime         = 40.
-timestep        = 0.2
+timestep        = 1
 theta       	= 0.35
 zeta        	= 0.75
 BDF_order   	= 2
 
+
 [../space_discretization]
-mesh_type = .mesh
-mesh_dir  	= ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/mesh/
-mesh_file 	= ventFine.mesh #idealized.mesh
-order     	= P1
+mesh_type       = .mesh
+mesh_dir        = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/mesh/
+mesh_file       = cube4.mesh
+mesh_scaling    = 1.0
+order           = P1
+anisotropic     = false
+fiber_name      = FiberDirection
+fiber_fieldname = fibers
+fiber_dir       = ./
+sheet_name      = SheetsDirection
+sheet_fieldname = sheets
+sheet_dir       = ./
 
 
 [../miscellaneous]
@@ -205,7 +215,7 @@ verbose   	= 1
 
 
 [../newton]
-maxiter 	= 1
+maxiter 	= 20
 reltol  	= 1.e-7
 abstol  	= 1.e-7
 

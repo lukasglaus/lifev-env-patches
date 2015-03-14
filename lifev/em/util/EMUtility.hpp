@@ -170,7 +170,7 @@ void computeI4 ( VectorEpetra& I4, VectorEpetra& displacement, VectorEpetra& fib
         Real J = F11 * (F22 * F33 - F32 * F23) - F22 * (F21 * F33 - F31 * F23) + F33 * (F21 * F32 - F31 * F22);
 
         I4[iGID] = fx * fx + fy * fy + fz * fz;
-//        I4[iGID] *= std::pow (J, -2.0 / 3.0);
+        //        I4[iGID] *= std::pow (J, -2.0 / 3.0);
 
     }
 

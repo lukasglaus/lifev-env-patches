@@ -12,6 +12,7 @@
 
 #include <lifev/electrophysiology/solver/IonicModels/IonicMinimalModel.hpp>
 #include <lifev/electrophysiology/solver/IonicModels/IonicAlievPanfilov.hpp>
-
+#include <lifev/electrophysiology/solver/IonicModels/IonicTenTusscher06.hpp>
+// #include <lifev/electrophysiology/solver/IonicModels/IonicOharaRudy.hpp>
 
 #endif /* IONICMODELSLIST_HPP_ */

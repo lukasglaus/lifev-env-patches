@@ -144,7 +144,7 @@ EMActiveStressMaterialType = ANH #SFAS
         
     	[../Front]
         type       = Natural
-        flag       = 200
+        flag       = 500
         mode       = Full
         component  = 3
     	function  = '[0.0, 0.0, 0.0]'

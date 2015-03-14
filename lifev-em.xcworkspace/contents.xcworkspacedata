@@ -5392,6 +5392,38 @@
                location = "group:examples"
                name = "examples">
                <Group
+                  location = "group:example_EMCoupling"
+                  name = "example_EMCoupling">
+                  <FileRef
+                     location = "group:CMakeLists.txt">
+                  </FileRef>
+                  <FileRef
+                     location = "group:data">
+                  </FileRef>
+                  <FileRef
+                     location = "group:main.cpp">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ParamList.xml">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:example_passiveEMMaterial"
+                  name = "example_passiveEMMaterial">
+                  <FileRef
+                     location = "group:CMakeLists.txt">
+                  </FileRef>
+                  <FileRef
+                     location = "group:data">
+                  </FileRef>
+                  <FileRef
+                     location = "group:main.cpp">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ParamList.xml">
+                  </FileRef>
+               </Group>
+               <Group
                   location = "group:example_HeartOharaRudy"
                   name = "example_HeartOharaRudy">
                   <FileRef
@@ -5934,6 +5966,9 @@
                         location = "group:functions"
                         name = "functions">
                         <FileRef
+                           location = "group:FunctionsMooneyRivlin.hpp">
+                        </FileRef>
+                        <FileRef
                            location = "group:CMakeLists.txt">
                         </FileRef>
                         <FileRef
@@ -5955,9 +5990,6 @@
                            location = "group:FunctionsIsotropicExponential.hpp">
                         </FileRef>
                         <FileRef
-                           location = "group:FunctionsLinearizedNeoHookean.hpp">
-                        </FileRef>
-                        <FileRef
                            location = "group:FunctionsList.hpp">
                         </FileRef>
                         <FileRef
@@ -5968,6 +6000,9 @@
                         </FileRef>
                         <FileRef
                            location = "group:FunctionsShearExponential.hpp">
+                        </FileRef>
+                        <FileRef
+                           location = "group:FunctionsLinearizedNeoHookean.hpp">
                         </FileRef>
                         <FileRef
                            location = "group:FunctionsSimpleActiveStress.hpp">
@@ -5995,6 +6030,9 @@
                      <Group
                         location = "group:passive_materials"
                         name = "passive_materials">
+                        <FileRef
+                           location = "group:PassiveMooneyRivlin.hpp">
+                        </FileRef>
                         <FileRef
                            location = "group:CMakeLists.txt">
                         </FileRef>

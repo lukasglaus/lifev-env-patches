@@ -1,12 +1,12 @@
 /*
  * EMMaterialFunctions.hpp
  *
- *  Created on: 28/apr/2014
- *      Author: srossi
+ *  Created on: 15/mar/2015
+ *      Author: tkummer
  */
 
-#ifndef FUNCTIONSNEOHOOKEAN_HPP_
-#define FUNCTIONSNEOHOOKEAN_HPP_
+#ifndef FUNCTIONSMOONEYRIVLIN_HPP_
+#define FUNCTIONSMOONEYRIVLIN_HPP_
 
 #include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
 
@@ -24,37 +24,27 @@ namespace MaterialFunctions
 
 
 
-typedef VectorEpetra           vector_Type;
-typedef boost::shared_ptr<vector_Type>         vectorPtr_Type;
+typedef VectorEpetra                            vector_Type;
+typedef boost::shared_ptr<vector_Type>          vectorPtr_Type;
 
-typedef MatrixEpetra<Real>           matrix_Type;
-typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
+typedef MatrixEpetra<Real>                      matrix_Type;
+typedef boost::shared_ptr<matrix_Type>          matrixPtr_Type;
 
 
 
 ////////////////////////////////////////////////////////////////////////
-//  NEO HOOKEAN FUNCTIONS
+//  MOONEY RIVLIN FUNCTIONS
 ////////////////////////////////////////////////////////////////////////
 template <class Mesh>
-class NeoHookean : public virtual EMMaterialFunctions<Mesh>
+class MooneyRivlin : public virtual EMMaterialFunctions<Mesh>
 {
 public:
+    
     typedef EMData          data_Type;
 
-//    virtual return_Type operator() (const MatrixSmall<3, 3>& F)
-//    {
-//        return 0.5 * M_mu;
-//    }
-//
-//    //    NeoHookean() : M_mu(4960) {} // 0.496 KPa
-      NeoHookean (Real mu = 4960) : M_W1 (new W1(mu)) { } // 0.496 KPa
-//    NeoHookean (const NeoHookean& neoHookean)
-//    {
-//        M_mu = neoHookean.M_mu;
-//    }
-//    virtual ~NeoHookean() {}
+    MooneyRivlin (Real mu = 4960) : M_W2 (new W2(mu)) { } // 0.496 KPa
 
-    class W1
+    class W2
     {
     public:
         typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
@@ -63,15 +53,14 @@ public:
             return 0.5 * mu;
         }
 
-        //    NeoHookean() : M_mu(4960) {} // 0.496 KPa
-        W1 (Real mu = 4960) : mu (mu) {} // 0.496 KPa
-        W1 (const W1& neoHookean)
+        W2 (Real mu = 4960) : mu (mu) {} // 0.496 KPa
+        W2 (const W2& mooneyRivlin)
         {
-            mu = neoHookean.mu;
+            mu = mooneyRivlin.mu;
         }
-        virtual ~W1() {}
+        virtual ~W2() {}
 
-        void setMu( Real mu )
+        void setC2( Real mu )
         {
         	this->mu = mu;
         }
@@ -86,7 +75,7 @@ public:
                                           const vector_Type& sheets,
                                           matrixPtr_Type           jacobianPtr )
     {
-        EMAssembler::computeI1JacobianTerms ( disp, dispETFESpace, jacobianPtr, M_W1 );
+        EMAssembler::computeI2JacobianTerms ( disp, dispETFESpace, jacobianPtr, M_W2 );
     }
 
     virtual void computeResidual ( const vector_Type& disp,
@@ -95,21 +84,21 @@ public:
                                           const vector_Type& sheets,
                                           vectorPtr_Type residualVectorPtr)
     {
-        EMAssembler::computeI1ResidualTerms ( disp, dispETFESpace, residualVectorPtr, M_W1 );
+        EMAssembler::computeI2ResidualTerms ( disp, dispETFESpace, residualVectorPtr, M_W2 );
     }
 
     virtual void setParameters (data_Type& data)
     {
-    	M_W1->setMu( data.solidParameter<Real>("mu") );
+    	M_W2->setC2( data.solidParameter<Real>("C2") );
     }
 
     void showMe()
     {
-    	std::cout << "Shear Modulus = " << M_W1->mu << "\n";
+    	std::cout << "Shear Modulus = " << M_W2->mu << "\n";
     }
 
 protected:
-    boost::shared_ptr<NeoHookean::W1> M_W1;
+    boost::shared_ptr<MooneyRivlin::W2> M_W2;
 };
 
 

@@ -60,6 +60,8 @@ EMData::setupSolidParameters(GetPot& dataFile, const std::string& section)
     M_solidParametersList.set ("bfs", bfs);
     M_solidParametersList.set ("bfn", bfn);
     M_solidParametersList.set ("bsn", bsn);
+    double C2 = dataFile ( ( section + "/physics/C2" ).data(), 4960.0 );
+    M_solidParametersList.set ("C2", C2);
 
 
     double mu = dataFile ( ( section + "/physics/mu" ).data(), 4960.0 );

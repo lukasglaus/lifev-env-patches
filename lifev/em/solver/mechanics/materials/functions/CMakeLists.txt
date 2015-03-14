@@ -11,6 +11,7 @@ SET( solver_mechanics_materials_functions_HEADERS
  solver/mechanics/materials/functions/FunctionsShearExponential.hpp
  solver/mechanics/materials/functions/FunctionsSimpleActiveStress.hpp
  solver/mechanics/materials/functions/FunctionsVolumetric.hpp
+ solver/mechanics/materials/functions/FunctionsMooneyRivlin.hpp
  CACHE INTERNAL "")
 
 SET( solver_mechanics_materials_functions_SOURCES

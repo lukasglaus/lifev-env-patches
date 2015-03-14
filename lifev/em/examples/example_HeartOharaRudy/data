@@ -29,10 +29,10 @@ save       = 1
     monodomain_xml_file = ParamList.xml
 
     [./physics]
-    IonicModel = AlievPanfilov
-    fiberDiffusion = 3.0
-    sheetDiffusion = 1.0
-    normalDiffusion = 1.0
+    IonicModel = MinimalModel
+    fiberDiffusion = 10.0
+    sheetDiffusion = 3.0
+    normalDiffusion = 3.0
     
     [../time_discretization]
     endtime         = 80.
@@ -42,16 +42,20 @@ save       = 1
     LumpedMass = false
 
     [../fiber]
-foldername = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/fibers/
-    filename = FiberDirection
-    fieldname = fibers
+    fiber_dir = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/fibers/
+    fiber_name = FiberDirection
+    fiber_fieldname = fibers
 
     [../flags]
     lvendo = 36
+    rveno = 37
+    rvseptum = 38
 
     [../]
 
+
 [activation]
+
     [./physics]
     #ActivationModels available and relative required parameters 
     # ActiveStressRossi14:
@@ -69,9 +73,7 @@ foldername = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/fiber
     ActivationModel = ActiveStrainRossi14
     CalciumIndex = 0
     ActiveForceCoefficient = -4.0
-    
 
-    
     EMActiveStrainOrthotropicParameter = -666.0
     #Active Strain types Available
     # Anisotropic
@@ -87,56 +89,54 @@ foldername = ./ #/Users/thomas/LIFE5/lifev-em/lifev/electrophysiology/data/fiber
 
 [solid]
 
- 
+    [./physics]
+    density   	= 0
+    material_flag   = 1000 #101 #1000
+    young     	= 29760 #9920
+    poisson   	= 0.5
+    bulk		= 100000 #1.3333e+8
+    alpha 		= 2.684564e+6
+    gamma		= 1.0
+    gammaf		= 0.0
+    solidType 	= EMMaterial 
+    lawType     = nonlinear
+        #Passive material available types for EM
+        #PNH   = Passive NeoHookean
+        #PNHL  = Passive NeoHookean Linearized
+        #PIE   = Passive Isoptropic Exponential
+        #PTIE  = Passive Transversely Isoptropic Exponential
+        #PIEWS = Passive Isoptropic Exponential With Shear
+        #PHO   = Passive Holzapfel Ogden
+        #POF   = Passive Orthotropic Fung
+        #PTIF  = Passive Transversely Isotropic Fung
+        #PV    = Passive Volumetric
+        #ANH   = Active (Strain) Neo Hookean
+        #SimpleActiveStress  = Simple Fiber Active Stress
 
-[./physics]
-density   	= 0
-material_flag   = 1000 #101 #1000
-young     	= 29760 #9920
-poisson   	= 0.5
-bulk		= 100000 #1.3333e+8
-alpha 		= 2.684564e+6
-gamma		= 1.0
-gammaf		= 0.0
-solidType 	= EMMaterial 
-lawType     = nonlinear
-    #Passive material available types for EM
-    #PNH   = Passive NeoHookean
-    #PNHL  = Passive NeoHookean Linearized
-    #PIE   = Passive Isoptropic Exponential
-    #PTIE  = Passive Transversely Isoptropic Exponential
-    #PIEWS = Passive Isoptropic Exponential With Shear
-    #PHO   = Passive Holzapfel Ogden
-    #POF   = Passive Orthotropic Fung
-    #PTIF  = Passive Transversely Isotropic Fung
-    #PV    = Passive Volumetric
-    #ANH   = Active (Strain) Neo Hookean
-    #SimpleActiveStress  = Simple Fiber Active Stress
+    EMPassiveMaterialType =  PV
+    EMActiveStressMaterialType = ANH #SFAS
 
-EMPassiveMaterialType =  PV
-EMActiveStressMaterialType = ANH #SFAS
-
-    Tmax = 497000
-    mu = 4960
-    a           = 3330
-    af          = 185350
-    as          = 25640
-    afs         = 4170
-    b           = 9.242
-    bf          = 15.972
-    bs          = 10.446
-    bfs         = 11.602
-    BulkModulus = 35000
-    C = 20000.0
-    bff = 8.0
-    bss = 2.0
-    bnn = 2.0
-    bfs = 4.0
-    bfn = 4.0
-    bsn = 2.0
+        Tmax = 497000
+        mu = 4960
+        a           = 3330
+        af          = 185350
+        as          = 25640
+        afs         = 4170
+        b           = 9.242
+        bf          = 15.972
+        bs          = 10.446
+        bfs         = 11.602
+        BulkModulus = 35000
+        C = 20000.0
+        bff = 8.0
+        bss = 2.0
+        bnn = 2.0
+        bfs = 4.0
+        bfn = 4.0
+        bsn = 2.0
 
 
-   [../boundary_conditions]
+    [../boundary_conditions]
     list = 'Top Bottom Front Back Left Right'
 
         [./Top]
@@ -182,6 +182,7 @@ EMActiveStressMaterialType = ANH #SFAS
 	    function  = '0.0'
 
         [../]
+
 
 [../time_discretization]
 initialtime 	= 0.

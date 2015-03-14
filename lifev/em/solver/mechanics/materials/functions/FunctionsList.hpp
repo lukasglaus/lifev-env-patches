@@ -21,4 +21,6 @@
 
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsActiveStrainNeoHookean.hpp>
 
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsMooneyRivlin.hpp>
+
 #endif /* FUNCTIONSLIST_HPP_ */
