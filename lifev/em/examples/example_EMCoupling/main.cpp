@@ -186,21 +186,24 @@ int main (int argc, char** argv)
     	std::cout << "Setting up anisotropy vectors ...";
     }
  
-    solver.setupFiberVector (1., 0., 0.);
-    solver.setupSheetVector (0., 1., 0.);
-    
-    std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_name", "FiberDirection");
-    std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_name", "SheetsDirection");
-    std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_fieldname", "fibers");
-    std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
-    std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
-    std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
-    
     bool anisotropy = dataFile ( "solid/space_discretization/anisotropic", false );
+
     if ( anisotropy )
     {
+        std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_name", "FiberDirection");
+        std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_name", "SheetsDirection");
+        std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_fieldname", "fibers");
+        std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
+        std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
+        std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
+        
         solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir );
         solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir );
+    }
+    else
+    {
+        solver.setupFiberVector (1., 0., 0.);
+        solver.setupSheetVector (0., 1., 0.);
     }
     
     if( 0 == comm->MyPID() )
