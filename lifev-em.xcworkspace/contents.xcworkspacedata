@@ -5392,10 +5392,23 @@
                location = "group:examples"
                name = "examples">
                <Group
+                  location = "group:example_XBridge"
+                  name = "example_XBridge">
+                  <FileRef
+                     location = "group:CMakeLists.txt">
+                  </FileRef>
+                  <FileRef
+                     location = "group:main.cpp">
+                  </FileRef>
+               </Group>
+               <Group
                   location = "group:example_EMCoupling"
                   name = "example_EMCoupling">
                   <FileRef
                      location = "group:CMakeLists.txt">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Circulation.h">
                   </FileRef>
                   <FileRef
                      location = "group:data">
@@ -5778,6 +5791,19 @@
                <Group
                   location = "group:activation"
                   name = "activation">
+                  <Group
+                     location = "group:xBridgeModels"
+                     name = "xBridgeModels">
+                     <FileRef
+                        location = "group:CMakeLists.txt">
+                     </FileRef>
+                     <FileRef
+                        location = "group:XBridge4SM.cpp">
+                     </FileRef>
+                     <FileRef
+                        location = "group:XBridge4SM.hpp">
+                     </FileRef>
+                  </Group>
                   <FileRef
                      location = "group:Activation.hpp">
                   </FileRef>

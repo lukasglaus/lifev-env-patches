@@ -688,6 +688,7 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     auto v = M_electroSolverPtr -> diffusionTensor();
     std::cout << "\nEMS - " << v[0] << ", " << v[1] << ", " << v[2];
     M_electroSolverPtr -> solveOneStepGatingVariablesFE();
+//    M_electroSolverPtr -> solveOneStepGatingVariablesRL();
     M_electroSolverPtr -> solveOneICIStep();
 }
 

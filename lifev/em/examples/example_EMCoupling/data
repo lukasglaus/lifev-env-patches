@@ -1,19 +1,5 @@
-###################################################################################################
-#
-#                       This file is part of the LifeV Library
-#                Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
-#                Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
-#
-#      Author(s): Umberto Villa <uvilla@emory.edu>
-#                 Tiziano Passerini <tiziano@mathcs.emory.edu>
-#           Date: 10-12-2010
-#  License Terms: GNU LGPL
-#
-###################################################################################################
-### TESTSUITE: STRUCTURE MECHANICS ################################################################
-###################################################################################################
 #-------------------------------------------------
-#      Data file for Structure Solver
+#      Data file for EM-Solver
 #-------------------------------------------------
 
 
@@ -25,21 +11,23 @@ save       = 1
 
 [electrophysiology]
 
-    monodomain_xml_path = ./
-    monodomain_xml_file = ParamList.xml
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml
 
     [./physics]
-    IonicModel = AlievPanfilov
+    IonicModel = MinimalModel
     fiberDiffusion = 10.0
     sheetDiffusion = 3.0
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 100
+    endtime         = 40
     timestep        = 0.05
     
     [../discretization]
     LumpedMass = false
+
+    elementsOrder   = P1
 
     [../flags]
     lvendo = 36
@@ -52,33 +40,33 @@ save       = 1
 [activation]
 
     [./physics]
-    #ActivationModels available and relative required parameters 
-    # ActiveStressRossi14:
-    #     ActiveStress_Beta
-    #     ActiveStressMu
-    #     Tmax ( MaxActiveTension )
-    # ActiveStressNashPanfilov04
-    #     kTa
-    #     epsilon0
-    # ActiveStrainRossi14
-    #     calciumIndex
-    #     InverseViscosity
-    #     ActiveForceCoefficient
-    #     ChemicalThreshold
+        #ActivationModels available and relative required parameters
+        # ActiveStressRossi14:
+        #     ActiveStress_Beta
+        #     ActiveStressMu
+        #     Tmax ( MaxActiveTension )
+        # ActiveStressNashPanfilov04
+        #     kTa
+        #     epsilon0
+        # ActiveStrainRossi14
+        #     calciumIndex
+        #     InverseViscosity
+        #     ActiveForceCoefficient
+        #     ChemicalThreshold
     ActivationModel = ActiveStressRossi14
-    CalciumIndex = 0
+    CalciumIndex = 2
     ActiveForceCoefficient = -4.0
-#    Tmax = 250
+#    Tmax = 250 # Default: 50
 
     EMActiveStrainOrthotropicParameter = -666.0
-    #Active Strain types Available
-    # Anisotropic
-    # Orthotropic
-    # TransverselyIsotropic
+        #Active Strain types Available
+        # Anisotropic
+        # Orthotropic
+        # TransverselyIsotropic
     EMActiveStrainType = TransverselyIsotropic
 
     [../time_discretization]
-    endtime         = 40.
+    endtime         = 0.5
     timestep        = 0.05
     [../]
 
@@ -107,12 +95,13 @@ save       = 1
         #PTIF  = Passive Transversely Isotropic Fung
         #PV    = Passive Volumetric
         #ANH   = Active (Strain) Neo Hookean
+        #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
     EMPassiveMaterialType =  PNH
     EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
-        Tmax = 500000
+        Tmax = 30000 #500000
         mu = 4960
         a           = 3330
         af          = 185350
@@ -135,6 +124,8 @@ save       = 1
     [../boundary_conditions]
     # list = 'Top Bottom Front Back Left Right' # Cube
     list = 'Base'
+
+    LvFlag = 36
 
         [./Base]
         type       = Essential
@@ -190,7 +181,7 @@ save       = 1
 
 [../time_discretization]
 initialtime 	= 0.
-endtime         = 40.
+endtime         = 1000.
 timestep        = 1
 theta       	= 0.35
 zeta        	= 0.75
@@ -202,12 +193,12 @@ mesh_type       = .mesh
 mesh_dir        = ./
 mesh_file       = ventFine.mesh
 mesh_scaling    = 0.1
-order           = P1
+order           = P2
 anisotropic     = true
-fiber_name      = FiberDirection
+fiber_name      = FiberDirectionP2
 fiber_fieldname = fibers
 fiber_dir       = ./
-sheet_name      = SheetsDirection
+sheet_name      = SheetsDirectionP2
 sheet_fieldname = sheets
 sheet_dir       = ./
 

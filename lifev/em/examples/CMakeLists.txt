@@ -22,4 +22,5 @@ ADD_SUBDIRECTORIES(
    example_HeartOharaRudy
    example_passiveEMMaterial
    example_EMCoupling
+   example_XBridge
 )

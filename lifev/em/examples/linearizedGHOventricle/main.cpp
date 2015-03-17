@@ -322,15 +322,16 @@ template<typename space> Real ComputeVolume (     const boost::shared_ptr<Region
 
     {
         using namespace ExpressionAssembly;
-
+        //auto I = value(Id); can be replaced by that
         BOOST_AUTO_TPL (I,      value (Id) );
         BOOST_AUTO_TPL (vE1,      value (E1) );
+        //auto Grad_u = grad ( dETFESpace, disp, 0); can be replaced by that
         BOOST_AUTO_TPL (Grad_u, grad ( dETFESpace, disp, 0) );
-        BOOST_AUTO_TPL (x,     value ( ETFESpace, positionVector ) );
+//        BOOST_AUTO_TPL (x,     value ( ETFESpace, positionVector ) );
         BOOST_AUTO_TPL (F,      ( Grad_u + I ) );
         BOOST_AUTO_TPL (FmT,    minusT (F) );
         BOOST_AUTO_TPL (J,       det (F) );
-        BOOST_AUTO_TPL (x1,     dot (x, vE1) );
+//        BOOST_AUTO_TPL (x1,     dot (x, vE1) );
 
         QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
 
@@ -338,7 +339,7 @@ template<typename space> Real ComputeVolume (     const boost::shared_ptr<Region
         integrate ( boundary ( localMesh, bdFlag),
                     myBDQR,
                     ETFESpace,
-                    value (-1.0) * J * dot ( vE1, FmT * Nface ) *phi_i
+                    value (-1.0) * dot ( vE1,J * FmT * Nface ) *phi_i
                   ) >> intergral;
 
         intergral -> globalAssemble();

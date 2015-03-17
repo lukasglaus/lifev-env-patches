@@ -258,11 +258,11 @@ int main ( int argc, char** argv )
     //*************************************************************//
 
     boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace
-    ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+    ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP2, Comm) );
 
-    fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P1", 1, Comm) );
+    fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P2", 1, Comm) );
 
-    fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P1", 3, Comm) );
+    fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P2", 3, Comm) );
 
     //*************************************************************//
     // We asseble the stiffness matrix using expression template.

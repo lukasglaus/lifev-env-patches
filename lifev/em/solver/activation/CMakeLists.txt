@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORIES(
 activeStressModels
 activeStrainModels
+xBridgeModels
 )
 
 SET( solver_activation_HEADERS

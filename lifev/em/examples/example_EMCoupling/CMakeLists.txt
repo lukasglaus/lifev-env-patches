@@ -7,7 +7,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 TRIBITS_ADD_EXECUTABLE(
   EMCoupling
-  SOURCES main.cpp
+  SOURCES main.cpp Circulation.h
   )
 
  TRIBITS_COPY_FILES_TO_BINARY_DIR(data_example_EMCoupling
