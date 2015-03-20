@@ -2,11 +2,11 @@
  * EMMaterialFunctions.hpp
  *
  *  Created on: 28/apr/2014
- *      Author: srossi
+ *      Author: srossi, Luca Barbarotta
  */
 
-#ifndef FUNCTIONActiveStrainNeoHookean_HPP_
-#define FUNCTIONActiveStrainNeoHookean_HPP_
+#ifndef FUNCTIONACTIVESTRAINNEOHOOKEAN_HPP_
+#define FUNCTIONACTIVESTRAINNEOHOOKEAN_HPP_
 
 #include <lifev/em/solver/mechanics/EMElasticityFunctions.hpp>
 
@@ -56,18 +56,17 @@ public:
                                   boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
                                   matrixPtr_Type           jacobianPtr)
   {
-      EMAssembler::computeActiveStrainI1JacobianTerms (disp,
-                                                       dispETFESpace,
-                                                       fibers,
-                                                       sheets,
-                                                       fiberActivation,
-                                                       sheetActivation,
-                                                       normalActivation,
-                                                       activationETFESpace,
-                                                       jacobianPtr,
-                                                       this->M_W1,
-                                                       this->M_activeStrainOrthotropicParameter);
-    	std::cout << "Norm of the activation = " <<  fiberActivation->norm2() << std::endl;
+      EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barJacobianTerms (disp,
+                                                                                            dispETFESpace,
+                                                                                            fibers,
+                                                                                            sheets,
+                                                                                            fiberActivation,
+                                                                                            sheetActivation,
+                                                                                            normalActivation,
+                                                                                            activationETFESpace,
+                                                                                            jacobianPtr,
+                                                                                            this->M_W1,
+                                                                                            this->M_activeStrainOrthotropicParameter);
 
     	using namespace ExpressionAssembly;
 
@@ -249,17 +248,17 @@ public:
 //		    dot ( P, grad (phi_i) )
 //		    ) >> residualVectorPtr;
 
-        EMAssembler::computeActiveStrainI1ResidualTerms( disp,
-                                                         dispETFESpace,
-                                                         fibers,
-                                                         sheets,
-                                                         fiberActivation,
-                                                         sheetActivation,
-                                                         normalActivation,
-                                                         activationETFESpace,
-                                                         residualVectorPtr,
-                                                         this->M_W1,
-                                                         this->M_activeStrainOrthotropicParameter);
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barResidualTerms( disp,
+                                                                                              dispETFESpace,
+                                                                                              fibers,
+                                                                                              sheets,
+                                                                                              fiberActivation,
+                                                                                              sheetActivation,
+                                                                                              normalActivation,
+                                                                                              activationETFESpace,
+                                                                                              residualVectorPtr,
+                                                                                              this->M_W1,
+                                                                                              this->M_activeStrainOrthotropicParameter);
     }
 
     virtual void setParameters (data_Type& data)
@@ -276,4 +275,4 @@ private:
 } //EMMaterialFunctions
 
 } //LifeV
-#endif /* EMMATERIALFUNCTIONS_HPP_ */
+#endif /* FUNCTIONACTIVESTRAINNEOHOOKEAN_HPP_ */

@@ -20,6 +20,9 @@
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsShearExponential.hpp>
 
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsActiveStrainNeoHookean.hpp>
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsActiveStrainIsotropicExponential.hpp>
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsActiveStrainAnisotropicExponential.hpp>
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsActiveStrainShearExponential.hpp>
 
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsMooneyRivlin.hpp>
 

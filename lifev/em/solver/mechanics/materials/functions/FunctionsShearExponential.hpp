@@ -96,7 +96,7 @@ public:
 		M_b = data.solidParameter<Real>("bfs");
     }
 
-private:
+protected:
     Real M_a;
     Real M_b;
 };
@@ -159,7 +159,7 @@ public:
 		M_b = data.solidParameter<Real>("bfs");
     }
 
-private:
+protected:
     Real M_a;
     Real M_b;
 };
