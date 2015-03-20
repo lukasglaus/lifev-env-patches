@@ -72,6 +72,7 @@
 
 #include <lifev/em/solver/activation/xBridgeModels/XBridge4SM.hpp>
 
+
 using namespace LifeV;
 
 #define SolutionTestNorm  -2476.4745158656560307
@@ -134,13 +135,20 @@ Int main ( Int argc, char** argv )
     //********************************************//
     Real Iapp (0.0);
 
+    
+    //********************************************//
+    // Setup X-Bridge Model.                      //
+    //********************************************//
+    XBridge4SM xb;
+    std::vector<Real> statesXb ( xb.xbVarVec() );
+
 
     //********************************************//
     // Simulation starts on t=0 and ends on t=TF. //
     // The timestep is given by dt                //
     //********************************************//
-    Real TF (500.0);
-    Real dt (0.1);
+    Real TF (15500.0);
+    Real dt (0.001);
 
 
     //********************************************//
@@ -158,20 +166,29 @@ Int main ( Int argc, char** argv )
     std::ofstream output ("output.txt");
     output << 0 << "\t";
 
-    for ( int j (0); j < ionicModel.Size() - 1; j++)
+    for ( int j (0); j < ionicModel.Size(); j++)
     {
         output << states[j] << "\t";
     }
-    output << states[ ionicModel.Size() - 1 ] << "\n";
-
+    
+    for ( int jXb (0); jXb < xb.size(); ++jXb )
+    {
+        output << statesXb[jXb] << "\t";
+    }
+    
+    output << "\n";
+    
+    
     //********************************************//
     // Time loop starts.                          //
     //********************************************//
     std::cout << "Time loop starts...\n";
 
 
-    int savestep ( 1.0 / dt );
+    int savestep ( 10.0 / dt );
     int iter (0);
+    int stimulusStep (1000 / dt);
+    int stimulusStepBreak (1 / dt);
 
 
     std::vector<Real> v (states);
@@ -182,11 +199,12 @@ Int main ( Int argc, char** argv )
         // Compute the applied current. This is a     //
         // simple switch.                             //
         //********************************************//
-        if ( t > 50 && t < 52 )
+//        if ( t > 0 && t < 1 && iter % stimulusStep == 0)
+        if ( iter % stimulusStep == 0)
         {
-            Iapp = 20.;
+            Iapp = 52.;
         }
-        else
+        if( ( iter - stimulusStepBreak ) % stimulusStep == 0)
         {
             Iapp = 0;
         }
@@ -201,13 +219,60 @@ Int main ( Int argc, char** argv )
         rhs[0] = ionicModel.computeLocalPotentialRhs (states);
         ionicModel.addAppliedCurrent (rhs);
 
-        ionicModel.computeGatingVariablesWithRushLarsen ( states, dt);
-        states[0] = states[0]  + dt * rhs[0]; //This should be divided by the membrane capacitance  ionicModel.membraneCapacitance();
+        //ionicModel.computeGatingVariablesWithRushLarsen ( states, dt);
+            Real V = states[0];
+            Real m = states[1];
+            Real h = states[2];
+            Real j = states[3];
+            Real d = states[4];
+            Real f = states[5];
+            Real f2 = states[6];
+            Real fcass = states[7];
+            Real r = states[8];
+            Real s = states[9];
+            Real xr1 = states[10];
+            Real xr2 = states[11];
+            Real xs = states[12];
+            Real Nai = states[13];
+            Real Ki = states[14];
+            Real Cai = states[15];
+            Real CaSS = states[16];
+            Real CaSR = states[17];
+            Real RR = states[18];
+        
+            states[18] = ionicModel.solveRR(CaSR, CaSS, RR, dt);
+            states[17] = ionicModel.solveCaSR(Cai, CaSR, CaSS, RR, dt);
+            states[16] = ionicModel.solveCaSS(Cai, CaSR, CaSS, RR, V, d, f, f2, fcass, dt);
+            states[15] = ionicModel.solveCai(V, Nai, Cai, CaSR, CaSS, dt);
+            states[14] = ionicModel.solveKi(V, r, s, xr1, xr2, xs, Nai, Ki, dt);
+            states[13] = ionicModel.solveNai(V, m, h, j, Nai, Cai, dt);
+            states[12] = ionicModel.solveXs(V, xs, dt);
+            states[11] = ionicModel.solveXr2(V, xr2, dt);
+            states[10] = ionicModel.solveXr1(V, xr1, dt);
+            states[9] = ionicModel.solveS(V, s, dt);
+            states[8] = ionicModel.solveR(V, r, dt);
+            states[7] = ionicModel.solveFCaSS(V, fcass, dt);
+            states[6] = ionicModel.solveF2(V, f2, dt);
+            states[5] = ionicModel.solveF(V, f, dt);
+            states[4] = ionicModel.solveD(V, d, dt);
+            states[3] = ionicModel.solveJ(V, j, dt);
+            states[2] = ionicModel.solveH(V, h, dt);
+            states[1] = ionicModel.solveM(V, m, dt);
+            states[0] = ionicModel.solveV(V, m, h, j, d, f, f2, fcass, r, s, xr1, xr2, xs, Nai, Ki, Cai, CaSS, dt);
+        
+        
+        //states[0] = states[0]  + dt * rhs[0]; //This should be divided by the membrane capacitance  ionicModel.membraneCapacitance();
         //In the code of Ten Tusscher there is no such a division
         // on the other hand if we don't divide by the membrane capacitance
         // in the three dimensional simulations
         // we get a faster wave (as fast as the LuoRudy ~2 the one in the benchmark!)
 
+        
+        //********************************************//
+        // Compute X-Bridge Model                     //
+        //********************************************//
+        xb.solveFE ( statesXb, states[15], dt );
+        
 
         //********************************************//
         // Update the time.                           //
@@ -216,17 +281,28 @@ Int main ( Int argc, char** argv )
 
 
         //********************************************//
-        // Writes solution on file.                   //
+        // Write solution on file.                    //
         //********************************************//
         if ( iter % savestep == 0  )
         {
+            // Write time data
             output << t << "\t";
-            for ( int index (0); index < ionicModel.Size() - 1; index++)
+            
+            // Write ionic model data
+            for ( int index (0); index < ionicModel.Size(); index++)
             {
                 output << states[index] << "\t";
             }
-            output << states[ ionicModel.Size() - 1 ] << "\n";
-
+            
+            // Write x-bridge model data
+            for ( int indexXb (0); indexXb < xb.size(); ++indexXb )
+            {
+                output << statesXb[indexXb] << "\t";
+            }
+            
+            output << "\n";
+            
+            
             //********************************************//
             // Update the norm of the solution to check   //
             // test failure                               //

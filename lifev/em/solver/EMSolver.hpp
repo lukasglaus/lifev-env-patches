@@ -511,17 +511,17 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
     M_electroSolverPtr ->showParameters();
 	M_electroSolverPtr -> setParametersFromEMData ( M_data );
     M_electroSolverPtr ->showParameters();
-    M_electroSolverPtr->init (M_commPtr);
+    M_electroSolverPtr->init (M_localMeshPtr); //(M_commPtr);
 
-    if (M_localMeshPtr)
-    {
-        M_electroSolverPtr -> setLocalMeshPtr (M_localMeshPtr);
+//    if (M_localMeshPtr)
+//    {
+//        M_electroSolverPtr -> setLocalMeshPtr (M_localMeshPtr);
         if (M_fullMeshPtr)
         {
             M_electroSolverPtr -> setFullMeshPtr (M_fullMeshPtr);
         }
         M_electroSolverPtr ->  setup (dataFile, ionicModelPtr->Size() );
-    }
+//    }
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << "... `Done\n";

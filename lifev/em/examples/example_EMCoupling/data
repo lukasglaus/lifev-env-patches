@@ -16,18 +16,18 @@ monodomain_xml_file = ParamList.xml
 
     [./physics]
     IonicModel = MinimalModel
-    fiberDiffusion = 10.0
+    fiberDiffusion = 40.0
     sheetDiffusion = 3.0
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 40
+    endtime         = 10
     timestep        = 0.05
     
     [../discretization]
-    LumpedMass = false
+    LumpedMass = false // use when too coarse mesh
 
-    elementsOrder   = P1
+    elementsOrder   = P2
 
     [../flags]
     lvendo = 36
@@ -41,27 +41,27 @@ monodomain_xml_file = ParamList.xml
 
     [./physics]
         #ActivationModels available and relative required parameters
-        # ActiveStressRossi14:
+# ActiveStressRossi14: # only correct with AlievPa., wrong parameters for others.
         #     ActiveStress_Beta
         #     ActiveStressMu
         #     Tmax ( MaxActiveTension )
         # ActiveStressNashPanfilov04
         #     kTa
         #     epsilon0
-        # ActiveStrainRossi14
+# ActiveStrainRossi14 # only use with minimalmodel and neoHoekan and Holzapfel and exponential
         #     calciumIndex
         #     InverseViscosity
         #     ActiveForceCoefficient
         #     ChemicalThreshold
     ActivationModel = ActiveStressRossi14
-    CalciumIndex = 2
+CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
 #    Tmax = 250 # Default: 50
 
     EMActiveStrainOrthotropicParameter = -666.0
         #Active Strain types Available
         # Anisotropic
-        # Orthotropic
+# Orthotropic # set kappa = 3 or 4 positiv to be orthotropic
         # TransverselyIsotropic
     EMActiveStrainType = TransverselyIsotropic
 
@@ -98,11 +98,15 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType =  PNH
+    EMPassiveMaterialType =  PHO
     EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
-        Tmax = 30000 #500000
+Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
+
+#NeoHokean
         mu = 4960
+
+# Holzapfel
         a           = 3330
         af          = 185350
         as          = 25640
@@ -111,7 +115,9 @@ monodomain_xml_file = ParamList.xml
         bf          = 15.972
         bs          = 10.446
         bfs         = 11.602
-        BulkModulus = 35000
+        BulkModulus = 3500000
+
+# Fang type materials
         C = 20000.0
         bff = 8.0
         bss = 2.0
@@ -122,10 +128,11 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-    # list = 'Top Bottom Front Back Left Right' # Cube
     list = 'Base'
-
+    LvPreloadPressure = 100
+    numPreloadSteps  = 100
     LvFlag = 36
+
 
         [./Base]
         type       = Essential
@@ -134,55 +141,13 @@ monodomain_xml_file = ParamList.xml
         component  = 3
         function  = '[0.0, 0.0, 0.0]'
 
-        [../Top]
-        type       = Natural
-        flag       = 400
-        mode       = Full
-        component  = 3
-    	function  = '[0.0, 0.0, 0.0]'
-
-        [../Bottom]
-        type       = Essential
-        flag       = 200
-        mode       = Component
-        component  = 2
-    	function  = '0.0'
-        
-    	[../Front]
-        type       = Natural
-        flag       = 500
-        mode       = Full
-        component  = 3
-    	function  = '[0.0, 0.0, 0.0]'
-
-        [../Back]
-        type       = Essential
-        flag       = 300
-        mode       = Component
-        component  = 1
-    	function  = '0.0'
-
-        [../Left]
-        type       = Natural
-        flag       = 100
-        mode       = Full
-        component  = 3
-     	function  = '[0.0, 0.0, 0.0]'
-
-        [../Right]
-        type       = Essential
-        flag       = 900
-        mode       = Component
-        component  = 0
-	    function  = '0.0'
-
         [../]
 
 
 [../time_discretization]
 initialtime 	= 0.
-endtime         = 1000.
-timestep        = 1
+endtime         = 100.
+timestep        = 0.5
 theta       	= 0.35
 zeta        	= 0.75
 BDF_order   	= 2
@@ -193,12 +158,12 @@ mesh_type       = .mesh
 mesh_dir        = ./
 mesh_file       = ventFine.mesh
 mesh_scaling    = 0.1
-order           = P2
+order           = P1
 anisotropic     = true
-fiber_name      = FiberDirectionP2
+fiber_name      = FiberDirectionP1
 fiber_fieldname = fibers
 fiber_dir       = ./
-sheet_name      = SheetsDirectionP2
+sheet_name      = SheetsDirectionP1
 sheet_fieldname = sheets
 sheet_dir       = ./
 

@@ -275,7 +275,7 @@ Int main ( Int argc, char** argv )
         std::cout << "\nBuilding Monodomain Solver ... \n";
     }
 
-    monodomainSolverPtr_Type solver ( new monodomainSolver_Type ( meshName, meshPath, dataFile , model ) );
+    monodomainSolverPtr_Type solver ( new monodomainSolver_Type ( meshName, meshPath, dataFile , model, monodomainList) );
     if ( Comm->MyPID() == 0 )
     {
         std::cout << "\t...  solver created!";
@@ -316,8 +316,9 @@ Int main ( Int argc, char** argv )
     // be around 1e-1 - 1e0.
     // ---------------------------------------------------------------
 
-    solver -> setParameters ( monodomainList );
-
+    //solver -> setParameters ( monodomainList );
+    //solver -> setup( dataFile, model -> Size() );
+    
     // ---------------------------------------------------------------
     // Cardiac tissue is typically model as transversely isotropic.
     // We need to define the preferred direction (or fiber direction).

@@ -43,12 +43,13 @@ using namespace LifeV;
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return 0; // ( X < 0.25 && Y < 0.25 && Z < 0.25 && t < 2 ? 10 : 0 );
+    return ( Y > 1.5 && Y < 3 /*std::abs(X) < 1 && std::abs(Z-3) < 1 && Y < 0*/ /*&& Y < 0.25 && Z < 0.25 */ && t < 2 ? 30 : 0 );
+    // setAppliedCurrent in electrophys. module.
 }
 
 Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return 1; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
+    return 0; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
 }
 
 
@@ -318,9 +319,9 @@ int main (int argc, char** argv)
     // Get b.c. flags
     ID LvFlag =  dataFile ( "solid/boundary_conditions/LvFlag", 0);
     
-    // Get preload pressure // Todo: loop for ramp until prel. p. is reached
-    Real pPreloadLvBC = 0.000001; // ( "solid/boundary_conditions/LvPreloadPressure", 0.0);
-    Real preloadSteps = 5;
+    // Get preload pressure and steps
+    Real pPreloadLvBC = dataFile ( "solid/boundary_conditions/LvPreloadPressure", 0.0);
+    int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
     
     // Declare pressure b.c. obtained from circulation
     Real pLvBC;
@@ -334,12 +335,7 @@ int main (int argc, char** argv)
     solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LvFlag, Natural, Full, *pLvBCVectorPtr, 3);
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
-    // ComputeBC<solidETFESpace_Type>(localSolidMesh, solid.displacement(), boundaryVectorPtr, dETFESpace, flag);
-   
-    // Real LVPreloadPressure =  dataFile ( "solid/boundary_conditions/LV_preload_pressure", 0.0);
-    // bool deformedPressure =  dataFile ( "solid/boundary_conditions/deformed_pressure", 1 );
-    
-    
+
     //********************************************//
     // Preload
     //********************************************//
@@ -351,7 +347,7 @@ int main (int argc, char** argv)
         std::cout << "\n*********************\n";
         
         // Update pressure b.c.
-        *endoLvVectorPtr = - pPreloadLvBC * ( i / preloadSteps );
+        *endoLvVectorPtr = - pPreloadLvBC * i / preloadSteps;
         pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(LvFlag, *pLvBCVectorPtr);
         
@@ -360,7 +356,7 @@ int main (int argc, char** argv)
         solver.solveMechanics();
     }
     
-    
+
     //********************************************//
     // Time loop
     //********************************************//
@@ -372,7 +368,7 @@ int main (int argc, char** argv)
     UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
     Real t = 0;
     solver.saveSolution (0.0);
-    
+
     for (int k (1); k <= maxiter; k++)
     {
         solver.electroSolverPtr() -> registerActivationTime (*activationTimeVector, t, 0.9);
@@ -389,7 +385,7 @@ int main (int argc, char** argv)
         if ( k % saveIter == 0 )
         {
             // Update pressure b.c.
-            pLvBC = Circulation::computePressure(0.1);
+            pLvBC = Circulation::computePressure(1/pPreloadLvBC);
             *endoLvVectorPtr = - pLvBC;
             pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(LvFlag, *pLvBCVectorPtr);

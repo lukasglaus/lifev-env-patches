@@ -46,13 +46,15 @@ public:
     {
         LifeV::Real I4 = f.dot (f);
         LifeV::Real I4m1 = I4 - 1.0;
-        return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+        return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::Heaviside (I4m1);
+//        return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
     }
 
     virtual return_Type operator() (const LifeV::Real& I4)
     {
         LifeV::Real I4m1 = I4 - 1.0;
-        return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
+        return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::Heaviside (I4m1);
+//        return M_a * I4m1 * std::exp (M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
     }
 
 //    class W4
@@ -233,16 +235,16 @@ public:
         LifeV::Real I4 = f.dot (f);
         LifeV::Real I4m1 = I4 - 1.0;
         return this->M_a * std::exp ( this->M_b * I4m1 * I4m1 )
-               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
-//               + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
+               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::Heaviside (I4m1);
+//               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
     }
 
     virtual return_Type operator() (const LifeV::Real& I4)
     {
         LifeV::Real I4m1 = I4 - 1.0;
         return this->M_a * std::exp ( this->M_b * I4m1 * I4m1 )
-               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
-//               + this->M_a * I4m1 * std::exp (this->M_b * I4m1 * I4m1 ) * Elasticity::dRegularizedHeaviside (I4m1);
+               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::Heaviside (I4m1);
+//               * ( 1.0 + 2.0 * this->M_b * I4m1 * I4m1 ) * Elasticity::RegularizedHeaviside (I4m1);
     }
 
     //    dAnisotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa

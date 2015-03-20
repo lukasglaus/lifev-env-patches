@@ -58,9 +58,6 @@ ActiveStressRossiModel14::updateActivation(	vectorPtr_Type& fiberActivationPtr,
 
 void ActiveStressRossiModel14::solveModel (Real& timeStep)
 {
-    M_XA
-    M_M
-    M_TnCA
 
     std::vector< std::shared_ptr<VectorEpetra> > M_states;
     

@@ -223,6 +223,17 @@ public:
 
     //! Constructor
     /*!
+     * @param meshName file name of the mesh
+     * @param meshPath path to the mesh
+     * @param datafile  GetPot file to setup the preconditioner
+     * @param model shared pointer to the chosen ionic model
+     * @param list xml Parameter list data
+     */
+    ElectroETAMonodomainSolver (std::string meshName, std::string meshPath,
+                                GetPot& dataFile, ionicModelPtr_Type model, list_Type list);
+    
+    //! Constructor
+    /*!
      * @param string file name of the mesh
      * @param string path to the mesh
      * @param GetPot datafile (for preconditioner)
@@ -1450,6 +1461,18 @@ ElectroETAMonodomainSolver<Mesh>::ElectroETAMonodomainSolver (
     setup (meshName, meshPath, dataFile, M_ionicModelPtr->Size() );
 }
 
+//!constructor
+template<typename Mesh>
+ElectroETAMonodomainSolver<Mesh>::ElectroETAMonodomainSolver (
+  std::string meshName, std::string meshPath, GetPot& dataFile,
+  ionicModelPtr_Type model, list_Type list)
+{
+    M_verbose = false;
+    setParameters(list);
+    init (model);
+    setup (meshName, meshPath, dataFile, M_ionicModelPtr->Size() );
+}
+    
 //!constructor with communicator
 template<typename Mesh>
 ElectroETAMonodomainSolver<Mesh>::ElectroETAMonodomainSolver (
@@ -1719,7 +1742,7 @@ void ElectroETAMonodomainSolver<Mesh>::setupLumpedMassMatrix()
     }
     {
         using namespace ExpressionAssembly;
-
+        // Todo: Check here whether p1 or p2, change quadRule to maybe 10pt.
         integrate (elements (M_localMeshPtr), quadRuleTetra4ptNodal,
                    M_ETFESpacePtr, M_ETFESpacePtr, phi_i * phi_j)
                 >> M_massMatrixPtr;
@@ -1804,11 +1827,11 @@ template<typename Mesh>
 void ElectroETAMonodomainSolver<Mesh>::setupGlobalSolution (
     short int ionicSize)
 {
-    M_globalSolution.push_back (M_potentialPtr);
+    M_globalSolution.resize(ionicSize);
+    M_globalSolution[0] = M_potentialPtr;
     for (int k = 1; k < ionicSize; ++k)
     {
-        M_globalSolution.push_back (
-            * (new vectorPtr_Type (new VectorEpetra (M_ETFESpacePtr->map() ) ) ) );
+        M_globalSolution[k].reset  (new VectorEpetra (M_ETFESpacePtr->map() ) ) ;
     }
 }
 
@@ -1816,11 +1839,11 @@ template<typename Mesh>
 void ElectroETAMonodomainSolver<Mesh>::setupGlobalRhs (
     short int ionicSize)
 {
-    M_globalRhs.push_back (M_rhsPtrUnique);
+    M_globalRhs.resize(ionicSize);
+    M_globalRhs[0] = M_rhsPtrUnique;
     for (int k = 1; k < ionicSize; ++k)
     {
-        M_globalRhs.push_back (
-            * (new vectorPtr_Type (new VectorEpetra (M_ETFESpacePtr->map() ) ) ) );
+        M_globalRhs[k].reset ( new VectorEpetra (M_ETFESpacePtr->map() ) );
     }
 }
 

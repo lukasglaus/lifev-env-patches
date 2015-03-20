@@ -5395,6 +5395,9 @@
                   location = "group:example_XBridge"
                   name = "example_XBridge">
                   <FileRef
+                     location = "group:data">
+                  </FileRef>
+                  <FileRef
                      location = "group:CMakeLists.txt">
                   </FileRef>
                   <FileRef
@@ -5832,6 +5835,12 @@
                   <Group
                      location = "group:activeStressModels"
                      name = "activeStressModels">
+                     <FileRef
+                        location = "group:ActiveStressRossiModel14XB.cpp">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ActiveStressRossiModel14XB.hpp">
+                     </FileRef>
                      <FileRef
                         location = "group:ActiveStressActivation.hpp">
                      </FileRef>

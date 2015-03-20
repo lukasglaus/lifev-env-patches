@@ -1,9 +1,9 @@
 SET( solver_activation_xBridgeModels_HEADERS
-  solver/activation/xBridgeModels/xBridge4SM.hpp
+  solver/activation/xBridgeModels/XBridge4SM.hpp
 CACHE INTERNAL "")
 
 SET( solver_activation_xBridgeModels_SOURCES
-  solver/activation/xBridgeModels/ActiveStrainRossiModel14.cpp
+  solver/activation/xBridgeModels/XBridge4SM.cpp
  CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)

@@ -115,7 +115,7 @@ IonicTenTusscher06::IonicTenTusscher06()  :
 
     if (flag == Endo)
     {
-        Gks = 0.073;
+        Gto = 0.073;
     }
     else
     {
@@ -151,37 +151,37 @@ IonicTenTusscher06::IonicTenTusscher06()  :
     inversevssF2 = 1. / (2.*Vss * F);
 
     //V
-    M_restingConditions.at (0) = -86.2;
+    M_restingConditions.at (0) = -85.4392; //-86.2;
     //m
-    M_restingConditions.at (1) = 0.0;
+    M_restingConditions.at (1) = 0.00139553; //0.0;
     //h
-    M_restingConditions.at (2) = 0.75;
+    M_restingConditions.at (2) = 0.750059; //0.75;
     //j
-    M_restingConditions.at (3) = 0.75;
+    M_restingConditions.at (3) = 0.750006; //0.75;
     //d
-    M_restingConditions.at (4) = 0.;
+    M_restingConditions.at (4) = 1.48661e-6; //0.;
     //f
     M_restingConditions.at (5) = 1.;
     //f2
-    M_restingConditions.at (6) = 1;
+    M_restingConditions.at (6) = 0.999999; //1;
     //fCass
     M_restingConditions.at (7) = 1.0;
     //r
-    M_restingConditions.at (8) = 0.;
+    M_restingConditions.at (8) = 1.10759e-10; //0.;
     //s
     M_restingConditions.at (9) = 1.0;
     //Xr1
-    M_restingConditions.at (10) = 0.0;
+    M_restingConditions.at (10) = 8.59227e-8; //0.0;
     //Xr2
-    M_restingConditions.at (11) = 1.0;
+    M_restingConditions.at (11) = 0.985661; //1.0;
     //Xs
-    M_restingConditions.at (12) =  0.0;
+    M_restingConditions.at (12) =  7.47962e-7; //0.0;
     //Nai
     M_restingConditions.at (13) = 7.67;
     //Ki
     M_restingConditions.at (14) = 138.3;
     //Cai
-    M_restingConditions.at (15) = 0.00007;
+    M_restingConditions.at (15) = 6.99985e-5; //0.00007;
     //Cass
     M_restingConditions.at (16) = 0.00007;
     //Casr

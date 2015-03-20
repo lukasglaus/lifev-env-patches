@@ -1,37 +1,52 @@
-#ifndef _XBridge4SM_H_
-#define _XBridge4SM_H_
+#ifndef XBRIDGE4SM_HPP_
+#define XBRIDGE4SM_HPP_
 
+#include <vector>
 
 namespace LifeV
 {
 
 class XBridge4SM
 {
-
 public:
-
-    XBridge4SM();
-
-    XBridge4SM ( const XBridge4SM& model );
     
-    virtual ~XBridge4SM() {}
+    typedef double Real;
 
-    XBridge4SM& operator= ( const XBridge4SM& model );
+    // Empty constructor.
+    XBridge4SM ();
 
+    // Return number of x-bridge model variables.
+    Real size () { return M_NVar; }
+    
+    // Return initialized x-bridge model state vector.
+    std::vector<Real> xbVarVec ();
+    
+    // Initialize vector with initial values.
+    void initialize( std::vector<Real>& variables );
+    
+    // Compute the rhs of the x-bridge model
+    void computeRHS ( const std::vector<Real>& variables, Real Ca, std::vector<Real>& RHS );
 
+    // Solve system with forward euler.
+    void solveFE( std::vector<Real>& variables, Real Ca, Real dt );
+    
 
 private:
-
+    
+    // Variables
+   std::vector<Real> M_variables;
+    
     // Constants
+    Real M_NVar;
     Real M_K2;
     Real M_K3;
     Real M_K4;
     Real M_Kd;
     Real M_Kdd;
     Real M_a1;
-    Real b1;
-    Real aa;
-    Real ba;
+    Real M_b1;
+    Real M_aa;
+    Real M_ba;
 
 }; // XBridge4SM
 

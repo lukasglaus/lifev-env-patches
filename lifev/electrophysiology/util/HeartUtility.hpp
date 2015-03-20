@@ -321,7 +321,7 @@ inline void setupFibers ( VectorEpetra& fiberVector, Real fx, Real fy, Real fz)
  */
 inline void setValueOnBoundary ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, UInt flag)
 {
-
+// fetofespace...
     for ( Int j (0); j < vec.epetraVector().MyLength() ; ++j )
     {
         if ( fullMesh -> point ( vec.blockMap().GID (j) ).markerID() == flag )
