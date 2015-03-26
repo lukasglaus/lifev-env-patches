@@ -37,7 +37,7 @@ class AnisotropicExponential : public virtual EMMaterialFunctions<Mesh>
 {
 public:
 
-	enum Field { Fibers, Sheets };
+    enum Field { Fibers, Sheets };
 
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
     typedef EMData          data_Type;

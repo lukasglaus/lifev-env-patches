@@ -1,12 +1,12 @@
 /*
- * EMPassiveNeoHookean.hpp
+ * ActiveNeoHookean.hpp
  *
  *  Created on: 29/apr/2014
  *      Author: srossi
  */
 
-#ifndef ActiveNeoHookean_HPP_
-#define ActiveNeoHookean_HPP_
+#ifndef ACTIVENEOHOOKEAN_HPP_
+#define ACTIVENEOHOOKEAN_HPP_
 
 
 #include <lifev/em/solver/mechanics/materials/EMActiveMaterialType.hpp>
@@ -45,4 +45,4 @@ static bool registerEM_ActiveNeoHookean = EMActiveMaterialType<LifeV::RegionMesh
 
 }//LifeV
 
-#endif /* EMPASSIVENEOHOOKEAN_HPP_ */
+#endif /* ACTIVENEOHOOKEAN_HPP_ */

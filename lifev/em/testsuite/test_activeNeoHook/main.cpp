@@ -27,16 +27,15 @@
 
 /*!
     @file
-    @brief Simple test using the electromechanical passive constitutive laws
+    @brief Simple test using the electromechanical active constitutive laws
 
 
-    @date 12-2014
-    @author Simone Rossi <simone.rossi@epfl.ch>
+    @date 03-2015
+    @author Luca Barbarotta <luca.barbarotta@gmail.com>
 
     @contributor
-    @mantainer Simone Rossi <simone.rossi@epfl.ch>
+    @mantainer Luca Barbarotta <luca.barbarotta@gmail.com>
  */
-
 
 #include <lifev/core/LifeV.hpp>
 #include <lifev/electrophysiology/solver/ElectroETAMonodomainSolver.hpp>
@@ -65,6 +64,9 @@
 
 #include <lifev/bc_interface/3D/bc/BCInterface3D.hpp>
 #include <lifev/structure/solver/NeoHookeanMaterialNonLinear.hpp>
+
+#include <limits>
+#define _fEq(a,b) ( fabs( (a) - (b) ) <= std::numeric_limits<Real>::epsilon() )
 
 using namespace LifeV;
 
@@ -222,7 +224,7 @@ int main (int argc, char** argv)
     solid.EMMaterial()->showMaterialParameters();
 
     solid.EMMaterial() -> setupFiberVector( 0.0, 0.0, 1.0);
-    // solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
+    solid.EMMaterial() -> setupSheetVector( 0.0, 1.0, 0.0);
 
     solid.setNewtonParameters(dataFile);
     solid.buildSystem (1.0);
@@ -243,6 +245,8 @@ int main (int argc, char** argv)
     exporter->setPostDir ( problemFolder );
     exporter->setMeshProcId ( localSolidMesh, comm->MyPID() );
     exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "displacement", dFESpace, solid.displacementPtr(), UInt (0) );
+    exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "solid_fibers", dFESpace, solid.EMMaterial()->fiberVectorPtr(), UInt (0) );
+        exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField, "solid_sheets", dFESpace, solid.EMMaterial()->sheetVectorPtr(), UInt (0) );
     exporter->postProcess ( 0 );
 
     //===========================================================
@@ -297,7 +301,16 @@ int main (int argc, char** argv)
     Real maxShortening   = dataFile ( "solid/activation/max_shortening", -0.2);
     UInt activationSteps = dataFile ( "solid/activation/activation_steps", 20);
 
-    if ( maxShortening != 0. )
+    // if ( _fEq(maxShortening, 0.) )
+    // {
+    //     std::cout << "Max Shortening: " << maxShortening << " --->fEq true\n";
+    // }
+    // else
+    // {
+    //     std::cout << "Max Shortening: " << maxShortening << " --->fEq false\n";
+    // }    
+    
+    if (  !( _fEq(maxShortening, 0.) ) )
     {
         std::cout << "Starting Activation Ramp\n";
         // activation ramp

@@ -1,5 +1,5 @@
 /*
- * PassiveMaterialsList.hpp
+ * MaterialsList.hpp
  *
  *  Created on: 30/apr/2014
  *      Author: srossi
@@ -21,8 +21,13 @@
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicFung.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveMooneyRivlin.hpp>
 
+// ACTIVE STRESS MATERIAL
 #include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
 
+// ACTIVE STRAIN MATERIAL
 #include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveNeoHookean.hpp>
+#include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveIsotropicExponential.hpp>
+#include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveHolzapfelOgden.hpp>
+#include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveHolzapfelOgdenNIIsotropicSplitting.hpp>
 
-#endif /* PASSIVEMATERIALSLIST_HPP_ */
+#endif /* MATERIALSLIST_HPP_ */

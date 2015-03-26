@@ -1,8 +1,8 @@
 /*
- * EMMaterialFunctions.hpp
+ * FunctionActiveStrainIsotropicExponential.hpp
  *
  *  Created on: 28/apr/2014
- *      Author: srossi
+ *      Author: srossi, Luca Barbarotta
  */
 
 #ifndef FUNCTIONSACTIVESTRAINISOTROPICEXPONENTIAL_HPP_
@@ -35,118 +35,171 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 
 template <class Mesh>
 class ActiveStrainIsotropicExponential : public virtual IsotropicExponential<Mesh>,
-                             public virtual EMActiveStrainMaterialFunctions<Mesh>
+                                         public virtual EMActiveStrainMaterialFunctions<Mesh>
 {
 public:
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
-    typedef EMData          data_Type;
+    typedef IsotropicExponential<Mesh> super;
+    typedef typename super::data_Type data_Type;
+    typedef EMActiveStrainMaterialFunctions<Mesh> activeStrain;
 
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         auto I1bar = Elasticity::I1bar (F);
-        return M_a / 2.0 * std::exp ( M_b * ( I1bar - 3 ) );
+        return this->M_a / 2.0 * std::exp ( this->M_b * ( I1bar - 3 ) );
     }
 
     //    IsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    ActiveStrainIsotropicExponential (Real a = 3330., Real b = 9.242) : M_a (a), M_b (b) {} // 0.33 KPa
-    ActiveStrainIsotropicExponential (const ActiveStrainIsotropicExponential& isotropicExponential)
+    ActiveStrainIsotropicExponential (Real a = 3330., Real b = 9.242) : super(a,b) {} // 0.33 KPa
+    ActiveStrainIsotropicExponential (const ActiveStrainIsotropicExponential& ActiveStrainIsotropicExponential)
     {
-        M_a = isotropicExponential.M_a;
-        M_b = isotropicExponential.M_b;
+        this->M_a = ActiveStrainIsotropicExponential.M_a;
+        this->M_b = ActiveStrainIsotropicExponential.M_b;
+        this->M_activeStrainType = ActiveStrainIsotropicExponential.M_activeStrainType;
+        this->M_activeStrainOrthotropicParameter = ActiveStrainIsotropicExponential.M_activeStrainOrthotropicParameter;
     }
     virtual ~ActiveStrainIsotropicExponential() {}
-
-    virtual void computeJacobian ( const vector_Type& disp,
-                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-                                          const vector_Type& fibers,
-                                          const vector_Type& sheets,
-                                          matrixPtr_Type           jacobianPtr)
+    
+    virtual  void computeJacobian ( const vector_Type& disp,
+                                    boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                    const vector_Type& fibers,
+                                    const vector_Type& sheets,
+                                    const vectorPtr_Type& fiberActivation,
+                                    const vectorPtr_Type& sheetActivation,
+                                    const vectorPtr_Type& normalActivation,
+                                    boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                    matrixPtr_Type           jacobianPtr)
     {
-        EMAssembler::computeI1JacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
+        // EMAssembler::computeI1JacobianTerms (disp, dispETFESpace, jacobianPtr, this->getMe() );
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barJacobianTerms (disp,
+                                                                                              dispETFESpace,
+                                                                                              fibers,
+                                                                                              sheets,
+                                                                                              fiberActivation,
+                                                                                              sheetActivation,
+                                                                                              normalActivation,
+                                                                                              activationETFESpace,
+                                                                                              jacobianPtr,
+                                                                                              this->getMe(),
+                                                                                              this->M_activeStrainOrthotropicParameter);
+
     }
 
     virtual void computeResidual ( const vector_Type& disp,
-                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-                                          const vector_Type& fibers,
-                                          const vector_Type& sheets,
-                                          vectorPtr_Type           residualVectorPtr)
+                                    boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                    const vector_Type& fibers,
+                                    const vector_Type& sheets,
+                                    const vectorPtr_Type& fiberActivation,
+                                    const vectorPtr_Type& sheetActivation,
+                                    const vectorPtr_Type& normalActivation,
+                                    boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                   vectorPtr_Type           residualVectorPtr)
     {
-        EMAssembler::computeI1ResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barResidualTerms( disp,
+                                                                                              dispETFESpace,
+                                                                                              fibers,
+                                                                                              sheets,
+                                                                                              fiberActivation,
+                                                                                              sheetActivation,
+                                                                                              normalActivation,
+                                                                                              activationETFESpace,
+                                                                                              residualVectorPtr,
+                                                                                              this->getMe(),
+                                                                                              this->M_activeStrainOrthotropicParameter);
+        
+        // EMAssembler::computeI1ResidualTerms (disp, dispETFESpace, residualVectorPtr, this->getMe() );
     }
 
     void showMe()
     {
-        std::cout << "Isotropic Exponential Function\n";
-        std::cout << "Coefficient a: " << M_a;
-        std::cout << ", coefficient b: " << M_b << "\n";
+        std::cout << "Active Strain Isotropic Exponential Function\n";
+        std::cout << "Coefficient a: " << this->M_a;
+        std::cout << ", coefficient b: " << this->M_b << "\n";
     }
 
-    void setParameters (data_Type& data)
+    virtual void setParameters (data_Type& data)
     {
-    	M_a = data.solidParameter<Real>("a");
-    	M_b = data.solidParameter<Real>("b");
+    	activeStrain::setParameters(data);
+    	super::setParameters(data);
     }
-
 
 private:
-    Real M_a;
-    Real M_b;
+
 };
 
 template <class Mesh>
-class dIsotropicExponential : public virtual EMMaterialFunctions<Mesh>
+class dActiveStrainIsotropicExponential : public virtual IsotropicExponential<Mesh>,
+                                          public virtual EMActiveStrainMaterialFunctions<Mesh>
 {
 public:
     typedef typename MaterialFunctions::EMMaterialFunctions<Mesh>::return_Type return_Type;
+    typedef IsotropicExponential<Mesh> super;
+    typedef typename super::data_Type data_Type;
+    typedef EMActiveStrainMaterialFunctions<Mesh> activeStrain;
+
+    dActiveStrainIsotropicExponential (Real a = 3330., Real b = 9.242) : super(a,b) {} // 0.33 KPa
+    dActiveStrainIsotropicExponential (const dActiveStrainIsotropicExponential& dActiveStrainIsotropicExponential)
+    {
+        this->M_a = dActiveStrainIsotropicExponential.M_a;
+        this->M_b = dActiveStrainIsotropicExponential.M_b;
+        this->M_activeStrainType = dActiveStrainIsotropicExponential.M_activeStrainType;
+        this->M_activeStrainOrthotropicParameter = dActiveStrainIsotropicExponential.M_activeStrainOrthotropicParameter;
+    }
 
     virtual return_Type operator() (const MatrixSmall<3, 3>& F)
     {
         auto I1bar = Elasticity::I1bar (F);
-        return M_a * M_b / 2.0 * std::exp ( M_b * ( I1bar - 3 ) );
+        return this->M_a * this->M_b / 2.0 * std::exp ( this->M_b * ( I1bar - 3 ) );
     }
 
-    //    dIsotropicExponential() : M_a(3330), M_b(9.242) {} // 0.33 KPa
-    dIsotropicExponential (Real a = 3330., Real b = 9.242) : M_a (a), M_b (b) {} // 0.33 KPa
-    dIsotropicExponential (const dIsotropicExponential& dIsotropicExponential)
-    {
-        M_a = dIsotropicExponential.M_a;
-        M_b = dIsotropicExponential.M_b;
-    }
-    virtual ~dIsotropicExponential() {}
+    virtual ~dActiveStrainIsotropicExponential() {}
 
 
-    inline virtual void computeJacobian ( const vector_Type& disp,
-                                          boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
-                                          const vector_Type& fibers,
-                                          const vector_Type& sheets,
-                                          matrixPtr_Type           jacobianPtr)
+    virtual  void computeJacobian ( const vector_Type& disp,
+                                    boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                    const vector_Type& fibers,
+                                    const vector_Type& sheets,
+                                    const vectorPtr_Type& fiberActivation,
+                                    const vectorPtr_Type& sheetActivation,
+                                    const vectorPtr_Type& normalActivation,
+                                    boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                    matrixPtr_Type           jacobianPtr)
+    
     {
-        EMAssembler::computeI1JacobianTermsSecondDerivative (disp, dispETFESpace, jacobianPtr, this->getMe() );
+        EMAssembler::ActiveStrainNearlyIncompressible::computeActiveStrainI1barJacobianTermsSecondDerivative (disp,
+                                                                                                              dispETFESpace,
+                                                                                                              fibers,
+                                                                                                              sheets,
+                                                                                                              fiberActivation,
+                                                                                                              sheetActivation,
+                                                                                                              normalActivation,
+                                                                                                              activationETFESpace,
+                                                                                                              jacobianPtr,
+                                                                                                              this->getMe(),
+                                                                                                              this->M_activeStrainOrthotropicParameter);
+        
     }
 
     void showMe()
     {
-        std::cout << "Derivative Isotropic Exponential Function\n";
-        std::cout << "Coefficient a: " << M_a;
-        std::cout << ", coefficient b: " << M_b << "\n";
+        std::cout << "Derivative Active Strain Isotropic Exponential Function\n";
+        std::cout << "Coefficient a: " << this->M_a;
+        std::cout << ", coefficient b: " << this->M_b << "\n";
     }
 
-    typedef EMData          data_Type;
-
-    void setParameters (data_Type& data)
+    virtual void setParameters (data_Type& data)
     {
-    	M_a = data.solidParameter<Real>("a");
-    	M_b = data.solidParameter<Real>("b");
+    	activeStrain::setParameters(data);
+    	super::setParameters(data);
     }
 
 private:
-    Real M_a;
-    Real M_b;
+
 };
 
 
-} //EMMaterialFunctions
+} //MaterialFunctions
 
 } //LifeV
-#endif /* EMMATERIALFUNCTIONS_HPP_ */
+#endif /* FUNCTIONSACTIVESTRAINISOTROPICEXPONENTIAL_HPP_ */
