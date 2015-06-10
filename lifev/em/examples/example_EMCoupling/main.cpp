@@ -30,11 +30,174 @@
 #include <lifev/core/fem/BCVector.hpp>
 
 // Circulation
-#include <lifev/em/examples/example_EMCoupling/Circulation.h>
+#include <lifev/em/solver/circulation/Circulation.hpp>
+
 
 
 // Namespaces
 using namespace LifeV;
+
+
+//********************************************//
+// Volume computation
+//********************************************//
+
+void createPositionVector (const RegionMesh<LinearTetra>& mesh,
+                           VectorEpetra& positionVector)
+{
+    Int nLocalDof = positionVector.epetraVector().MyLength();
+    Int nComponentLocalDof = nLocalDof / 3;
+    for (int k (0); k < nComponentLocalDof; k++)
+    {
+        UInt iGID = positionVector.blockMap().GID (k);
+        UInt jGID = positionVector.blockMap().GID (k + nComponentLocalDof);
+        UInt kGID = positionVector.blockMap().GID (k + 2 * nComponentLocalDof);
+
+        positionVector[iGID] = mesh.point (iGID).x();
+        positionVector[jGID] = mesh.point (iGID).y();
+        positionVector[kGID] = mesh.point (iGID).z();
+    }
+    
+}
+
+Real openEndVolume (const RegionMesh<LinearTetra>& mesh,
+                           VectorEpetra& positionVector)
+{
+
+    int bcflag (36);
+    int component(1);
+    int direction(1);
+    
+    
+    // Determine points at boundary
+    std::set< unsigned int> vertexIds;
+    for (UInt iBFaceIn = 0; iBFaceIn < mesh.numBFaces(); ++iBFaceIn)
+    {
+        UInt markerIdIn = mesh.boundaryFace(iBFaceIn).markerID();
+        if ( markerIdIn == bcflag )
+        {
+            for (UInt iBFaceOut = 0; iBFaceOut < mesh.numBFaces(); ++iBFaceOut)
+            {
+                UInt markerIdOut = mesh.boundaryFace(iBFaceOut).markerID();
+                if ( markerIdOut != bcflag )
+                {
+                    for (UInt iBPointIn = 0; iBPointIn < mesh.boundaryFace(iBFaceIn).S_numPoints; ++ iBPointIn)
+                    {
+                        for (UInt iBPointOut = 0; iBPointOut < mesh.boundaryFace(iBFaceOut).S_numPoints; ++ iBPointOut)
+                        {
+                            UInt pointIdIn = mesh.boundaryFace(iBFaceIn).point(iBPointIn).id();
+                            UInt pointIdOut = mesh.boundaryFace(iBFaceOut).point(iBPointOut).id();
+
+                            if ( pointIdIn == pointIdOut )
+                            {
+                                vertexIds.insert(pointIdIn);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    // Determine center of point cloud
+    Vector3D center;
+    for (auto it = vertexIds.begin(); it != vertexIds.end(); ++it)
+    {
+        center += mesh.point(*it).coordinates() / vertexIds.size();
+    }
+    
+    
+    // Order points by angles
+    std::map<double, unsigned int> vertexIdsOrdered;
+    unsigned int compOne = (1 + component) % 3;
+    unsigned int compTwo = (2 + component) % 3;
+    for (auto it = vertexIds.begin(); it != vertexIds.end(); ++it)
+    {
+        double angle = std::atan2( mesh.point(*it).coordinate(compOne) - center(compOne) , mesh.point(*it).coordinate(compTwo) - center(compTwo) );
+        vertexIdsOrdered.insert( std::pair<double, unsigned int> (angle, *it) );
+    }
+
+    
+    // Compute projected area
+    double area (0.0);
+    auto itNext = vertexIdsOrdered.begin();
+    unsigned int i (0);
+    for (auto it = vertexIdsOrdered.begin(); it != vertexIdsOrdered.end(); ++it)
+    {
+        if ( i++ < vertexIdsOrdered.size() - 1 ) std::advance(itNext, 1);
+        else std::advance(itNext, - (vertexIdsOrdered.size() -1));
+
+        area += 0.5 * ( mesh.point(itNext->second).coordinate(compTwo) + mesh.point(it->second).coordinate(compTwo) ) * ( mesh.point(itNext->second).coordinate(compOne) - mesh.point(it->second).coordinate(compOne) );
+    }
+    
+    std::cout << "------------------------------------ nP: " << vertexIds.size() << std::endl << area << std::endl;
+    
+    return ( direction * center(component) * area );
+    
+}
+
+template<typename space> Real ComputeVolume (const boost::shared_ptr<RegionMesh<LinearTetra> > localMesh,
+                                             VectorEpetra positionVector,
+                                             const VectorEpetra& disp,
+                                             const boost::shared_ptr <ETFESpace<RegionMesh<LinearTetra>, MapEpetra, 3, 1> > ETFESpace,
+                                             const boost::shared_ptr<space> dETFESpace,
+                                             int bdFlag,
+                                             boost::shared_ptr<Epetra_Comm> comm)
+{
+    
+    Real fluidVolume;
+    
+    MatrixSmall<3, 3> Id;
+    Id (0, 0) = 1., Id (0, 1) = 0., Id (0, 2) = 0.;
+    Id (1, 0) = 0., Id (1, 1) = 1., Id (1, 2) = 0.;
+    Id (2, 0) = 0., Id (2, 1) = 0., Id (2, 2) = 1.;
+    VectorSmall<3> E1;
+    E1 (0) = 1., E1 (1) = 0., E1 (2) = 0.; ////
+    
+    Int nLocalDof = positionVector.epetraVector().MyLength();
+    for (int k (0); k < nLocalDof; k++)
+    {
+        UInt iGID = positionVector.blockMap().GID ( k ); ////
+        
+        positionVector[iGID] += disp[iGID];
+    }
+    
+    boost::shared_ptr<VectorEpetra> intergral ( new VectorEpetra ( positionVector.map() ) );
+    
+    {
+        using namespace ExpressionAssembly;
+        
+        BOOST_AUTO_TPL (I, value (Id) );
+        BOOST_AUTO_TPL (vE1, value (E1) );
+        BOOST_AUTO_TPL (Grad_u, grad (dETFESpace, disp, 0) ); ////
+        BOOST_AUTO_TPL (x, value (ETFESpace, positionVector) );
+        BOOST_AUTO_TPL (F, (Grad_u + I) );
+        BOOST_AUTO_TPL (FmT, minusT (F) );
+        BOOST_AUTO_TPL (J, det (F) );
+        BOOST_AUTO_TPL (x1, dot (x, vE1) );
+        
+        QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
+        
+        *intergral *= 0.0;
+        integrate (boundary (localMesh, bdFlag), myBDQR, ETFESpace,
+                   value (-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral;
+        
+        intergral->globalAssemble();
+        //        *position = *positionR;
+        //        for
+        //        fluidVolume = position ->
+        
+        fluidVolume = positionVector.dot (*intergral);
+        
+        if (comm->MyPID() == 0)
+        {
+            std::cout << "\nFluid volume: " << fluidVolume << " in processor "
+            << comm->MyPID() << std::endl;
+        }
+        return fluidVolume;
+    }
+}
 
 
 //********************************************//
@@ -313,6 +476,20 @@ int main (int argc, char** argv)
     
     
     //********************************************//
+    // Body circulation
+    //********************************************//
+    
+    Circulation circulationSolver("inputfile");
+
+    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
+    std::vector<double> bcValues(2, 5);
+    
+    circulationSolver.exportSolution( "solution.txt" );
+    circulationSolver.iterate(0.01, bcNames, bcValues, 0);
+    circulationSolver.exportSolution( "solution.txt" );
+
+    
+    //********************************************//
     // Boundary conditions
     //********************************************//
 
@@ -334,7 +511,18 @@ int main (int argc, char** argv)
     bcVectorPtr_Type pLvBCVectorPtr( new bcVector_Type( *endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
     solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LvFlag, Natural, Full, *pLvBCVectorPtr, 3);
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+
     
+    //********************************************//
+    // Volume computation
+    //********************************************//
+    
+    vectorPtr_Type referencePosition( new vector_Type( solver.structuralOperatorPtr() -> displacement().map() ) );
+    createPositionVector( *solver.fullMeshPtr(), *referencePosition );
+
+    Real fluidVolume =  ComputeVolume( solver.localMeshPtr(), *referencePosition, solver.structuralOperatorPtr() -> displacement(), solver.electroSolverPtr() -> ETFESpacePtr(), solver.electroSolverPtr() -> displacementETFESpacePtr() , 36, comm );
+
+    auto a = openEndVolume(*solver.fullMeshPtr(), *referencePosition);
 
     //********************************************//
     // Preload
@@ -385,7 +573,7 @@ int main (int argc, char** argv)
         if ( k % saveIter == 0 )
         {
             // Update pressure b.c.
-            pLvBC = Circulation::computePressure(1/pPreloadLvBC);
+            pLvBC = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
             *endoLvVectorPtr = - pLvBC;
             pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(LvFlag, *pLvBCVectorPtr);

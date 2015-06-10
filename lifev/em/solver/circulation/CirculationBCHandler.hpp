@@ -12,16 +12,16 @@
 #include "CirculationDofHandler.hpp"
 
 
-class BCHandler {
+class CirculationBCHandler {
 public:
     
-    BCHandler(DofHandler dofh, const std::vector<std::vector<std::string> >& bcNames, const std::vector<double>& bcValues) :
+    CirculationBCHandler(DofHandler dofh, const std::vector<std::vector<std::string> >& bcNames, const std::vector<double>& bcValues) :
         M_dofh(dofh),
         M_bcNames(bcNames),
         M_bcValues(bcValues)
     {}
     
-    virtual ~BCHandler() {}
+    virtual ~CirculationBCHandler() {}
     
     void addBC(Eigen::MatrixXd& A, Eigen::VectorXd& rhs) const
     {

@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/thomas/LIFE5/lifev-em/tools/install_scripts/app/dummy/dummy.cpp
+lifev/core/LifeV.hpp
+-
+

@@ -94,7 +94,7 @@ public:
         
         // b.c. handler
         DofHandler dofh(M_gv);
-        BCHandler bcHandler(dofh, bcNames, bcValues);
+        CirculationBCHandler bcHandler(dofh, bcNames, bcValues);
 
         // time integration
         ImplicitTimeIntegrator timeIntegrator;

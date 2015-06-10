@@ -26,7 +26,7 @@ public:
     virtual Eigen::MatrixXd assembleOperator(const double& dt, Eigen::MatrixXd& M, Eigen::MatrixXd& A, Eigen::VectorXd& f) = 0;
     virtual Eigen::VectorXd assembleRhs(const double& dt, Eigen::MatrixXd& M, Eigen::MatrixXd& A, Eigen::VectorXd& f, Eigen::VectorXd& uPrev) = 0;
     
-    virtual Eigen::VectorXd solve(Eigen::MatrixXd& A, Eigen::VectorXd& rhs, const BCHandler& bcHandler)
+    virtual Eigen::VectorXd solve(Eigen::MatrixXd& A, Eigen::VectorXd& rhs, const CirculationBCHandler& bcHandler)
     {
         bcHandler.addBC(A, rhs);
         return A.fullPivLu().solve(rhs);

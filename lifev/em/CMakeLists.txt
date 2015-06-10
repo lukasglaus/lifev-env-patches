@@ -36,8 +36,9 @@ SET(HEADERS ${HEADERS}
             ${solver_activation_HEADERS}
             ${solver_activation_xBridgeModels_HEADERS}
             ${solver_activation_activeStressModels_HEADERS}
-            ${solver_activation_activeStrainModels_HEADERS})
-            
+            ${solver_activation_activeStrainModels_HEADERS}
+            ${solver_circulation_HEADERS})
+
 SET(SOURCES ${SOURCES} 
             ${solver_SOURCES} 
             ${solver_electrophysiology_SOURCES} 
@@ -50,7 +51,7 @@ SET(SOURCES ${SOURCES}
             ${solver_activation_xBridgeModels_SOURCES}
             ${solver_activation_activeStressModels_SOURCES}
             ${solver_activation_activeStrainModels_SOURCES}
-            )
+            ${solver_circulation_SOURCES})
 
 ADD_SUBDIRECTORY(util)
 SET(HEADERS ${HEADERS} ${util_HEADERS})

@@ -21,13 +21,13 @@ monodomain_xml_file = ParamList.xml
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 10
+    endtime         = 0.1
     timestep        = 0.05
     
     [../discretization]
     LumpedMass = false // use when too coarse mesh
 
-    elementsOrder   = P2
+    elementsOrder   = P1
 
     [../flags]
     lvendo = 36
@@ -129,8 +129,8 @@ Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 
     [../boundary_conditions]
     list = 'Base'
-    LvPreloadPressure = 100
-    numPreloadSteps  = 5
+    LvPreloadPressure = 1000
+    numPreloadSteps  = 50
     LvFlag = 36
 
 
@@ -147,7 +147,7 @@ Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 [../time_discretization]
 initialtime 	= 0.
 endtime         = 100.
-timestep        = 1
+timestep        = 0.5
 theta       	= 0.35
 zeta        	= 0.75
 BDF_order   	= 2
@@ -158,12 +158,12 @@ mesh_type       = .mesh
 mesh_dir        = ./
 mesh_file       = ventFine.mesh
 mesh_scaling    = 0.1
-order           = P2
+order           = P1
 anisotropic     = true
-fiber_name      = FiberDirectionP2
+fiber_name      = FiberDirectionP1
 fiber_fieldname = fibers
 fiber_dir       = ./
-sheet_name      = SheetsDirectionP2
+sheet_name      = SheetsDirectionP1
 sheet_fieldname = sheets
 sheet_dir       = ./
 

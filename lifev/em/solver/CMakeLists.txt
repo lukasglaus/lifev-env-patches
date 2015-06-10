@@ -2,6 +2,7 @@ ADD_SUBDIRECTORIES(
 	activation
 	electrophysiology
 	mechanics
+    circulation
 )
 
 SET(solver_HEADERS
