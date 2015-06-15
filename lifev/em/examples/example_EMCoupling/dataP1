@@ -154,18 +154,19 @@ BDF_order   	= 2
 
 
 [../space_discretization]
-mesh_type       = .mesh
-mesh_dir        = ./
-mesh_file       = ventFine.mesh
-mesh_scaling    = 0.1
-order           = P1
-anisotropic     = true
-fiber_name      = FiberDirectionP1
-fiber_fieldname = fibers
-fiber_dir       = ./
-sheet_name      = SheetsDirectionP1
-sheet_fieldname = sheets
-sheet_dir       = ./
+mesh_type           = .mesh
+mesh_dir            = ./
+mesh_file           = ventFine.mesh
+mesh_scaling        = 0.1
+mesh_rotation_2     = 0
+order               = P1
+anisotropic         = true
+fiber_name          = FiberDirectionP1
+fiber_fieldname     = fibers
+fiber_dir           = ./
+sheet_name          = SheetsDirectionP1
+sheet_fieldname     = sheets
+sheet_dir           = ./
 
 
 [../miscellaneous]
