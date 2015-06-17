@@ -355,18 +355,18 @@ int main (int argc, char** argv)
 
     
     //********************************************//
-    // Volume computation
+    // Volume Integrators
     //********************************************//
     
     auto disp = solver.structuralOperatorPtr() -> displacement();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    VolumeIntegrator LV (std::vector<int> {36}, "Left Ventricle", solver.fullMeshPtr(), ETFESpace);
-    VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), ETFESpace);
+    VolumeIntegrator LV (std::vector<int> {36}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
+    VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
 
-    Real LVVolume = LV.volume(disp, dETFESpace, comm);
-    Real RVVolume = RV.volume(disp, dETFESpace, comm);
+    Real LVVolume = LV.volume(disp, dETFESpace);
+    Real RVVolume = RV.volume(disp, dETFESpace);
     
     solver.saveSolution (0.0);
 
@@ -389,6 +389,10 @@ int main (int argc, char** argv)
         // Solve mechanics
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
+        
+        Real LVVolume = LV.volume(disp, dETFESpace);
+        Real RVVolume = RV.volume(disp, dETFESpace);
+        
     }
     
 
@@ -429,6 +433,10 @@ int main (int argc, char** argv)
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
+            
+            Real LVVolume = LV.volume(disp, dETFESpace);
+            Real RVVolume = RV.volume(disp, dETFESpace);
+            
         }
         
         solver.saveSolution(t);

@@ -129,8 +129,8 @@ Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 
     [../boundary_conditions]
     list = 'Base'
-    LvPreloadPressure = 1000
-    numPreloadSteps  = 50
+    LvPreloadPressure = 0
+    numPreloadSteps  = 0
     LvFlag = 36
 
 

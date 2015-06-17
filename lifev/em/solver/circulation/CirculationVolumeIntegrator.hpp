@@ -19,10 +19,11 @@ public:
     
     VolumeIntegrator(const std::vector<int>& bdFlags,
                      const std::string& domain,
-                     const boost::shared_ptr<RegionMesh<LinearTetra> > mesh,
+                     const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr,
+                     const boost::shared_ptr<RegionMesh<LinearTetra> > localMeshPtr,
                      const boost::shared_ptr <ETFESpace<RegionMesh<LinearTetra>, MapEpetra, 3, 1> > ETFESpace) :
-                M_meshPtr       ( mesh ),
-                M_mesh          ( *mesh ),
+                M_localMeshPtr  ( localMeshPtr ),
+                M_fullMesh      ( *fullMeshPtr ),
                 M_bdFlags       ( bdFlags ),
                 M_domain        ( domain ),
                 M_ETFESpace     ( ETFESpace )
@@ -41,22 +42,22 @@ public:
     void findBoundaryPoints()
     {
         std::set<unsigned int> vertexIds;
-        for (UInt iBFaceIn = 0; iBFaceIn < M_mesh.numBFaces(); ++iBFaceIn)
+        for (UInt iBFaceIn = 0; iBFaceIn < M_fullMesh.numBFaces(); ++iBFaceIn)
         {
-            UInt markerIdIn = M_mesh.boundaryFace(iBFaceIn).markerID();
+            UInt markerIdIn = M_fullMesh.boundaryFace(iBFaceIn).markerID();
             if ( std::find(M_bdFlags.begin(), M_bdFlags.end(), markerIdIn) != M_bdFlags.end() )
             {
-                for (UInt iBFaceOut = 0; iBFaceOut < M_mesh.numBFaces(); ++iBFaceOut)
+                for (UInt iBFaceOut = 0; iBFaceOut < M_fullMesh.numBFaces(); ++iBFaceOut)
                 {
-                    UInt markerIdOut = M_mesh.boundaryFace(iBFaceOut).markerID();
+                    UInt markerIdOut = M_fullMesh.boundaryFace(iBFaceOut).markerID();
                     if ( std::find(M_bdFlags.begin(), M_bdFlags.end(), markerIdOut) == M_bdFlags.end() )
                     {
-                        for (UInt iBPointIn = 0; iBPointIn < M_mesh.boundaryFace(iBFaceIn).S_numPoints; ++iBPointIn)
+                        for (UInt iBPointIn = 0; iBPointIn < M_fullMesh.boundaryFace(iBFaceIn).S_numPoints; ++iBPointIn)
                         {
-                            for (UInt iBPointOut = 0; iBPointOut < M_mesh.boundaryFace(iBFaceOut).S_numPoints; ++iBPointOut)
+                            for (UInt iBPointOut = 0; iBPointOut < M_fullMesh.boundaryFace(iBFaceOut).S_numPoints; ++iBPointOut)
                             {
-                                UInt pointIdIn = M_mesh.boundaryFace(iBFaceIn).point(iBPointIn).id();
-                                UInt pointIdOut = M_mesh.boundaryFace(iBFaceOut).point(iBPointOut).id();
+                                UInt pointIdIn = M_fullMesh.boundaryFace(iBFaceIn).point(iBPointIn).id();
+                                UInt pointIdOut = M_fullMesh.boundaryFace(iBFaceOut).point(iBPointOut).id();
                                 
                                 if ( pointIdIn == pointIdOut )
                                 {
@@ -78,17 +79,18 @@ public:
         // Determine center and normal vector of point cloud in reference position
         Vector3D center0 = center();
         Vector3D normal0 = normal(center0);
-        
+
         
         // Order points by angles
         std::map<double, unsigned int> vertexIdsOrdered;
-        Vector3D axis0  = ( M_mesh.point(*M_boundaryPoints.begin()).coordinates() - center0 ).normalized();
+
+        Vector3D axis0  = ( M_fullMesh.point(*M_boundaryPoints.begin()).coordinates() - center0 ).normalized();
         Vector3D axis1  = ( normal0.cross(axis0) ).normalized();
-        
+
         for (auto it = M_boundaryPoints.begin(); it != M_boundaryPoints.end(); ++it)
         {
-            double x0 ( ( M_mesh.point(*it).coordinates() - center0 ).dot(axis0) );
-            double x1 ( ( M_mesh.point(*it).coordinates() - center0 ).dot(axis1) );
+            double x0 ( ( M_fullMesh.point(*it).coordinates() - center0 ).dot(axis0) );
+            double x1 ( ( M_fullMesh.point(*it).coordinates() - center0 ).dot(axis1) );
             
             double angle = std::atan2( x1 , x0 );
             vertexIdsOrdered.insert( std::pair<double, unsigned int> (angle, *it) );
@@ -98,7 +100,31 @@ public:
         // Store sorted points in input vector
         M_boundaryPoints.clear();
         for (auto it = vertexIdsOrdered.begin(); it != vertexIdsOrdered.end(); ++it) M_boundaryPoints.push_back(it->second);
+    }
+    
+    
+    void currentPosition(const VectorEpetra& disp)
+    {
+        Int nLocalDof = disp.epetraVector().MyLength();
+        Int nComponentLocalDof = nLocalDof / 3;
+
+        M_boundaryCoordinates.resize(nLocalDof, std::vector<double> (3));
         
+        for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )
+        {
+            std::vector<double> pointCoordinates (3);
+            
+            UInt iGID = M_boundaryPoints[i];
+            UInt jGID = M_boundaryPoints[i] + nComponentLocalDof;
+            UInt kGID = M_boundaryPoints[i] + 2 * nComponentLocalDof;
+            
+            pointCoordinates[0] = M_fullMesh.point (iGID).x() + disp[iGID];
+            pointCoordinates[1] = M_fullMesh.point (iGID).y() + disp[jGID];
+            pointCoordinates[2] = M_fullMesh.point (iGID).z() + disp[kGID];
+            
+            M_boundaryCoordinates[i] = pointCoordinates;
+            
+        }
     }
 
     
@@ -107,7 +133,7 @@ public:
                                      const unsigned int component = 0) const
     {
         Vector3D componentVector; componentVector (component) = 1;
-        
+
         auto positionVector ( currentPositionVector(disp) );
         Vector3D centerPoint ( center(positionVector) );
 
@@ -134,9 +160,14 @@ public:
             
             Real areaProjected = area * normal.dot(componentVector);
             
+            std::cout << "... Volume in " << M_domain << ": " << M_fullMesh.comm()->MyPID()<< "  "  << positionVector[ *it ] << std::endl;
+            
             volume += areaProjected * centerTriangle.dot(componentVector);
         }
         
+        const boost::shared_ptr<Epetra_Comm> comm = M_fullMesh.comm();
+        //bcast(volume, comm);
+
         return direction * volume;
     }
     
@@ -146,8 +177,6 @@ public:
                                 const boost::shared_ptr <space> dETFESpace,
                                 int bdFlag) const
     {
-        Real fluidVolume;
-        
         MatrixSmall<3, 3> Id;
         Id (0, 0) = 1.; Id (0, 1) = 0.; Id (0, 2) = 0.;
         Id (1, 0) = 0.; Id (1, 1) = 1.; Id (1, 2) = 0.;
@@ -169,44 +198,47 @@ public:
             BOOST_AUTO_TPL (J, det (F) );
             
             QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
-            
+
             *intergral *= 0.0;
-            integrate (boundary (M_meshPtr, bdFlag), myBDQR, M_ETFESpace,
+            integrate (boundary (M_localMeshPtr, bdFlag), myBDQR, M_ETFESpace,
                        value(-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral;
-            
+
             intergral->globalAssemble();
             
-            fluidVolume = positionVector.dot (*intergral);
-  
-            return fluidVolume;
-        }
+            return positionVector.dot (*intergral);
+          }
     }
     
     
     template<class space>
     const Real volume(const VectorEpetra& disp,
                       const boost::shared_ptr <space> dETFESpace,
-                      boost::shared_ptr<Epetra_Comm> comm,
                       const int direction = - 1,
                       const unsigned int component = 0)
     {
+        const boost::shared_ptr<Epetra_Comm> comm = M_fullMesh.comm();
+        
         // Compute volume over boundary
         Real volumeBoundary (0);
         for ( auto& bdFlag : M_bdFlags )
         {
-            std::cout << bdFlag << std::endl;
             volumeBoundary += computeBoundaryVolume(disp, dETFESpace, bdFlag);
+            std::cout << "Volume in " << M_domain << ": " << comm->MyPID()<< "  "  << volumeBoundary << std::endl;
         }
         
         // Compute volume over open-end-boundary
         Real volumeOpenEnd = computeOpenEndVolume(disp);
+
+        bcast(volumeOpenEnd, comm);
         
+        std::cout << "2 ) Volume in " << M_domain << ": " << comm->MyPID() << "  " << volumeOpenEnd << std::endl;
+
         // Compute total volume
         Real totalVolume = volumeBoundary + volumeOpenEnd;
         
         if (comm->MyPID() == 0)
         {
-            std::cout << "Volume in " << M_domain << ": " << totalVolume << std::endl;
+            std::cout << "Volume in " << M_domain << ": " << comm->MyPID()<< "  " << totalVolume << std::endl;
         }
         
         return totalVolume;
@@ -226,10 +258,11 @@ protected:
             UInt jGID = positionVector.blockMap().GID (k + nComponentLocalDof);
             UInt kGID = positionVector.blockMap().GID (k + 2 * nComponentLocalDof);
             
-            positionVector[iGID] = M_mesh.point (iGID).x() + disp[iGID];
-            positionVector[jGID] = M_mesh.point (iGID).y() + disp[jGID];
-            positionVector[kGID] = M_mesh.point (iGID).z() + disp[kGID];
+            positionVector[iGID] = M_fullMesh.point (iGID).x() + disp[iGID];
+            positionVector[jGID] = M_fullMesh.point (iGID).y() + disp[jGID];
+            positionVector[kGID] = M_fullMesh.point (iGID).z() + disp[kGID];
         }
+
         return positionVector;
     }
     
@@ -254,7 +287,7 @@ protected:
         Vector3D center0;
         for (auto it = M_boundaryPoints.begin(); it != M_boundaryPoints.end(); ++it)
         {
-            center0 += M_mesh.point(*it).coordinates() / M_boundaryPoints.size();
+            center0 += M_fullMesh.point(*it).coordinates() / M_boundaryPoints.size();
         }
         return center0;
     }
@@ -270,8 +303,8 @@ protected:
             if ( j++ < M_boundaryPoints.size() - 1 ) std::advance(itNext0, 1);
             else std::advance(itNext0, - (M_boundaryPoints.size() - 1));
             
-            Vector3D P1 ( M_mesh.point(*it).coordinates() );
-            Vector3D P2 ( M_mesh.point(*itNext0).coordinates() );
+            Vector3D P1 ( M_fullMesh.point(*it).coordinates() );
+            Vector3D P2 ( M_fullMesh.point(*itNext0).coordinates() );
             
             Vector3D v1 = P1 - center0;
             Vector3D v2 = P2 - center0;
@@ -281,13 +314,39 @@ protected:
         return normal0.normalized();
     }
     
-    const boost::shared_ptr<RegionMesh<LinearTetra> > M_meshPtr;
-    const RegionMesh<LinearTetra>& M_mesh;
+    
+    const unsigned int bcast(double& var, const boost::shared_ptr<Epetra_Comm> comm) const
+    {
+        int rank ( comm->MyPID() );
+        int root (0);
+        int root_sum;
+        
+        if ( ! std::isnan(var) )
+        {
+            std::cout << "root: " << rank << "  " << var << std::endl;
+            root =rank;
+        }
+        else std::cout << "not root: " << rank << "  " << var << std::endl;
+        
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Allreduce(&root, &root_sum, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+        
+        std::cout << "sum: " << rank << "  " << root_sum << "  " << M_boundaryPoints.size() << std::endl;
+
+        
+        //MPI_Bcast(&var, 1, MPI_DOUBLE, root_sum, MPI_COMM_WORLD);
+    }
+    
+    
+    const boost::shared_ptr<RegionMesh<LinearTetra> > M_localMeshPtr;
+    const RegionMesh<LinearTetra>& M_fullMesh;
     const boost::shared_ptr <ETFESpace<RegionMesh<LinearTetra>, MapEpetra, 3, 1> > M_ETFESpace;
     
     const std::vector<int> M_bdFlags;
     const std::string M_domain;
     std::vector<unsigned int> M_boundaryPoints;
+    std::vector<std::vector<double> > M_boundaryCoordinates;
+
     
 };
 
