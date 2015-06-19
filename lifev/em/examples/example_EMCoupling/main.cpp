@@ -365,8 +365,8 @@ int main (int argc, char** argv)
     VolumeIntegrator LV (std::vector<int> {36}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
     VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
 
-    Real LVVolume = LV.volume(disp, dETFESpace);
-    Real RVVolume = RV.volume(disp, dETFESpace);
+    Real LVVolume = LV.volume(disp, dETFESpace, - 1);
+    Real RVVolume = RV.volume(disp, dETFESpace, 1);
     
     solver.saveSolution (0.0);
 
@@ -390,8 +390,8 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
         
-        Real LVVolume = LV.volume(disp, dETFESpace);
-        Real RVVolume = RV.volume(disp, dETFESpace);
+        Real LVVolume = LV.volume(disp, dETFESpace, - 1);
+        Real RVVolume = RV.volume(disp, dETFESpace, 1);
         
     }
     
@@ -434,8 +434,8 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
-            Real LVVolume = LV.volume(disp, dETFESpace);
-            Real RVVolume = RV.volume(disp, dETFESpace);
+            Real LVVolume = LV.volume(disp, dETFESpace, - 1);
+            Real RVVolume = RV.volume(disp, dETFESpace, 1);
             
         }
         
