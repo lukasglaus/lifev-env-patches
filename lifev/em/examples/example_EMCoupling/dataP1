@@ -21,7 +21,7 @@ monodomain_xml_file = ParamList.xml
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 50 #0.1
+    endtime         = 100
     timestep        = 0.05
     
     [../discretization]
@@ -66,7 +66,7 @@ monodomain_xml_file = ParamList.xml
     EMActiveStrainType = TransverselyIsotropic
 
     [../time_discretization]
-    endtime         = 50 #0.5
+    endtime         = 0.5
     timestep        = 0.05
     [../]
 
@@ -129,7 +129,7 @@ Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 
     [../boundary_conditions]
     list = 'Base'
-    LvPreloadPressure = 0
+    LvPreloadPressure = 0.0
     numPreloadSteps  = 0
     LvFlag = 36
 
@@ -158,7 +158,7 @@ mesh_type           = .mesh
 mesh_dir            = ./
 mesh_file           = ventFine.mesh
 mesh_scaling        = 0.1
-mesh_rotation_2     = 0
+mesh_rotation_2     = 0.0
 order               = P1
 anisotropic         = true
 fiber_name          = FiberDirectionP1

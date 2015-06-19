@@ -358,7 +358,7 @@ int main (int argc, char** argv)
     // Volume Integrators
     //********************************************//
     
-    auto disp = solver.structuralOperatorPtr() -> displacement();
+    auto& disp = solver.structuralOperatorPtr() -> displacement();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
@@ -368,7 +368,7 @@ int main (int argc, char** argv)
     Real LVVolume = LV.volume(disp, dETFESpace, - 1);
     Real RVVolume = RV.volume(disp, dETFESpace, 1);
     
-    solver.saveSolution (0.0);
+    solver.saveSolution (-1.0);
 
     
     //********************************************//
@@ -399,7 +399,7 @@ int main (int argc, char** argv)
     //********************************************//
     // Time loop
     //********************************************//
-    
+    s
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     Real endtime = solver.data().electroParameter<Real>("endtime");

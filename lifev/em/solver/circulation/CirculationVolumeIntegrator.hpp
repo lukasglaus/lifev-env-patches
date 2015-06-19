@@ -191,7 +191,7 @@ public:
         
         {
             using namespace ExpressionAssembly;
-            
+
             BOOST_AUTO_TPL (I, value (Id) );
             BOOST_AUTO_TPL (vE1, value (E1) );
             BOOST_AUTO_TPL (Grad_u, grad (dETFESpace, disp, 0) );
