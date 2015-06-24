@@ -18,8 +18,8 @@
 
 [problem]
 centerline_x           = 0.0
-centerline_y           = 0.0
-centerline_z           = 1.0
+centerline_y           = -1.0
+centerline_z           = 0.0
 epi_angle              =-60.0
 endo_angle             = 60.0
 output_fiber_filename  = FiberDirection
@@ -33,7 +33,7 @@ hdf5_sheets_name       = sheets
    
         [./Endocardium]
         type       = Essential
-        flag       = 10
+        flag       = 23
         mode       = Full
         component  = 1
 	    function  = '0.0'
@@ -41,7 +41,7 @@ hdf5_sheets_name       = sheets
 
         [../Epicardium]
         type       = Essential
-        flag       = 5 
+        flag       = 24
         mode       = Full
         component  = 1
         function  = '1.0'
@@ -49,7 +49,7 @@ hdf5_sheets_name       = sheets
 
         [../Base]
         type       = Natural
-        flag       = 40
+        flag       = 22
         mode       = Full
         component  = 1
 		function  = '0.0'
@@ -58,7 +58,8 @@ hdf5_sheets_name       = sheets
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= idealized.mesh 
+    mesh_file 	= singleVentricle.mesh
+    elem_type   = P1
   
     [../solver]
     solver_name     = AztecOO #Belos

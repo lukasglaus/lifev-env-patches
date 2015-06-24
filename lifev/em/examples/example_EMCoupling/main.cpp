@@ -240,11 +240,11 @@ int main (int argc, char** argv)
     
     // Set potential on certain flags
     UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
-    UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
-    UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
+    //UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
+    //UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
     ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
-    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
-    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
+//    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
+//    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
     
     // Restrict the potential set by a function
     vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) ); // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );
@@ -362,11 +362,11 @@ int main (int argc, char** argv)
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    VolumeIntegrator LV (std::vector<int> {36}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
-    VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
+    VolumeIntegrator LV (std::vector<int> {23}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
+    //VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
 
     Real LVVolume = LV.volume(disp, dETFESpace, - 1);
-    Real RVVolume = RV.volume(disp, dETFESpace, 1);
+    //Real RVVolume = RV.volume(disp, dETFESpace, 1);
     
     solver.saveSolution (-1.0);
 
@@ -391,7 +391,7 @@ int main (int argc, char** argv)
         solver.solveMechanics();
         
         Real LVVolume = LV.volume(disp, dETFESpace, - 1);
-        Real RVVolume = RV.volume(disp, dETFESpace, 1);
+        //Real RVVolume = RV.volume(disp, dETFESpace, 1);
         
     }
     
@@ -399,7 +399,7 @@ int main (int argc, char** argv)
     //********************************************//
     // Time loop
     //********************************************//
-    s
+    
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     Real endtime = solver.data().electroParameter<Real>("endtime");
@@ -435,7 +435,7 @@ int main (int argc, char** argv)
             solver.solveMechanics();
             
             Real LVVolume = LV.volume(disp, dETFESpace, - 1);
-            Real RVVolume = RV.volume(disp, dETFESpace, 1);
+            //Real RVVolume = RV.volume(disp, dETFESpace, 1);
             
         }
         

@@ -256,14 +256,26 @@ int main ( int argc, char** argv )
     //   operation on them, this fespace will be required to export
     //   the solution.
     //*************************************************************//
+    
+    std::string elemType = dataFile ( "problem/space_discretization/elem_type", "P1" );
+    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+    
+    if ( elemType == "P1" )
+    {
+        boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+    }
+    else if ( elemType == "P2" )
+    {
+        boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP2, Comm) );
+    }
+    else
+    {
+        throw std::runtime_error( "Element type " + elemType + " not supported!");
+    }
 
-    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace
-    ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP2, Comm) );
-
-    fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P2", 1, Comm) );
-
-    fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, "P2", 3, Comm) );
-
+    fespacePtr_Type uFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, elemType, 1, Comm) );
+    fespacePtr_Type vectorFESpace ( new FESpace< mesh_Type, MapEpetra > (meshPart, elemType, 3, Comm) );
+    
     //*************************************************************//
     // We asseble the stiffness matrix using expression template.
     // For more details, look at the ETA tutorial.
