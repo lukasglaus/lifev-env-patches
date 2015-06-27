@@ -90,7 +90,7 @@ public:
         std::vector<unsigned int> pointsOrdered;
         
         unsigned int idx1 ( M_boundaryPoints[0] );
-        unsigned int idx;
+        int idx ( - 1 );
         Vector3D v1;
         Vector3D v;
         

@@ -18,8 +18,8 @@
 
 [problem]
 centerline_x           = 0.0
-centerline_y           = 0.0
-centerline_z           = 1.0
+centerline_y           = -1.0
+centerline_z           = 0.0
 epi_angle              =-60.0
 endo_angle             = 60.0
 output_fiber_filename  = FiberDirection
@@ -29,19 +29,35 @@ hdf5_sheets_name       = sheets
 
 
     [./boundary_conditions]
-    list = 'Endocardium Epicardium Base'
+    list = 'EndocardiumRv EndocardiumLv Septum Epicardium Base'
    
-        [./Endocardium]
+        [./EndocardiumRv]
         type       = Essential
-        flag       = 10
+        flag       = 37
+        mode       = Full
+        component  = 1
+		function  = '0.0'
+
+
+		[../EndocardiumLv]
+        type       = Essential
+        flag       = 36
         mode       = Full
         component  = 1
 	    function  = '0.0'
 
 
+		[../Septum]
+        type       = Essential
+        flag       = 38
+        mode       = Full
+        component  = 1
+	    function  = '1.0'
+
+
         [../Epicardium]
         type       = Essential
-        flag       = 5 
+        flag       = 35
         mode       = Full
         component  = 1
         function  = '1.0'
@@ -49,7 +65,7 @@ hdf5_sheets_name       = sheets
 
         [../Base]
         type       = Natural
-        flag       = 40
+        flag       = 34
         mode       = Full
         component  = 1
 		function  = '0.0'
@@ -58,7 +74,7 @@ hdf5_sheets_name       = sheets
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= idealized.mesh 
+	mesh_file 	=  ventFine.mesh #LifeV_vent.mesh #idealized.mesh 
   
     [../solver]
     solver_name     = AztecOO #Belos
