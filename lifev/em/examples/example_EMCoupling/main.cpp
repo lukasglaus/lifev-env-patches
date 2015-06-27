@@ -331,31 +331,38 @@ int main (int argc, char** argv)
 
     
     //********************************************//
-    // Boundary conditions
+    // Kept-normal boundary conditions
     //********************************************//
 
     // Get b.c. flags
-    ID LvFlag =  dataFile ( "solid/boundary_conditions/LvFlag", 0);
-    
-    // Get preload pressure and steps
-    Real pPreloadLvBC = dataFile ( "solid/boundary_conditions/LvPreloadPressure", 0.0);
-    int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
-    
-    // Declare pressure b.c. obtained from circulation
-    Real pLvBC;
+    // ID LvFlag =  dataFile ( "solid/boundary_conditions/LvFlag", 0);
     
     // Boundary vector normal in deformed configuration
-    solver.structuralOperatorPtr() -> setBCFlag( LvFlag );
+    // solver.structuralOperatorPtr() -> setBCFlag( LvFlag );
+    
+    
+    //********************************************//
+    // Modifiable-value boundary condition
+    //********************************************//
 
-    // Create b.c. for endocardium which can be modified during time loop
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 0);
+    ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 0);
+
+    Real pBCLV;;
+    Real pBCRV;;
+
     vectorPtr_Type endoLvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
     bcVectorPtr_Type pLvBCVectorPtr( new bcVector_Type( *endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
-    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LvFlag, Natural, Full, *pLvBCVectorPtr, 3);
+    
+    // Todo: Normal boundary condition!!
+    
+    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", Natural, Normal, Full, *pLvBCVectorPtr, 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3);
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
 
     
     //********************************************//
-    // Volume Integrators
+    // Volume integrators
     //********************************************//
     
     auto& disp = solver.structuralOperatorPtr() -> displacement();
@@ -375,6 +382,9 @@ int main (int argc, char** argv)
     // Preload
     //********************************************//
     
+    Real pPreloadLvBC = dataFile ( "solid/boundary_conditions/LvPreloadPressure", 0.0);
+    int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
+    
     for (int i (1); i <= preloadSteps; i++)
     {
         std::cout << "\n*********************";
@@ -384,7 +394,7 @@ int main (int argc, char** argv)
         // Update pressure b.c.
         *endoLvVectorPtr = - pPreloadLvBC * i / preloadSteps;
         pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-        solver.bcInterfacePtr() -> handler() -> modifyBC(LvFlag, *pLvBCVectorPtr);
+        solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
         
         // Solve mechanics
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
@@ -424,10 +434,10 @@ int main (int argc, char** argv)
         if ( k % saveIter == 0 )
         {
             // Update pressure b.c.
-            pLvBC = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
-            *endoLvVectorPtr = - pLvBC;
+            pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
+            *endoLvVectorPtr = - pBCLV;
             pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-            solver.bcInterfacePtr() -> handler() -> modifyBC(LvFlag, *pLvBCVectorPtr);
+            solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
             
             // Solve mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);

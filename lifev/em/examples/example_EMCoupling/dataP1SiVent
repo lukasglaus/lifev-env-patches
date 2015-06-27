@@ -68,6 +68,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     endtime         = 0.5
     timestep        = 0.05
+
     [../]
 
 
@@ -101,45 +102,50 @@ monodomain_xml_file = ParamList.xml
     EMPassiveMaterialType =  PNH
     EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
-Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 
-#NeoHokean
-        mu = 4960
+    #NeoHokean
+    mu = 4960
 
-# Holzapfel
-        a           = 3330
-        af          = 185350
-        as          = 25640
-        afs         = 4170
-        b           = 9.242
-        bf          = 15.972
-        bs          = 10.446
-        bfs         = 11.602
-        BulkModulus = 3500000
+    # Holzapfel
+    a           = 3330
+    af          = 185350
+    as          = 25640
+    afs         = 4170
+    b           = 9.242
+    bf          = 15.972
+    bs          = 10.446
+    bfs         = 11.602
+    BulkModulus = 3500000
 
-# Fang type materials
-        C = 20000.0
-        bff = 8.0
-        bss = 2.0
-        bnn = 2.0
-        bfs = 4.0
-        bfn = 4.0
-        bsn = 2.0
+    # Fang type materials
+    C = 20000.0
+    bff = 8.0
+    bss = 2.0
+    bnn = 2.0
+    bfs = 4.0
+    bfn = 4.0
+    bsn = 2.0
 
 
     [../boundary_conditions]
-    list = 'Apex'
+    list = 'Base Apex'
     LvPreloadPressure = 5.0
-    numPreloadSteps  = 10
-    LvFlag = 23
-
+    numPreloadSteps  = 5
 
         [./Apex]
         type       = Essential
         flag       = 28
-        mode       = Full
-        component  = 3
-        function  = '[0.0, 0.0, 0.0]'
+        mode       = Component
+        component  = '0 2'
+        function   = 0 #'[0.0, 0.0, 0.0]'
+
+        [../Base]
+        type       = Essential
+        flag       = 22
+        mode       = Component
+        component  = 1
+        function   = 0
 
         [../BaseRobin]
         type       = Robin
@@ -156,81 +162,86 @@ Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 
             [../]
 
+        [../VariableBoundaryConditions]
+        LVFlag = 23
+        RVFlag = 0
+
         [../]
 
-[../time_discretization]
-initialtime 	= 0.
-endtime         = 100.
-timestep        = 0.5
-theta       	= 0.35
-zeta        	= 0.75
-BDF_order   	= 2
+    [../time_discretization]
+    initialtime 	= 0.
+    endtime         = 100.
+    timestep        = 0.1
+    theta       	= 0.35
+    zeta        	= 0.75
+    BDF_order   	= 2
 
 
-[../space_discretization]
-mesh_type           = .mesh
-mesh_dir            = ./
-mesh_file           = singleVentricle.mesh
-mesh_scaling        = 0.1
-mesh_rotation_2     = 0.0
-order               = P1
-anisotropic         = true
-fiber_name          = FiberDirection
-fiber_fieldname     = fibers
-fiber_dir           = ./
-sheet_name          = SheetsDirection
-sheet_fieldname     = sheets
-sheet_dir           = ./
+    [../space_discretization]
+    mesh_type           = .mesh
+    mesh_dir            = ./
+    mesh_file           = singleVentricle.mesh
+    mesh_scaling        = 0.1
+    mesh_rotation_2     = 0.0
+    order               = P1
+    anisotropic         = true
+    fiber_name          = FiberDirection
+    fiber_fieldname     = fibers
+    fiber_dir           = ./
+    sheet_name          = SheetsDirection
+    sheet_fieldname     = sheets
+    sheet_dir           = ./
 
 
-[../miscellaneous]
-factor    	= 1
-verbose   	= 1
+    [../miscellaneous]
+    factor    	= 1
+    verbose   	= 1
 
 
-[../newton]
-maxiter 	= 20
-reltol  	= 1.e-7
-abstol  	= 1.e-7
+    [../newton]
+    maxiter 	= 20
+    reltol  	= 1.e-7
+    abstol  	= 1.e-7
 
 
-[../solver]
-solver          = cg #gmres
-scaling         = none
-output          = all 			# none
-conv            = rhs
-max_iter        = 500
-reuse           = true
-max_iter_reuse  = 250
-kspace          = 800
-tol             = 1.e-10    		# AztecOO tolerance
+    [../solver]
+    solver          = cg #gmres
+    scaling         = none
+    output          = all 			# none
+    conv            = rhs
+    max_iter        = 500
+    reuse           = true
+    max_iter_reuse  = 250
+    kspace          = 800
+    tol             = 1.e-10    		# AztecOO tolerance
 
-[../prec]
-prectype        = Ifpack	 		# Ifpack or ML
-displayList     = true
-xmlName         = ParamList.xml #xmlParameters.xml
+    [../prec]
+    prectype        = Ifpack	 		# Ifpack or ML
+    displayList     = true
+    xmlName         = ParamList.xml #xmlParameters.xml
 
-[./ifpack]
-overlap  	= 3
+        [./ifpack]
+        overlap  	= 3
 
-[./fact]
-ilut_level-of-fill 	= 1
-drop_tolerance          = 1.e-5
-relax_value             = 0
+            [./fact]
+            ilut_level-of-fill 	= 1
+            drop_tolerance          = 1.e-5
+            relax_value             = 0
 
-[../amesos]
-solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+            [../amesos]
+            solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
 
-[../partitioner]
-overlap 		= 4
+            [../partitioner]
+            overlap 		= 4
 
 
-[../schwarz]
-reordering_type 	= none 			# metis, rcm, none
-filter_singletons 	= true
+            [../schwarz]
+            reordering_type 	= none 			# metis, rcm, none
+            filter_singletons 	= true
 
-[../]
-[../]
+        [../]
+
+    [../]
 
 
 
