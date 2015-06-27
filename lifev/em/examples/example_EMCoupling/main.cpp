@@ -399,7 +399,7 @@ int main (int argc, char** argv)
     //********************************************//
     // Time loop
     //********************************************//
-    s
+    
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     Real endtime = solver.data().electroParameter<Real>("endtime");
