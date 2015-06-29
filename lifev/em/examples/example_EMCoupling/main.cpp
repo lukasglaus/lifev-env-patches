@@ -326,8 +326,8 @@ int main (int argc, char** argv)
     std::vector<double> bcValues(2, 5);
     
     circulationSolver.exportSolution( "solution.txt" );
-    circulationSolver.iterate(0.01, bcNames, bcValues, 0);
-    circulationSolver.exportSolution( "solution.txt" );
+//    circulationSolver.iterate(0.01, bcNames, bcValues, 0);
+//    circulationSolver.exportSolution( "solution.txt" );
 
     
     //********************************************//
@@ -433,6 +433,10 @@ int main (int argc, char** argv)
         
         if ( k % saveIter == 0 )
         {
+            // Circulation
+            circulationSolver.iterate(dt_mechanics, bcNames, bcValues, 0);
+            circulationSolver.exportSolution( "solution.txt" );
+            
             // Update pressure b.c.
             pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
             *endoLvVectorPtr = - pBCLV;

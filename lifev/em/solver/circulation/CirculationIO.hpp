@@ -99,7 +99,10 @@ public:
             file.close();
         }
         
-        else std::cout << "Unable to open file";
+        else
+        {
+            throw std::runtime_error( "Unable to open file" );
+        }
     }
     
 //    template<class type>

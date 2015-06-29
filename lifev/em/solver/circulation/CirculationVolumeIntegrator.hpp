@@ -125,7 +125,7 @@ public:
         
         if ( pointsOrdered.size() != M_boundaryPoints.size() &&  M_fullMesh.comm()->MyPID() == 0 )
         {
-            throw std::runtime_error( "Sorting boundary points in " + M_domain + " failed!");
+            throw std::runtime_error( "Sorting boundary points in " + M_domain + " failed!" );
         }
 
         M_boundaryPoints = pointsOrdered;
