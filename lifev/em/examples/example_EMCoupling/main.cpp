@@ -435,7 +435,7 @@ int main (int argc, char** argv)
         {
             // Circulation
             circulationSolver.iterate(dt_mechanics, bcNames, bcValues, 0);
-            circulationSolver.exportSolution( "solution.txt" );
+            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( "solution.txt" );
             
             // Update pressure b.c.
             pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
