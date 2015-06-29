@@ -320,14 +320,15 @@ int main (int argc, char** argv)
     // Body circulation
     //********************************************//
     
-    Circulation circulationSolver("inputfile");
+    const std::string circulationInputFile = command_line.follow ("inputfile", 2, "-cif", "--cifile");
+    const std::string circulationOutputFile = command_line.follow ("solution.txt", 2, "-cof", "--cofile");
+
+    Circulation circulationSolver( circulationInputFile );
+    if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
 
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues(2, 5);
     
-    circulationSolver.exportSolution( "solution.txt" );
-//    circulationSolver.iterate(0.01, bcNames, bcValues, 0);
-//    circulationSolver.exportSolution( "solution.txt" );
 
     
     //********************************************//
@@ -435,7 +436,7 @@ int main (int argc, char** argv)
         {
             // Circulation
             circulationSolver.iterate(dt_mechanics, bcNames, bcValues, 0);
-            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( "solution.txt" );
+            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             
             // Update pressure b.c.
             pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
