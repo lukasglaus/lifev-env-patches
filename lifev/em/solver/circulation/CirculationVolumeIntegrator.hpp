@@ -235,7 +235,9 @@ public:
         
         if (comm->MyPID() == 0)
         {
+            std::cout << "=============================================\n";
             std::cout << "Volume in " << M_domain << ": " << totalVolume << std::endl;
+            std::cout << "=============================================\n\n";
         }
         
         return totalVolume;
