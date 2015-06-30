@@ -91,7 +91,7 @@ public:
 //        Eigen::GeneralizedEigenSolver<Eigen::MatrixXd> eigV;
 //        eigV.compute(A, M);
 //        std::cout << eigV.eigenvalues() << std::endl;
-        
+
         // b.c. handler
         DofHandler dofh(M_gv);
         CirculationBCHandler bcHandler(dofh, bcNames, bcValues);
@@ -111,7 +111,7 @@ public:
     
     void iterate(const double& dt, const MatrixStdString& bcNames = MatrixStdString(0), const VectorStdDouble& bcValues = VectorStdDouble(0), const unsigned int& iter = 0, const bool plotError = false, const bool plotSystem = false, const double& error = 1e-6)
     {
-        unsigned int world_rank;
+        int world_rank;
         MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
         
         if ( world_rank == 0 )
