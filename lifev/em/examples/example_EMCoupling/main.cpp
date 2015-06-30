@@ -452,7 +452,7 @@ int main (int argc, char** argv)
             //Real RVVolume = RV.volume(disp, dETFESpace, 1);
 
             // Circulation
-            bcValues[0] = - ( LVVolume - LVVolumePre ) / dt_mechanics;
+            bcValues[0] = - ( LVVolume - LVVolumePre ) / ( dt_mechanics / 1000 ) ;
             circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, 0);
             if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             
