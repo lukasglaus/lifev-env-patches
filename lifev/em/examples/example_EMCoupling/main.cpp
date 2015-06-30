@@ -46,7 +46,7 @@ using namespace LifeV;
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return ( Y > 1.5 && Y < 3 /*std::abs(X) < 1 && std::abs(Z-3) < 1 && Y < 0*/ /*&& Y < 0.25 && Z < 0.25 */ && t < 2 ? 30 : 0 );
+    return ( Y > 1.5 && Y < 3 /*std::abs(X) < 1 && std::abs(Z-3) < 1 && Y < 0*/ /*&& Y < 0.25 && Z < 0.25 */ && t < 52 && t > 50 ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
 
@@ -326,11 +326,13 @@ int main (int argc, char** argv)
     Circulation circulationSolver( circulationInputFile );
     if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
 
-    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
-    std::vector<double> bcValues(2, 5);
-    
+//    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
+//    std::vector<double> bcValues(2, 5);
+  
+    std::vector<std::vector<std::string> > bcNames { { "lv" , "Q" } };
+    std::vector<double> bcValues(1, 0);
 
-    
+
     //********************************************//
     // Kept-normal boundary conditions
     //********************************************//
@@ -357,9 +359,9 @@ int main (int argc, char** argv)
     
     // Todo: Normal boundary condition!!
     
-    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", Natural, Normal, Full, *pLvBCVectorPtr, 3);
-    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3);
-    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", Natural, Normal, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
+//    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3); // BC which is only at time zero normal
+//    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
 
     
     //********************************************//
@@ -393,10 +395,10 @@ int main (int argc, char** argv)
         std::cout << "\n*********************\n";
         
         // Update pressure b.c.
-        *endoLvVectorPtr = - pPreloadLvBC * i / preloadSteps;
-        pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-        solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
-        
+//        *endoLvVectorPtr = - pPreloadLvBC * i / preloadSteps;
+//        pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//        solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+//        
         // Solve mechanics
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
@@ -434,23 +436,25 @@ int main (int argc, char** argv)
         
         if ( k % saveIter == 0 )
         {
-            // Circulation
-            circulationSolver.iterate(dt_mechanics, bcNames, bcValues, 0);
-            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
-            
             // Update pressure b.c.
-            pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
-            *endoLvVectorPtr = - pBCLV;
-            pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-            solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
-            
+//            pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
+//            *endoLvVectorPtr = - pBCLV;
+//            pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//            solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+//            
             // Solve mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
+            Real LVVolumePre = LVVolume;
             Real LVVolume = LV.volume(disp, dETFESpace, - 1);
             //Real RVVolume = RV.volume(disp, dETFESpace, 1);
+
+            // Circulation
+            bcValues[0] = - ( LVVolume - LVVolumePre ) / dt_mechanics;
+            circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, 0);
+            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             
         }
         
