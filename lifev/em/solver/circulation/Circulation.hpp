@@ -127,6 +127,9 @@ public:
             
             std::cout << "\t\t\titer = " << subiter << "\t\tL2-Norm = " << residuum.norm() << std::endl;
         }
+        
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Bcast(M_u.data(), M_u.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
     
     CirculationCoupling coupling()
