@@ -111,21 +111,27 @@ public:
     
     void iterate(const double& dt, const MatrixStdString& bcNames = MatrixStdString(0), const VectorStdDouble& bcValues = VectorStdDouble(0), const unsigned int& iter = 0, const bool plotError = false, const bool plotSystem = false, const double& error = 1e-6)
     {
-        unsigned int subiter (0);
-        VectorEigen uPrevIter ( M_u );
-        solve(dt, bcNames, bcValues, iter, plotError, plotSystem);
-        VectorEigen residuum ( M_u - uPrevIter );
-
-        std::cout << "t = " << M_time << "\t\titer = " << subiter << "\t\tL2-Norm = " << residuum.norm() << std::endl;
-
-        while ( residuum.norm() > error && subiter < 10)
+        unsigned int world_rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+        
+        if ( world_rank == 0 )
         {
-            ++subiter;
-            uPrevIter = M_u;
-            solve(dt, bcNames, bcValues, 1, plotError, plotSystem);
-            residuum = ( M_u - uPrevIter );
-            
-            std::cout << "\t\t\titer = " << subiter << "\t\tL2-Norm = " << residuum.norm() << std::endl;
+            unsigned int subiter (0);
+            VectorEigen uPrevIter ( M_u );
+            solve(dt, bcNames, bcValues, iter, plotError, plotSystem);
+            VectorEigen residuum ( M_u - uPrevIter );
+
+            std::cout << "t = " << M_time << "\t\titer = " << subiter << "\t\tL2-Norm = " << residuum.norm() << std::endl;
+
+            while ( residuum.norm() > error && subiter < 10)
+            {
+                ++subiter;
+                uPrevIter = M_u;
+                solve(dt, bcNames, bcValues, 1, plotError, plotSystem);
+                residuum = ( M_u - uPrevIter );
+                
+                std::cout << "\t\t\titer = " << subiter << "\t\tL2-Norm = " << residuum.norm() << std::endl;
+            }
         }
         
         MPI_Barrier(MPI_COMM_WORLD);
