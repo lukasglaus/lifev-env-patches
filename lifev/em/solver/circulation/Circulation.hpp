@@ -137,8 +137,10 @@ public:
             
             std::cout << "================================================================\n\n";
         }
+       
+	std::cout << rank << std::endl; 
         
-        MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(M_u.data(), M_u.size(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
     
