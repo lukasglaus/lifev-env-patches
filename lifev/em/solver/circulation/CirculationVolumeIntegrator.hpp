@@ -251,6 +251,8 @@ protected:
         Int nLocalDof = disp.epetraVector().MyLength();
         Int nComponentLocalDof = nLocalDof / 3;
         
+        // nLocalDof is different for each core
+        disp.blockMap().NumG
         std::vector<Vector3D> boundaryCoordinates(M_boundaryPoints.size());
         
         for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )

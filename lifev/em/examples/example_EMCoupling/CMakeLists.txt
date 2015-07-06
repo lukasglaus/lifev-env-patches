@@ -3,7 +3,6 @@ INCLUDE(TribitsAddExecutableAndTest)
 INCLUDE(TribitsCopyFilesToBinaryDir)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
-INCLUDE_DIRECTORIES(/usr/local/Cellar/eigen/3.2.4/include/eigen3)
 
 TRIBITS_ADD_EXECUTABLE(
   EMCoupling

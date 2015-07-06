@@ -447,7 +447,7 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
-            Real LVVolumePre = LVVolume;q
+            Real LVVolumePre = LVVolume;
             Real LVVolume = LV.volume(disp, dETFESpace, - 1);
             //Real RVVolume = RV.volume(disp, dETFESpace, 1);
 
