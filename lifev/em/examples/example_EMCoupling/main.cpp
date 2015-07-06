@@ -35,6 +35,8 @@
 // Volume computation
 #include <lifev/em/solver/circulation/CirculationVolumeIntegrator.hpp>
 
+//#include <fenv.h>
+
 
 // Namespaces
 using namespace LifeV;
@@ -58,6 +60,9 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
 
 int main (int argc, char** argv)
 {
+
+  //  feenableexcept(FE_INVALID | FE_OVERFLOW);
+
     //********************************************//
     // Typedefs
     //********************************************//
@@ -377,7 +382,7 @@ int main (int argc, char** argv)
 
     Real LVVolume = LV.volume(disp, dETFESpace, - 1);
     //Real RVVolume = RV.volume(disp, dETFESpace, 1);
-    
+
     solver.saveSolution (-1.0);
 
     
@@ -447,14 +452,12 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
-            Real LVVolumePre = LVVolume;q
+            Real LVVolumePre = LVVolume;
             Real LVVolume = LV.volume(disp, dETFESpace, - 1);
             //Real RVVolume = RV.volume(disp, dETFESpace, 1);
 
             // Circulation
             bcValues[0] = - ( LVVolume - LVVolumePre ) / ( dt_mechanics / 1000 );
-            std::cout << comm->MyPID() << "  " << bcValues[0] << std::endl;
-            
             circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, 0);
             if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             

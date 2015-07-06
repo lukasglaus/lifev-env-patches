@@ -333,13 +333,13 @@ public:
 
         switch (idx) {
             case Q:
-                return 1.0;
+                return ( M_param[0] * u[1] );
                 break;
             case p1:
-                return - M_D / ( M_param[0] * u[1] );
+                return - M_D;
                 break;
             case p2:
-                return   M_D / ( M_param[0] * u[1] );
+                return   M_D;
                 break;
             default:
                 return 0.0;
