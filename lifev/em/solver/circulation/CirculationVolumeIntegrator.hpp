@@ -32,8 +32,8 @@ public:
         {
             std::cout << "Volume integrator " << M_domain << " created." << std::endl;
         }
-        
-        initialize();
+       
+	initialize();
         
         if ( M_boundaryPoints.size() > 0 && M_fullMesh.comm()->MyPID() == 0 )
         {
@@ -50,7 +50,7 @@ public:
     }
     
     void findBoundaryPoints()
-    {
+    {	
         std::set<unsigned int> vertexIds;
         for (UInt iBFaceIn = 0; iBFaceIn < M_fullMesh.numBFaces(); ++iBFaceIn)
         {
@@ -79,7 +79,7 @@ public:
                 }
             }
         }
-        
+
         M_boundaryPoints.clear();
         for (auto it = vertexIds.begin(); it != vertexIds.end(); ++it) M_boundaryPoints.push_back(*it);
     }
@@ -87,13 +87,13 @@ public:
     
     void sortBoundaryPoints()
     {
-        std::vector<unsigned int> pointsOrdered;
+        std::vector<int> pointsOrdered;
         
         unsigned int idx1 ( M_boundaryPoints[0] );
         int idx ( - 1 );
         Vector3D v1;
         Vector3D v;
-        
+
         while ( idx != M_boundaryPoints[0] )
         {
             double distMin ( - 1.0 );
@@ -103,12 +103,12 @@ public:
                 if ( idx1 != idx2 && std::find(pointsOrdered.begin(), pointsOrdered.end(), idx2) == pointsOrdered.end() )
                 {
                     Vector3D v2 = M_fullMesh.point(idx2).coordinates() - M_fullMesh.point(idx1).coordinates();
-                    const Vector3D v1N = v1.normalized();
-                    const Vector3D v2N = v2.normalized();
-
-                    const double sc = ( v1.norm() > 0.0 ? v1N.dot(v2N) : 1.0 );
-                    const double dist = v2.norm() / std::max( std::pow(sc + 1, 2) , 0.25 );
+                    const Vector3D v1N = ( v1.norm() > 0 ? v1.normalized() : v1 );
+                    const Vector3D v2N = ( v2.norm() > 0 ? v2.normalized() : v2 );
                     
+		    const double sc = ( v1.norm() > 0.0 ? v1N.dot(v2N) : 1.0 );
+		    const double dist = v2.norm() / std::max( std::pow(sc + 1, 2) , 0.25 );
+
                     if ( dist < distMin || distMin < 0.0 )
                     {
                         distMin = dist;
@@ -123,13 +123,15 @@ public:
             v1 = v;
         }
         
+	std::cout << "sorting done" << std::endl;
+
         if ( pointsOrdered.size() != M_boundaryPoints.size() &&  M_fullMesh.comm()->MyPID() == 0 )
         {
             throw std::runtime_error( "Sorting boundary points in " + M_domain + " failed!" );
         }
 
         M_boundaryPoints = pointsOrdered;
-    }
+     }
     
     
     const Real computeOpenEndVolume (const VectorEpetra& disp,
@@ -160,15 +162,16 @@ public:
                 Vector3D v2 = P2 - centerPoint;
                 
                 Vector3D centerTriangle = ( P1 + P2 + centerPoint ) / 3;
-                Vector3D normal = ( v1.cross(v2) ).normalized();
                 Real area = ( v1.cross(v2) ).norm() / 2;
-                
+                Vector3D normal = ( area > 0 ? ( v1.cross(v2) ).normalized() : Vector3D (0,0,0) );
+
                 Real areaProjected = area * normal.dot(componentVector);
                 
                 volume += areaProjected * centerTriangle.dot(componentVector);
             }
         }
-        
+       
+	MPI_Barrier(MPI_COMM_WORLD); 
         MPI_Bcast(&volume, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         return direction * volume;
     }
@@ -248,27 +251,38 @@ protected:
     
     const std::vector<Vector3D> currentPosition(const VectorEpetra& disp) const
     {
-        Int nLocalDof = disp.epetraVector().MyLength();
+        Int nLocalDof = disp.blockMap().NumGlobalElements(); //disp.epetraVector().MyLength();
         Int nComponentLocalDof = nLocalDof / 3;
         
         // nLocalDof is different for each core
         disp.blockMap().NumG
         std::vector<Vector3D> boundaryCoordinates(M_boundaryPoints.size());
-        
-        for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )
+
+	for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )
         {
-            Vector3D pointCoordinates;
-            
-            UInt iGID = M_boundaryPoints[i];
-            UInt jGID = M_boundaryPoints[i] + nComponentLocalDof;
-            UInt kGID = M_boundaryPoints[i] + 2 * nComponentLocalDof;
-            
-            pointCoordinates[0] = M_fullMesh.point (iGID).x() + disp[iGID];
-            pointCoordinates[1] = M_fullMesh.point (iGID).y() + disp[jGID];
-            pointCoordinates[2] = M_fullMesh.point (iGID).z() + disp[kGID];
-            
-            boundaryCoordinates[i] = pointCoordinates;
+            int root; int LID;
+	    disp.blockMap().RemoteIDList(1, &M_boundaryPoints[i], &root, &LID);
+
+	    if ( disp.blockMap().MyGID( M_boundaryPoints[i] ) )
+	    {    
+		Vector3D pointCoordinates;
+
+            	UInt iGID = M_boundaryPoints[i];
+            	UInt jGID = M_boundaryPoints[i] + nComponentLocalDof;
+            	UInt kGID = M_boundaryPoints[i] + 2 * nComponentLocalDof;
+   	
+            	pointCoordinates[0] = M_fullMesh.point (iGID).x() + disp[iGID];
+            	pointCoordinates[1] = M_fullMesh.point (iGID).y() + disp[jGID];
+            	pointCoordinates[2] = M_fullMesh.point (iGID).z() + disp[kGID];
+
+                boundaryCoordinates[i] = pointCoordinates;
+ 	    }
+
+	    MPI_Bcast(&boundaryCoordinates[i], 3, MPI_DOUBLE, root, MPI_COMM_WORLD);
         }
+	
+	MPI_Barrier(MPI_COMM_WORLD);
+
         return boundaryCoordinates;
     }
 
@@ -343,7 +357,7 @@ protected:
     
     const std::vector<int> M_bdFlags;
     const std::string M_domain;
-    std::vector<unsigned int> M_boundaryPoints;
+    std::vector<int> M_boundaryPoints;
     
 };
 
