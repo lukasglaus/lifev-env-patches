@@ -331,12 +331,15 @@ int main (int argc, char** argv)
     Circulation circulationSolver( circulationInputFile );
     if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
 
-//    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
-//    std::vector<double> bcValues(2, 5);
+    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
+    std::vector<double> bcValues(2, 5);
   
-    std::vector<std::vector<std::string> > bcNames { { "lv" , "Q" } };
-    std::vector<double> bcValues(1, 0);
-
+//    std::vector<std::vector<std::string> > bcNames { { "lv" , "Q" } };
+//    std::vector<double> bcValues(1, 0);
+    
+    // Flow rate between two vertices
+    auto Q = [] (Circulation& c, const std::string& N1, const std::string& N2) { return c.solution ( std::vector<std::string> {N1, N2} ); };
+    auto p = [] (Circulation& c, const std::string& N1) { return c.solution ( N1 ); };
 
     //********************************************//
     // Kept-normal boundary conditions
@@ -356,17 +359,14 @@ int main (int argc, char** argv)
     ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 0);
     ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 0);
 
-    Real pBCLV;;
-    Real pBCRV;;
-
     vectorPtr_Type endoLvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
     bcVectorPtr_Type pLvBCVectorPtr( new bcVector_Type( *endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
     
     // Todo: Normal boundary condition!!
     
-    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", Natural, Normal, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
-//    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3); // BC which is only at time zero normal
-//    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
+    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3); // BC which is only at time zero normal
+    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
 
     
     //********************************************//
@@ -395,24 +395,31 @@ int main (int argc, char** argv)
     
     for (int i (1); i <= preloadSteps; i++)
     {
-        std::cout << "\n*********************";
-        std::cout << "\nPreload step: " << i << " / " << preloadSteps;
-        std::cout << "\n*********************\n";
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*********************";
+            std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+            std::cout << "\n*********************\n";
+        }
         
         // Update pressure b.c.
-//        *endoLvVectorPtr = - pPreloadLvBC * i / preloadSteps;
-//        pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//        solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
-//        
+        *endoLvVectorPtr = - p(circulationSolver, "lv") * 0.001333224 * i / preloadSteps;
+        pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+        solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+        
         // Solve mechanics
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
         
-        Real LVVolume = LV.volume(disp, dETFESpace, - 1);
+        //Real LVVolume = LV.volume(disp, dETFESpace, - 1);
         //Real RVVolume = RV.volume(disp, dETFESpace, 1);
         
     }
     
+    std::vector<double> VCirc { LV.volume(disp, dETFESpace, - 1) };
+    std::vector<double> VCircNew (VCirc);
+    std::vector<double> VFe (VCirc);
+    std::vector<double> VFeNew (VCirc);
 
     //********************************************//
     // Time loop
@@ -425,42 +432,122 @@ int main (int argc, char** argv)
     UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
     Real t = 0;
     solver.saveSolution (0.0);
+    
+    VFeNew.at(0) = LVVolume;
 
     for (int k (1); k <= maxiter; k++)
     {
         solver.electroSolverPtr() -> registerActivationTime (*activationTimeVector, t, 0.9);
         
-        std::cout << "\n*********************";
-        std::cout << "\nTIME = " << t+dt_activation;
-        std::cout << "\n*********************\n";
-
-        t = t + dt_activation;
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*********************";
+            std::cout << "\nTIME = " << t+dt_activation;
+            std::cout << "\n*********************\n";
+        }
         
+        t = t + dt_activation;
+        unsigned int iter (0);
+
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
         
         if ( k % saveIter == 0 )
         {
-            // Update pressure b.c.
-//            pBCLV = pPreloadLvBC; //Circulation::computePressure(1/pPreloadLvBC);
-//            *endoLvVectorPtr = - pBCLV;
-//            pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//            solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
-//            
-            // Solve mechanics
-            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            solver.solveMechanics();
+            // Solve circlation
+            circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, iter);
+            VCircNew.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
             
-            Real LVVolumePre = LVVolume;
-            Real LVVolume = LV.volume(disp, dETFESpace, - 1);
-            //Real RVVolume = RV.volume(disp, dETFESpace, 1);
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*********************";
+                std::cout << "\nCoupling: Newton iteration nr. " << iter;
+                std::cout << "\nPressure: " << bcValues.at(0);
+                std::cout << "\nFE-Volume: " << VFeNew.at(0);
+                std::cout << "\nCirculation-Volume: " << VCircNew.at(0);
+                std::cout << "\nResidual = " << std::abs(VFeNew.at(0) - VCircNew.at(0));
+                std::cout << "\n*********************\n";
+            }
+            
+            if ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
+            {
+                // Perturb fe
+                std::vector<double> VFePert (VFe);
+                
+                *endoLvVectorPtr = - bcValues.at(0) * 0.001333224 * (1.0 + 1e-3);
+                pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+                solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+                solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                solver.solveMechanics();
+                VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
+                
+                // Jacobian fe
+                const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * 1e-3 );
+                
+                while ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
+                {
+                    ++iter;
+                    
+                    if ( 0 == comm->MyPID() )
+                    {
+                        std::cout << "\n*********************************************************************************";
+                        std::cout << "\nCoupling: Newton iteration nr. " << iter;
+                        std::cout << "\n*********************************************************************************\n";
+                    }
+                    
+                    // Perturb circulation
+                    std::vector<double> bcValuesPert { bcValues.at(0) * (1.0 + 1e-3) , bcValues.at(1) };
+                    std::vector<double> VCircPert (1);
+                    circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValuesPert, iter);
+                    VCircPert.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
 
-            // Circulation
-            bcValues[0] = - ( LVVolume - LVVolumePre ) / ( dt_mechanics / 1000 );
-            circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, 0);
-            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
+                    // Update pressure b.c.
+                    // fe jacobian is constant!!!!!
+                    const double J = Jfe - ( VCircPert.at(0) - VCircNew.at(0) ) / ( bcValues.at(0) * 1e-3 );
+                    bcValues.at(0) += - std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0));
+                    
+                    // Solve circulation
+                    circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, iter);
+                    VCircNew.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
+
+                    // Solve mechanics
+                    *endoLvVectorPtr = - bcValues.at(0) * 0.001333224;
+                    pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+                    solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+                    solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                    solver.solveMechanics();
+                    VFeNew.at(0) = LV.volume(disp, dETFESpace, - 1);
+                    
+                    if ( 0 == comm->MyPID() )
+                    {
+                        std::cout << "\n*********************";
+                        std::cout << "\nCoupling: Newton iteration nr. " << iter;
+                        std::cout << "\nPressure: " << bcValues.at(0);
+                        std::cout << "\nFE-Volume: " << VFeNew.at(0);
+                        std::cout << "\nFE-Volume perturbed: " << VFePert.at(0);
+                        std::cout << "\nFE-Jacobian: " << ( VFePert.at(0) - VFeNew.at(0) ) / ( p(circulationSolver, "lv") * 1e-3 );
+                        std::cout << "\nCirculation-Volume: " << VCircNew.at(0);
+                        std::cout << "\nCirculation-Volume perturbed: " << VCircPert.at(0);
+                        std::cout << "\nCirculation-Jacobian: " << ( VCircPert.at(0) - VCircNew.at(0) ) / ( p(circulationSolver, "lv") * 1e-3 );
+                        std::cout << "\nResidual = " << std::abs(VFeNew.at(0) - VCircNew.at(0));
+                        std::cout << "\n*********************\n";
+                    }
+                }
+            }
             
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*********************";
+                std::cout << "\nCoupling converged after " << iter << " iterations";
+                std::cout << "\n*********************\n";
+            }
+            
+            VCirc = VCircNew;
+            VFe = VFeNew;
+            
+            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
         }
         
         solver.saveSolution(t);

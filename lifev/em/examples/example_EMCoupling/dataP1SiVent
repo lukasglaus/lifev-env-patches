@@ -131,7 +131,7 @@ monodomain_xml_file = ParamList.xml
     [../boundary_conditions]
     list = 'Base Apex BaseRobin'
     LvPreloadPressure = 5.0
-    numPreloadSteps  = 5
+    numPreloadSteps  = 1
 
         [./Apex]
         type       = Essential

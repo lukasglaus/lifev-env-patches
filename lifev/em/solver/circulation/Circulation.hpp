@@ -125,7 +125,7 @@ public:
             std::cout << "Compute circulation\n";
             std::cout << "t = " << M_time << "\t\titer = " << subiter << "\t\tL2-Norm = " << residuum.norm() << std::endl;
             
-            while ( residuum.norm() > error && subiter < 10)
+            while ( residuum.norm() > error && subiter < 10 )
             {
                 ++subiter;
                 uPrevIter = M_u;
