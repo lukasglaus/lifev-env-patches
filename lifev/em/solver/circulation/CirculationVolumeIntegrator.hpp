@@ -33,7 +33,7 @@ public:
             std::cout << "Volume integrator " << M_domain << " created." << std::endl;
         }
        
-	initialize();
+        initialize();
         
         if ( M_boundaryPoints.size() > 0 && M_fullMesh.comm()->MyPID() == 0 )
         {
@@ -106,8 +106,8 @@ public:
                     const Vector3D v1N = ( v1.norm() > 0 ? v1.normalized() : v1 );
                     const Vector3D v2N = ( v2.norm() > 0 ? v2.normalized() : v2 );
                     
-		    const double sc = ( v1.norm() > 0.0 ? v1N.dot(v2N) : 1.0 );
-		    const double dist = v2.norm() / std::max( std::pow(sc + 1, 2) , 0.25 );
+                    const double sc = ( v1.norm() > 0.0 ? v1N.dot(v2N) : 1.0 );
+                    const double dist = v2.norm() / std::max( std::pow(sc + 1, 2) , 0.25 );
 
                     if ( dist < distMin || distMin < 0.0 )
                     {
@@ -123,8 +123,6 @@ public:
             v1 = v;
         }
         
-	std::cout << "sorting done" << std::endl;
-
         if ( pointsOrdered.size() != M_boundaryPoints.size() &&  M_fullMesh.comm()->MyPID() == 0 )
         {
             throw std::runtime_error( "Sorting boundary points in " + M_domain + " failed!" );
@@ -256,14 +254,14 @@ protected:
         
         std::vector<Vector3D> boundaryCoordinates(M_boundaryPoints.size());
 
-	for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )
+        for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )
         {
             int root; int LID;
-	    disp.blockMap().RemoteIDList(1, &M_boundaryPoints[i], &root, &LID);
+            disp.blockMap().RemoteIDList(1, &M_boundaryPoints[i], &root, &LID);
 
-	    if ( disp.blockMap().MyGID( M_boundaryPoints[i] ) )
-	    {    
-		Vector3D pointCoordinates;
+            if ( disp.blockMap().MyGID( M_boundaryPoints[i] ) )
+            {
+                Vector3D pointCoordinates;
 
             	UInt iGID = M_boundaryPoints[i];
             	UInt jGID = M_boundaryPoints[i] + nComponentLocalDof;
@@ -274,16 +272,15 @@ protected:
             	pointCoordinates[2] = M_fullMesh.point (iGID).z() + disp[kGID];
 
                 boundaryCoordinates[i] = pointCoordinates;
- 	    }
+            }
 
-	    MPI_Bcast(&boundaryCoordinates[i], 3, MPI_DOUBLE, root, MPI_COMM_WORLD);
+            MPI_Bcast(&boundaryCoordinates[i], 3, MPI_DOUBLE, root, MPI_COMM_WORLD);
         }
 	
-	MPI_Barrier(MPI_COMM_WORLD);
-
+        MPI_Barrier(MPI_COMM_WORLD);
         return boundaryCoordinates;
     }
-
+    
     
     const VectorEpetra currentPositionVector (const VectorEpetra& disp) const
     {
