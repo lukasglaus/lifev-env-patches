@@ -579,7 +579,7 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalBC (std::string data_file_name,
     M_bcInterfacePtr.reset (new bcInterface_Type() );
     M_bcInterfacePtr->createHandler();
     M_bcInterfacePtr->fillHandler ( data_file_name, "solid" );
-    M_bcInterfacePtr->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
+    // M_bcInterfacePtr->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
 }
 
 

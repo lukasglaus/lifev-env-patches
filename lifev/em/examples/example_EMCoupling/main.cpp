@@ -365,10 +365,11 @@ int main (int argc, char** argv)
     // Todo: Normal boundary condition!!
     
     //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
-    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3); // BC which is only at time zero normal
+    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr); // BC which is only at time zero normal
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+    solver.bcInterfacePtr() -> handler() -> showMe();
 
-    
+
     //********************************************//
     // Volume integrators
     //********************************************//
