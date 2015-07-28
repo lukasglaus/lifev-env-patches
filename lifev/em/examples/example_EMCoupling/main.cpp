@@ -356,8 +356,8 @@ int main (int argc, char** argv)
     // Modifiable-value boundary condition
     //********************************************//
 
-    ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 0);
-    ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 0);
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 0 );
+    ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 0 );
 
     vectorPtr_Type endoLvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
     bcVectorPtr_Type pLvBCVectorPtr( new bcVector_Type( *endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
@@ -365,7 +365,7 @@ int main (int argc, char** argv)
     // Todo: Normal boundary condition!!
     
     //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
-    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr, 3); // BC which is only at time zero normal
+    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr); // BC which is only at time zero normal
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
 
     
@@ -504,7 +504,6 @@ int main (int argc, char** argv)
                     VCircPert.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
 
                     // Update pressure b.c.
-                    // fe jacobian is constant!!!!!
                     const double J = Jfe - ( VCircPert.at(0) - VCircNew.at(0) ) / ( bcValues.at(0) * 1e-3 );
                     bcValues.at(0) += - std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0));
                     
