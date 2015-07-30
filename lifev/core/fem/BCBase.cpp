@@ -443,8 +443,6 @@ BCBase::BCBase ( const BCBase& bcBase ) :
     {
         M_bcVector = bcBase.M_bcVector->clone();
     }
-	std::cout << 1 << std::endl;
-	std::cout << M_name << "  " << M_idVector.size() << "  " << bcBase.M_idVector.size() << std::endl;
 
     // Important!!: The set member M_idSet is always empty at this point, it is just
     // an auxiliary container used at the moment of the boundary update (see BCHandler::bcUpdate)
