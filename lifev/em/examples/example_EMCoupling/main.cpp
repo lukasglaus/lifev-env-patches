@@ -482,20 +482,21 @@ int main (int argc, char** argv)
             
             if ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
             {
-//                // Perturb fe
-//                std::vector<double> VFePert (VFe);
-//                
-//                *endoLvVectorPtr = - bcValues.at(0) * 0.001333224 * (1.0 + 1e-3);
-//                pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//                solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
-//                solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-//                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-//                solver.solveMechanics();
-//                VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
-//                
-//                // Jacobian fe
-//                const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * 1e-3 );
-//                
+                const double dpFactor ( 1e-4 );
+                
+                // Jacobian fe
+                std::vector<double> VFePert (VFe);
+                
+                *endoLvVectorPtr = - bcValues.at(0) * 0.001333224 * (1.0 + 1e-3);
+                pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+                solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+                solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                solver.solveMechanics();
+                VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
+                
+                const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * dpFactor );
+                
                 while ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
                 {
                     ++iter;
@@ -507,28 +508,29 @@ int main (int argc, char** argv)
                         std::cout << "\n*********************************************************************************\n";
                     }
                     
-                    // Perturb circulation
-                    std::vector<double> bcValuesPert { bcValues.at(0) * (1.0 + 1e-3) , bcValues.at(1) };
+                    // Jacobian circulation
+                    std::vector<double> bcValuesPert { bcValues.at(0) * (1.0 + dpFactor) , bcValues.at(1) };
                     std::vector<double> VCircPert (1);
                     circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValuesPert, iter);
                     VCircPert.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
 
-                    // Perturb fe
-                    std::vector<double> VFePert (VFe);
+                    const double Jcirc = ( VCircPert.at(0) - VCircNew.at(0) ) / ( bcValues.at(0) * dpFactor );
                     
-                    *endoLvVectorPtr = - bcValues.at(0) * 0.001333224 * (1.0 + 1e-3);
-                    pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-                    solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
-                    solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                    solver.solveMechanics();
-                    VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
-                    
-                    // Jacobian fe
-                    const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * 1e-3 );
-                    
+//                    // Jacobian fe
+//                    std::vector<double> VFePert (VFe);
+//                    
+//                    *endoLvVectorPtr = - bcValues.at(0) * 0.001333224 * (1.0 + dpFactor);
+//                    pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//                    solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
+//                    solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+//                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+//                    solver.solveMechanics();
+//                    VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
+//                    
+//                    const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * dpFactor );
+//                    
                     // Update pressure b.c.
-                    const double J = Jfe - ( VCircPert.at(0) - VCircNew.at(0) ) / ( bcValues.at(0) * 1e-3 );
+                    const double J = Jfe - Jcirc;
                     bcValues.at(0) += - std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0));
                     
                     // Solve circulation
@@ -554,7 +556,7 @@ int main (int argc, char** argv)
                         std::cout << "\nFE-Jacobian: " << Jfe;
                         std::cout << "\nCirculation-Volume: " << VCircNew.at(0);
                         std::cout << "\nCirculation-Volume perturbed: " << VCircPert.at(0);
-                        std::cout << "\nCirculation-Jacobian: " << ( VCircPert.at(0) - VCircNew.at(0) ) / ( p(circulationSolver, "lv") * 1e-3 );
+                        std::cout << "\nCirculation-Jacobian: " << Jcirc;
                         std::cout << "\nResidual = " << std::abs(VFeNew.at(0) - VCircNew.at(0));
                         std::cout << "\n*********************\n";
                     }
