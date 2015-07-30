@@ -169,7 +169,7 @@ public:
             }
         }
        
-	MPI_Barrier(MPI_COMM_WORLD); 
+        MPI_Barrier(MPI_COMM_WORLD);
         MPI_Bcast(&volume, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         return direction * volume;
     }
