@@ -159,11 +159,8 @@ BCHandler::addBC ( const bcName_Type& name,
                    const bcMode_Type& mode,
                    BCVectorBase& bcVector )
 {
-std::cout << "bcHandler: " << name << std::endl;    
-M_bcList.push_back ( BCBase ( name, flag, type, mode, bcVector ) );
-//    std::sort ( M_bcList.begin(), M_bcList.end() );
-std::cout << "bcHandler: " << name << std::endl;
-
+    M_bcList.push_back ( BCBase ( name, flag, type, mode, bcVector ) );
+    std::sort ( M_bcList.begin(), M_bcList.end() );
 }
 
 void
