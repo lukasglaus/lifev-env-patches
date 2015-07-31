@@ -482,7 +482,7 @@ int main (int argc, char** argv)
             
             if ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
             {
-                const double dpFactor ( 1e-4 );
+                const double dpFactor ( 1e-3 );
                 
                 // Jacobian fe
                 std::vector<double> VFePert (VFe);
