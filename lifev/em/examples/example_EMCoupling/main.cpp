@@ -332,7 +332,7 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
 
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
-    std::vector<double> bcValues(2, 5);
+    std::vector<double> bcValues ( 2 , 5 );
   
 //    std::vector<std::vector<std::string> > bcNames { { "lv" , "Q" } };
 //    std::vector<double> bcValues(1, 0);
@@ -480,7 +480,7 @@ int main (int argc, char** argv)
                 std::cout << "\n*********************\n";
             }
             
-            if ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
+            if ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-6) )
             {
                 const double dpFactor ( 1e-3 );
                 
@@ -497,7 +497,7 @@ int main (int argc, char** argv)
                 
                 const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * dpFactor );
                 
-                while ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-4) )
+                while ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-6) )
                 {
                     ++iter;
                     
@@ -532,7 +532,8 @@ int main (int argc, char** argv)
                     // Update pressure b.c.
                     const double J = Jfe - Jcirc;
                     bcValues.at(0) += - std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0));
-                    
+                    bcValues.at(1) = std::max( bcValues.at(0) / 6 , 5.0 );
+
                     // Solve circulation
                     circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, iter);
                     VCircNew.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
