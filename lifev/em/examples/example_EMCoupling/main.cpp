@@ -528,7 +528,7 @@ int main (int argc, char** argv)
 //                    VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
 //                    
 //                    const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * dpFactor );
-//                    
+//
                     // Update pressure b.c.
                     const double J = Jfe - Jcirc;
                     bcValues.at(0) += - std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0));
