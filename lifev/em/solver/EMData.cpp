@@ -100,7 +100,8 @@ EMData::setupActivationParameters(GetPot& dataFile, const std::string& section)
 
     double  ActiveStressBeta = dataFile ( ( section + "/physics/ActiveStress_Beta" ).data(), 2.279 );
     M_activationParametersList.set ("ActiveStress_Beta", ActiveStressBeta );
-    double ActiveStressMu = dataFile ( ( section + "/physics/ActiveStress_Beta" ).data(), 1000.0 );
+    
+    double ActiveStressMu = dataFile ( ( section + "/physics/ActiveStressMu" ).data(), 1000.0 );
     M_activationParametersList.set ("ActiveStress_Mu", ActiveStressMu);
 
     //Devil Number, in case you do not put anything ...
@@ -109,6 +110,7 @@ EMData::setupActivationParameters(GetPot& dataFile, const std::string& section)
 
     std::string EMactiveStrainType = dataFile ( ( section + "/physics/EMActiveStrainType" ).data(), "Anisotropic" );
     M_activationParametersList.set ("EMActiveStrainType", EMactiveStrainType);
+  
     double Tmax = dataFile ( ( section + "/physics/Tmax" ).data(), 50.0 );
     M_activationParametersList.set ("MaxActiveTension", Tmax);
 
