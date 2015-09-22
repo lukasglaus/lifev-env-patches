@@ -1,6 +1,6 @@
-//********************************************//
+//============================================//
 // Includes
-//********************************************//
+//============================================//
 
 #include <lifev/core/LifeV.hpp>
 
@@ -42,9 +42,9 @@
 using namespace LifeV;
 
 
-//********************************************//
+//============================================//
 // Functions
-//********************************************//
+//============================================//
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
@@ -63,9 +63,9 @@ int main (int argc, char** argv)
 
   //  feenableexcept(FE_INVALID | FE_OVERFLOW);
 
-    //********************************************//
+    //============================================//
     // Typedefs
-    //********************************************//
+    //============================================//
     
     typedef RegionMesh<LinearTetra>                         mesh_Type;
     typedef boost::shared_ptr<mesh_Type>                    meshPtr_Type;
@@ -99,9 +99,9 @@ int main (int argc, char** argv)
     typedef boost::shared_ptr< bcInterface_Type >           bcInterfacePtr_Type;
     
 
-    //********************************************//
+    //============================================//
     // Declare communicator and solver
-    //********************************************//
+    //============================================//
     
 #ifdef HAVE_MPI
     MPI_Init ( &argc, &argv );
@@ -117,9 +117,9 @@ int main (int argc, char** argv)
     EMSolver<mesh_Type, monodomain_Type> solver(comm);
 
     
-    //********************************************//
+    //============================================//
     // Read data file and create output folder
-    //********************************************//
+    //============================================//
 
     GetPot command_line (argc, argv);
     const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
@@ -127,17 +127,17 @@ int main (int argc, char** argv)
     std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
 
     
-    //********************************************//
+    //============================================//
     // Setup material data
-    //********************************************//
+    //============================================//
     
     EMData emdata;
     emdata.setup (dataFile);
     
     
-    //********************************************//
+    //============================================//
     // Load mesh
-    //********************************************//
+    //============================================//
     
     if ( comm->MyPID() == 0 )
     {
@@ -155,9 +155,9 @@ int main (int argc, char** argv)
     }
     
     
-    //********************************************//
+    //============================================//
     // Resize mesh
-    //********************************************//
+    //============================================//
     
     if ( comm->MyPID() == 0 )
     {
@@ -180,9 +180,9 @@ int main (int argc, char** argv)
     }
     
     
-    //********************************************//
+    //============================================//
     // Setup solver (including fe-spaces & b.c.)
-    //********************************************//
+    //============================================//
     
     if( 0 == comm->MyPID() )
     {
@@ -197,9 +197,9 @@ int main (int argc, char** argv)
     }
 
     
-    //********************************************//
+    //============================================//
     // Setup anisotropy vectors
-    //********************************************//
+    //============================================//
     
     if( 0 == comm->MyPID() )
     {
@@ -232,9 +232,9 @@ int main (int argc, char** argv)
     }
 
     
-    //********************************************//
+    //============================================//
     // Initialize electrophysiology
-    //********************************************//
+    //============================================//
     
     if( 0 == comm->MyPID() )
     {
@@ -263,9 +263,9 @@ int main (int argc, char** argv)
     }
 
     
-    //********************************************//
+    //============================================//
     // Building Matrices
-    //********************************************//
+    //============================================//
 
     if( 0 == comm->MyPID() )
     {
@@ -282,9 +282,9 @@ int main (int argc, char** argv)
     }
 
     
-    //********************************************//
+    //============================================//
     // Setup exporter for EMSolver
-    //********************************************//
+    //============================================//
     
     if ( 0 == comm->MyPID() )
     {
@@ -299,9 +299,9 @@ int main (int argc, char** argv)
     }
     
     
-    //********************************************//
+    //============================================//
     // Setup vector & exporter for activation time
-    //********************************************//
+    //============================================//
     
     vectorPtr_Type activationTimeVector ( new vector_Type ( solver.electroSolverPtr()->potentialPtr() -> map() ) );
     *activationTimeVector = -1.0;
@@ -314,16 +314,16 @@ int main (int argc, char** argv)
     activationTimeExporter.setPostDir (problemFolder);
     
     
-    //********************************************//
+    //============================================//
     // Electric stimulus function
-    //********************************************//
+    //============================================//
     
     function_Type stim = &Iapp;
     
     
-    //********************************************//
+    //============================================//
     // Body circulation
-    //********************************************//
+    //============================================//
     
     const std::string circulationInputFile = command_line.follow ("inputfile", 2, "-cif", "--cifile");
     const std::string circulationOutputFile = command_line.follow ("solution.txt", 2, "-cof", "--cofile");
@@ -334,16 +334,14 @@ int main (int argc, char** argv)
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues ( 2 , 5 );
   
-//    std::vector<std::vector<std::string> > bcNames { { "lv" , "Q" } };
-//    std::vector<double> bcValues(1, 0);
     
     // Flow rate between two vertices
     auto Q = [] (Circulation& c, const std::string& N1, const std::string& N2) { return c.solution ( std::vector<std::string> {N1, N2} ); };
     auto p = [] (Circulation& c, const std::string& N1) { return c.solution ( N1 ); };
 
-    //********************************************//
+    //============================================//
     // Kept-normal boundary conditions
-    //********************************************//
+    //============================================//
 
     // Get b.c. flags
     // ID LvFlag =  dataFile ( "solid/boundary_conditions/LvFlag", 0);
@@ -352,9 +350,9 @@ int main (int argc, char** argv)
     // solver.structuralOperatorPtr() -> setBCFlag( LvFlag );
     
     
-    //********************************************//
+    //============================================//
     // Modifiable-value boundary condition
-    //********************************************//
+    //============================================//
 
     ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 0 );
     ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 0 );
@@ -370,9 +368,9 @@ int main (int argc, char** argv)
     //if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
 
 
-    //********************************************//
+    //============================================//
     // Volume integrators
-    //********************************************//
+    //============================================//
     
     auto& disp = solver.structuralOperatorPtr() -> displacement();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
@@ -392,9 +390,9 @@ int main (int argc, char** argv)
     std::vector<double> VFeNew (VCirc);
 
     
-    //********************************************//
+    //============================================//
     // Preload
-    //********************************************//
+    //============================================//
     
     Real pPreloadLvBC = dataFile ( "solid/boundary_conditions/LvPreloadPressure", 0.0);
     int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
@@ -416,16 +414,12 @@ int main (int argc, char** argv)
         // Solve mechanics
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
-        
-        //Real LVVolume = LV.volume(disp, dETFESpace, - 1);
-        //Real RVVolume = RV.volume(disp, dETFESpace, 1);
-        
     }
     
     
-    //********************************************//
+    //============================================//
     // Time loop
-    //********************************************//
+    //============================================//
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
@@ -456,11 +450,15 @@ int main (int argc, char** argv)
         
         if ( k % saveIter == 0 )
         {
+            //============================================//
             // Solve circlation
+            //============================================//
             circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, iter);
             VCircNew.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
             
+            //============================================//
             // Solve mechanics
+            //============================================//
             *endoLvVectorPtr = - bcValues.at(0) * 0.001333224;
             pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
@@ -484,7 +482,9 @@ int main (int argc, char** argv)
             {
                 const double dpFactor ( 1e-3 );
                 
+                //============================================//
                 // Jacobian fe
+                //============================================//
                 std::vector<double> VFePert (VFe);
                 
                 *endoLvVectorPtr = - bcValues.at(0) * 0.001333224 * (1.0 + 1e-3);
@@ -497,6 +497,9 @@ int main (int argc, char** argv)
                 
                 const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * dpFactor );
                 
+                //============================================//
+                // Newton iterations
+                //============================================//
                 while ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, 1e-6) )
                 {
                     ++iter;
@@ -508,7 +511,9 @@ int main (int argc, char** argv)
                         std::cout << "\n*********************************************************************************\n";
                     }
                     
+                    //============================================//
                     // Jacobian circulation
+                    //============================================//
                     std::vector<double> bcValuesPert { bcValues.at(0) * (1.0 + dpFactor) , bcValues.at(1) };
                     std::vector<double> VCircPert (1);
                     circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValuesPert, iter);
@@ -516,7 +521,9 @@ int main (int argc, char** argv)
 
                     const double Jcirc = ( VCircPert.at(0) - VCircNew.at(0) ) / ( bcValues.at(0) * dpFactor );
                     
+                    //============================================//
                     // Jacobian fe
+                    //============================================//
                     if ( ! iter % 5 )
                     {
                         std::vector<double> VFePert (VFe);
@@ -531,17 +538,23 @@ int main (int argc, char** argv)
                     
                         const double Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / ( bcValues.at(0) * dpFactor );
                     }
-
+                    
+                    //============================================//
                     // Update pressure b.c.
+                    //============================================//
                     const double J = Jfe - Jcirc;
                     bcValues.at(0) += - std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0));
                     bcValues.at(1) = std::max( bcValues.at(0) / 6 , 5.0 );
 
+                    //============================================//
                     // Solve circulation
+                    //============================================//
                     circulationSolver.iterate(dt_mechanics/1000, bcNames, bcValues, iter);
                     VCircNew.at(0) = VCirc.at(0) + dt_mechanics/1000 * ( Q(circulationSolver, "la", "lv") - Q(circulationSolver, "lv", "sa") );
 
+                    //============================================//
                     // Solve mechanics
+                    //============================================//
                     *endoLvVectorPtr = - bcValues.at(0) * 0.001333224;
                     pLvBCVectorPtr.reset ( ( new bcVector_Type (*endoLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
                     solver.bcInterfacePtr() -> handler() -> modifyBC(LVFlag, *pLvBCVectorPtr);
@@ -574,20 +587,29 @@ int main (int argc, char** argv)
                 std::cout << "\n*********************\n";
             }
             
+            //============================================//
+            // Set old volumes to new ones
+            //============================================//
             VCirc = VCircNew;
             VFe = VFeNew;
             
+            //============================================//
+            // Export circulation solution
+            //============================================//
             if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
         }
         
+        //============================================//
+        // Export FE-solution
+        //============================================//
         solver.saveSolution(t);
-        activationTimeExporter.postProcess(t);// usually stored after time loop
+        activationTimeExporter.postProcess(t); // usually stored after time loop
     }
 
     
-    //********************************************//
+    //============================================//
     // Close all exporters
-    //********************************************//
+    //============================================//
     
     solver.closeExporters();
     activationTimeExporter.closeFile();
