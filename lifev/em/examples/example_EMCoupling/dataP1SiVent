@@ -56,7 +56,7 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-        Tmax = 0.05 #2 # Default: 50
+        Tmax = 0.1 #2 # Default: 50
 	ActiveStress_Beta = 45.6 #2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
         #Active Strain types Available
