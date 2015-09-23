@@ -22,14 +22,14 @@ centerline_y           = -1.0
 centerline_z           = 0.0
 epi_angle              =-60.0
 endo_angle             = 60.0
-output_fiber_filename  = FiberDirection
-hdf5_fiber_name        = fibers
-output_sheets_filename = SheetsDirection
-hdf5_sheets_name       = sheets
+output_fiber_filename  = FiberDirectionSiVentP2
+hdf5_fiber_name        = fibersSiVentP2
+output_sheets_filename = SheetsDirectionSiVentP2
+hdf5_sheets_name       = sheetsSiVentP2
 
 
     [./boundary_conditions]
-    list = 'Endocardium Epicardium Base'
+    list = 'Endocardium Epicardium Apex Base'
    
         [./Endocardium]
         type       = Essential
@@ -46,6 +46,13 @@ hdf5_sheets_name       = sheets
         component  = 1
         function  = '1.0'
 
+        [../Apex]
+        type       = Essential
+        flag       = 28
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
 
         [../Base]
         type       = Natural
@@ -58,7 +65,7 @@ hdf5_sheets_name       = sheets
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= singleVentricle.mesh
+    mesh_file 	= xVentSingle.mesh
     elem_type   = P2
   
     [../solver]

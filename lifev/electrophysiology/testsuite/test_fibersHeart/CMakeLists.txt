@@ -12,13 +12,13 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
-  SOURCE_FILES dataSingleVentricle singleVentricle.mesh 
+  SOURCE_FILES dataSingleVentricle dataXVentSingle singleVentricle.mesh xVentSingle.mesh
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
   CREATE_SYMLINK
-  SOURCE_FILES data 
+  SOURCE_FILES data
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

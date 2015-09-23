@@ -588,7 +588,7 @@ int main (int argc, char** argv)
             }
             
             //============================================//
-            // Set old volumes to new ones
+            // Set volumes equal to new ones
             //============================================//
             VCirc = VCircNew;
             VFe = VFeNew;
