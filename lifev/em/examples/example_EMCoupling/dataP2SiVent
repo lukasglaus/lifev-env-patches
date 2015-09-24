@@ -27,7 +27,7 @@ monodomain_xml_file = ParamList.xml
     [../discretization]
     LumpedMass = false // use when too coarse mesh
 
-    elementsOrder   = P1
+    elementsOrder   = P2
 
     [../flags]
     lvendo = 23
@@ -183,14 +183,14 @@ monodomain_xml_file = ParamList.xml
     mesh_file           = xVentSingle.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P1
+    order               = P2
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = siVentP1/
+    fiber_dir           = siVentP2/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = siVentP1/
+    sheet_dir           = siVentP2/
 
 
     [../miscellaneous]

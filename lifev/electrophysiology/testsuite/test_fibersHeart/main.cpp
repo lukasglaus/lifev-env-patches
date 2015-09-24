@@ -258,15 +258,16 @@ int main ( int argc, char** argv )
     //*************************************************************//
     
     std::string elemType = dataFile ( "problem/space_discretization/elem_type", "P1" );
-    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
-    
+    boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace;
     if ( elemType == "P1" )
     {
-        boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+        boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpaceTemp ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP1, Comm) );
+        uSpace = uSpaceTemp;
     }
     else if ( elemType == "P2" )
     {
-        boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpace ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP2, Comm) );
+        boost::shared_ptr<ETFESpace< mesh_Type, MapEpetra, 3, 1 > > uSpaceTemp ( new ETFESpace< mesh_Type, MapEpetra, 3, 1 > (meshPart, &feTetraP2, Comm) );
+        uSpace = uSpaceTemp;
     }
     else
     {

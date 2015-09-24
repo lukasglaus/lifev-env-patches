@@ -10,6 +10,6 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
  TRIBITS_COPY_FILES_TO_BINARY_DIR(data_example_EMCoupling
-   SOURCE_FILES ParamList.xml dataP1BiVent dataP2BiVent dataP1SiVent inputfile singleVentricle.mesh FiberDirection.h5  SheetsDirection.h5
+   SOURCE_FILES ParamList.xml data dataP1BiVent dataP2BiVent dataP1SiVent dataP2SiVent inputfile singleVentricle.mesh FiberDirection.h5  SheetsDirection.h5 siVentP1/FiberDirection.h5 siVentP1/SheetsDirection.h5 siVentP2/FiberDirection.h5 siVentP2/SheetsDirection.h5 xVentSingle.mesh
    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
  )
