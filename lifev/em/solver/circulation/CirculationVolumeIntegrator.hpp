@@ -200,7 +200,7 @@ public:
             BOOST_AUTO_TPL (FmT, minusT (F) );
             BOOST_AUTO_TPL (J, det (F) );
             
-            QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria6pt) );
+            QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
 
             *intergral *= 0.0;
             integrate (boundary (M_localMeshPtr, bdFlag), myBDQR, M_ETFESpace,
