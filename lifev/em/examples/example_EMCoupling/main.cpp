@@ -35,7 +35,7 @@
 // Volume computation
 #include <lifev/em/solver/circulation/CirculationVolumeIntegrator.hpp>
 
-//#include <fenv.h>
+#include <fenv.h>
 
 
 // Namespaces
@@ -61,7 +61,7 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
 int main (int argc, char** argv)
 {
 
-  //  feenableexcept(FE_INVALID | FE_OVERFLOW);
+    feenableexcept(FE_INVALID | FE_OVERFLOW);
 
     //============================================//
     // Typedefs
@@ -420,6 +420,8 @@ int main (int argc, char** argv)
     //============================================//
     // Time loop
     //============================================//
+    
+    //UInt couplingFeJacobianIter (
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");

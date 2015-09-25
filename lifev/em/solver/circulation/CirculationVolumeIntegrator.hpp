@@ -200,7 +200,7 @@ public:
             BOOST_AUTO_TPL (FmT, minusT (F) );
             BOOST_AUTO_TPL (J, det (F) );
             
-            QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria4pt) );
+            QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria6pt) );
 
             *intergral *= 0.0;
             integrate (boundary (M_localMeshPtr, bdFlag), myBDQR, M_ETFESpace,
@@ -237,6 +237,8 @@ public:
         if (comm->MyPID() == 0)
         {
             std::cout << "=============================================\n";
+            std::cout << "Volume in " << M_domain << ": " << volumeBoundary << std::endl;
+            std::cout << "Volume in " << M_domain << ": " << volumeOpenEnd << std::endl;
             std::cout << "Volume in " << M_domain << ": " << totalVolume << std::endl;
             std::cout << "=============================================\n\n";
         }
