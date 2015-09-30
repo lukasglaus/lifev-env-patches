@@ -218,9 +218,10 @@ int main (int argc, char** argv)
         std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
         std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
         std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
-        
-        solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir );
-        solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir );
+        std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
+
+        solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
+        solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );
     }
     else
     {

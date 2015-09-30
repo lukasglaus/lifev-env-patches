@@ -239,9 +239,9 @@ public:
         if (comm->MyPID() == 0)
         {
             std::cout << "=================================================================\n";
-            std::cout << "Volume (integration over boundary) in " << M_domain << ": " << volumeBoundary << std::endl;
-            std::cout << "Volume (open-end) in " << M_domain << ": " << volumeOpenEnd << std::endl;
-            std::cout << "Volume (total) in " << M_domain << ": " << totalVolume << std::endl;
+            std::cout << "Volume (integration over boundary) in " << M_domain << ": \t" << volumeBoundary << std::endl;
+            std::cout << "Volume (open-end) in " << M_domain << ": \t" << volumeOpenEnd << std::endl;
+            std::cout << "Volume (total) in " << M_domain << ": \t" << totalVolume << std::endl;
             std::cout << "=================================================================\n\n";
         }
         
