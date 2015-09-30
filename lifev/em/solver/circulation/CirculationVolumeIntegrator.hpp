@@ -200,10 +200,12 @@ public:
             BOOST_AUTO_TPL (FmT, minusT (F) );
             BOOST_AUTO_TPL (J, det (F) );
             
-            QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria1pt) );
+            QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria3ptNew) );
 
             *intergral *= 0.0;
-            integrate (boundary (M_localMeshPtr, bdFlag), myBDQR, M_ETFESpace,
+            integrate (boundary (M_localMeshPtr, bdFlag),
+                       myBDQR,
+                       M_ETFESpace,
                        value(-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral;
 
             intergral->globalAssemble();
@@ -236,11 +238,11 @@ public:
         
         if (comm->MyPID() == 0)
         {
-            std::cout << "=============================================\n";
-            std::cout << "Volume in " << M_domain << ": " << volumeBoundary << std::endl;
-            std::cout << "Volume in " << M_domain << ": " << volumeOpenEnd << std::endl;
-            std::cout << "Volume in " << M_domain << ": " << totalVolume << std::endl;
-            std::cout << "=============================================\n\n";
+            std::cout << "=================================================================\n";
+            std::cout << "Volume (integration over boundary) in " << M_domain << ": " << volumeBoundary << std::endl;
+            std::cout << "Volume (open-end) in " << M_domain << ": " << volumeOpenEnd << std::endl;
+            std::cout << "Volume (total) in " << M_domain << ": " << totalVolume << std::endl;
+            std::cout << "=================================================================\n\n";
         }
         
         return totalVolume;

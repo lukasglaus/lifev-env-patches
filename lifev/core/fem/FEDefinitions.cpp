@@ -160,10 +160,11 @@ static const QuadratureRule quad_rule_seg[ NB_QUAD_RULE_SEG ] =
  *
  *=======================================================================*/
 //! total number of quadrature rules in 2D on triangle
-#define NB_QUAD_RULE_TRIA 5
+#define NB_QUAD_RULE_TRIA 6
 //! id of the quadrature rules on triangles
 #define QUAD_RULE_TRIA_1PT     1
 #define QUAD_RULE_TRIA_3PT     2
+#define QUAD_RULE_TRIA_3PT_NEW     6
 #define QUAD_RULE_TRIA_4PT     3
 #define QUAD_RULE_TRIA_6PT     4
 #define QUAD_RULE_TRIA_7PT     5
@@ -186,6 +187,16 @@ static const QuadraturePoint pt_tria_3pt[ 3 ] =
 const QuadratureRule quadRuleTria3pt ( pt_tria_3pt,
                                        QUAD_RULE_TRIA_3PT,
                                        "Quadrature rule 3 points on a triangle", TRIANGLE, 3, 2 );
+//----------------------------------------------------------------------
+static const QuadraturePoint pt_tria_3pt_new[ 3 ] =
+{
+    QuadraturePoint ( 0.,  0. , 1. / 6. ),
+    QuadraturePoint ( 0. , 1.,  1. / 6. ),
+    QuadraturePoint ( 1. , 0.,  1. / 6. )
+};
+const QuadratureRule quadRuleTria3ptNew ( pt_tria_3pt_new,
+                                      QUAD_RULE_TRIA_3PT_NEW,
+                                      "Quadrature rule 3 points on a triangle", TRIANGLE, 3, 6 );
 //----------------------------------------------------------------------
 // 4 points Integration rule for triangle (Ref. e.g. Comincioli pag. 234) D of Ex = 3
 const Real t4pt_xb1 = 3. / 5.,
@@ -255,6 +266,7 @@ static const QuadratureRule quad_rule_tria[ NB_QUAD_RULE_TRIA ] =
 {
     quadRuleTria1pt,
     quadRuleTria3pt,
+    quadRuleTria3ptNew,
     quadRuleTria4pt,
     quadRuleTria6pt,
     quadRuleTria7pt
