@@ -147,7 +147,7 @@ int main (int argc, char** argv)
     }
     
     std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
-    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "cube4.mesh");
+    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
 
     solver.loadMesh (meshName, meshPath);
     
@@ -250,7 +250,12 @@ int main (int argc, char** argv)
     UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
     //UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
     //UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
-    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+    
+    auto a = solver.structuralOperatorPtr() -> dispFESpacePtr() -> feToFEInterpolate(*solver.structuralOperatorPtr() -> dispFESpacePtr(), *solver.electroSolverPtr()->potentialPtr());
+    ElectrophysiologyUtility::setValueOnBoundary ( a, solver.fullMeshPtr(), 1.0, lvendo );
+    * (solver.electroSolverPtr()->potentialPtr() ) = a;
+    
+//    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
 //    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
 //    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
     

@@ -209,9 +209,9 @@ public:
                        value(-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral;
 
             intergral->globalAssemble();
-            
-            return positionVector.dot (*intergral);
-          }
+        }
+        
+        return positionVector.dot (*intergral);
     }
     
     
