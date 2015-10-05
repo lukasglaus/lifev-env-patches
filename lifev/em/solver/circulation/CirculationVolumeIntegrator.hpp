@@ -19,14 +19,16 @@ public:
     
     VolumeIntegrator(const std::vector<int>& bdFlags,
                      const std::string& domain,
-                     const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr,
-                     const boost::shared_ptr<RegionMesh<LinearTetra> > localMeshPtr,
-                     const boost::shared_ptr <ETFESpace<RegionMesh<LinearTetra>, MapEpetra, 3, 1> > ETFESpace) :
+                     const boost::shared_ptr <RegionMesh<LinearTetra> > fullMeshPtr,
+                     const boost::shared_ptr <RegionMesh<LinearTetra> > localMeshPtr,
+                     const boost::shared_ptr <ETFESpace<RegionMesh<LinearTetra>, MapEpetra, 3, 1> > ETFESpace,
+                     const boost::shared_ptr <FESpace<RegionMesh<LinearTetra>, MapEpetra> > FESpace ) :
                 M_localMeshPtr  ( localMeshPtr ),
                 M_fullMesh      ( *fullMeshPtr ),
                 M_bdFlags       ( bdFlags ),
                 M_domain        ( domain ),
-                M_ETFESpace     ( ETFESpace )
+                M_ETFESpace     ( ETFESpace ),
+                M_FESpace       ( FESpace )
     {
         if ( M_fullMesh.comm()->MyPID() == 0 )
         {
@@ -209,8 +211,14 @@ public:
                        value(-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral;
 
             intergral->globalAssemble();
+
         }
+
         
+        std::cout << "\n Length: " << positionVector.epetraVector().MyLength() << "  " << (*intergral).epetraVector().MyLength() << std::cout;
+        std::cout << "\n Norm: " << positionVector.norm2() << "  " << (*intergral).norm2() << std::cout;
+
+
         return positionVector.dot (*intergral);
     }
     
@@ -288,20 +296,52 @@ protected:
     
     const VectorEpetra currentPositionVector (const VectorEpetra& disp) const
     {
-        VectorEpetra positionVector ( disp.map() );
-        Int nLocalDof = disp.epetraVector().MyLength();
-        Int nComponentLocalDof = nLocalDof / 3;
-        for (int k (0); k < nComponentLocalDof; k++)
-        {
-            UInt iGID = positionVector.blockMap().GID (k);
-            UInt jGID = positionVector.blockMap().GID (k + nComponentLocalDof);
-            UInt kGID = positionVector.blockMap().GID (k + 2 * nComponentLocalDof);
-            
-            positionVector[iGID] = M_fullMesh.point (iGID).x() + disp[iGID];
-            positionVector[jGID] = M_fullMesh.point (iGID).y() + disp[jGID];
-            positionVector[kGID] = M_fullMesh.point (iGID).z() + disp[kGID];
-        }
+        // New P1 Space
+        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( M_localMeshPtr, "P1", 3, M_fullMesh.comm() );
 
+        // Create P1 VectorEpetra
+        VectorEpetra p1PositionVector (p1FESpace.map());
+
+        // Fill P1 vector with mesh values
+        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+        for (int j (0); j < p1nCompLocalDof; j++)
+        {
+            UInt iGID = p1PositionVector.blockMap().GID (j);
+            UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+            UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+            
+            p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
+            p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
+            p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
+        }
+        
+        // Interpolate position vector from P1-space to current space
+        VectorEpetra positionVector ( disp.map() );
+        positionVector = M_FESpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+        
+        // Add displacement to position vector
+        positionVector += disp;
+        
+//        Int nComponentLocalDof = disp.epetraVector().MyLength() / 3;
+//        for (int k (0); k < nComponentLocalDof; k++)
+//        {
+//            UInt iGID = positionVector.blockMap().GID (k);
+//            UInt jGID = positionVector.blockMap().GID (k + nComponentLocalDof);
+//            UInt kGID = positionVector.blockMap().GID (k + 2 * nComponentLocalDof);
+//           
+////		if (isnan(disp[iGID])) std::cout << "\n i..... \n";
+////                if (isnan(disp[jGID])) std::cout << "\n j..... \n";
+////                if (isnan(disp[kGID])) std::cout << "\n k..... \n";
+////                if ( isnan(M_fullMesh.point (iGID).x()) ) std::cout << "\n i..... " << k << M_fullMesh.point (iGID).x() << "\n";
+////                if ( isnan(M_fullMesh.point (iGID).y()) ) std::cout << "\n j..... " << k << M_fullMesh.point (iGID).y() << "\n";
+////                if ( isnan(M_fullMesh.point (iGID).z()) ) std::cout << "\n k..... " << k << M_fullMesh.point (iGID).z() << "\n";
+//
+//            positionVector[iGID] = M_fullMesh.point (iGID).x() + disp[iGID];
+//            positionVector[jGID] = M_fullMesh.point (iGID).y() + disp[jGID];
+//            positionVector[kGID] = M_fullMesh.point (iGID).z() + disp[kGID];
+//        }
+	
+		//if ( isnan(positionVector.norm2()) ) std::cout << "\n hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii \n";
         return positionVector;
     }
     
@@ -353,7 +393,8 @@ protected:
     const boost::shared_ptr<RegionMesh<LinearTetra> > M_localMeshPtr;
     const RegionMesh<LinearTetra>& M_fullMesh;
     const boost::shared_ptr <ETFESpace<RegionMesh<LinearTetra>, MapEpetra, 3, 1> > M_ETFESpace;
-    
+    const boost::shared_ptr <FESpace<RegionMesh<LinearTetra>, MapEpetra> > M_FESpace;
+
     const std::vector<int> M_bdFlags;
     const std::string M_domain;
     std::vector<int> M_boundaryPoints;

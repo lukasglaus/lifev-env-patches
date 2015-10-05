@@ -250,12 +250,26 @@ int main (int argc, char** argv)
     UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
     //UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
     //UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
+
+    solver.localMeshPtr() -> showMe();
+    solver.fullMeshPtr() -> showMe();
+    solver.structuralOperatorPtr() -> dispFESpacePtr() -> dofPtr() -> showMe();
+    solver.electroSolverPtr() -> feSpacePtr() -> dofPtr() -> showMe();
+
+    
+//    auto a = solver.structuralOperatorPtr() -> dispFESpacePtr() -> feToFEInterpolate(*solver.structuralOperatorPtr() -> dispFESpacePtr(), *solver.electroSolverPtr()->potentialPtr());
+//    ElectrophysiologyUtility::setValueOnBoundary ( a, solver.fullMeshPtr(), 1.0, lvendo );
+//    * (solver.electroSolverPtr()->potentialPtr() ) = a;
+    
+
     
     auto a = solver.structuralOperatorPtr() -> dispFESpacePtr() -> feToFEInterpolate(*solver.structuralOperatorPtr() -> dispFESpacePtr(), *solver.electroSolverPtr()->potentialPtr());
-    ElectrophysiologyUtility::setValueOnBoundary ( a, solver.fullMeshPtr(), 1.0, lvendo );
+vector_Type b;    
+//ElectrophysiologyUtility::setValueOnBoundary ( b, solver.fullMeshPtr(), 1.0, lvendo );
     * (solver.electroSolverPtr()->potentialPtr() ) = a;
-    
-//    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+
+
+    //    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
 //    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
 //    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
     
@@ -381,10 +395,11 @@ int main (int argc, char** argv)
     //============================================//
     
     auto& disp = solver.structuralOperatorPtr() -> displacement();
+    auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    VolumeIntegrator LV (std::vector<int> {23}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
+    VolumeIntegrator LV (std::vector<int> {23}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
     //VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
 
     Real LVVolume = LV.volume(disp, dETFESpace, - 1);
