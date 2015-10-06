@@ -143,7 +143,7 @@ public:
         auto boundaryCoordinates ( currentPosition(disp) );
         Vector3D centerPoint ( center(boundaryCoordinates) );
 
-        // Compute volumeh
+        // Compute volume
         auto itNext = boundaryCoordinates.begin();
         unsigned int i (0);
         Real volume (0.0);
@@ -322,26 +322,6 @@ protected:
         // Add displacement to position vector
         positionVector += disp;
         
-//        Int nComponentLocalDof = disp.epetraVector().MyLength() / 3;
-//        for (int k (0); k < nComponentLocalDof; k++)
-//        {
-//            UInt iGID = positionVector.blockMap().GID (k);
-//            UInt jGID = positionVector.blockMap().GID (k + nComponentLocalDof);
-//            UInt kGID = positionVector.blockMap().GID (k + 2 * nComponentLocalDof);
-//           
-////		if (isnan(disp[iGID])) std::cout << "\n i..... \n";
-////                if (isnan(disp[jGID])) std::cout << "\n j..... \n";
-////                if (isnan(disp[kGID])) std::cout << "\n k..... \n";
-////                if ( isnan(M_fullMesh.point (iGID).x()) ) std::cout << "\n i..... " << k << M_fullMesh.point (iGID).x() << "\n";
-////                if ( isnan(M_fullMesh.point (iGID).y()) ) std::cout << "\n j..... " << k << M_fullMesh.point (iGID).y() << "\n";
-////                if ( isnan(M_fullMesh.point (iGID).z()) ) std::cout << "\n k..... " << k << M_fullMesh.point (iGID).z() << "\n";
-//
-//            positionVector[iGID] = M_fullMesh.point (iGID).x() + disp[iGID];
-//            positionVector[jGID] = M_fullMesh.point (iGID).y() + disp[jGID];
-//            positionVector[kGID] = M_fullMesh.point (iGID).z() + disp[kGID];
-//        }
-	
-		//if ( isnan(positionVector.norm2()) ) std::cout << "\n hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii \n";
         return positionVector;
     }
     

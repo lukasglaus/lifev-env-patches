@@ -250,28 +250,9 @@ int main (int argc, char** argv)
     UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
     //UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
     //UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
-
-    solver.localMeshPtr() -> showMe();
-    solver.fullMeshPtr() -> showMe();
-    solver.structuralOperatorPtr() -> dispFESpacePtr() -> dofPtr() -> showMe();
-    solver.electroSolverPtr() -> feSpacePtr() -> dofPtr() -> showMe();
-
-    
-//    auto a = solver.structuralOperatorPtr() -> dispFESpacePtr() -> feToFEInterpolate(*solver.structuralOperatorPtr() -> dispFESpacePtr(), *solver.electroSolverPtr()->potentialPtr());
-//    ElectrophysiologyUtility::setValueOnBoundary ( a, solver.fullMeshPtr(), 1.0, lvendo );
-//    * (solver.electroSolverPtr()->potentialPtr() ) = a;
-    
-
-    
-    auto a = solver.structuralOperatorPtr() -> dispFESpacePtr() -> feToFEInterpolate(*solver.structuralOperatorPtr() -> dispFESpacePtr(), *solver.electroSolverPtr()->potentialPtr());
-vector_Type b;    
-//ElectrophysiologyUtility::setValueOnBoundary ( b, solver.fullMeshPtr(), 1.0, lvendo );
-    * (solver.electroSolverPtr()->potentialPtr() ) = a;
-
-
-    //    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
-//    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
-//    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
+    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+    //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
+    //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
     
     // Restrict the potential set by a function
     vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) ); // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );

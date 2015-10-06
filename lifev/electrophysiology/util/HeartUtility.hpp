@@ -321,21 +321,54 @@ inline void setupFibers ( VectorEpetra& fiberVector, Real fx, Real fy, Real fz)
  */
 inline void setValueOnBoundary ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, UInt flag)
 {
+    // New P1 Space
+    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( fullMesh, "P1", 1, fullMesh -> comm() );
     
-    std::cout << "\n\n" << vec.epetraVector().MyLength() << "  " << fullMesh->numPoints() << "  " << fullMesh->storedPoints() << std::endl;
-    //boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > feSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, "P1", 3, comm ) );
-
-    // fetofespace...
-    for ( Int j (0); j < vec.epetraVector().MyLength() ; ++j )
+    // Create P1 VectorEpetra
+    VectorEpetra p1Vector (p1FESpace.map());
+    
+    // Fill P1 vector with values on boundary
+    Int p1nLocalDof = p1Vector.epetraVector().MyLength();
+    for (int j (0); j < p1nLocalDof; j++)
     {
-        if ( fullMesh -> point ( vec.blockMap().GID (j) ).markerID() == flag )
+        if ( fullMesh -> point ( p1Vector.blockMap().GID (j) ).markerID() == flag )
         {
-            if ( vec.blockMap().LID ( vec.blockMap().GID (j) ) != -1 )
+            if ( p1Vector.blockMap().LID ( p1Vector.blockMap().GID (j) ) != -1 )
             {
-                (vec) ( vec.blockMap().GID (j) ) = value;
+                UInt iGID = p1Vector.blockMap().GID (j);
+                p1Vector[iGID] = value;
             }
         }
     }
+    
+    // Interpolate P1-vector from P1-space to current space
+    std::cout << "size:     " << vec.size() << "  " << p1Vector.size() << std::endl;
+    if ( vec.size() == p1Vector.size() )
+    {
+        vec = p1Vector;
+    }
+    else
+    {
+        FESpace<RegionMesh<LinearTetra> , MapEpetra > p2FESpace ( fullMesh, "P2", 1, fullMesh -> comm() );
+        vec = p2FESpace.feToFEInterpolate(p1FESpace, p1Vector);
+    }
+    
+
+    
+    //std::cout << "\n\n" << vec.epetraVector().MyLength() << "  " << fullMesh->numPoints() << "  " << fullMesh->storedPoints() << std::endl;
+    //boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > feSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, "P1", 3, comm ) );
+
+//    // fetofespace...
+//    for ( Int j (0); j < vec.epetraVector().MyLength() ; ++j )
+//    {
+//        if ( fullMesh -> point ( vec.blockMap().GID (j) ).markerID() == flag )
+//        {
+//            if ( vec.blockMap().LID ( vec.blockMap().GID (j) ) != -1 )
+//            {
+//                (vec) ( vec.blockMap().GID (j) ) = value;
+//            }
+//        }
+//    }
 }
 
 
