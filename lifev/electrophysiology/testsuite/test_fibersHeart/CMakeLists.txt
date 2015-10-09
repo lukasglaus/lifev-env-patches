@@ -12,7 +12,7 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
-  SOURCE_FILES dataSingleVentricle dataXVentSingle singleVentricle.mesh xVentSingle.mesh
+  SOURCE_FILES dataSingleVentricle dataXVentSingle singleVentricle.mesh xVentSingle.mesh biVentCoarse.mesh biVentMedium.mesh biVentFine.mesh
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -22,9 +22,10 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(ellipsoidmesh_test_fibers
-  SOURCE_FILES idealized.mesh
-  SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/electrophysiology/data/mesh/
+TRIBITS_COPY_FILES_TO_BINARY_DIR(dataBiVent
+  CREATE_SYMLINK
+  SOURCE_FILES dataBiVent
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 #TRIBITS_COPY_FILES_TO_BINARY_DIR(fibers_test_fibers
