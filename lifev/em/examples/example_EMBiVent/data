@@ -27,12 +27,12 @@ monodomain_xml_file = ParamList.xml
     [../discretization]
     LumpedMass = false // use when too coarse mesh
 
-    elementsOrder   = P1
+    elementsOrder   = P2
 
     [../flags]
-    lvendo = 23
-    # rvedno = 37
-    # rvseptum = 38
+    lvendo = 50
+    # rvedno = 51
+    # rvseptum = 52
 
     [../]
 
@@ -56,8 +56,8 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-        Tmax = 0.1 #2 # Default: 50
-	ActiveStress_Beta = 45.6 #2.279
+    Tmax = 2 #0.1 #2 # Default: 50
+    ActiveStress_Beta = 2.279 #45.6 #2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
         #Active Strain types Available
         # Anisotropic
@@ -129,21 +129,14 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-    list = 'Base Apex'
+    list = 'Base'
     LvPreloadPressure = 5.0
-    numPreloadSteps  = 1
+    numPreloadSteps  = 50
 
-        [./Apex]
+        [./Base]
         type       = Essential
-        flag       = 28
-        mode       = Component
-        component  = '0 2'
-        function   = 0 #'[0.0, 0.0, 0.0]'
-
-        [../Base]
-        type       = Essential
-        flag       = 22
-        mode       = Component
+        flag       = 49
+        mode       = Full
         component  = 1
         function   = 0
 
@@ -163,7 +156,7 @@ monodomain_xml_file = ParamList.xml
             [../]
 
         [../VariableBoundaryConditions]
-        LVFlag = 23
+        LVFlag = 50
         RVFlag = 0
 
         [../]
@@ -171,7 +164,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100.
-    timestep        = 0.5
+    timestep        = 0.2
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2
@@ -179,18 +172,18 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = ./
-    mesh_file           = singleVentricle.mesh
+    mesh_dir            = biVentMedium/
+    mesh_file           = biVentMedium.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P1
+    order               = P2
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = ./
+    fiber_dir           = biVentMedium/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = ./
+    sheet_dir           = biVentMedium/
 
 
     [../miscellaneous]

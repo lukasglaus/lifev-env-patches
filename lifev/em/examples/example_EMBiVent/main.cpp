@@ -148,7 +148,7 @@ int main (int argc, char** argv)
     
     std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
     std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
-
+    
     solver.loadMesh (meshName, meshPath);
     
     if ( comm->MyPID() == 0 )
@@ -381,10 +381,10 @@ int main (int argc, char** argv)
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
     VolumeIntegrator LV (std::vector<int> {50}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
-    //VolumeIntegrator RV (std::vector<int> {37, 38}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace);
+    VolumeIntegrator RV (std::vector<int> {51, 52, 53}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
 
     Real LVVolume = LV.volume(disp, dETFESpace, - 1);
-    //Real RVVolume = RV.volume(disp, dETFESpace, 1);
+    Real RVVolume = RV.volume(disp, dETFESpace, 1);
 
     solver.saveSolution (-1.0);
 
