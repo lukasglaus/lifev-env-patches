@@ -161,6 +161,11 @@ monodomain_xml_file = ParamList.xml
 
         [../]
 
+    [../coupling]
+    pPerturbationFactor     = 1e-3
+    couplingError           = 1e-6
+    couplingFeJacobianIter  = 5
+
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100.
