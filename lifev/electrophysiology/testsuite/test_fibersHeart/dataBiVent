@@ -29,15 +29,14 @@ hdf5_sheets_name       = sheets
 
 
     [./boundary_conditions]
-    list = 'EndocardiumLV Epicardium EndocardiumRV Septum Support Base'
+    list = 'EndocardiumLV Epicardium EndocardiumRV Septum Support Base SeptumEdge'
    
         [./EndocardiumLV]
         type       = Essential
         flag       = 50
         mode       = Full
         component  = 1
-	function  = '0.0'
-
+        function  = '0.0'
 
         [../Epicardium]
         type       = Essential
@@ -72,13 +71,20 @@ hdf5_sheets_name       = sheets
         flag       = 48
         mode       = Full
         component  = 1
-	function  = '0.0'
+        function  = '0.0'
+
+        [../SeptumEdge]
+        type       = Essential
+        flag       = 53
+        mode       = Full
+        component  = 1
+        function  = '0.0'
 
         [../]
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= biVentMedium.mesh
+    mesh_file 	= biVentCoarse.mesh
     elem_type   = P2
   
     [../solver]
