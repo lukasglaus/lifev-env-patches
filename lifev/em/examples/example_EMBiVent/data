@@ -131,7 +131,7 @@ monodomain_xml_file = ParamList.xml
     [../boundary_conditions]
     list = 'Base'
     LvPreloadPressure = 5.0
-    numPreloadSteps  = 50
+    numPreloadSteps  = 10
 
         [./Base]
         type       = Essential
@@ -161,6 +161,12 @@ monodomain_xml_file = ParamList.xml
 
         [../]
 
+    [../coupling]
+    pPerturbationFactor     = 1e-2
+    couplingError           = 1e-6
+    couplingFeJacobianIter  = 5
+    dpMax                   = 5.0
+
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100.
@@ -172,18 +178,18 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentMedium/
-    mesh_file           = biVentMedium.mesh
+    mesh_dir            = biVentCoarse/
+    mesh_file           = biVentCoarse.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
     order               = P2
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = biVentMedium/
+    fiber_dir           = biVentCoarse/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = biVentMedium/
+    sheet_dir           = biVentCoarse/
 
 
     [../miscellaneous]
@@ -206,7 +212,7 @@ monodomain_xml_file = ParamList.xml
     reuse           = true
     max_iter_reuse  = 250
     kspace          = 800
-    tol             = 1.e-10    		# AztecOO tolerance
+    tol             = 1.e-8   # 1.e-10 		# AztecOO tolerance
 
     [../prec]
     prectype        = Ifpack	 		# Ifpack or ML
@@ -217,7 +223,7 @@ monodomain_xml_file = ParamList.xml
         overlap  	= 3
 
             [./fact]
-            ilut_level-of-fill 	= 1
+            ilut_level-of-fill      = 1
             drop_tolerance          = 1.e-5
             relax_value             = 0
 
@@ -226,7 +232,6 @@ monodomain_xml_file = ParamList.xml
 
             [../partitioner]
             overlap 		= 4
-
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none

@@ -19,3 +19,10 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentMedium
   SOURCE_FILES biVentMedium
   SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent/
 )
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentCoarse
+  CREATE_SYMLINK
+  SOURCE_FILES biVentCoarse
+  SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent/
+)
+
