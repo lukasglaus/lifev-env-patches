@@ -14,8 +14,8 @@ TRIBITS_ADD_EXECUTABLE(
    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
  )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentCoarse
-  CREATE_SYMLINK
-  SOURCE_FILES biVentCoarse
-  SOURCE_DIR ${CMAKE_SOURCE_DIR}/../lifev-env/lifev-em-build/lifev/electrophysiology/testsuite/test_fibersHeart/
-)
+#TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentCoarse
+#  CREATE_SYMLINK
+#  SOURCE_FILES biVentCoarse
+#  SOURCE_DIR ${CMAKE_SOURCE_DIR}/../lifev-env/lifev-em-build/lifev/electrophysiology/testsuite/test_fibersHeart/
+#)
