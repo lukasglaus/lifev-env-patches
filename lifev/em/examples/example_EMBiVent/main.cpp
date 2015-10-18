@@ -400,6 +400,13 @@ int main (int argc, char** argv)
     Real LVVolume = LV.volume(disp, dETFESpace, - 1);
     Real RVVolume = RV.volume(disp, dETFESpace, 1);
 
+    std::vector<double> VCirc { LV.volume(disp, dETFESpace, - 1) };
+    std::vector<double> VCircNew (VCirc);
+    std::vector<double> VCircPert (VCirc);
+    std::vector<double> VFe (VCirc);
+    std::vector<double> VFeNew (VFe);
+    std::vector<double> VFePert (VFe);
+
     
     //============================================//
     // Preload
@@ -442,13 +449,6 @@ int main (int argc, char** argv)
     Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
     UInt couplingFeJacobianIter = dataFile ( "solid/coupling/couplingFeJacobianIter", 5 );
     Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
-
-    std::vector<double> VCirc { LV.volume(disp, dETFESpace, - 1) };
-    std::vector<double> VCircNew (VCirc);
-    std::vector<double> VCircPert (VCirc);
-    std::vector<double> VFe (VCirc);
-    std::vector<double> VFeNew (VFe);
-    std::vector<double> VFePert (VFe);
 
     Real t = 0.;
     solver.saveSolution (t);
