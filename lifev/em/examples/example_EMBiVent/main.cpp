@@ -535,7 +535,7 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian fe
                 //============================================//
-                if ( ! (iter - couplingFeJacobianStart) % couplingFeJacobianIter || k == saveIter )
+                if ( ! (iter - couplingFeJacobianStart) % couplingFeJacobianIter || Jfe == 0 )
                 {
                     modifyBC(LVFlag, pLvBCVectorPtr, pLvVectorPtr, (bcValues.at(0) + pPerturbation));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
