@@ -494,7 +494,7 @@ int main (int argc, char** argv)
         if ( k % saveIter == 0 )
         {
             iter = 0;
-            long double dt_circulation ( dt_mechanics / 1000 );
+            const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
             //============================================//
@@ -510,13 +510,10 @@ int main (int argc, char** argv)
             // Solve circlation
             //============================================//
             circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
-            if ( k == saveIter ) VCirc.at(0) = VFeNew.at(0) - 0.1 * dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+            if ( k == saveIter ) VCirc.at(0) = VFeNew.at(0); // + 0.1;
             VCircNew.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             
             printCoupling("Residual Computation");
-            
-            
-            std::cout << std::endl << VCirc.at(0) << " " << dt_circulation << " " << Q("la", "lv") << VCircNew.at(0) << " " << VCircPert.at(0) << " " << pPerturbation << " " << Jcirc << std::endl;
             
             //============================================//
             // Newton iterations
@@ -535,8 +532,6 @@ int main (int argc, char** argv)
                 
                 Jcirc = ( VCircPert.at(0) - VCircNew.at(0) ) / pPerturbation;
                 
-                std::cout << std::endl << VCirc.at(0) << " " << dt_circulation << " " << Q("la", "lv") << " " << VCircNew.at(0) << " " << VCircPert.at(0) << " " << pPerturbation << " " << Jcirc << std::endl;
-                
                 //============================================//
                 // Jacobian fe
                 //============================================//
@@ -554,7 +549,7 @@ int main (int argc, char** argv)
                 // Update pressure b.c.
                 //============================================//
                 J = Jfe - Jcirc;
-                bcValues.at(0) += - std::min( std::max( std::pow(J, -1) * (VFeNew.at(0) - VCircNew.at(0)) , - dpMax ) , dpMax );
+                bcValues.at(0) += - std::min( std::max( (J == 0 ? 0 : std::pow(J, -1)) * (VFeNew.at(0) - VCircNew.at(0)) , - dpMax ) , dpMax );
                 bcValues.at(1) = std::max( bcValues.at(0) / 6 , 5.0 );
                 
                 printCoupling("Pressure Update");
