@@ -162,7 +162,8 @@ monodomain_xml_file = ParamList.xml
         [../]
 
     [../coupling]
-    pPerturbation           = 1e-3
+    pPerturbationFe         = 1e-2
+    pPerturbationCirc       = 1e-3
     couplingError           = 1e-6
     couplingFeJacobianStart = 2
     couplingFeJacobianIter  = 5
