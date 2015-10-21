@@ -129,14 +129,21 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-    list = 'Base'
+    list = 'Support Base'
     LvPreloadPressure = 5.0
     numPreloadSteps  = 1
 
-        [./Base]
+        [./Support]
         type       = Essential
         flag       = 49
         mode       = Full
+        component  = 1
+        function   = 0
+
+        [../Base]
+        type       = Essential
+        flag       = 49
+        mode       = Component
         component  = 1
         function   = 0
 
