@@ -427,7 +427,7 @@ int main (int argc, char** argv)
     
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() ) {
         std::cout << "\n******************** Coupling: " << label << " *********************";
-        std::cout << "\Newton iteration nr. " << iter " at time " << t;
+        std::cout << "\Newton iteration nr. " << iter << " at time " << t;
         std::cout << "\nPressure: " << bcValues.at(0);
         std::cout << "\nFE-Volume (Current - Pert - New - J): \t" << VFe.at(0) << "\t" << VFePert.at(0) << "\t" << VFeNew.at(0) << "\t" << Jfe;
         std::cout << "\nCirculation-Volume (Current - Pert - New - J): \t" << VCirc.at(0) << "\t" << VCircPert.at(0) << "\t" << VCircNew.at(0) << "\t" << Jcirc;
