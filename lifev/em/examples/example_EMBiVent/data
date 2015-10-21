@@ -142,7 +142,7 @@ monodomain_xml_file = ParamList.xml
 
         [../Base]
         type       = Essential
-        flag       = 49
+        flag       = 48
         mode       = Component
         component  = 1
         function   = 0
