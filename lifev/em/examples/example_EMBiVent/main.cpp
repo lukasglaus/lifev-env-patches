@@ -426,13 +426,13 @@ int main (int argc, char** argv)
     Real t (0), J (0), Jfe (0), Jcirc (0);
     
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() ) {
-        std::cout << "\n******************** Coupling: " << label << " *********************";
-        std::cout << "\Newton iteration nr. " << iter << " at time " << t;
+        std::cout << "\n*************************** Coupling: " << label << " ****************************";
+        std::cout << "\nNewton iteration nr. " << iter << " at time " << t;
         std::cout << "\nPressure: " << bcValues.at(0);
-        std::cout << "\nFE-Volume (Current - Pert - New - J): \t" << VFe.at(0) << "\t" << VFePert.at(0) << "\t" << VFeNew.at(0) << "\t" << Jfe;
+        std::cout << "\nFE-Volume (Current - Pert - New - J): \t\t" << VFe.at(0) << "\t" << VFePert.at(0) << "\t" << VFeNew.at(0) << "\t" << Jfe;
         std::cout << "\nCirculation-Volume (Current - Pert - New - J): \t" << VCirc.at(0) << "\t" << VCircPert.at(0) << "\t" << VCircNew.at(0) << "\t" << Jcirc;
         std::cout << "\nResidual = " << std::abs(VFeNew.at(0) - VCircNew.at(0));
-        std::cout << "\n******************** Coupling: " << label << " *********************\n\n"; }
+        std::cout << "\n*************************** Coupling: " << label << " ****************************\n\n"; }
     };
     
     
@@ -527,8 +527,6 @@ int main (int argc, char** argv)
                 VCircPert.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 
                 Jcirc = ( VCircPert.at(0) - VCircNew.at(0) ) / pPerturbationCirc;
-
-                printCoupling("JCirc");
                 
                 //============================================//
                 // Jacobian fe
@@ -543,8 +541,6 @@ int main (int argc, char** argv)
                     Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / pPerturbationFe;
                 }
                 
-                printCoupling("Jfe");
-
                 //============================================//
                 // Update pressure b.c.
                 //============================================//
@@ -580,7 +576,7 @@ int main (int argc, char** argv)
             }
             
             //============================================//
-            // Set volumes equal to new ones
+            // Update volume variables
             //============================================//
             VCirc = VCircNew;
             VFe = VFeNew;
