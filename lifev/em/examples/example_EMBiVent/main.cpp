@@ -535,8 +535,11 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian fe
                 //============================================//
+                std::cout << "\n******************************************************************************************\n" << Jfe << std::endl;
+
                 if ( ! (iter - couplingFeJacobianStart) % couplingFeJacobianIter || Jfe == 0 )
                 {
+                    std::cout << "\n******************************************************************************************\n" << Jfe << std::endl;
                     modifyBC(LVFlag, pLvBCVectorPtr, pLvVectorPtr, (bcValues.at(0) + pPerturbation));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanics();
