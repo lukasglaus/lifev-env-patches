@@ -531,7 +531,8 @@ int main (int argc, char** argv)
                 VCircPert.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 
                 Jcirc = ( VCircPert.at(0) - VCircNew.at(0) ) / pPerturbation;
-                
+                std::cout << "\n------------------------------\n" << Jcirc << "  " << VCirc.at(0) << "  " << VCircPert.at(0) << "  " << VCircNew.at(0) << std::endl;
+
                 //============================================//
                 // Jacobian fe
                 //============================================//
@@ -548,6 +549,8 @@ int main (int argc, char** argv)
                     Jfe = ( VFePert.at(0) - VFeNew.at(0) ) / pPerturbation;
                 }
                 
+                std::cout << "\n------------------------------\n" << Jfe << "  " << VFe.at(0) << "  " << VFePert.at(0) << "  " << VFeNew.at(0) << std::endl;
+
                 //============================================//
                 // Update pressure b.c.
                 //============================================//
