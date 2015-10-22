@@ -467,8 +467,11 @@ int main (int argc, char** argv)
     // Time loop
     //============================================//
     
-    solver.saveSolution (t);
+    VFe.at(0) = LV.volume(disp, dETFESpace, - 1);
+    VCirc.at(0) = VFe.at(0);
 
+    solver.saveSolution (t);
+    
     for (int k (1); k <= maxiter; k++)
     {
         if ( 0 == comm->MyPID() )
@@ -506,7 +509,6 @@ int main (int argc, char** argv)
             // Solve circlation
             //============================================//
             circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
-            if ( k == saveIter ) VCirc.at(0) = VFeNew.at(0); // + 0.1;
             VCircNew.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             
             printCoupling("Residual Computation");
@@ -521,7 +523,7 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian circulation
                 //============================================//
-                std::vector<double> bcValuesPert { (bcValues.at(0)+ pPerturbationCirc) , bcValues.at(1) };
+                std::vector<double> bcValuesPert { (bcValues.at(0) + pPerturbationCirc) , bcValues.at(1) };
                 std::vector<double> VCircPert (1);
                 circulationSolver.iterate(dt_circulation, bcNames, bcValuesPert, iter);
                 VCircPert.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
@@ -531,7 +533,7 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian fe
                 //============================================//
-                if ( ! (iter - couplingFeJacobianStart) % couplingFeJacobianIter || Jfe == 0 )
+                if ( ( ! ( (iter - couplingFeJacobianStart) % couplingFeJacobianIter) && iter >= couplingFeJacobianStart ) || Jfe == 0 )
                 {
                     modifyBC(LVFlag, pLvBCVectorPtr, pLvVectorPtr, (bcValues.at(0) + pPerturbationFe));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();

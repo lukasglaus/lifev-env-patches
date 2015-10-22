@@ -173,7 +173,7 @@ monodomain_xml_file = ParamList.xml
     pPerturbationCirc       = 1e-3
     couplingError           = 1e-6
     couplingFeJacobianStart = 2
-    couplingFeJacobianIter  = 5
+    couplingFeJacobianIter  = 1
     dpMax                   = 5.0
 
     [../time_discretization]
