@@ -143,9 +143,9 @@ monodomain_xml_file = ParamList.xml
         [../Base]
         type       = Essential
         flag       = 48
-        mode       = Component
-        component  = 1
-        function   = '0.0'
+mode       = Full
+component  = 3
+function  = '[0.0, 0.0, 0.0]'
 
         [../BaseRobin]
         type       = Robin
