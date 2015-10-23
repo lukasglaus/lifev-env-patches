@@ -137,15 +137,15 @@ monodomain_xml_file = ParamList.xml
         type       = Essential
         flag       = 49
         mode       = Full
-        component  = 1
-        function   = 0
+        component  = 3
+        function  = '[0.0, 0.0, 0.0]'
 
         [../Base]
         type       = Essential
         flag       = 48
         mode       = Component
         component  = 1
-        function   = 0
+        function   = '0.0'
 
         [../BaseRobin]
         type       = Robin
@@ -179,7 +179,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100.
-    timestep        = 0.2
+    timestep        = 1.0
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2
