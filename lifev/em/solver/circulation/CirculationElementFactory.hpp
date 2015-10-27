@@ -229,7 +229,13 @@ public:
 class Diode : public Element {
 public:
     
-    using Element::Element;
+    // using Element::Element;
+    
+    Diode(const std::vector<std::string>& nodes,
+          const std::vector<double>& param) :
+        Element ( nodes , param ),
+        M_time  ( 0.0 )
+    {}
     
     virtual const double rhs(const std::vector<double>& u, const double& time)
     {
@@ -267,7 +273,7 @@ public:
     
     virtual const double Dp(const double& dp) const
     {
-        return M_param[1] * std::pow(M_timestep, 2) * (dp == 0 ? 1.0 : dp / std::abs(dp)) + 2 * M_Dprev0 - M_Dprev1;
+        return M_param[1] * std::pow(M_timestep, 2) * (dp == 0 ? 0.0 : dp / std::abs(dp)) + 2 * M_Dprev0 - M_Dprev1;
     }
     
     virtual const double Du(const double& dp) const
@@ -311,6 +317,7 @@ protected:
     double M_time;
     double M_timestep;
     
+    bool M_initialized;
     double M_D;
     double M_Dprev0;
     double M_Dprev1;

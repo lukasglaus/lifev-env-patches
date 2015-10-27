@@ -334,15 +334,11 @@ int main (int argc, char** argv)
 
     Circulation circulationSolver( circulationInputFile );
     if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
-
-    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
-    std::vector<double> bcValues ( 2 , 5 );
-  
     
     // Flow rate between two vertices
     auto Q = [&circulationSolver] (const std::string& N1, const std::string& N2) { return circulationSolver.solution ( std::vector<std::string> {N1, N2} ); };
     auto p = [&circulationSolver] (const std::string& N1) { return circulationSolver.solution ( N1 ); };
-
+    
     
     //============================================//
     // Kept-normal boundary conditions
@@ -359,8 +355,10 @@ int main (int argc, char** argv)
     // Modifiable-value boundary condition
     //============================================//
 
-    ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 0 );
-    ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 0 );
+    ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 50 );
+    ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 51 );
+    ID SeptumFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 52 );
+    ID RadiiFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 53 );
     
     vectorPtr_Type pLvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
     vectorPtr_Type pRvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
@@ -370,6 +368,8 @@ int main (int argc, char** argv)
 
     solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr);
     solver.bcInterfacePtr() -> handler() -> addBC("RvPressure", RVFlag, Natural, Normal, *pRvBCVectorPtr);
+    solver.bcInterfacePtr() -> handler() -> addBC("SeptumPressure", SeptumFlag, Natural, Normal, *pRvBCVectorPtr);
+    solver.bcInterfacePtr() -> handler() -> addBC("RadiiPressure", RadiiFlag, Natural, Normal, *pRvBCVectorPtr);
 
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
@@ -394,8 +394,8 @@ int main (int argc, char** argv)
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    VolumeIntegrator LV (std::vector<int> {50}, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
-    VolumeIntegrator RV (std::vector<int> {51, 52, 53}, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
+    VolumeIntegrator LV (std::vector<int> { LVFlag }, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
+    VolumeIntegrator RV (std::vector<int> { RVFlag , SeptumFlag , RadiiFlag }, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
 
     
     //============================================//
@@ -414,6 +414,9 @@ int main (int argc, char** argv)
     UInt couplingFeJacobianIter = dataFile ( "solid/coupling/couplingFeJacobianIter", 5 );
     UInt couplingFeJacobianStart = dataFile ( "solid/coupling/couplingFeJacobianStart", 1 );
     Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
+    
+    std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
+    std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     
     std::vector<double> VCirc { LV.volume(disp, dETFESpace, - 1) };
     std::vector<double> VCircNew (VCirc);
