@@ -456,8 +456,8 @@ public:
                 break;
             case 2:
                 cofactor[0][0] =   M_coords[1][1];
-                cofactor[0][1] = - M_coords[0][1];
-                cofactor[1][0] = - M_coords[1][0];
+                cofactor[0][1] = - M_coords[1][0];
+                cofactor[1][0] = - M_coords[0][1];
                 cofactor[1][1] =   M_coords[0][0];
                 break;
             case 3:
@@ -519,6 +519,32 @@ public:
         minusT *= 1.0 / det;
 
         return minusT;
+    }
+
+    
+    //! This method
+    //! In this method, which is based on cofactor and determinant,
+    //! given a matrix, its inverse is computed explicitly
+    //! for matrices of dimensions 1 2 3
+    //! This method is mainly used for structural problems.
+    /*!
+     @return inverse of the matrix
+     */
+    MatrixSmall<Dim1, Dim2> inverse() const
+    {
+        ASSERT ( Dim2 == Dim1, "This method is based on the cofactor and determinant methods which are defined only for squared matrices!");
+        
+        //Create the matrix to store the cofactor and inverse
+        //In this case it is a copy of the current matrix
+        MatrixSmall<Dim1, Dim2> cof (*this);
+        MatrixSmall<Dim1, Dim2> inv (*this);
+
+        Real det = this->determinant();
+
+        cof = this->cofactor();
+        inv = this->transpose() / det;
+        
+        return inv;
     }
 
 

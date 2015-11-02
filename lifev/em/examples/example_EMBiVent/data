@@ -130,7 +130,6 @@ monodomain_xml_file = ParamList.xml
 
     [../boundary_conditions]
     list = 'Support Base'
-    LvPreloadPressure = 5.0
     numPreloadSteps  = 1
 
         [./Support]
@@ -176,7 +175,7 @@ monodomain_xml_file = ParamList.xml
     couplingError           = 1e-6
     couplingFeJacobianStart = 2
     couplingFeJacobianIter  = 1
-    dpMax                   = 5.0
+    dpMax                   = 1.0
 
     [../time_discretization]
     initialtime 	= 0.

@@ -214,10 +214,9 @@ public:
 
         }
 
-        
-        std::cout << "\n Length: " << positionVector.epetraVector().MyLength() << "  " << (*intergral).epetraVector().MyLength() << std::cout;
-        std::cout << "\n Norm: " << positionVector.norm2() << "  " << (*intergral).norm2() << std::cout;
-
+//        std::cout << "bdFlag: " << bdFlag << std::endl;
+//        std::cout << "\n Length: " << positionVector.epetraVector().MyLength() << "  " << (*intergral).epetraVector().MyLength() << std::endl;
+//        std::cout << "\n Norm: " << positionVector.norm2() << "  " << (*intergral).norm2() << std::endl;
 
         return positionVector.dot (*intergral);
     }
@@ -230,7 +229,7 @@ public:
                       const unsigned int component = 0)
     {
         const boost::shared_ptr<Epetra_Comm> comm = M_fullMesh.comm();
-
+        
         // Compute volume over boundary
         Real volumeBoundary (0);
         for ( auto& bdFlag : M_bdFlags )
@@ -246,11 +245,11 @@ public:
         
         if (comm->MyPID() == 0)
         {
-            std::cout << "\n\n=================================================================\n";
+            std::cout << "\n\n===================================================================\n";
             std::cout << "Volume (integration over boundary) in " << M_domain << ": \t" << volumeBoundary << std::endl;
             std::cout << "Volume (open-end) in " << M_domain << ": \t" << volumeOpenEnd << std::endl;
             std::cout << "Volume (total) in " << M_domain << ": \t" << totalVolume << std::endl;
-            std::cout << "=================================================================\n\n";
+            std::cout << "===================================================================\n\n";
         }
         
         return totalVolume;
