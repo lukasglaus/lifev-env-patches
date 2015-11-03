@@ -129,8 +129,8 @@ ActiveStress_Beta = 22.79 #2.279 #45.6 #2.279
 
 
     [../boundary_conditions]
-    list = 'Support Base'
-    #list = 'BaseNormal BaseRobin'
+#list = 'Support Base'
+list = 'BaseNormal BaseRobin'
     numPreloadSteps  = 1
 
         [./Support]
@@ -154,19 +154,19 @@ ActiveStress_Beta = 22.79 #2.279 #45.6 #2.279
         component  = 1
         function  = '0.0'
 
-
         [../BaseRobin]
         type       = Robin
         flag       = 48
         mode       = Component
         component  = '0 2'
-        functionSD = RobinWall
+        #functionSD = RobinWall
+        function = '0.0'
 
             [./RobinAlpha]
             function = '1' #' 5.00 * 1000' # D
 
             [../RobinBeta]
-            function = '0' #' 5.00 * 1000' # D
+            function = '1' #' 5.00 * 1000' # D
 
             [../]
 
