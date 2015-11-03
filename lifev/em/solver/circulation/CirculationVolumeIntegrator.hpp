@@ -32,7 +32,7 @@ public:
     {
         if ( M_fullMesh.comm()->MyPID() == 0 )
         {
-            std::cout << "Volume integrator " << M_domain << " created." << std::endl;
+            std::cout << "\nVolume integrator " << M_domain << " created." << std::endl;
         }
        
         initialize();
