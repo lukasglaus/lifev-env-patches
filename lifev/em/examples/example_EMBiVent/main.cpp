@@ -50,7 +50,7 @@ using namespace LifeV;
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return ( Y > 1.5 && Y < 3 /*std::abs(X) < 1 && std::abs(Z-3) < 1 && Y < 0*/ /*&& Y < 0.25 && Z < 0.25 */ && t < 7 && t > 5 ? 30 : 0 );
+    return ( Y > 1.5 && Y < 3 /*std::abs(X) < 1 && std::abs(Z-3) < 1 && Y < 0*/ /*&& Y < 0.25 && Z < 0.25 */ && ( (t < 7 && t > 5) ||  (t < 807 && t > 805) ) ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
 
