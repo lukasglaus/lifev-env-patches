@@ -390,10 +390,10 @@ int main (int argc, char** argv)
     
     auto modifyFeBC = [&] (const std::vector<Real>& bcVal)
     {
-        modifyBC(LVFlag, pLvBCVectorPtr, pLvVectorPtr, bcVal.at(0));
-        modifyBC(RVFlag, pRvBCVectorPtr, pRvVectorPtr, bcVal.at(1));
-        modifyBC(SeptumFlag, pSeBCVectorPtr, pSeVectorPtr, bcVal.at(1));
-        modifyBC(RadiiFlag, pRaBCVectorPtr, pRaVectorPtr, bcVal.at(1));
+        modifyBC(LVFlag, pLvBCVectorPtr, pLvVectorPtr, bcVal[0]);
+        modifyBC(RVFlag, pRvBCVectorPtr, pRvVectorPtr, bcVal[1]);
+        modifyBC(SeptumFlag, pSeBCVectorPtr, pSeVectorPtr, bcVal[1]);
+        modifyBC(RadiiFlag, pRaBCVectorPtr, pRaVectorPtr, bcVal[1]);
     };
 
 
@@ -430,17 +430,8 @@ int main (int argc, char** argv)
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     
-    std::vector<double> VCirc { LV.volume(disp, dETFESpace, - 1) , RV.volume(disp, dETFESpace, - 1) };
-    std::vector<double> VCircNew (VCirc);
-    std::vector<double> VCircPert (VCirc);
-    std::vector<double> VFe (VCirc);
-    std::vector<double> VFeNew (VFe);
-    std::vector<double> VFePert (VFe);
-
-    std::vector<double> J {0 , 0}, Jfe {0 , 0}, Jcirc {0 , 0};
-    MatrixSmall<2,2> Jms;
-    double Jfelvrv = 0;
-    double Jfervlv = 0;
+    VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R;
+    MatrixSmall<2,2> JFe, JCirc, JR;
 
     UInt iter;
     Real t (0);
@@ -448,14 +439,14 @@ int main (int argc, char** argv)
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() ) {
         std::cout << "\n****************************** Coupling: " << label << " *******************************";
         std::cout << "\nNewton iteration nr. " << iter << " at time " << t;
-        std::cout << "\nLV - Pressure: " << bcValues.at(0);
-        std::cout << "\nLV - FE-Volume (Current - Pert - New - J): \t\t" << VFe.at(0) << "\t" << VFePert.at(0) << "\t" << VFeNew.at(0) << "\t" << Jfe[0] << "\t" << Jfelvrv;
-        std::cout << "\nLV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc.at(0) << "\t" << VCircPert.at(0) << "\t" << VCircNew.at(0) << "\t" << Jcirc[0];
-        std::cout << "\nLV - Residual = " << std::abs(VFeNew.at(0) - VCircNew.at(0));
-        std::cout << "\nRV - Pressure: " << bcValues.at(1);
-        std::cout << "\nRV - FE-Volume (Current - Pert - New - J): \t\t" << VFe.at(1) << "\t" << VFePert.at(1) << "\t" << VFeNew.at(1) << "\t" << Jfe[1] << "\t" << Jfervlv;
-        std::cout << "\nRV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc.at(1) << "\t" << VCircPert.at(1) << "\t" << VCircNew.at(1) << "\t" << Jcirc[1];
-        std::cout << "\nRV - Residual = " << std::abs(VFeNew.at(1) - VCircNew.at(1));
+        std::cout << "\nLV - Pressure: " << bcValues[0];
+        std::cout << "\nLV - FE-Volume (Current - Pert - New - J): \t\t" << VFe[0] << "\t" << VFePert[0] << "\t" << VFeNew[0];
+        std::cout << "\nLV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc[0] << "\t" << VCircPert[0] << "\t" << VCircNew[0];
+        std::cout << "\nLV - Residual = " << std::abs(VFeNew[0] - VCircNew[0]);
+        std::cout << "\nRV - Pressure: " << bcValues[1];
+        std::cout << "\nRV - FE-Volume (Current - Pert - New - J): \t\t" << VFe[1] << "\t" << VFePert[1] << "\t" << VFeNew[1];
+        std::cout << "\nRV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc[1] << "\t" << VCircPert[1] << "\t" << VCircNew[1];
+        std::cout << "\nRV - Residual = " << std::abs(VFeNew[1] - VCircNew[1]);
         std::cout << "\n****************************** Coupling: " << label << " *******************************\n\n"; }
     };
     
@@ -495,8 +486,8 @@ int main (int argc, char** argv)
     // Time loop
     //============================================//
     
-    VFe.at(0) = LV.volume(disp, dETFESpace, - 1);
-    VFe.at(1) = RV.volume(disp, dETFESpace, 1);
+    VFe[0] = LV.volume(disp, dETFESpace, - 1);
+    VFe[1] = RV.volume(disp, dETFESpace, 1);
     VCirc = VFe;
     
     auto perturbedPressure = [] (std::vector<double> p, const double& dp)
@@ -544,22 +535,22 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
-            VFeNew.at(0) = LV.volume(disp, dETFESpace, - 1);
-            VFeNew.at(1) = RV.volume(disp, dETFESpace, 1);
+            VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
+            VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
             //============================================//
             // Solve circlation
             //============================================//
             circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
-            VCircNew.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-            VCircNew.at(1) = VCirc.at(1) + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+            VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+            VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
             printCoupling("Residual Computation");
             
             //============================================//
             // Newton iterations
             //============================================//
-            while ( ! circulationSolver.coupling().converged(VFeNew, VCircNew, couplingError) )
+            while ( ( VFeNew - VCircNew ).norm() > couplingError )
             {
                 ++iter;
                 
@@ -567,18 +558,19 @@ int main (int argc, char** argv)
                 // Jacobian circulation
                 //============================================//
                 circulationSolver.iterate(dt_circulation, bcNames, perturbedPressure(bcValues, pPerturbationCirc), iter);
-                VCircPert.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-                VCircPert.at(1) = VCirc.at(1) + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+                VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+                VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
-                Jcirc[0] = ( VCircPert.at(0) - VCircNew.at(0) ) / pPerturbationCirc;
-                Jcirc[1] = ( VCircPert.at(1) - VCircNew.at(1) ) / pPerturbationCirc;
+                JCirc(0,0) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
+                JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
                 
                 //============================================//
                 // Jacobian fe
                 //============================================//
 
-                if ( ( ! ( (iter - couplingFeJacobianStart) % couplingFeJacobianIter) && iter >= couplingFeJacobianStart ) || Jfe[0] == 0 || Jfe[1] == 0 )
+                if ( ( ! ( (iter - couplingFeJacobianStart) % couplingFeJacobianIter) && iter >= couplingFeJacobianStart ) || JFe.norm() == 0 )
                 {
+                    JFe *= 0.0;
                     bool mixed ( false );
                     if ( mixed )
                     {
@@ -587,22 +579,22 @@ int main (int argc, char** argv)
                         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                         solver.solveMechanics();
                         
-                        VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
-                        VFePert.at(1) = RV.volume(disp, dETFESpace, 1);
+                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
 
-                        Jfe[0] = ( VFePert.at(0) - VFeNew.at(0) ) / pPerturbationFe;
-                        Jfervlv = ( VFePert.at(1) - VFeNew.at(1) ) / pPerturbationFe;
+                        JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                        JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                         
                         // Right ventricle
                         modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
                         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                         solver.solveMechanics();
                         
-                        VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
-                        VFePert.at(1) = RV.volume(disp, dETFESpace, 1);
+                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
                         
-                        Jfelvrv = ( VFePert.at(0) - VFeNew.at(0) ) / pPerturbationFe;
-                        Jfe[1] = ( VFePert.at(1) - VFeNew.at(1) ) / pPerturbationFe;
+                        JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                        JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                     }
                     else
                     {
@@ -610,33 +602,25 @@ int main (int argc, char** argv)
                         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                         solver.solveMechanics();
                         
-                        VFePert.at(0) = LV.volume(disp, dETFESpace, - 1);
-                        VFePert.at(1) = RV.volume(disp, dETFESpace, 1);
+                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
                         
-                        Jfe[0] = ( VFePert.at(0) - VFeNew.at(0) ) / pPerturbationFe;
-                        Jfe[1] = ( VFePert.at(1) - VFeNew.at(1) ) / pPerturbationFe;
+                        JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                        JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                     }
                 }
                 
                 //============================================//
                 // Update pressure b.c.
                 //============================================//
-                const double a = Jfe[0] - Jcirc[0];
-                const double b = Jfelvrv;
-                const double c = Jfervlv;
-                const double d = Jfe[1] - Jcirc[1];
-                const double detJ = a*d - b*c;
-                
-                const double Rlv = VFeNew.at(0) - VCircNew.at(0);
-                const double Rrv = VFeNew.at(1) - VCircNew.at(1);
-                
-                if ( detJ != 0 )
-                {
-                    const double dpLv = ( d * Rlv - b * Rrv ) / detJ;
-                    const double dpRv = ( -c * Rlv + a * Rrv ) / detJ;
+                R = VFeNew - VCircNew;
+                JR = JFe - JCirc;
 
-                    bcValues.at(0) += - std::min( std::max( dpLv , - dpMax ) , dpMax );
-                    bcValues.at(1) += - std::min( std::max( dpRv , - dpMax ) , dpMax );
+                if ( JR.determinant() != 0 )
+                {
+                    auto dp ( JR | R );
+                    bcValues[0] -= std::min( std::max( dp(0) , - dpMax ) , dpMax );
+                    bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
                 }
                 
                 printCoupling("Pressure Update");
@@ -645,8 +629,8 @@ int main (int argc, char** argv)
                 // Solve circulation
                 //============================================//
                 circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
-                VCircNew.at(0) = VCirc.at(0) + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-                VCircNew.at(1) = VCirc.at(1) + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+                VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+                VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
                 //============================================//
                 // Solve mechanics
@@ -655,8 +639,8 @@ int main (int argc, char** argv)
                 solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                 solver.solveMechanics();
                 
-                VFeNew.at(0) = LV.volume(disp, dETFESpace, - 1);
-                VFeNew.at(1) = RV.volume(disp, dETFESpace, 1);
+                VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
+                VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
                 printCoupling("Residual Update");
             }

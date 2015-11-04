@@ -542,11 +542,18 @@ public:
         Real det = this->determinant();
 
         cof = this->cofactor();
-        inv = this->transpose() / det;
+        inv = cof.transpose() / det;
         
         return inv;
     }
 
+    //! Operator | (solvel linear system)
+    template <typename Vector>
+    VectorSmall<Dim2> operator| ( Vector const& vec ) const
+    {
+        VectorSmall<Dim2> rhs = castToVectorSmall <Dim2> ( vec );
+        return (*this).inverse() * rhs;
+    }
 
     Real trace() const
     {
