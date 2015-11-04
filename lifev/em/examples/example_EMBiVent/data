@@ -129,8 +129,8 @@ ActiveStress_Beta = 22.79 #2.279 #45.6 #2.279
 
 
     [../boundary_conditions]
-list = 'Support Base'
-#list = 'BaseNormal BaseRobin'
+#list = 'Support Base'
+list = 'BaseNormal BaseRobin'
     numPreloadSteps  = 1
 
         [./Support]
