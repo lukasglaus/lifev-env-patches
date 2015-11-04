@@ -50,7 +50,9 @@ using namespace LifeV;
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return ( Y > 1.5 && Y < 3 /*std::abs(X) < 1 && std::abs(Z-3) < 1 && Y < 0*/ /*&& Y < 0.25 && Z < 0.25 */ && ( (t < 7 && t > 5) ||  (t < 807 && t > 805) ) ? 30 : 0 );
+    bool coords ( Y > 1.5 && Y < 3 );
+    bool time ( (t < 7 && t > 5) ||  (t < 807 && t > 805) );
+    return ( coords && time ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
 
@@ -423,8 +425,11 @@ int main (int argc, char** argv)
     Real pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
     Real pPerturbationCirc = dataFile ( "solid/coupling/pPerturbationCirc", 1e-3 );
     Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
-    UInt couplingFeJacobianIter = dataFile ( "solid/coupling/couplingFeJacobianIter", 5 );
-    UInt couplingFeJacobianStart = dataFile ( "solid/coupling/couplingFeJacobianStart", 1 );
+    UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
+    UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
+    UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
+    std::string couplingJFeMethod = dataFile ( "solid/coupling/couplingJFeMethod", "mixed" );
+
     Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
     
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
@@ -581,11 +586,17 @@ int main (int argc, char** argv)
                 // Jacobian fe
                 //============================================//
 
-                if ( ( ! ( k % (10 * saveIter) ) ) || ( ! ( (iter - couplingFeJacobianStart) % couplingFeJacobianIter) && iter >= couplingFeJacobianStart ) || JFe.norm() == 0 )
+                bool jFeIter ( ! ( k % (couplingJFeIter * saveIter) ) );
+                bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
+                bool jFeEmpty ( JFe.norm() == 0 );
+                
+                std::cout << "\n\n------- " << jFeIter << " " << jFeSubIter << " " << jFeEmpty << std::endl << std::endl;
+                
+                if ( jFeIter || jFeSubIter || jFeEmpty )
                 {
                     JFe *= 0.0;
-                    bool mixed ( true );
-                    if ( mixed )
+
+                    if ( couplingJFeMethod == "mixed" )
                     {
                         // Left ventricle
                         modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
@@ -609,7 +620,7 @@ int main (int argc, char** argv)
                         JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
                         JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                     }
-                    else
+                    else if ( couplingJFeMethod == "diagonal" )
                     {
                         modifyFeBC(perturbedPressure(bcValues, pPerturbationFe));
                         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
@@ -661,7 +672,7 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n******************************************";
-                std::cout << "\nCoupling converged after " << iter << " iterations";
+                std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
                 std::cout << "\n******************************************\n\n";
             }
             
