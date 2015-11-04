@@ -447,6 +447,9 @@ int main (int argc, char** argv)
         std::cout << "\nRV - FE-Volume (Current - Pert - New - J): \t\t" << VFe[1] << "\t" << VFePert[1] << "\t" << VFeNew[1];
         std::cout << "\nRV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc[1] << "\t" << VCircPert[1] << "\t" << VCircNew[1];
         std::cout << "\nRV - Residual = " << std::abs(VFeNew[1] - VCircNew[1]);
+        std::cout << "\nJFe   = " << JFe;
+        std::cout << "\nJCirc = " << JCirc;
+        std::cout << "\nJR    = " << JR;
         std::cout << "\n****************************** Coupling: " << label << " *******************************\n\n"; }
     };
     
@@ -557,21 +560,31 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian circulation
                 //============================================//
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressure(bcValues, pPerturbationCirc), iter);
+                
+                // Left ventricle
+                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 0), iter);
                 VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
                 JCirc(0,0) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
+                JCirc(1,0) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
+                
+                // Right ventricle
+                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 1), iter);
+                VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+                VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+                
+                JCirc(0,1) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
                 JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
                 
                 //============================================//
                 // Jacobian fe
                 //============================================//
 
-                if ( ( ! ( (iter - couplingFeJacobianStart) % couplingFeJacobianIter) && iter >= couplingFeJacobianStart ) || JFe.norm() == 0 )
+                if ( ( ! ( k % (10 * saveIter) ) ) || ( ! ( (iter - couplingFeJacobianStart) % couplingFeJacobianIter) && iter >= couplingFeJacobianStart ) || JFe.norm() == 0 )
                 {
                     JFe *= 0.0;
-                    bool mixed ( false );
+                    bool mixed ( true );
                     if ( mixed )
                     {
                         // Left ventricle
