@@ -378,23 +378,17 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
 
-    auto modifyBC = [&solver] (const UInt& bcFlag, bcVectorPtr_Type& bcVectorPtr, vectorPtr_Type& vectorPtr, const Real& bcValue)
-    {
-        *vectorPtr = - bcValue * 0.001333224;
-        bcVectorPtr.reset ( ( new bcVector_Type (*vectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-        solver.bcInterfacePtr() -> handler() -> modifyBC(bcFlag, *bcVectorPtr);
-    };
     
-    auto modifyFeBC = [&] (const std::vector<Real>& bcVal)
+    auto modifyFeBC = [&] (const std::vector<Real>& bcValues)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
             std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
             ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
             ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
-            pVecPtrs[i] = - bcValue * 0.001333224;
-            pBCVecPtrs[i].reset ( ( new bcVector_Type (*vectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-            modifyBC(flag, pBCVecPtrs[i], pVecPtrs[i], bcVal[index]);
+            *pVecPtrs[i] = - bcValues[index] * 0.001333224;
+            pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+            solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *pBCVecPtrs[i]);
         }
     };
 
