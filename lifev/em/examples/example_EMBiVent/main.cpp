@@ -352,36 +352,31 @@ int main (int argc, char** argv)
     // Boundary vector normal in deformed configuration
     // solver.structuralOperatorPtr() -> setBCFlag( LvFlag );
     
+    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
+    // Todo: Normal boundary condition!!
     
     //============================================//
     // Modifiable-value boundary condition
     //============================================//
 
-    ID LVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/LVFlag", 50 );
-    ID RVFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RVFlag", 51 );
-    ID SeptumFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/SeptumFlag", 52 );
-    ID RadiiFlag =  dataFile ( "solid/boundary_conditions/VariableBoundaryConditions/RadiiFlag", 53 );
+    std::vector<vectorPtr_Type> pVecPtrs;
+    std::vector<bcVectorPtr_Type> pBCVecPtrs;
     
-    vectorPtr_Type pLvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
-    vectorPtr_Type pRvVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
-    vectorPtr_Type pSeVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
-    vectorPtr_Type pRaVectorPtr( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) );
+    UInt nVarBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listVariableBC" ) );
+    for ( UInt i (0) ; i < nVarBC ; ++i )
+    {
+        std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
+        ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
+        ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
 
-    bcVectorPtr_Type pLvBCVectorPtr( new bcVector_Type( *pLvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
-    bcVectorPtr_Type pRvBCVectorPtr( new bcVector_Type( *pRvVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
-    bcVectorPtr_Type pSeBCVectorPtr( new bcVector_Type( *pSeVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
-    bcVectorPtr_Type pRaBCVectorPtr( new bcVector_Type( *pRaVectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
-    
-    solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Normal, *pLvBCVectorPtr);
-    solver.bcInterfacePtr() -> handler() -> addBC("RvPressure", RVFlag, Natural, Normal, *pRvBCVectorPtr);
-    solver.bcInterfacePtr() -> handler() -> addBC("SeptumPressure", SeptumFlag, Natural, Normal, *pSeBCVectorPtr);
-    solver.bcInterfacePtr() -> handler() -> addBC("RadiiPressure", RadiiFlag, Natural, Normal, *pRaBCVectorPtr);
+        pVecPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
+        pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Normal, *pBCVecPtrs[i]);
+    }
 
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
-    //if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
-    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
-    // Todo: Normal boundary condition!!
+    if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
 
     auto modifyBC = [&solver] (const UInt& bcFlag, bcVectorPtr_Type& bcVectorPtr, vectorPtr_Type& vectorPtr, const Real& bcValue)
     {
@@ -392,10 +387,15 @@ int main (int argc, char** argv)
     
     auto modifyFeBC = [&] (const std::vector<Real>& bcVal)
     {
-        modifyBC(LVFlag, pLvBCVectorPtr, pLvVectorPtr, bcVal[0]);
-        modifyBC(RVFlag, pRvBCVectorPtr, pRvVectorPtr, bcVal[1]);
-        modifyBC(SeptumFlag, pSeBCVectorPtr, pSeVectorPtr, bcVal[1]);
-        modifyBC(RadiiFlag, pRaBCVectorPtr, pRaVectorPtr, bcVal[1]);
+        for ( UInt i (0) ; i < nVarBC ; ++i )
+        {
+            std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
+            ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
+            ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
+            pVecPtrs[i] = - bcValue * 0.001333224;
+            pBCVecPtrs[i].reset ( ( new bcVector_Type (*vectorPtr, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+            modifyBC(flag, pBCVecPtrs[i], pVecPtrs[i], bcVal[index]);
+        }
     };
 
 
@@ -408,8 +408,27 @@ int main (int argc, char** argv)
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    VolumeIntegrator LV (std::vector<int> { LVFlag }, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
-    VolumeIntegrator RV (std::vector<int> { RVFlag , SeptumFlag , RadiiFlag }, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
+    std::vector<int> LVFlags;
+    std::vector<int> RVFlags;
+
+    for ( UInt i (0) ; i < nVarBC ; ++i )
+    {
+        std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
+        ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
+        ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
+        switch ( index )
+        {
+            case 0: LVFlags.push_back ( flag );
+                break;
+            case 1: RVFlags.push_back ( flag );
+                break;
+            default:
+                break;
+        }
+    }
+    
+    VolumeIntegrator LV (LVFlags, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
+    VolumeIntegrator RV (RVFlags, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
 
     
     //============================================//
@@ -586,11 +605,9 @@ int main (int argc, char** argv)
                 // Jacobian fe
                 //============================================//
 
-                bool jFeIter ( ! ( k % (couplingJFeIter * saveIter) ) );
-                bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
-                bool jFeEmpty ( JFe.norm() == 0 );
-                
-                std::cout << "\n\n------- " << jFeIter << " " << jFeSubIter << " " << jFeEmpty << std::endl << std::endl;
+                const bool jFeIter ( ! ( k % (couplingJFeIter * saveIter) ) );
+                const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
+                const bool jFeEmpty ( JFe.norm() == 0 );
                 
                 if ( jFeIter || jFeSubIter || jFeEmpty )
                 {

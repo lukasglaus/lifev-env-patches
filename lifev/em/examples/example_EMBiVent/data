@@ -21,7 +21,7 @@ monodomain_xml_file = ParamList.xml
     normalDiffusion = 0.176 #3.0
     
     [../time_discretization]
-    endtime         = 1000
+    endtime         = 5000
     timestep        = 0.05
     
     [../discretization]
@@ -66,7 +66,7 @@ monodomain_xml_file = ParamList.xml
     EMActiveStrainType = TransverselyIsotropic
 
     [../time_discretization]
-    endtime         = 100
+    endtime         = 5000
     timestep        = 0.05
 
     [../]
@@ -99,7 +99,7 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType =  PNH
+    EMPassiveMaterialType =  PMR
     EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
     Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
@@ -129,8 +129,10 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-#list = 'Support Base'
-list = 'BaseNormal BaseRobin'
+    #list = 'Support Base'
+    list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
+    listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
+
     numPreloadSteps  = 1
 
         [./Support]
@@ -139,6 +141,28 @@ list = 'BaseNormal BaseRobin'
         mode       = Full
         component  = 3
         function  = '[0.0, 0.0, 0.0]'
+
+        [../SupportNormal]
+        type       = Essential
+        flag       = 49
+        mode       = Component
+        component  = 1
+        function  = '0.0'
+
+        [../SupportRobin]
+        type       = Robin
+        flag       = 49
+        mode       = Component
+        component  = '0 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
 
         [../Base]
         type       = Essential
@@ -159,7 +183,6 @@ list = 'BaseNormal BaseRobin'
         flag       = 48
         mode       = Component
         component  = '0 2'
-        #functionSD = RobinWall
         function = '0.0'
 
             [./RobinAlpha]
@@ -170,11 +193,21 @@ list = 'BaseNormal BaseRobin'
 
             [../]
 
-        [../VariableBoundaryConditions]
-        LVFlag = 50
-        RVFlag = 51
-        SeptumFlag = 52
-        RadiiFlag = 53
+        [../LVEndo]
+            flag    = 50
+            index   = 0
+
+        [../RVEndo]
+            flag    = 51
+            index   = 1
+
+        [../RVSeptum]
+            flag    = 52
+            index   = 1
+
+        [../RVRadii]
+            flag    = 53
+            index   = 1
 
         [../]
 
@@ -182,7 +215,7 @@ list = 'BaseNormal BaseRobin'
     pPerturbationFe         = 1e-2
     pPerturbationCirc       = 1e-3
     dpMax                   = 5.0
-    couplingError           = 1e-6
+    couplingError           = 1e-8
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 5
@@ -190,7 +223,7 @@ list = 'BaseNormal BaseRobin'
 
     [../time_discretization]
     initialtime 	= 0.
-    endtime         = 100.
+    endtime         = 5000.
     timestep        = 0.5
     theta       	= 0.35
     zeta        	= 0.75
@@ -222,7 +255,7 @@ list = 'BaseNormal BaseRobin'
     maxiter 	= 20
     reltol  	= 1.e-7
     abstol  	= 1.e-7
-
+    #NonLinearLineSearch = 0
 
     [../solver]
     solver          = cg #gmres
