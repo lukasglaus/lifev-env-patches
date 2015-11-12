@@ -50,7 +50,7 @@
 #include <lifev/structure/solver/StructuralConstitutiveLawData.hpp>
 #include <lifev/structure/solver/StructuralOperator.hpp>
 
-#include <lifev/structure/solver/HolzapfelOgdenMaterial.hpp>
+//#include <lifev/structure/solver/HolzapfelOgdenMaterial.hpp>
 
 #include <lifev/core/algorithm/PreconditionerIfpack.hpp>
 #include <lifev/core/algorithm/PreconditionerML.hpp>

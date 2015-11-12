@@ -355,6 +355,7 @@ int main (int argc, char** argv)
     //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
     // Todo: Normal boundary condition!!
     
+    
     //============================================//
     // Modifiable-value boundary condition
     //============================================//
@@ -479,12 +480,12 @@ int main (int argc, char** argv)
     const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
     auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
     {
-        for (auto& i : p) {i *= step / steps;}
+        for (auto& i : p) {i *= double(step) / double(steps);}
         return p;
     };
     
     solver.saveSolution (-1.0);
-
+    
     for (int i (1); i <= preloadSteps; i++)
     {
         if ( 0 == comm->MyPID() )

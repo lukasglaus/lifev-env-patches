@@ -56,8 +56,8 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-    Tmax = 0.05 #1 #0.1 #2 # Default: 50
-    ActiveStress_Beta = 45.6 #2.279 #45.6 #2.279
+    Tmax = 5 #0.05 #1 #0.1 #2 # Default: 50
+    ActiveStress_Beta = 2.279 #45.6 #2.279 #45.6 #2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
         #Active Strain types Available
         # Anisotropic
@@ -99,8 +99,8 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType =  PMR
-    EMActiveStressMaterialType = SimpleActiveStress #SFAS
+    EMPassiveMaterialType = PNH
+    EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
 
@@ -133,7 +133,7 @@ monodomain_xml_file = ParamList.xml
     list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
 
-    numPreloadSteps  = 1
+    numPreloadSteps  = 10
 
         [./Support]
         type       = Essential
