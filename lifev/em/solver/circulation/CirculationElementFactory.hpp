@@ -32,6 +32,7 @@ public:
     const std::string node(const unsigned int idx) const {return M_nodes[idx];} // todo: return pointer to Vertex object
     const std::vector<std::string> nodes() const {return M_nodes;}
     const double init() const {return M_init;}
+    virtual void initRestart(const std::vector<double>& u, const double& time){}
 
     virtual const double rhs(const std::vector<double>& u, const double& time) = 0;
     virtual const double lhs(const unsigned int& idx, const std::vector<double>& u, const double& time) = 0;     // u containing (Q p1 p2 R)
@@ -311,6 +312,14 @@ public:
         }
     }
     
+    virtual void initRestart(const std::vector<double>& u, const double& time)
+    {
+        M_time = time;
+        M_D = M_param[0] * u[0] / ( u[1] - u[2] );
+        M_Dprev0 = M_D;
+        M_Dprev1 = M_D;
+    }
+    
     
 protected:
     
@@ -353,6 +362,15 @@ public:
                 break;
         };
     }
+    
+    virtual void initRestart(const std::vector<double>& u, const double& time)
+    {
+        M_time = time;
+        M_D = M_param[0] * u[0] * u[1] / ( u[1] - u[2] );
+        M_Dprev0 = M_D;
+        M_Dprev1 = M_D;
+    }
+
 };
 
 

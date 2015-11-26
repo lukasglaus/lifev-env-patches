@@ -10,10 +10,10 @@
     <Parameter name="elementsOrder" type="string" value="P1"  />
     <Parameter name="ionic_model" type="string" value="AlievPanfilov"  />
     <Parameter name="solid_mesh_name" type="string" value="cube4.mesh"  />
-    <Parameter name="solid_mesh_path" type="string" value="/Users/srossi/LifeV/meshes/"  />
+    <Parameter name="solid_mesh_path" type="string" value="../../data/mesh/"  />
     <Parameter name="solid_fiber_file" type="string" value="idealHeart_structure_fiber"  />
     <Parameter name="mesh_name" type="string" value="cube4.mesh"  />
-    <Parameter name="mesh_path" type="string" value="/Users/srossi/LifeV/meshes/"  />
+    <Parameter name="mesh_path" type="string" value="/Users/thomas/LIFE5/lifev-em/lifev/em/data/mesh/"  />
     <Parameter name="fiber_file" type="string" value="idealHeart_electro_fiber"  />
     <Parameter name="fiber_X" type="double" value="0.707106781187"  />
     <Parameter name="fiber_Y" type="double" value="0.707106781187"  />

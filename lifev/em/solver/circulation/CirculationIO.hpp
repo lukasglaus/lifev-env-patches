@@ -183,6 +183,40 @@ public:
         else std::cout << "Unable to open file";
     }
     
+    const std::vector<double> importVector(const std::string& filename,  const unsigned int& row) const
+    {
+        std::vector<double> vec;
+        std::ifstream file (filename.c_str());
+
+        if (file.is_open())
+        {
+            std::string line;
+            
+            unsigned int i = 0;
+            while ( getline (file, line) )
+            {
+                std::istringstream iss(line);
+                std::string column;
+
+                if ( i == row )
+                {
+                    while(iss >> column)
+                    {
+                        std::istringstream entryStr(column);
+                        double entry;
+                        entryStr >> entry;
+                        vec.push_back ( entry );
+                    }
+                }
+                
+                ++i;
+            }
+            file.close();
+            return vec;
+        }
+        else std::cout << "Unable to open file";
+    }
+
     
 private:
     

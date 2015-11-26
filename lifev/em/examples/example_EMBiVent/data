@@ -129,20 +129,11 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-    #list = 'Support Base'
     list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
+    numPreloadSteps  = 1
 
-    numPreloadSteps  = 10
-
-        [./Support]
-        type       = Essential
-        flag       = 49
-        mode       = Full
-        component  = 3
-        function  = '[0.0, 0.0, 0.0]'
-
-        [../SupportNormal]
+        [./SupportNormal]
         type       = Essential
         flag       = 49
         mode       = Component
@@ -163,13 +154,6 @@ monodomain_xml_file = ParamList.xml
             function = '1' #' 5.00 * 1000' # D
 
             [../]
-
-        [../Base]
-        type       = Essential
-        flag       = 48
-        mode       = Full
-        component  = 3
-        function  = '[0.0, 0.0, 0.0]'
 
         [../BaseNormal]
         type       = Essential
@@ -215,7 +199,7 @@ monodomain_xml_file = ParamList.xml
     pPerturbationFe         = 1e-2
     pPerturbationCirc       = 1e-3
     dpMax                   = 5.0
-    couplingError           = 1e-8
+    couplingError           = 1e-7
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 5

@@ -326,6 +326,9 @@ public:
     }
 
     void saveSolution (Real time);
+    
+    void setTimeIndex (const UInt& time);
+
 
     void closeExporters();
 
@@ -632,6 +635,15 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                             UInt (0) );
 }
 
+template<typename Mesh , typename ElectroSolver>
+void
+EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
+{
+    M_electroExporterPtr -> setTimeIndex (time);
+    M_activationExporterPtr -> setTimeIndex (time);
+    M_mechanicsExporterPtr -> setTimeIndex (time);
+}
+    
 template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time)

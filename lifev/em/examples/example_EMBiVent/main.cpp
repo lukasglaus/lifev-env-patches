@@ -314,8 +314,7 @@ int main (int argc, char** argv)
     
     ExporterHDF5< RegionMesh <LinearTetra> > activationTimeExporter;
     activationTimeExporter.setMeshProcId (solver.localMeshPtr(), solver.comm()->MyPID() );
-    activationTimeExporter.addVariable (ExporterData<mesh_Type>::ScalarField, "Activation Time",
-                                        solver.electroSolverPtr()->feSpacePtr(), activationTimeVector, UInt (0) );
+    activationTimeExporter.addVariable (ExporterData<mesh_Type>::ScalarField, "Activation Time", solver.electroSolverPtr()->feSpacePtr(), activationTimeVector, UInt (0) );
     activationTimeExporter.setPrefix ("ActivationTime");
     activationTimeExporter.setPostDir (problemFolder);
     
@@ -332,10 +331,9 @@ int main (int argc, char** argv)
     //============================================//
     
     const std::string circulationInputFile = command_line.follow ("inputfile", 2, "-cif", "--cifile");
-    const std::string circulationOutputFile = command_line.follow ("solution.txt", 2, "-cof", "--cofile");
-
+    const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.txt").c_str(), 2, "-cof", "--cofile");
+    
     Circulation circulationSolver( circulationInputFile );
-    if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
     
     // Flow rate between two vertices
     auto Q = [&circulationSolver] (const std::string& N1, const std::string& N2) { return circulationSolver.solution ( std::vector<std::string> {N1, N2} ); };
@@ -455,7 +453,8 @@ int main (int argc, char** argv)
     UInt iter;
     Real t (0);
     
-    auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() ) {
+    auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() )
+    {
         std::cout << "\n****************************** Coupling: " << label << " *******************************";
         std::cout << "\nNewton iteration nr. " << iter << " at time " << t;
         std::cout << "\nLV - Pressure: " << bcValues[0];
@@ -472,35 +471,90 @@ int main (int argc, char** argv)
         std::cout << "\n****************************** Coupling: " << label << " *******************************\n\n"; }
     };
     
+    auto pipeToString = [] ( const char* command )
+    {
+        FILE* file = popen( command, "r" ) ;
+        std::ostringstream stm ;
+        char line[6] ;
+        fgets( line, 6, file );
+        stm << line;
+        pclose(file) ;
+        return stm.str() ;
+    };
+    
+    
+    //============================================//
+    // Load restart file
+    //============================================//
+    
+    std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
+    const bool restart ( restartInput != "noRestart" );
 
+    if ( restart )
+    {
+        // Get most recent restart index
+        if ( restartInput == "." ) restartInput = pipeToString( ("grep Iteration " + problemFolder + "MechanicalSolution.xmf | tail -n 1 | awk '{print $5}'").c_str() );
+            
+        // Set time variable
+        const unsigned int nIter = (std::stoi(restartInput) - 1) / saveIter;
+        t = nIter * dt_mechanics;
+        
+        std::cout << nIter << " " << restartInput << " " << std::stoi(restartInput) << " " << saveIter << std::endl;
+        activationTimeExporter.setTimeIndex(nIter * saveIter + 1);
+        solver.setTimeIndex(nIter * saveIter + 1);
+        
+        // FE
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
+                                                               
+        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, "P2", restartInput );
+        
+        //solver.electroSolverPtr() -> importSolution ("ElectroSolution", problemFolder, t);
+        
+        ElectrophysiologyUtility::importVectorField (solver.electroSolverPtr()->potentialPtr(), "ElectroSolution" , "Variable0", solver.localMeshPtr(), restartDir, "P2", restartInput );
+                                                               
+        //ElectrophysiologyUtility::importVectorField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, "P2", restartInput );
+
+        // Circulation
+        circulationSolver.restartFromFile ( circulationOutputFile , nIter );
+        
+        // Coupling boundary conditions
+        bcValues = { p ( "lv" ) , p ( "rv") };
+    }
+
+    
     //============================================//
     // Preload
     //============================================//
     
-    const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
-    auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+    if ( ! restart )
     {
-        for (auto& i : p) {i *= double(step) / double(steps);}
-        return p;
-    };
-    
-    solver.saveSolution (-1.0);
-    
-    for (int i (1); i <= preloadSteps; i++)
-    {
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\n*********************";
-            std::cout << "\nPreload step: " << i << " / " << preloadSteps;
-            std::cout << "\n*********************\n";
-        }
+        const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
         
-        // Update pressure b.c.
-        modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
+        auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+        {
+            for (auto& i : p) {i *= double(step) / double(steps);}
+            return p;
+        };
+        
+        solver.saveSolution (-1.0);
+        activationTimeExporter.postProcess(-1.0);
+        
+        for (int i (1); i <= preloadSteps; i++)
+        {
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*********************";
+                std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+                std::cout << "\n*********************\n";
+            }
+            
+            // Update pressure b.c.
+            modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
 
-        // Solve mechanics
-        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-        solver.solveMechanics();
+            // Solve mechanics
+            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            solver.solveMechanics();
+        }
     }
     
     
@@ -511,6 +565,8 @@ int main (int argc, char** argv)
     VFe[0] = LV.volume(disp, dETFESpace, - 1);
     VFe[1] = RV.volume(disp, dETFESpace, 1);
     VCirc = VFe;
+    
+    printCoupling("Initial values");
     
     auto perturbedPressure = [] (std::vector<double> p, const double& dp)
     {
@@ -525,7 +581,9 @@ int main (int argc, char** argv)
     };
 
     solver.saveSolution (t);
-    
+    activationTimeExporter.postProcess(t);
+    if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile , restart );
+
     for (int k (1); k <= maxiter; k++)
     {
         if ( 0 == comm->MyPID() )

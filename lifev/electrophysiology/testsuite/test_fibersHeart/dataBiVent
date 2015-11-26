@@ -29,7 +29,7 @@ hdf5_sheets_name       = sheets
 
 
     [./boundary_conditions]
-    list = 'EndocardiumLV Epicardium EndocardiumRV Septum Support Base SeptumEdge'
+    list = 'EndocardiumLV Epicardium EndocardiumRV Septum Support Base'
    
         [./EndocardiumLV]
         type       = Essential

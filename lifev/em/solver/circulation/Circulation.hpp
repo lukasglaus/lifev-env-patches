@@ -149,7 +149,12 @@ public:
     
     void updateTimeVar(const double& dt)
     {
-        M_time += dt;
+        setTime(M_time + dt);
+    }
+    
+    void setTime(const double& time)
+    {
+        M_time = time;
     }
     
     void updatePrevSolVectors()
@@ -198,15 +203,44 @@ public:
         std::cout << "t = " << M_time << ":\t\t" << "rel. error = " << relative_error << std::endl;
     }
     
-    void exportSolution(const std::string& filename) const
+    void exportSolution(const std::string& filename, const bool& restart = false) const
     {
         VectorStdDouble exportRow ({M_time});
         VectorStdDouble u ( eigenToStd(M_u) );
         exportRow.insert(exportRow.end(), u.begin(), u.end());
         
         CirculationIO exporter;
-        const bool append = (M_time == 0 ? false : true);
+        const bool append = (M_time == 0 && restart == false ? false : true);
         exporter.exportVector(filename, exportRow, append);
+    }
+    
+    void restartFromFile(const std::string& filename, const unsigned int& timestep)
+    {
+        CirculationIO importer;
+
+        std::vector<double> u ( importer.importVector(filename, timestep) );
+        std::vector<double> uPrev0 ( importer.importVector(filename, (timestep < 1 ? 0 : (timestep - 1))) );
+        std::vector<double> uPrev1 ( importer.importVector(filename, (timestep < 2 ? 0 : (timestep - 2))) );
+        
+        M_u = stdToEigen(u).tail( M_u.size() );
+        M_uPrev0 = ( stdToEigen(uPrev0) ).tail( M_u.size() );
+        M_uPrev1 = ( stdToEigen(uPrev1) ).tail( M_u.size() );
+                                    
+        M_time = u[0];
+
+        DofHandler dofh (M_gv);
+        for ( auto& element : M_gv.elements() )
+        {
+            const unsigned int elementIdx = dofh( element );
+            const unsigned int vertex1Idx = dofh( element->node(0) );
+            const unsigned int vertex2Idx = dofh( element->node(1) );
+            
+            std::vector<double> u {M_u(elementIdx) , 0.0, 0.0 };
+            if ( vertex1Idx < dofh.size() ) u[1] = M_u(vertex1Idx);
+            if ( vertex2Idx < dofh.size() ) u[2] = M_u(vertex2Idx);
+            
+            element -> initRestart ( u , M_time );
+        }
     }
     
 

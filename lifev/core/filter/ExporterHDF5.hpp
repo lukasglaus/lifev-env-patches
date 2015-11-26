@@ -528,6 +528,7 @@ void ExporterHDF5<MeshType>::import (const Real& Tstart, const Real& dt)
 template<typename MeshType>
 void ExporterHDF5<MeshType>::import (const Real& time)
 {
+    std::cout << time << std::endl;
     if ( M_HDF5.get() == 0)
     {
         M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );

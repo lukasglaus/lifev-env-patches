@@ -55,7 +55,7 @@ save       = 1
     #     InverseViscosity
     #     ActiveForceCoefficient
     #     ChemicalThreshold
-    ActivationModel = ActiveStrainRossi14
+    ActivationModel = ActiveStressRossi14
     CalciumIndex = 0
     ActiveForceCoefficient = -4.0
     
@@ -102,8 +102,8 @@ lawType     = nonlinear
     #ANH   = Active (Strain) Neo Hookean
     #SimpleActiveStress  = Simple Fiber Active Stress
 
-EMPassiveMaterialType =  PV
-EMActiveStressMaterialType = ANH #SFAS
+EMPassiveMaterialType =  PHO
+EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
     Tmax = 497000
     mu = 4960
@@ -182,8 +182,8 @@ BDF_order   	= 2
 
 [../space_discretization]
 mesh_type = .mesh
-mesh_dir  	= /usr/scratch/srossi/meshes/ 
-mesh_file 	= CoarseSymmCube.mesh 
+mesh_dir  	= ../../data/mesh/
+mesh_file 	= Cube.mesh 
 order     	= P1
 
 
