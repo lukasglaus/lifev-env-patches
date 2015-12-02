@@ -106,7 +106,13 @@ template<typename Mesh> inline void importFibers (  boost::shared_ptr<VectorEpet
  * @param fieldName   Name of the scalar field in the HDF5 file
  * @param localMesh   Pointer to the mesh
  */
-template<typename Mesh> inline void importScalarField (  boost::shared_ptr<VectorEpetra> vector, const std::string& fileName, const std::string& fieldName, boost::shared_ptr< Mesh > localMesh  )
+template<typename Mesh> inline void importScalarField (  boost::shared_ptr<VectorEpetra> vector,
+                                                         const std::string& fileName,
+                                                         const std::string& fieldName,
+                                                         boost::shared_ptr< Mesh > localMesh,
+                                                         const std::string& postDir = "./",
+                                                         const std::string& polynomialDegree = "P1",
+                                                         const std::string& timestep = "00000" )
 {
     typedef Mesh                                                                         mesh_Type;
     typedef ExporterData<mesh_Type>                                                      exporterData_Type;
@@ -116,14 +122,15 @@ template<typename Mesh> inline void importScalarField (  boost::shared_ptr<Vecto
 
 
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
-    boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > feSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, "P1", 1, comm ) );
+    boost::shared_ptr<FESpace< mesh_Type, MapEpetra > > feSpace ( new FESpace< mesh_Type, MapEpetra > ( localMesh, polynomialDegree, 1, comm ) );
 
-    exporterData_Type impData (exporterData_Type::ScalarField, fieldName + ".00000", feSpace,
+    exporterData_Type impData (exporterData_Type::ScalarField, fieldName + "." + timestep, feSpace,
                                vector, UInt (0), exporterData_Type::UnsteadyRegime);
 
     filterPtr_Type importer ( new hdf5Filter_Type() );
     importer -> setMeshProcId ( localMesh, comm -> MyPID() );
     importer -> setPrefix (fileName);
+    importer -> setPostDir (postDir);
     importer -> readVariable (impData);
     importer -> closeFile();
 

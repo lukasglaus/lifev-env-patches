@@ -205,13 +205,19 @@ public:
     
     void exportSolution(const std::string& filename, const bool& restart = false) const
     {
-        VectorStdDouble exportRow ({M_time});
-        VectorStdDouble u ( eigenToStd(M_u) );
-        exportRow.insert(exportRow.end(), u.begin(), u.end());
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         
-        CirculationIO exporter;
-        const bool append = (M_time == 0 && restart == false ? false : true);
-        exporter.exportVector(filename, exportRow, append);
+        if ( rank == 0 )
+        {
+            VectorStdDouble exportRow ({M_time});
+            VectorStdDouble u ( eigenToStd(M_u) );
+            exportRow.insert(exportRow.end(), u.begin(), u.end());
+            
+            CirculationIO exporter;
+            const bool append = (M_time == 0 && restart == false ? false : true);
+            exporter.exportVector(filename, exportRow, append);
+        }
     }
     
     void restartFromFile(const std::string& filename, const unsigned int& timestep)

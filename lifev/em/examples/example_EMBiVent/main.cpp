@@ -330,7 +330,7 @@ int main (int argc, char** argv)
     // Body circulation
     //============================================//
     
-    const std::string circulationInputFile = command_line.follow ("inputfile", 2, "-cif", "--cifile");
+    const std::string circulationInputFile = command_line.follow ("circulation", 2, "-cif", "--cifile");
     const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.txt").c_str(), 2, "-cof", "--cofile");
     
     Circulation circulationSolver( circulationInputFile );
@@ -450,7 +450,7 @@ int main (int argc, char** argv)
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R;
     MatrixSmall<2,2> JFe, JCirc, JR;
 
-    UInt iter;
+    UInt iter (0);
     Real t (0);
     
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() )
@@ -492,33 +492,41 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir") + "/";
+        
         // Get most recent restart index
-        if ( restartInput == "." ) restartInput = pipeToString( ("grep Iteration " + problemFolder + "MechanicalSolution.xmf | tail -n 1 | awk '{print $5}'").c_str() );
-            
+        if ( restartInput == "." )
+        {
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.txt | awk -F '[. ]' '{print $1 \",\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
+        }
+        
         // Set time variable
         const unsigned int nIter = (std::stoi(restartInput) - 1) / saveIter;
         t = nIter * dt_mechanics;
         
-        std::cout << nIter << " " << restartInput << " " << std::stoi(restartInput) << " " << saveIter << std::endl;
-        activationTimeExporter.setTimeIndex(nIter * saveIter + 1);
-        solver.setTimeIndex(nIter * saveIter + 1);
+        activationTimeExporter.setTimeIndex(nIter * saveIter + 2);
+        solver.setTimeIndex(nIter * saveIter + 2);
         
         // FE
-        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
-                                                               
+        // Todo: add other electrophysiology variables! solver.electroSolverPtr() -> importSolution ("ElectroSolution", problemFolder, t);
+        
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, "P2", restartInput );
-        
-        //solver.electroSolverPtr() -> importSolution ("ElectroSolution", problemFolder, t);
-        
-        ElectrophysiologyUtility::importVectorField (solver.electroSolverPtr()->potentialPtr(), "ElectroSolution" , "Variable0", solver.localMeshPtr(), restartDir, "P2", restartInput );
+
+        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->potentialPtr(), "ElectroSolution" , "Variable0", solver.localMeshPtr(), restartDir, "P2", restartInput );
                                                                
-        //ElectrophysiologyUtility::importVectorField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, "P2", restartInput );
+        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, "P2", restartInput );
+
+        ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, "P2", restartInput );
 
         // Circulation
-        circulationSolver.restartFromFile ( circulationOutputFile , nIter );
+        circulationSolver.restartFromFile ( restartDir + "solution.txt" , nIter );
         
         // Coupling boundary conditions
-        bcValues = { p ( "lv" ) , p ( "rv") };
+        bcValues = { p ( "lv" ) , p ( "rv" ) };
+        
+        modifyFeBC(bcValues);
+        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+        solver.solveMechanics();
     }
 
     
@@ -580,10 +588,13 @@ int main (int argc, char** argv)
         return p;
     };
 
-    solver.saveSolution (t);
-    activationTimeExporter.postProcess(t);
-    if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile , restart );
-
+    if ( ! restart )
+    {
+        solver.saveSolution (t);
+        activationTimeExporter.postProcess(t);
+        circulationSolver.exportSolution( circulationOutputFile );
+    }
+    
     for (int k (1); k <= maxiter; k++)
     {
         if ( 0 == comm->MyPID() )
