@@ -99,7 +99,7 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType = PNH
+    EMPassiveMaterialType = PNHL
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
