@@ -51,7 +51,7 @@ using namespace LifeV;
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y > 1.5 && Y < 3 );
-    bool time ( (t < 7 && t > 5) ||  (t < 807 && t > 805) );
+    bool time ( fmod(t, 800.) < 7 && fmod(t, 800.) > 5);
     return ( coords && time ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
