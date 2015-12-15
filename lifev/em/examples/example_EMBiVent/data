@@ -56,7 +56,7 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-    Tmax = 5 #0.05 #1 #0.1 #2 # Default: 50
+    Tmax = 1 #5 #0.05 #1 #0.1 #2 # Default: 50
     ActiveStress_Beta = 2.279 #45.6 #2.279 #45.6 #2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
         #Active Strain types Available
@@ -99,13 +99,14 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType = PNHL
+    EMPassiveMaterialType = PNH
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
-    Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
+    # Simple Fiber Active Stress
+    Tmax = 30000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
-    mu = 4960
+    mu = 4960 #4960
 
     # Holzapfel
     a           = 3330
@@ -116,6 +117,8 @@ monodomain_xml_file = ParamList.xml
     bf          = 15.972
     bs          = 10.446
     bfs         = 11.602
+
+    # Volumetric
     BulkModulus = 3500000
 
     # Fang type materials
@@ -199,7 +202,7 @@ monodomain_xml_file = ParamList.xml
     pPerturbationFe         = 1e-2
     pPerturbationCirc       = 1e-3
     dpMax                   = 5.0
-    couplingError           = 1e-9
+    couplingError           = 1e-8
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 5

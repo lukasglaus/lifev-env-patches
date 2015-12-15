@@ -32,7 +32,7 @@ save       = 1
     normalDiffusion = 3.0
     
     [../time_discretization]
-    endtime         = 40.
+    endtime         = 0.4
     timestep        = 0.05
     
     [../discretization]
@@ -69,7 +69,7 @@ save       = 1
     EMActiveStrainType = TransverselyIsotropic
 
     [../time_discretization]
-    endtime         = 40.
+    endtime         = 0.4
     timestep        = 0.05
     [../]
 
@@ -115,7 +115,7 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
     bf          = 15.972
     bs          = 10.446
     bfs         = 11.602
-    BulkModulus = 35000
+    BulkModulus = 3500000
     C = 20000.0
     bff = 8.0
     bss = 2.0
@@ -126,8 +126,8 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
 
    [../boundary_conditions]
-    list = 'Top Bottom Front Back Left Right'
-
+#list = 'Top Bottom Front Back Left Right'
+    list = 'Front Back'
         [./Top]
         type       = Natural
         flag       = 400
@@ -147,14 +147,14 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
         flag       = 500
         mode       = Full
         component  = 3
-    	function  = '[0.0, 0.0, 0.0]'
+    	function  = '[0.0, -1.0, 0.0]'
 
         [../Back]
         type       = Essential
         flag       = 300
-        mode       = Component
-        component  = 1
-    	function  = '0.0'
+        mode       = Full
+        component  = 3
+    	function  = '[0.0, 0.0, 0.0]'
 
         [../Left]
         type       = Natural
@@ -174,7 +174,7 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
 [../time_discretization]
 initialtime 	= 0.
-endtime         = 40.
+endtime         = 0.4
 timestep        = 0.2
 theta       	= 0.35
 zeta        	= 0.75

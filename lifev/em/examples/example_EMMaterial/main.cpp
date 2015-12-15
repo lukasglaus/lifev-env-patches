@@ -146,9 +146,16 @@ int main (int argc, char** argv)
         std::cout << "Reading Mesh Name and Path...\n";
     }
 
-    std::string meshName = parameterList.get ("mesh_name", "lid16.mesh");
-    std::string meshPath = parameterList.get ("mesh_path", "./");
+//    std::string meshName = parameterList.get ("mesh_name", "lid16.mesh");
+//    std::string meshPath = parameterList.get ("mesh_path", "./");
 
+    GetPot command_line (argc, argv);
+    const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
+    GetPot dataFile (data_file_name);
+    
+    std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
+    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
+    
     solver.loadMesh (meshName, meshPath);
 
     //    meshPtr_Type localSolidMesh ( new mesh_Type ( comm ) );
@@ -163,7 +170,6 @@ int main (int argc, char** argv)
     // We need the GetPot datafile for to setup   //
     // the preconditioner.                        //
     //********************************************//
-    GetPot command_line (argc, argv);
 
     std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
 
@@ -179,10 +185,6 @@ int main (int argc, char** argv)
     //        }
     //    }
 
-
-
-    const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
-    GetPot dataFile (data_file_name);
 
 
     //    std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
@@ -307,9 +309,23 @@ int main (int argc, char** argv)
     	std::cout << "Setting up anisotropy vectors ...";
     }
 
-    solver.setupFiberVector (1., 0., 0.);
-    solver.setupSheetVector (0., 1., 0.);
+    //solver.setupFiberVector (1., 0., 0.);
+    //solver.setupSheetVector (0., 1., 0.);
+    
+    solver.setupFiberVector (0., 1., 0.);
+    solver.setupSheetVector (1., 0., 0.);
 
+    std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_name", "FiberDirection");
+    std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_name", "SheetsDirection");
+    std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_fieldname", "fibers");
+    std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
+    std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
+    std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
+    std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
+    
+    //solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
+    //solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );
+    
     if( 0 == comm->MyPID() )
     {
     	std::cout << " done!" << std::endl;
@@ -933,7 +949,7 @@ int main (int argc, char** argv)
 
           solver.solveElectrophysiology (stim, t);
 
-          solver.solveActivation (dt_activation);
+          //solver.solveActivation (dt_activation);
 
 
           t += dt_activation;
