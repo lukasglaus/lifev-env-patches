@@ -492,7 +492,8 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
-        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir") + "/";
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir")
+        ;
         
         // Get most recent restart index
         if ( restartInput == "." )
