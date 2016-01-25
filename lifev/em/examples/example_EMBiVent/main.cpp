@@ -492,14 +492,16 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
-        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir") + "/";
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
         // Get most recent restart index
         if ( restartInput == "." )
         {
-            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.txt | awk -F '[. ]' '{print $1 \",\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.txt | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
         }
         
+	std::cout << restartInput << std::endl;
+	
         // Set time variable
         const unsigned int nIter = (std::stoi(restartInput) - 1) / saveIter;
         t = nIter * dt_mechanics;
