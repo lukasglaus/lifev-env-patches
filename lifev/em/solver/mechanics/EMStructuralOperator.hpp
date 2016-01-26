@@ -324,19 +324,19 @@ solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol)
     
     //if(M_LVpressureBC) computePressureBCJacobian(*this->M_disp, this->M_jacobian, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
     
-    Real time = this->M_data->dataTime()->time();
-    UInt interval = 1;
-    
-    Real remainder = std::fmod(time, interval);
-    
-    std::cout << remainder << " -C .... -- " << time << std::endl;
-    if ( remainder < 1e-3 || interval - remainder < 1e-3 )
-    {
+//    Real time = this->M_data->dataTime()->time();
+//    UInt interval = 1;
+//    
+//    Real remainder = std::fmod(time, interval);
+//    
+//    std::cout << remainder << " -C .... -- " << time << std::endl;
+//    if ( remainder < 1e-3 || interval - remainder < 1e-3 )
+//    {
         *this->M_jacobian *= 0.0;
         updateJacobian ( *this->M_disp, this->M_jacobian );
         this->M_jacobian -> globalAssemble();
 
-    }
+//    }
     
     this->solveJacobian (step,  res, linear_rel_tol, this->M_BCh);
 }

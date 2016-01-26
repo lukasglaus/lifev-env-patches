@@ -440,14 +440,13 @@ int main (int argc, char** argv)
     UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
     UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
     UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
-    std::string couplingJFeMethod = dataFile ( "solid/coupling/couplingJFeMethod", "mixed" );
 
     Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
     
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     
-    VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R;
+    VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
 
     UInt iter (0);
@@ -638,12 +637,16 @@ int main (int argc, char** argv)
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
+            //============================================//
+            // Residual computation
+            //============================================//
+            R = VFeNew - VCircNew;
             printCoupling("Residual Computation");
             
             //============================================//
             // Newton iterations
             //============================================//
-            while ( ( VFeNew - VCircNew ).norm() > couplingError )
+            while ( R.norm() > couplingError )
             {
                 ++iter;
                 
@@ -670,7 +673,7 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian fe
                 //============================================//
-
+                
                 const bool jFeIter ( ! ( k % (couplingJFeIter * saveIter) ) );
                 const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
                 const bool jFeEmpty ( JFe.norm() == 0 );
@@ -679,53 +682,38 @@ int main (int argc, char** argv)
                 {
                     JFe *= 0.0;
 
-                    if ( couplingJFeMethod == "mixed" )
-                    {
-                        // Left ventricle
-                        modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
-                        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                        solver.solveMechanics();
-                        
-                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
-                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
+                    // Left ventricle
+                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
+                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                    solver.solveMechanics();
+                    
+                    VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                    VFePert[1] = RV.volume(disp, dETFESpace, 1);
 
-                        JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                        JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-                        
-                        // Right ventricle
-                        modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
-                        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                        solver.solveMechanics();
-                        
-                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
-                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
-                        
-                        JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                        JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-                    }
-                    else if ( couplingJFeMethod == "diagonal" )
-                    {
-                        modifyFeBC(perturbedPressure(bcValues, pPerturbationFe));
-                        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                        solver.solveMechanics();
-                        
-                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
-                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
-                        
-                        JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                        JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-                    }
+                    JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                    JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
+                    
+                    // Right ventricle
+                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
+                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                    solver.solveMechanics();
+                    
+                    VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                    VFePert[1] = RV.volume(disp, dETFESpace, 1);
+                    
+                    JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                    JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
+                
                 }
                 
                 //============================================//
                 // Update pressure b.c.
                 //============================================//
-                R = VFeNew - VCircNew;
                 JR = JFe - JCirc;
 
                 if ( JR.determinant() != 0 )
                 {
-                    auto dp ( JR | R );
+                    dp = ( JR | R );
                     bcValues[0] -= std::min( std::max( dp(0) , - dpMax ) , dpMax );
                     bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
                 }
@@ -749,6 +737,10 @@ int main (int argc, char** argv)
                 VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
                 VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
+                //============================================//
+                // Residual update
+                //============================================//
+                R = VFeNew - VCircNew;
                 printCoupling("Residual Update");
             }
             

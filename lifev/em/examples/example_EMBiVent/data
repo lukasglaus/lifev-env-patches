@@ -206,7 +206,6 @@ monodomain_xml_file = ParamList.xml
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 5
-    couplingJFeMethod       = mixed # diagonal
 
     [../time_discretization]
     initialtime 	= 0.
