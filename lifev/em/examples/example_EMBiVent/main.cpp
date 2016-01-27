@@ -496,10 +496,11 @@ int main (int argc, char** argv)
         // Get most recent restart index
         if ( restartInput == "." )
         {
+            pipeToString( ( "export LC_NUMERIC=\"en_US.UTF-8\"" ) );
             restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.txt | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
         }
         
-	std::cout << restartInput << std::endl;
+        std::cout << "-----------------------\n" << restartInput << std::endl;
 	
         // Set time variable
         const unsigned int nIter = (std::stoi(restartInput) - 1) / saveIter;
@@ -673,7 +674,7 @@ int main (int argc, char** argv)
                 //============================================//
                 // Jacobian fe
                 //============================================//
-                
+
                 const bool jFeIter ( ! ( k % (couplingJFeIter * saveIter) ) );
                 const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
                 const bool jFeEmpty ( JFe.norm() == 0 );
@@ -705,6 +706,16 @@ int main (int argc, char** argv)
                     JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                 
                 }
+
+//                //============================================//
+//                // Broyden update
+//                //============================================//
+//                if ( t > 1.1 )
+//                {
+//                    VectorSmall<2> dJdp = ( (VFeNew - VFe ) - JFe * dp ) / ( dp.dot( dp ) );
+//                    MatrixSmall<2,2> dJ = dJdp.outerProduct( dp );
+//                    JFe += dJ;
+//                }
                 
                 //============================================//
                 // Update pressure b.c.
