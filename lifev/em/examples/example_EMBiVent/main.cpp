@@ -331,7 +331,7 @@ int main (int argc, char** argv)
     //============================================//
     
     const std::string circulationInputFile = command_line.follow ("circulation", 2, "-cif", "--cifile");
-    const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.txt").c_str(), 2, "-cof", "--cofile");
+    const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.dat").c_str(), 2, "-cof", "--cofile");
     
     Circulation circulationSolver( circulationInputFile );
     
@@ -497,7 +497,7 @@ int main (int argc, char** argv)
         if ( restartInput == "." )
         {
             pipeToString( ( "export LC_NUMERIC=\"en_US.UTF-8\"" ) );
-            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.txt | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
         }
         
         std::cout << "-----------------------\n" << restartInput << std::endl;
