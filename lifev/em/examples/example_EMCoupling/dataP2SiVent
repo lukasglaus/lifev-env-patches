@@ -56,7 +56,7 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-        Tmax = 50 #0.1 #2 # Default: 50
+        Tmax = 1 #0.1 #2 # Default: 50
 	ActiveStress_Beta = 2.279 #45.6 # Default 2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
         #Active Strain types Available
@@ -99,7 +99,7 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType =  PNH
+    EMPassiveMaterialType =  PHO
     EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
     Tmax = 30000 #500000 # 500000 value is thought for Holzapfel
@@ -129,9 +129,9 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-    list = 'Base Apex'
+    list = 'BaseNormal BaseRobinBiVent'
     LvPreloadPressure = 5.0
-    numPreloadSteps  = 1
+    numPreloadSteps  = 5
 
         [./Apex]
         type       = Essential
@@ -147,6 +147,13 @@ monodomain_xml_file = ParamList.xml
         component  = 1
         function   = 0
 
+        [../BaseNormal]
+        type       = Essential
+        flag       = 22
+        mode       = Component
+        component  = 1
+        function  = '0.0'
+
         [../BaseRobin]
         type       = Robin
         flag       = 22
@@ -159,6 +166,21 @@ monodomain_xml_file = ParamList.xml
 
             [../RobinBeta]
             function = ' 5.00 * 1000' # D
+
+            [../]
+
+        [../BaseRobinBiVent]
+        type       = Robin
+        flag       = 22
+        mode       = Component
+        component  = '0 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
 
             [../]
 
@@ -184,7 +206,7 @@ monodomain_xml_file = ParamList.xml
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
     order               = P2
-    anisotropic         = true
+    anisotropic         = false
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
     fiber_dir           = siVentP2/

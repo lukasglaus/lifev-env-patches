@@ -92,7 +92,7 @@ public:
 
     EMStructuralOperator();
 
-    virtual ~EMStructuralOperator()
+    virtual ~EMStructuralOperator() 
     {
         M_EMMaterial.reset();
     };

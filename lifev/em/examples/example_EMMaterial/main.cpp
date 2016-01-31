@@ -312,8 +312,8 @@ int main (int argc, char** argv)
     //solver.setupFiberVector (1., 0., 0.);
     //solver.setupSheetVector (0., 1., 0.);
     
-    solver.setupFiberVector (0., 1., 0.);
-    solver.setupSheetVector (1., 0., 0.);
+    //solver.setupFiberVector (0., 1., 0.);
+    //solver.setupSheetVector (1., 0., 0.);
 
     std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_name", "FiberDirection");
     std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_name", "SheetsDirection");
@@ -323,8 +323,8 @@ int main (int argc, char** argv)
     std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
     std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
     
-    //solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
-    //solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );
+    solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
+    solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );
     
     if( 0 == comm->MyPID() )
     {

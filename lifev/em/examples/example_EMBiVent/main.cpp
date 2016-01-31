@@ -521,7 +521,7 @@ int main (int argc, char** argv)
         ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, "P2", restartInput );
 
         // Circulation
-        circulationSolver.restartFromFile ( restartDir + "solution.txt" , nIter );
+        circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
         
         // Coupling boundary conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
