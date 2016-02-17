@@ -57,7 +57,7 @@
                4920 3
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="31836 3"
+                           Dimensions="4920 3"
                            DataType="Float"
                            Precision="8">
                SheetsDirection.h5:/sheets.00000/Values

@@ -496,7 +496,6 @@ int main (int argc, char** argv)
         // Get most recent restart index
         if ( restartInput == "." )
         {
-            pipeToString( ( "export LC_NUMERIC=\"en_US.UTF-8\"" ) );
             restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
         }
         
@@ -522,13 +521,19 @@ int main (int argc, char** argv)
 
         // Circulation
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
-        
+        circulationSolver.exportSolution( circulationOutputFile );
+
         // Coupling boundary conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
+        
+        std::cout << "Volume 0: " << LV.volume(disp, dETFESpace, - 1) << " " << RV.volume(disp, dETFESpace, 1) << std::endl;
         
         modifyFeBC(bcValues);
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
+        
+        std::cout << "Volume 1: " << LV.volume(disp, dETFESpace, - 1) << " " << RV.volume(disp, dETFESpace, 1) << std::endl;
+
     }
 
     

@@ -57,7 +57,7 @@
                4920 1
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="31836 1"
+                           Dimensions="4920 1"
                            DataType="Float"
                            Precision="8">
                Potential.h5:/potential.00000/Values

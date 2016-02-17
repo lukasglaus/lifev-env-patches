@@ -84,8 +84,8 @@ hdf5_sheets_name       = sheets
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= biVentCoarse.mesh
-    elem_type   = P2
+    mesh_file 	= biVentFine.mesh
+    elem_type   = P1
   
     [../solver]
     solver_name     = AztecOO #Belos

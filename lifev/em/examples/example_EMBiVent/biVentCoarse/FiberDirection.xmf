@@ -57,7 +57,7 @@
                4920 3
            </DataStructure>
            <DataStructure  Format="HDF"
-                           Dimensions="31836 3"
+                           Dimensions="4920 3"
                            DataType="Float"
                            Precision="8">
                FiberDirection.h5:/fibers.00000/Values
