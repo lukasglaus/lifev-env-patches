@@ -84,7 +84,7 @@ hdf5_sheets_name       = sheets
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= biVentFine.mesh
+    mesh_file 	= biVentMedium.mesh
     elem_type   = P1
   
     [../solver]

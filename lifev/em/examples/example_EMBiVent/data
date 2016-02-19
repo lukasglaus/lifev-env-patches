@@ -99,7 +99,7 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType = PNH
+    EMPassiveMaterialType = PHO
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
@@ -151,7 +151,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '1' #' 5.00 * 1000' # D
+            function = '100' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -173,7 +173,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '1' #' 5.00 * 1000' # D
+            function = '100' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -202,10 +202,10 @@ monodomain_xml_file = ParamList.xml
     pPerturbationFe         = 1e-2
     pPerturbationCirc       = 1e-3
     dpMax                   = 5.0
-    couplingError           = 1e-8
-couplingJFeIter         = 10 #20
+    couplingError           = 1e-7 #1e-8
+    couplingJFeIter         = 20
     couplingJFeSubStart     = 2
-couplingJFeSubIter      = 1#5
+    couplingJFeSubIter      = 5
 
     [../time_discretization]
     initialtime 	= 0.
@@ -218,18 +218,18 @@ couplingJFeSubIter      = 1#5
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentFine/
-    mesh_file           = biVentFine.mesh
+    mesh_dir            = biVentMedium/
+    mesh_file           = biVentMedium.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
     order               = P1
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = biVentFine/
+    fiber_dir           = biVentMedium/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = biVentFine/
+    sheet_dir           = biVentMedium/
 
 
     [../miscellaneous]
