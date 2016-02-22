@@ -27,7 +27,7 @@ monodomain_xml_file = ParamList.xml
     [../discretization]
     LumpedMass = false // use when too coarse mesh
 
-    elementsOrder   = P1
+    elementsOrder   = P2
 
     [../flags]
     lvendo = 50
@@ -151,7 +151,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100' #' 5.00 * 1000' # D
+            function = '1' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -173,7 +173,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100' #' 5.00 * 1000' # D
+            function = '1' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -218,18 +218,18 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentMedium/
+    mesh_dir            = biVentMediumP2/
     mesh_file           = biVentMedium.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P1
+    order               = P2
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = biVentMedium/
+    fiber_dir           = biVentMediumP2/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = biVentMedium/
+    sheet_dir           = biVentMediumP2/
 
 
     [../miscellaneous]

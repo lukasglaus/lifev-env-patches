@@ -60,7 +60,7 @@ computeFiberActiveStressResidualTerms ( const vector_Type& disp,
     auto P = Wa /* Wm */ *  fxf0;
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dot ( Wa * outerProduct ( F * f0, f0), grad (phi_i) )
               ) >> residualVectorPtr;
@@ -98,7 +98,7 @@ computeModifiedFiberActiveStressResidualTerms ( const vector_Type& disp,
     auto P = Wa /* Wm */ * _dI4bar (F, f0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dot ( P, grad (phi_i) )
               ) >> residualVectorPtr;
@@ -133,7 +133,7 @@ computeI4ResidualTerms ( const vector_Type& disp,
 //             * _dI4bar (dispETFESpace, disp, 0, f0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dot ( P , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -172,7 +172,7 @@ computeI4ResidualTerms ( const vector_Type& disp,
 
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dot ( P , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -213,7 +213,7 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
 
 
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dot ( P , grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -225,7 +225,7 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
 
 
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dot ( P , grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -265,7 +265,7 @@ computeI8ResidualTerms ( const vector_Type& disp,
         std::cout << "EMETA - Computing I8 residual terms while orthonormalizing ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dot (  P, grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -289,7 +289,7 @@ computeI8ResidualTerms ( const vector_Type& disp,
         std::cout << "EMETA - Computing I8 residual terms ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dot (  P, grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -335,7 +335,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
 
             integrate ( elements ( dispETFESpace->mesh() ),
-                        quadRuleTetra4pt,
+                        quadRuleTetra5pt,
                         dispETFESpace,
                         dot (  P, grad (phi_i) )
                       ) >> residualVectorPtr;
@@ -355,7 +355,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
 
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            quadRuleTetra5pt,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
@@ -370,7 +370,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
 
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            quadRuleTetra5pt,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
@@ -401,7 +401,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
 
             integrate ( elements ( dispETFESpace->mesh() ),
-                        quadRuleTetra4pt,
+                        quadRuleTetra5pt,
                         dispETFESpace,
                         dot (  P, grad (phi_i) )
                       ) >> residualVectorPtr;
@@ -423,7 +423,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
 
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            quadRuleTetra5pt,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;
@@ -438,7 +438,7 @@ computeI8ResidualTermsFung ( const vector_Type& disp,
 
 
                 integrate ( elements ( dispETFESpace->mesh() ),
-                            quadRuleTetra4pt,
+                            quadRuleTetra5pt,
                             dispETFESpace,
                             dot (  P, grad (phi_i) )
                           ) >> residualVectorPtr;

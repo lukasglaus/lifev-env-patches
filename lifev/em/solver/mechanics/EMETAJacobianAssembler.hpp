@@ -66,7 +66,7 @@ computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
     //    auto dP = Wa * Wm * dfxf0;
     auto dP = Wa * Wm * dfxf0;
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP, grad (phi_i) )
@@ -105,7 +105,7 @@ computeModifiedFiberActiveStressJacobianTerms ( const vector_Type& disp,
 //    auto dP = Wa * Wm * dfxf0;
     auto dP = Wa * Wm *  _d2I4bardF ( F, f0, dF );
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP, grad (phi_i) )
@@ -137,7 +137,7 @@ computeI4JacobianTerms ( const vector_Type& disp,
     std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
 
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot (  dP, grad (phi_i) )
@@ -170,7 +170,7 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
               *  _dI4 ( F, f0 );
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -208,7 +208,7 @@ computeI4JacobianTerms ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot (  dP, grad (phi_i) )
@@ -248,7 +248,7 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
               *  _dI4 ( F, s0 );
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra5pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -289,7 +289,7 @@ computeI8JacobianTerms ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 jacobian terms orthonormalizing ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP, grad (phi_i) )
@@ -313,7 +313,7 @@ computeI8JacobianTerms ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 jacobian terms ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP, grad (phi_i) )
@@ -356,7 +356,7 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
     		std::cout << "EMETA - Computing I8 jacobian terms second derivative orthonormalizing ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot (  dP, grad (phi_i) )
@@ -381,7 +381,7 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
     	if(disp.comm().MyPID() == 0)
         std::cout << "EMETA - Computing I8 jacobian terms second derivative ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra5pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot (  dP, grad (phi_i) )
