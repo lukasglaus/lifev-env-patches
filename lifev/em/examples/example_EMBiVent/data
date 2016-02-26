@@ -210,7 +210,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 0.5
+    timestep        = 0.2
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2
