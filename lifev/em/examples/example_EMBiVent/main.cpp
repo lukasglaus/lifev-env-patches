@@ -51,7 +51,7 @@ using namespace LifeV;
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y > 1.5 && Y < 3 );
-    bool time ( fmod(t, 800.) < 7 && fmod(t, 800.) > 5);
+    bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
     return ( coords && time ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
@@ -730,6 +730,7 @@ int main (int argc, char** argv)
                 if ( JR.determinant() != 0 )
                 {
                     dp = ( JR | R );
+                    if ( iter > 5 ) dp *= 0.7;
                     bcValues[0] -= std::min( std::max( dp(0) , - dpMax ) , dpMax );
                     bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
                 }

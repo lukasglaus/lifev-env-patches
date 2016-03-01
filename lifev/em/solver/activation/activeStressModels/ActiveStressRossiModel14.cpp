@@ -63,6 +63,9 @@ void ActiveStressRossiModel14::solveModel (Real& timeStep)
     rhs *= M_coefficientBeta;
     rhs -= 2.0 * *super::M_fiberActivationPtr;
     rhs *= (timeStep * M_maximumActiveTenstion / M_coefficientMu);
+    //rhs -= 2.0 * M_maximumActiveTenstion * *super::M_fiberActivationPtr;
+    //rhs *= (timeStep / M_coefficientMu);
+
     *super::M_fiberActivationPtr += rhs;
 }
 
