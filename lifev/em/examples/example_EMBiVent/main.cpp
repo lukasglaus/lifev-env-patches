@@ -731,6 +731,7 @@ int main (int argc, char** argv)
                 {
                     dp = ( JR | R );
                     if ( iter > 5 ) dp *= 0.7;
+                    if ( iter > 20 ) dp *= 0.7;
                     bcValues[0] -= std::min( std::max( dp(0) , - dpMax ) , dpMax );
                     bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
                 }
