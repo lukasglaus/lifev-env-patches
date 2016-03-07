@@ -48,11 +48,34 @@ using namespace LifeV;
 // Functions
 //============================================//
 
+class AppliedCurrent {
+    
+public:
+    
+    AppliedCurrent( GetPot& dataFile )
+    {
+        
+    }
+    
+    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
+    {
+        bool coords ( Y > 1.5 && Y < 3 );
+        bool time ( fmod(t, 800.) < 22 && fmod(t, 800.) > 2);
+        return ( coords && time ? 0.03 : 0 );
+    }
+    
+private:
+    
+    Real M_YUpper;
+    Real M_YLower;
+    
+};
+
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y > 1.5 && Y < 3 );
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
-    return ( coords && time ? 30 : 0 );
+    return ( coords && time ? 10 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
 
@@ -385,7 +408,7 @@ int main (int argc, char** argv)
             std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
             ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
             ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
-            *pVecPtrs[i] = - bcValues[index] * 0.001333224;
+            *pVecPtrs[i] = - bcValues[index] * 1333.224; // 0.001333224
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *pBCVecPtrs[i]);
         }
