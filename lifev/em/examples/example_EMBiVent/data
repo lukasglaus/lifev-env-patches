@@ -106,7 +106,7 @@ monodomain_xml_file = ParamList.xml
     Tmax = 30000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
-    mu = 4960 #4960
+    mu = 49600 #4960
 
     # Holzapfel
     a           = 3330
@@ -134,7 +134,7 @@ monodomain_xml_file = ParamList.xml
     [../boundary_conditions]
     list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
-    numPreloadSteps  = 40
+    numPreloadSteps  = 50
 
         [./SupportNormal]
         type       = Essential
@@ -151,7 +151,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100000' #' 5.00 * 1000' # D
+            function = '10000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -173,7 +173,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100000' #' 5.00 * 1000' # D
+            function = '10000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
