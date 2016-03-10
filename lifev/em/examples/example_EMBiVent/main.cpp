@@ -393,7 +393,8 @@ int main (int argc, char** argv)
 
         pVecPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
         pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Normal, *pBCVecPtrs[i]);
+        //solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Normal, *pBCVecPtrs[i]);
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Full, *pBCVecPtrs[i], 3);
     }
 
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
@@ -592,6 +593,9 @@ int main (int argc, char** argv)
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
+            solver.saveSolution ( i );
+            activationTimeExporter.postProcess( i );
+
         }
     }
     
