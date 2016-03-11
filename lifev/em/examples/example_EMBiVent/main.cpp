@@ -593,8 +593,8 @@ int main (int argc, char** argv)
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            solver.saveSolution ( i );
-            activationTimeExporter.postProcess( i );
+            //solver.saveSolution ( i );
+            //activationTimeExporter.postProcess( i );
 
         }
     }
