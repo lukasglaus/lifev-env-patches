@@ -27,7 +27,7 @@ monodomain_xml_file = ParamList.xml
     [../discretization]
     LumpedMass = false // use when too coarse mesh
 
-    elementsOrder   = P2
+    elementsOrder   = P1
 
     [../flags]
     lvendo = 50
@@ -103,10 +103,10 @@ monodomain_xml_file = ParamList.xml
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 30000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 100000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
-    mu = 49600 #4960
+    mu = 15000 #4960
 
     # Holzapfel
     a           = 3330
@@ -218,18 +218,18 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarseP2/
+    mesh_dir            = biVentCoarse/
     mesh_file           = biVentCoarse.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P2
+    order               = P1
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = biVentCoarseP2/
+    fiber_dir           = biVentCoarse/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = biVentCoarseP2/
+    sheet_dir           = biVentCoarse/
 
 
     [../miscellaneous]
