@@ -172,8 +172,41 @@ int main (int argc, char** argv)
         std::cout << "Load mesh...\n";
     }
     
-    std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
-    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
+    const std::string meshFile = command_line.follow ("biVent", 2, "-m", "--mesh");
+    std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
+    std::string meshName;
+    std::string meshPath;
+    
+    if ( meshFile == "fine" && elementOrder == "P1" )
+    {
+        meshName = "biVentFine.mesh";
+        meshPath = "biVentFine/";
+    }
+    else if ( meshFile == "med" && elementOrder == "P1" )
+    {
+        meshName = "biVentMedium.mesh";
+        meshPath = "biVentMedium/";
+    }
+    else if ( meshFile == "coa" && elementOrder == "P1" )
+    {
+        meshName = "biVentCoarse.mesh";
+        meshPath = "biVentCoarse/";
+    }
+    else if ( meshFile == "med" && elementOrder == "P2" )
+    {
+        meshName = "biVentMedium.mesh";
+        meshPath = "biVentMediumP2/";
+    }
+    else if ( meshFile == "coa" && elementOrder == "P2" )
+    {
+        meshName = "biVentCoarse.mesh";
+        meshPath = "biVentCoarseP2/";
+    }
+    else
+    {
+        meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
+        meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
+    }
     
     solver.loadMesh (meshName, meshPath);
     
@@ -242,9 +275,9 @@ int main (int argc, char** argv)
         std::string sheetFileName  =  dataFile ( "solid/space_discretization/sheet_name", "SheetsDirection");
         std::string fiberFieldName =  dataFile ( "solid/space_discretization/fiber_fieldname", "fibers");
         std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
-        std::string fiberDir       =  dataFile ( "solid/space_discretization/fiber_dir", "./");
-        std::string sheetDir       =  dataFile ( "solid/space_discretization/sheet_dir", "./");
-        std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
+        std::string fiberDir       =  meshPath; //dataFile ( "solid/space_discretization/fiber_dir", "./");
+        std::string sheetDir       =  meshPath; //dataFile ( "solid/space_discretization/sheet_dir", "./");
+        //std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
 
         solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
         solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );

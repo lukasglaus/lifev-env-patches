@@ -170,7 +170,7 @@ EMData::setupElectrophysiologyParameters(GetPot& dataFile, const std::string& se
     double timestep = dataFile ( ( section + "/time_discretization/timestep" ).data(), 0.1 );
     M_electroParametersList.set ("timestep", timestep);
 
-    std::string elementsOrder = dataFile ( ( section + "/discretization/elementsOrder" ).data(), "P1" );
+    std::string elementsOrder = dataFile ( ( std::string("solid/space_discretization/order") ).data(), "P1" );
     M_electroParametersList.set ("elementsOrder", elementsOrder);
 
     bool LumpedMass = dataFile ( ( section + "/discretization/LumpedMass" ).data(), false);

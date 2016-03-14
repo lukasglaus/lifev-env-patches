@@ -26,8 +26,7 @@ monodomain_xml_file = ParamList.xml
     
     [../discretization]
     LumpedMass = false // use when too coarse mesh
-
-    elementsOrder   = P1
+    #elementsOrder   = P1
 
     [../flags]
     lvendo = 50
@@ -103,10 +102,10 @@ monodomain_xml_file = ParamList.xml
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 50000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 100000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
-    mu = 10000 #4960
+    mu = 15000 #4960
 
     # Holzapfel
     a           = 3330
