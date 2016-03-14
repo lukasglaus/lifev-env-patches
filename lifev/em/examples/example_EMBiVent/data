@@ -103,10 +103,10 @@ monodomain_xml_file = ParamList.xml
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 100000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 50000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
-    mu = 15000 #4960
+    mu = 10000 #4960
 
     # Holzapfel
     a           = 3330
@@ -201,7 +201,7 @@ monodomain_xml_file = ParamList.xml
     [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
-    dpMax                   = 0.1
+    dpMax                   = 0.2
     couplingError           = 1e-7 #1e-7 #1e-8
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
@@ -210,7 +210,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 0.5
+    timestep        = 0.2
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2

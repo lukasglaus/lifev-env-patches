@@ -59,7 +59,7 @@ public:
     
     Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
     {
-        bool coords ( Y > 1.5 && Y < 3 );
+        bool coords ( Y > 2.5 && Y < 4 );
         bool time ( fmod(t, 800.) < 22 && fmod(t, 800.) > 2);
         return ( coords && time ? 0.03 : 0 );
     }
@@ -73,9 +73,9 @@ private:
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    bool coords ( Y > 1.5 && Y < 3 );
+    bool coords ( Y > 2.5 && Y < 4 );
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
-    return ( coords && time ? 10 : 0 );
+    return ( coords && time ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
 }
 
@@ -788,7 +788,7 @@ int main (int argc, char** argv)
                 R = VFeNew - VCircNew;
                 printCoupling("Residual Update");
             }
-            
+ 
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n******************************************";
