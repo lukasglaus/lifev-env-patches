@@ -16,9 +16,9 @@ monodomain_xml_file = ParamList.xml
 
     [./physics]
     IonicModel = MinimalModel
-    fiberDiffusion = 1.33 #10.0
-    sheetDiffusion = 0.176 #3.0
-    normalDiffusion = 0.176 #3.0
+    fiberDiffusion = 10 #1.33 #10.0
+    sheetDiffusion = 3 #0.176 #3.0
+    normalDiffusion = 3 #0.176 #3.0
     
     [../time_discretization]
     endtime         = 100000
@@ -102,7 +102,7 @@ monodomain_xml_file = ParamList.xml
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 100000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 50000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
     mu = 15000 #4960
@@ -217,18 +217,18 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarse/
-    mesh_file           = biVentCoarse.mesh
+    mesh_dir            = biVentMedium/
+    mesh_file           = biVentMedium.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
     order               = P1
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    fiber_dir           = biVentCoarse/
+    #fiber_dir           = biVentCoarse/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    sheet_dir           = biVentCoarse/
+    #sheet_dir           = biVentCoarse/
 
 
     [../miscellaneous]
