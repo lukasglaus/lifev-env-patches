@@ -73,7 +73,7 @@ private:
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    bool coords ( Y > 2.5 && Y < 4 );
+    bool coords ( Y > 1.5 && Y < 3 );
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
     return ( coords && time ? 30 : 0 );
     // setAppliedCurrent in electrophys. module.
