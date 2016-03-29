@@ -53,7 +53,7 @@ computeVolumetricJacobianTerms ( const vector_Type& disp,
 
     	auto dP = eval (Wvol, F ) * _d2JdF (F, _dF);
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP, grad (phi_i) )
@@ -80,7 +80,7 @@ computeVolumetricJacobianTermsSecondDerivative ( const vector_Type& disp,
 
         auto dP = eval (dWvol, F ) * _dJdF (F, _dF) * _dJ (F);
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP , grad (phi_i) )
@@ -106,7 +106,7 @@ computeLinearizedVolumetricJacobianTerms ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing linear volumetric Jacobian terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP  , grad (phi_i) )
@@ -130,7 +130,7 @@ computeLinearizedDeviatoricJacobianTerms ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "Computing linear deviatoric Jacobian terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP  , grad (phi_i) )
@@ -173,7 +173,7 @@ computeI1JacobianTerms ( const vector_Type& disp,
 	auto dPdF = eval (W1, F ) * _d2I1bardF(F, _dF);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dPdF , grad (phi_i) )
@@ -217,7 +217,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
     auto dPdF = eval (dW1, F ) * _dI1bardF (F, _dF) * _dI1bar (F) ;
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dPdF , grad (phi_i) )
@@ -241,7 +241,7 @@ computeI1JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
 
     auto dP = eval (dW1dI2, F ) * _dI2bardF (F, _dF)  * dI1bar (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -265,7 +265,7 @@ computeI2JacobianTerms ( const vector_Type& disp,
 
     auto dP = eval (W2, F ) * _d2I2bardF (F, _dF);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -287,7 +287,7 @@ computeI2JacobianTermsSecondDerivative ( const vector_Type& disp,
 
     auto dP = eval (dW2, F ) * _dI2bardF (F, _dF)  * _dI2bar (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -311,7 +311,7 @@ computeI2JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
 
     auto dP = eval (dW2dI1, F ) * (_dI1bardF (F, _dF ) ) * (_dI2bar (F) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -351,7 +351,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 
     auto dP = eval (dW1, F, f0, s0) * ( _dI1bardF (F, _dF) ) * ( _dI1bar (F) );
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra4pt,
+                quadRuleTetra15pt,
                 dispETFESpace,
                 dispETFESpace,
                 dot ( dP , grad (phi_i) )
@@ -391,7 +391,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 
         auto dP = eval (dW1, F, f0, s0) * ( _dI4dF ( F, f0, _dF ) ) * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP , grad (phi_i) )
@@ -404,7 +404,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 
         auto dP = eval (dW1, F, f0, s0) * ( _dI4dF ( F, s0, _dF ) ) * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP , grad (phi_i) )
@@ -419,7 +419,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
                   * ( _dI8dF ( F, f0, s0, _dF ) )
                   * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP , grad (phi_i) )
@@ -434,7 +434,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
                   * ( _dI8dF ( F, f0, n0, _dF ) )
                   * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP , grad (phi_i) )
@@ -449,7 +449,7 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
                   * ( _dI8dF ( F, s0, n0, _dF ) )
                   * (_dI1bar (F) );
         integrate ( elements ( dispETFESpace->mesh() ) ,
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dispETFESpace,
                     dot ( dP , grad (phi_i) )
