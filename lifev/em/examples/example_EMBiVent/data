@@ -25,7 +25,7 @@ monodomain_xml_file = ParamList.xml
     timestep        = 0.05
     
     [../discretization]
-    LumpedMass = false // use when too coarse mesh
+    LumpedMass = true // use when too coarse mesh
     #elementsOrder   = P1
 
     [../flags]
@@ -98,11 +98,11 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType = PNH
+    EMPassiveMaterialType = PNHL
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 50000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 200000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
     mu = 15000 #4960
@@ -209,7 +209,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 0.2
+    timestep        = 0.5
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2
