@@ -334,7 +334,7 @@ int main (int argc, char** argv)
     	std::cout << "Building matrices ... ";
     }
     
-    solver.twoWayCoupling();
+    solver.oneWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
