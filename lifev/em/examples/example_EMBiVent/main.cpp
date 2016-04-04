@@ -556,26 +556,34 @@ int main (int argc, char** argv)
             restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
         }
         
-        std::cout << "-----------------------\n" << restartInput << std::endl;
-	
+        //std::cout << comm->MyPID() << " ----------------------- " << restartInput << std::endl;
+
+        
         // Set time variable
         const unsigned int nIter = (std::stoi(restartInput) - 1) / saveIter;
         t = nIter * dt_mechanics;
         
         activationTimeExporter.setTimeIndex(nIter * saveIter + 2);
         solver.setTimeIndex(nIter * saveIter + 2);
+
+        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
         
-        // FE
         // Todo: add other electrophysiology variables! solver.electroSolverPtr() -> importSolution ("ElectroSolution", problemFolder, t);
         
-        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, "P2", restartInput );
+        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
-        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->potentialPtr(), "ElectroSolution" , "Variable0", solver.localMeshPtr(), restartDir, "P2", restartInput );
-                                                               
-        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, "P2", restartInput );
+        
+        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(0), "ElectroSolution" , "Variable0", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(1), "ElectroSolution" , "Variable1", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(2), "ElectroSolution" , "Variable2", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(3), "ElectroSolution" , "Variable3", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        
+        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
-        ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, "P2", restartInput );
+        
+        ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
+        
         // Circulation
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
         circulationSolver.exportSolution( circulationOutputFile );
