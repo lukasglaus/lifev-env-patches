@@ -48,40 +48,40 @@ using namespace LifeV;
 // Functions
 //============================================//
 
-class AppliedCurrent {
-    
-public:
-    
-    AppliedCurrent( GetPot& dataFile )
-    {
-        
-    }
-    
-    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-    {
-        bool coords ( Y > 2.5 && Y < 4 );
-        bool time ( fmod(t, 800.) < 22 && fmod(t, 800.) > 2);
-        return ( coords && time ? 0.03 : 0 );
-    }
-    
-private:
-    
-    Real M_YUpper;
-    Real M_YLower;
-    
-};
+//class AppliedCurrent {
+//    
+//public:
+//    
+//    AppliedCurrent( GetPot& dataFile )
+//    {
+//        
+//    }
+//    
+//    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
+//    {
+//        bool coords ( Y > 2.5 && Y < 4 );
+//        bool time ( fmod(t, 800.) < 22 && fmod(t, 800.) > 2);
+//        return ( coords && time ? 0.03 : 0 );
+//    }
+//    
+//private:
+//    
+//    Real M_YUpper;
+//    Real M_YLower;
+//    
+//};
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y > 1.5 && Y < 3 );
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
     return ( coords && time ? 30 : 0 );
-    // setAppliedCurrent in electrophys. module.
 }
 
 Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    return 0; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
+    bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
+    return 1.4 * time; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
 }
 
 
@@ -676,6 +676,12 @@ int main (int argc, char** argv)
         //============================================//
         // Solve electrophysiology and activation
         //============================================//
+        
+//        if ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2)
+//        {
+//            ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+//        }
+        
         solver.electroSolverPtr() -> registerActivationTime (*activationTimeVector, t, 0.9);
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);

@@ -102,7 +102,7 @@ monodomain_xml_file = ParamList.xml
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 50000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 450000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
     mu = 15000 #4960
@@ -133,7 +133,7 @@ monodomain_xml_file = ParamList.xml
     [../boundary_conditions]
     list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
-    numPreloadSteps  = 10
+    numPreloadSteps  = 5
 
         [./SupportNormal]
         type       = Essential
@@ -209,7 +209,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 0.2
+    timestep        = 0.5
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2
@@ -217,11 +217,11 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarseP2/
+    mesh_dir            = biVentCoarse/
     mesh_file           = biVentCoarse.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P2
+    order               = P1
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
@@ -237,7 +237,7 @@ monodomain_xml_file = ParamList.xml
 
 
     [../newton]
-    maxiter 	= 20
+    maxiter 	= 50
     reltol  	= 1.e-7
     abstol  	= 1.e-7
     #NonLinearLineSearch = 0

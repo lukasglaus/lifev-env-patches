@@ -197,7 +197,8 @@ Int NonLinearRichardson ( VectorEpetra& sol,
         switch ( NonLinearLineSearch )
         {
             case 0: // no NonLinearLineSearch
-                sol += step;
+                if ( normRes > 50 ) lambda = 0.5;
+                sol += lambda * step;
                 functional.evalResidual ( residual, sol, iter);
                 //                normRes = residual.NormInf();
                 break;
