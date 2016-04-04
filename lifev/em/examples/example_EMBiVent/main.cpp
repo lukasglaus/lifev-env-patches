@@ -75,8 +75,7 @@ Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID
 {
     bool coords ( Y > 1.5 && Y < 3 );
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
-    return 0; //( coords && time ? 30 : 0 );
-    // setAppliedCurrent in electrophys. module.
+    return ( coords && time ? 30 : 0 );
 }
 
 Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
@@ -335,7 +334,7 @@ int main (int argc, char** argv)
     	std::cout << "Building matrices ... ";
     }
     
-    solver.twoWayCoupling();
+    solver.oneWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
@@ -678,10 +677,10 @@ int main (int argc, char** argv)
         // Solve electrophysiology and activation
         //============================================//
         
-        if ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2)
-        {
-            ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
-        }
+//        if ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2)
+//        {
+//            ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+//        }
         
         solver.electroSolverPtr() -> registerActivationTime (*activationTimeVector, t, 0.9);
         solver.solveElectrophysiology (stim, t);

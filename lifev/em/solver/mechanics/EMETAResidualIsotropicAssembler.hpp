@@ -52,7 +52,7 @@ computeLinearizedVolumetricResidualTerms ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing linear volumetric residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra15pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( P  , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -75,7 +75,7 @@ computeLinearizedDeviatoricResidualTerms ( const vector_Type& disp,
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing linear deviatoric residual terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra15pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( P  , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -107,7 +107,7 @@ computeI1ResidualTerms ( const vector_Type& disp,
 //	auto P = eval (W1, F ) * _dI1bar(F) ;
 
 	integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra15pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( P, grad (phi_i) )
               ) >> residualVectorPtr;
@@ -128,7 +128,7 @@ computeI2ResidualTerms ( const vector_Type& disp,
 	auto F = _F (dispETFESpace, disp, 0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra15pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( eval (W2, F) * _dI2bar (F), grad (phi_i) )
               ) >> residualVectorPtr;
@@ -151,7 +151,7 @@ computeVolumetricResidualTerms ( const vector_Type& disp,
 
     auto P = eval (Wvol, F ) * _dJ (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra15pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( P , grad (phi_i) )
               ) >> residualVectorPtr;
@@ -168,7 +168,7 @@ computeI1ResidualTerms ( const vector_Type& disp,
                          FunctorPtr         W1)
 {
     using namespace ExpressionAssembly;
-
+    
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto s_0 = _v0 (dispETFESpace, sheets);
 
@@ -185,7 +185,7 @@ computeI1ResidualTerms ( const vector_Type& disp,
 	auto F = _F (dispETFESpace, disp, 0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
-                quadRuleTetra15pt,
+                quadRuleTetra4pt,
                 dispETFESpace,
                 dot ( eval (W1, F, f0, s0) * _dI1bar (F), grad (phi_i) )
               ) >> residualVectorPtr;
