@@ -588,7 +588,7 @@ int main (int argc, char** argv)
         
         // Circulation
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
-        circulationSolver.exportSolution( circulationOutputFile );
+        //circulationSolver.exportSolution( circulationOutputFile );
 
         // Coupling boundary conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
