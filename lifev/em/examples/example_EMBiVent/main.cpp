@@ -556,7 +556,7 @@ int main (int argc, char** argv)
             restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
         }
         
-        //std::cout << comm->MyPID() << " ----------------------- " << restartInput << std::endl;
+        std::cout << comm->MyPID() << " ----------------------- " << restartInput << std::endl;
 
         
         // Set time variable
@@ -582,7 +582,9 @@ int main (int argc, char** argv)
 
         
         ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
+        
+        
+        std::cout << restartDir + "solution.dat" << "    " << nIter << std::endl;
         
         // Circulation
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
