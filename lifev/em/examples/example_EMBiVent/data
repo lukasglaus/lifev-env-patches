@@ -133,7 +133,7 @@ monodomain_xml_file = ParamList.xml
     [../boundary_conditions]
     list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
-    numPreloadSteps  = 5
+    numPreloadSteps  = 10
 
         [./SupportNormal]
         type       = Essential
@@ -150,7 +150,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100' #' 5.00 * 1000' # D
+            function = '1000000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -172,7 +172,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100' #' 5.00 * 1000' # D
+            function = '1000000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -213,15 +213,16 @@ monodomain_xml_file = ParamList.xml
     theta       	= 0.35
     zeta        	= 0.75
     BDF_order   	= 2
+    timestepRestartFactor = 0.5
 
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarse/
+    mesh_dir            = biVentCoarseP2/
     mesh_file           = biVentCoarse.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P1
+    order               = P2
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers

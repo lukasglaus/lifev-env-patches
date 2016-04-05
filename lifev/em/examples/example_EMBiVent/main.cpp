@@ -600,6 +600,11 @@ int main (int argc, char** argv)
         solver.solveMechanics();
         
         std::cout << "Volume 1: " << LV.volume(disp, dETFESpace, - 1) << " " << RV.volume(disp, dETFESpace, 1) << std::endl;
+        
+        // Adjust time step
+        Real timestepFactor = dataFile ( "solid/time_discretization/timestepRestartFactor", 1. );
+        dt_mechanics *= timestepFactor;
+        saveIter = static_cast<UInt>( dt_mechanics / dt_activation );
 
     }
 

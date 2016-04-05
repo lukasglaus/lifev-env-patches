@@ -2312,7 +2312,7 @@ void bcRobinManageResidual ( VectorType& residual,
 
     if (solution.mapType() == Repeated)
     {
-        std::cout << "pass me a non-repeated solution" << std::endl;
+        //std::cout << "pass me a non-repeated solution" << std::endl;
         VectorType uniqueSolution (solution, Unique, Zero);
         bcRobinManageResidual (  residual,
                                  rightHandSide,
@@ -2458,7 +2458,7 @@ bcFluxManageResidual ( VectorType&      residual,
 {
     if (solution.mapType() == Repeated)
     {
-        std::cout << "pass me a non-repeated solution" << std::endl;
+        //std::cout << "pass me a non-repeated solution" << std::endl;
         VectorType uniqueSolution (solution, Unique, Zero);
         bcFluxManageResidual (  residual,
                                 rightHandSide,
