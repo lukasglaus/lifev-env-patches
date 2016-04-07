@@ -121,7 +121,7 @@ public:
       "multimesh" ( = true if the mesh has to be saved at each post-processing step)
       @param mesh the mesh
       @param the prefix for the case file (ex. "test" for test.case)
-      @param the procId determines de CPU id. if negative, it ussemes there is only one processor
+      @param the procId determines de CPU id. if negative, it ussemes there is only one processorf
     */
     ExporterHDF5 (const GetPot& dfile, meshPtr_Type mesh, const std::string& prefix, const Int& procId);
 

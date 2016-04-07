@@ -29,7 +29,7 @@ monodomain_xml_file = ParamList.xml
     #elementsOrder   = P1
 
     [../flags]
-    lvendo = 50
+    lvendo = 23
     # rvedno = 51
     # rvseptum = 52
 
@@ -131,42 +131,20 @@ monodomain_xml_file = ParamList.xml
 
 
     [../boundary_conditions]
-    list = 'SupportNormal SupportRobin BaseNormal BaseRobin'
-    listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
+    list =  'BaseNormal BaseRobin'
+    listVariableBC = 'LVEndo'
     numPreloadSteps  = 10
 
-        [./SupportNormal]
+        [./BaseNormal]
         type       = Essential
-        flag       = 49
-        mode       = Component
-        component  = 1
-        function  = '0.0'
-
-        [../SupportRobin]
-        type       = Robin
-        flag       = 49
-        mode       = Component
-        component  = '0 2'
-        function = '0.0'
-
-            [./RobinAlpha]
-            function = '10000' #' 5.00 * 1000' # D
-
-            [../RobinBeta]
-            function = '1' #' 5.00 * 1000' # D
-
-            [../]
-
-        [../BaseNormal]
-        type       = Essential
-        flag       = 48
+        flag       = 22
         mode       = Component
         component  = 1
         function  = '0.0'
 
         [../BaseRobin]
         type       = Robin
-        flag       = 48
+        flag       = 22
         mode       = Component
         component  = '0 2'
         function = '0.0'
@@ -180,20 +158,8 @@ monodomain_xml_file = ParamList.xml
             [../]
 
         [../LVEndo]
-            flag    = 50
+            flag    = 23
             index   = 0
-
-        [../RVEndo]
-            flag    = 51
-            index   = 1
-
-        [../RVSeptum]
-            flag    = 52
-            index   = 1
-
-        [../RVRadii]
-            flag    = 53
-            index   = 1
 
         [../]
 
@@ -218,8 +184,8 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarseP2/
-    mesh_file           = biVentCoarse.mesh
+    mesh_dir            = siVentP2/
+    mesh_file           = siVent.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
     order               = P2

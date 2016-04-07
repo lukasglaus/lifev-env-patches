@@ -24,4 +24,5 @@ ADD_SUBDIRECTORIES(
    example_EMCoupling
    example_XBridge
    example_EMBiVent
+   example_EMSiVent
 )
