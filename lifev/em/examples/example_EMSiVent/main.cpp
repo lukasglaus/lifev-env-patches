@@ -47,30 +47,7 @@ using namespace LifeV;
 //============================================//
 // Functions
 //============================================//
-
-//class AppliedCurrent {
-//    
-//public:
-//    
-//    AppliedCurrent( GetPot& dataFile )
-//    {
-//        
-//    }
-//    
-//    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-//    {
-//        bool coords ( Y > 2.5 && Y < 4 );
-//        bool time ( fmod(t, 800.) < 22 && fmod(t, 800.) > 2);
-//        return ( coords && time ? 0.03 : 0 );
-//    }
-//    
-//private:
-//    
-//    Real M_YUpper;
-//    Real M_YLower;
-//    
-//};
-
+               
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y > 1.5 && Y < 3 );

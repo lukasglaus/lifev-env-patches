@@ -98,11 +98,11 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType = PNH
+    EMPassiveMaterialType = PNHL
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
-    Tmax = 450000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Tmax = 500000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     #NeoHokean
     mu = 15000 #4960
@@ -218,11 +218,11 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarseP2/
+    mesh_dir            = biVentCoarse/
     mesh_file           = biVentCoarse.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P2
+    order               = P1
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers

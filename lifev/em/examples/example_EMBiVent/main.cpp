@@ -48,28 +48,47 @@ using namespace LifeV;
 // Functions
 //============================================//
 
-//class AppliedCurrent {
-//    
-//public:
-//    
-//    AppliedCurrent( GetPot& dataFile )
-//    {
-//        
-//    }
-//    
-//    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-//    {
-//        bool coords ( Y > 2.5 && Y < 4 );
-//        bool time ( fmod(t, 800.) < 22 && fmod(t, 800.) > 2);
-//        return ( coords && time ? 0.03 : 0 );
-//    }
-//    
-//private:
-//    
-//    Real M_YUpper;
-//    Real M_YLower;
-//    
-//};
+Real
+externalPower ( const VectorEpetra& dispCurrent,
+                const VectorEpetra& dispPrevious,
+                const boost::shared_ptr<ETFESpace< RegionMesh<LinearTetra>, MapEpetra, 3, 3 > > dispETFESpace,
+                Real pressure,
+                Real dt,
+                const unsigned int bdFlag)
+{
+    VectorEpetra traction ( dispCurrent.map() );
+    VectorEpetra velocity ( (dispCurrent - dispPrevious) / dt );
+    
+    MatrixSmall<3,3> Id;
+    Id(0,0) = 1.; Id(0,1) = 0., Id(0,2) = 0.;
+    Id(1,0) = 0.; Id(1,1) = 1., Id(1,2) = 0.;
+    Id(2,0) = 0.; Id(2,1) = 0., Id(2,2) = 1.;
+    
+    {
+        using namespace ExpressionAssembly;
+
+        auto I = value(Id);
+        auto Grad_u = grad( dispETFESpace, dispCurrent, 0);
+        auto F =  Grad_u + I;
+        auto FmT = minusT(F);
+        auto J = det(F);
+        auto p = value(pressure);
+
+        QuadratureBoundary myBDQR (buildTetraBDQR (quadRuleTria7pt) );
+        
+        integrate ( boundary ( dispETFESpace->mesh(), bdFlag),
+                   myBDQR,
+                   dispETFESpace,
+                   p * J * dot( FmT * Nface,  phi_i)
+                   //p * J * dot( FmT * Nface,  phi_i)
+                   //value(-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral
+                   ) >> traction;
+
+        traction.globalAssemble();
+    }
+
+    return traction.dot(velocity);
+}
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
@@ -499,7 +518,7 @@ int main (int argc, char** argv)
     UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
 
     Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
-    
+
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     
@@ -655,6 +674,9 @@ int main (int argc, char** argv)
     VFe[0] = LV.volume(disp, dETFESpace, - 1);
     VFe[1] = RV.volume(disp, dETFESpace, 1);
     VCirc = VFe;
+    
+    VectorEpetra dispPre ( disp );
+    ID bdPowerFlag  =  dataFile ( ("solid/boundary_conditions/LVEndo/flag") , 0 );
     
     printCoupling("Initial values");
     
@@ -849,6 +871,17 @@ int main (int argc, char** argv)
                 std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
                 std::cout << "\n******************************************\n\n";
             }
+            
+            Real extPow = externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, bdPowerFlag);
+            
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n******************************************";
+                std::cout << "\nExternal power is " << extPow;
+                std::cout << "\n******************************************\n\n";
+            }
+            
+            dispPre = disp;
             
             //============================================//
             // Update volume variables
