@@ -33,6 +33,56 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 namespace EMAssembler
 {
 
+    
+template< typename Mesh, typename FunctorPtr1, typename FunctorPtr2, typename FunctorPtr3, typename FunctorPtr4 >
+void
+computePMRCResidualTerms ( const vector_Type& disp,
+                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                           vectorPtr_Type residualVectorPtr,
+                           FunctorPtr1 Wvol, FunctorPtr2 dWvol, FunctorPtr3 W1, FunctorPtr4 W2)
+{
+    using namespace ExpressionAssembly;
+    
+    auto F = _F (dispETFESpace, disp, 0);
+    
+    //
+    if(disp.comm().MyPID() == 0) ::cout << "EMETA - Computing Volumetric residual terms ... \n";
+    
+    auto Pvol = eval (Wvol, F ) * _dJ (F);
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+               quadRuleTetra15pt,
+               dispETFESpace,
+               dot ( Pvol , grad (phi_i) )
+               ) >> residualVectorPtr;
+    
+    //
+    if(disp.comm().MyPID() == 0) std::cout << "EMETA - Computing I1 residual terms ... \n";
+    
+    auto J = det(F);
+    auto Jm23 = pow(J, 2 / (-3.) );
+    auto FmT = minusT(F);
+    auto H = J * FmT;
+    auto I1 = dot(F, F);
+    auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
+    auto P = eval (W1, F) * dI1bar ;
+    
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+               quadRuleTetra15pt,
+               dispETFESpace,
+               dot ( P, grad (phi_i) )
+               ) >> residualVectorPtr;
+    
+    //
+    if(disp.comm().MyPID() == 0) std::cout << "EMETA - Computing I2 residual terms ... \n";
+    
+    integrate ( elements ( dispETFESpace->mesh() ) ,
+               quadRuleTetra15pt,
+               dispETFESpace,
+               dot ( eval (W2, F) * _dI2bar (F), grad (phi_i) )
+               ) >> residualVectorPtr;
+    
+}
+
 
 
 template< typename Mesh, typename FunctorPtr >

@@ -25,5 +25,6 @@
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsActiveStrainShearExponential.hpp>
 
 #include <lifev/em/solver/mechanics/materials/functions/FunctionsMooneyRivlin.hpp>
+#include <lifev/em/solver/mechanics/materials/functions/FunctionsMooneyRivlinCompact.hpp>
 
 #endif /* FUNCTIONSLIST_HPP_ */

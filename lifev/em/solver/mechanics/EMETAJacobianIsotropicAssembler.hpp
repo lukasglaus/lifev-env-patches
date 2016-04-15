@@ -34,6 +34,66 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 namespace EMAssembler
 {
 
+    
+template <typename Mesh, typename FunctorPtr1, typename FunctorPtr2, typename FunctorPtr3, typename FunctorPtr4 >
+void
+computePMRCJacobianTerms ( const vector_Type& disp,
+                           boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                           matrixPtr_Type jacobianPtr,
+                           FunctorPtr1 Wvol, FunctorPtr2 dWvol, FunctorPtr3 W1, FunctorPtr4 W2)
+{
+    {
+        using namespace ExpressionAssembly;
+        
+        auto F = _F (dispETFESpace, disp, 0);
+        
+        //
+        if(disp.comm().MyPID() == 0) std::cout << "EMETA - Computing Volumetric jacobian terms  ... \n";
+        
+        auto dPvol = eval (Wvol, F ) * _d2JdF (F, _dF);
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRuleTetra15pt,
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dPvol, grad (phi_i) )
+                   ) >> jacobianPtr;
+        
+        //
+        if(disp.comm().MyPID() == 0) std::cout << "EMETA - Computing Volumetric jacobian terms with second derivative of the energy ... \n";
+        
+        auto dPdvol = eval (dWvol, F ) * _dJdF (F, _dF) * _dJ (F);
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRuleTetra15pt,
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dPdvol , grad (phi_i) )
+                   ) >> jacobianPtr;
+        
+        //
+        if(disp.comm().MyPID() == 0) std::cout << "Computing I1 jacobian terms  ... \n";
+        
+        auto dPdF = eval (W1, F ) * _d2I1bardF(F, _dF);
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRuleTetra15pt,
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dPdF , grad (phi_i) )
+                   ) >> jacobianPtr;
+        
+        //
+        if(disp.comm().MyPID() == 0) std::cout << "Computing I2 jacobian terms  ... \n";
+        
+        auto dP2 = eval (W2, F ) * _d2I2bardF (F, _dF);
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRuleTetra15pt,
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dP2 , grad (phi_i) )
+                   ) >> jacobianPtr;
+        
+    }
+}
+
 
 template <typename Mesh, typename FunctorPtr >
 void

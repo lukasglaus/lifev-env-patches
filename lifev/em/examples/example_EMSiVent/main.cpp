@@ -592,6 +592,9 @@ int main (int argc, char** argv)
     
     if ( ! restart )
     {
+        LifeChrono chronoPreload;
+        chronoPreload.start();
+
         const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
         
         auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
@@ -622,6 +625,13 @@ int main (int argc, char** argv)
             //activationTimeExporter.postProcess( i );
 
         }
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*********************";
+            std::cout << "\nPreload done in: " << chronoPreload.diff();
+            std::cout << "\n*********************\n";
+        }
+
     }
     
     

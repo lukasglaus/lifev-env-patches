@@ -20,6 +20,7 @@
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicExponential.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicFung.hpp>
 #include <lifev/em/solver/mechanics/materials/passive_materials/PassiveMooneyRivlin.hpp>
+#include <lifev/em/solver/mechanics/materials/passive_materials/PassiveMooneyRivlinCompact.hpp>
 
 // ACTIVE STRESS MATERIAL
 #include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
