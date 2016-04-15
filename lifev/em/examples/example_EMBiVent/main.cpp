@@ -645,6 +645,9 @@ int main (int argc, char** argv)
         solver.saveSolution (-1.0);
         activationTimeExporter.postProcess(-1.0);
         
+        LifeChrono chronoPreload;
+        chronoPreload.start();
+        
         for (int i (1); i <= preloadSteps; i++)
         {
             if ( 0 == comm->MyPID() )
@@ -662,8 +665,15 @@ int main (int argc, char** argv)
             solver.solveMechanics();
             //solver.saveSolution ( i );
             //activationTimeExporter.postProcess( i );
-
         }
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*********************";
+            std::cout << "\nPreload done in: " << chronoPreload.diff();
+            std::cout << "\n*********************\n";
+        }
+
     }
     
     

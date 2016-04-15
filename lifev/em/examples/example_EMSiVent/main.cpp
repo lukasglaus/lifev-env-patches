@@ -625,6 +625,7 @@ int main (int argc, char** argv)
             //activationTimeExporter.postProcess( i );
 
         }
+        
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*********************";
