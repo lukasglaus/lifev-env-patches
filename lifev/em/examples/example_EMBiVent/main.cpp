@@ -325,18 +325,18 @@ int main (int argc, char** argv)
     solver.initialize();
     
     // Set potential on certain flags
-    UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
+    //UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
     //UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
     //UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
-    ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
+    //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
     //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
     //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
     
     // Restrict the potential set by a function
-    vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) ); // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );
-    function_Type potMult = &potentialMultiplyerFcn;
-    solver.electroSolverPtr()->feSpacePtr()->interpolate( potMult, *potentialMultiplyer, 0 );
-    *solver.electroSolverPtr()->potentialPtr() *= *potentialMultiplyer;
+    //vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) ); // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );
+    //function_Type potMult = &potentialMultiplyerFcn;
+    //solver.electroSolverPtr()->feSpacePtr()->interpolate( potMult, *potentialMultiplyer, 0 );
+    //*solver.electroSolverPtr()->potentialPtr() *= *potentialMultiplyer;
     
     if( 0 == comm->MyPID() )
     {
@@ -908,8 +908,8 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        solver.saveSolution(t);
-        activationTimeExporter.postProcess(t);
+        //solver.saveSolution(t);
+        //activationTimeExporter.postProcess(t);
     }
 
     
