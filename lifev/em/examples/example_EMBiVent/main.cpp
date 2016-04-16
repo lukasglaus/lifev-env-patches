@@ -908,8 +908,11 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        //solver.saveSolution(t);
-        //activationTimeExporter.postProcess(t);
+        if ( t % 10 == 0. )
+        {
+            solver.saveSolution(t);
+            activationTimeExporter.postProcess(t);
+        }
     }
 
     
