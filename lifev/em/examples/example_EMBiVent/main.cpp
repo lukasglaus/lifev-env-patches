@@ -908,7 +908,7 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        if ( fmod(t, 10.) == 0. )
+        if ( fmod(t, 10.) < 1e-2 )
         {
             solver.saveSolution(t);
             activationTimeExporter.postProcess(t);
