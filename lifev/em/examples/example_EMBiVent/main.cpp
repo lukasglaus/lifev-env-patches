@@ -652,6 +652,13 @@ int main (int argc, char** argv)
         {
             if ( 0 == comm->MyPID() )
             {
+                std::cout << "\n" << fmod(i, 10) << std::endl;
+                std::cout << "\n" << fmod(9, 10) << std::endl;
+                std::cout << "\n" << fmod(10, 10) << std::endl;
+                std::cout << "\n" << fmod(10.5, 10.) << std::endl;
+                std::cout << "\n" << (fmod(10.5, 10.) > 5 )<< std::endl;
+                std::cout << "\n" << (fmod(10.5, 10.) < 5 )<< std::endl;
+
                 std::cout << "\n*********************";
                 std::cout << "\nPreload step: " << i << " / " << preloadSteps;
                 std::cout << "\n*********************\n";
@@ -903,15 +910,13 @@ int main (int argc, char** argv)
             // Export circulation solution
             //============================================//
             if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
-        }
         
-        //============================================//
-        // Export FE-solution
-        //============================================//
-        if ( fmod(t, 10.) < 1e-2 )
-        {
+            //============================================//
+            // Export FE-solution
+            //============================================//
             solver.saveSolution(t);
             activationTimeExporter.postProcess(t);
+            
         }
     }
 
