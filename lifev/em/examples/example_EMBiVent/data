@@ -98,14 +98,15 @@ monodomain_xml_file = ParamList.xml
         #PMR   = Passive Mooney Rivlin
         #SimpleActiveStress  = Simple Fiber Active Stress
 
-    EMPassiveMaterialType = PNHL
+    EMPassiveMaterialType = PMR
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
     Tmax = 500000 #30000 #500000 # 500000 value is thought for Holzapfel
 
-    #NeoHokean
-    mu = 15000 #4960
+    # NeoHokean & Mooney-Rivlin
+    mu = 5000 #4960
+    C2 = 5000
 
     # Holzapfel
     a           = 3330

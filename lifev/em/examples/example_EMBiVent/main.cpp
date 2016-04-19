@@ -882,16 +882,16 @@ int main (int argc, char** argv)
                 std::cout << "\n******************************************\n\n";
             }
             
-            Real extPow = externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, bdPowerFlag);
-            
-            if ( 0 == comm->MyPID() )
-            {
-                std::cout << "\n******************************************";
-                std::cout << "\nExternal power is " << extPow;
-                std::cout << "\n******************************************\n\n";
-            }
-            
-            dispPre = disp;
+//            Real extPow = externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, bdPowerFlag);
+//            
+//            if ( 0 == comm->MyPID() )
+//            {
+//                std::cout << "\n******************************************";
+//                std::cout << "\nExternal power is " << extPow;
+//                std::cout << "\n******************************************\n\n";
+//            }
+//            
+//            dispPre = disp;
             
             //============================================//
             // Update volume variables
@@ -908,7 +908,7 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        if ( t % 10 == 0. )
+        if ( fmod(t, 10.) == 0. )
         {
             solver.saveSolution(t);
             activationTimeExporter.postProcess(t);
