@@ -907,10 +907,12 @@ int main (int argc, char** argv)
             //============================================//
             // Export FE-solution
             //============================================//
-            bool save ( fmod(t, 5.) < 0.01 );
-            std::cout << "\n---------------------------------------------------------------------------save: " << save << std::endl;
-            solver.saveSolution(t, restart);
-            activationTimeExporter.postProcess(t, restart);
+            bool save ( std::abs(std::remainder(t, 10.)) < 0.01 );
+            if ( save )
+            {
+                solver.saveSolution(t, restart);
+                activationTimeExporter.postProcess(t, restart);
+            }
             
         }
     }

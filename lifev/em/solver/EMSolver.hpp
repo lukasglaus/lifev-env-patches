@@ -648,12 +648,12 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-    M_electroExporterPtr -> postProcess (time, restart);
+    M_electroExporterPtr -> postProcess (time);//, restart);
     //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
     //if(M_activationModelPtr -> fiberActivationPtr()) std::cout << "\nFiber activation exporter available.";
-    M_activationExporterPtr -> postProcess (time, restart);
+    M_activationExporterPtr -> postProcess (time);//, restart);
     //if(M_mechanicsExporterPtr) std::cout << "\nMechanics exporter available.";
-    M_mechanicsExporterPtr -> postProcess (time, restart);
+    M_mechanicsExporterPtr -> postProcess (time);//, restart);
 }
 
 template<typename Mesh , typename ElectroSolver>
