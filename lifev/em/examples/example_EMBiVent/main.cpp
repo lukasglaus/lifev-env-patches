@@ -572,7 +572,7 @@ int main (int argc, char** argv)
         // Get most recent restart index
         if ( restartInput == "." )
         {
-            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_activation) + " + 1}'").c_str() );
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_mechanics) + " + 1}'").c_str() );
         }
         
         std::cout << comm->MyPID() << " ----------------------- " << restartInput << std::endl;
@@ -580,11 +580,11 @@ int main (int argc, char** argv)
         
         // Set time variable
         const unsigned int restartInputStr = std::stoi(restartInput);
-        const unsigned int nIter = (restartInputStr - 1) / saveIter;
+        const unsigned int nIter = (restartInputStr - 1);
         t = nIter * dt_mechanics;
         
-        activationTimeExporter.setTimeIndex(nIter * saveIter + 2);
-        solver.setTimeIndex(nIter * saveIter + 2);
+        activationTimeExporter.setTimeIndex(nIter + 2);
+        solver.setTimeIndex(nIter + 2);
 
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
         
@@ -652,13 +652,6 @@ int main (int argc, char** argv)
         {
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n" << fmod(i, 10) << std::endl;
-                std::cout << "\n" << fmod(9, 10) << std::endl;
-                std::cout << "\n" << fmod(10, 10) << std::endl;
-                std::cout << "\n" << fmod(10.5, 10.) << std::endl;
-                std::cout << "\n" << (fmod(10.5, 10.) > 5 )<< std::endl;
-                std::cout << "\n" << (fmod(10.5, 10.) < 5 )<< std::endl;
-
                 std::cout << "\n*********************";
                 std::cout << "\nPreload step: " << i << " / " << preloadSteps;
                 std::cout << "\n*********************\n";
@@ -914,8 +907,10 @@ int main (int argc, char** argv)
             //============================================//
             // Export FE-solution
             //============================================//
-            solver.saveSolution(t);
-            activationTimeExporter.postProcess(t);
+            bool save ( fmod(t, 5.) < 0.01 );
+            std::cout << "\n---------------------------------------------------------------------------save: " << save << std::endl;
+            solver.saveSolution(t, restart);
+            activationTimeExporter.postProcess(t, restart);
             
         }
     }

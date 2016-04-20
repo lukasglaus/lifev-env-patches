@@ -144,6 +144,10 @@ public:
     //@{
     virtual void postProcess (const Real& time);
 
+
+    void postProcess (const Real& time, const bool& restart);
+
+    
     //! Import data from previous simulations at a certain time
     /*!
       @param Time the time of the data to be imported
@@ -296,7 +300,66 @@ ExporterHDF5<MeshType>::ExporterHDF5 (const GetPot& dfile, const std::string& pr
 template<typename MeshType>
 void ExporterHDF5<MeshType>::postProcess (const Real& time)
 {
-    if ( M_HDF5.get() == 0)
+    if ( M_HDF5.get() == 0 )
+    {
+        M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
+        M_outputFileName = this->M_prefix + ".h5";
+        M_HDF5->Create (this->M_postDir + M_outputFileName);
+        
+        // write empty xdmf file
+        writeInitXdmf();
+        
+        if (!this->M_multimesh)
+        {
+            writeGeometry(); // see also writeGeometry
+            M_HDF5->Flush();
+        }
+    }
+    
+    // typedef std::list< exporterData_Type >::const_iterator Iterator;
+    
+    this->computePostfix();
+    
+    std::size_t found ( this->M_postfix.find ( "*" ) );
+    if ( found == std::string::npos )
+    {
+        if (!this->M_procId)
+        {
+            std::cout << "  X-  HDF5 post-processing ...                 " << std::flush;
+        }
+        LifeChrono chrono;
+        chrono.start();
+        for (typename super::dataVectorIterator_Type i = this->M_dataVector.begin(); i != this->M_dataVector.end(); ++i)
+        {
+            writeVariable (*i);
+        }
+        // pushing time
+        this->M_timeSteps.push_back (time);
+        
+        writeXdmf (time);
+        
+        if (this->M_multimesh)
+        {
+            writeGeometry(); // see also writeGeometry
+        }
+        
+        chrono.stop();
+        
+        // Write to file without closing the file
+        M_HDF5->Flush();
+        
+        if (!this->M_procId)
+        {
+            std::cout << "done in " << chrono.diff() << " s." << std::endl;
+        }
+    }
+}
+
+    
+template<typename MeshType>
+void ExporterHDF5<MeshType>::postProcess (const Real& time, const bool& restart)
+{
+    if ( M_HDF5.get() == 0 && !restart )
     {
         M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
         M_outputFileName = this->M_prefix + ".h5";
@@ -313,7 +376,18 @@ void ExporterHDF5<MeshType>::postProcess (const Real& time)
     }
 
     // typedef std::list< exporterData_Type >::const_iterator Iterator;
+    
+    if ( restart )
+    {
+        M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
 
+        if (this->M_procId == 0)
+        {
+            M_xdmf.open ( (this->M_postDir + this->M_prefix + ".xmf").c_str(), std::ios_base::out );
+        }
+
+    }
+    
     this->computePostfix();
 
     std::size_t found ( this->M_postfix.find ( "*" ) );
@@ -350,6 +424,7 @@ void ExporterHDF5<MeshType>::postProcess (const Real& time)
         }
     }
 }
+    
 
 template<typename MeshType>
 UInt ExporterHDF5<MeshType>::importFromTime ( const Real& Time )

@@ -325,7 +325,7 @@ public:
         return M_activationModelPtr;
     }
 
-    void saveSolution (Real time);
+    void saveSolution (Real time, const bool& restart = 0);
     
     void setTimeIndex (const UInt& time);
 
@@ -646,14 +646,14 @@ EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
     
 template<typename Mesh , typename ElectroSolver>
 void
-EMSolver<Mesh, ElectroSolver>::saveSolution (Real time)
+EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-    M_electroExporterPtr -> postProcess (time);
-    if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
-    if(M_activationModelPtr -> fiberActivationPtr()) std::cout << "\nFiber activation exporter available.";
-    M_activationExporterPtr -> postProcess (time);
-    if(M_mechanicsExporterPtr) std::cout << "\nMechanics exporter available.";
-    M_mechanicsExporterPtr -> postProcess (time);
+    M_electroExporterPtr -> postProcess (time, restart);
+    //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
+    //if(M_activationModelPtr -> fiberActivationPtr()) std::cout << "\nFiber activation exporter available.";
+    M_activationExporterPtr -> postProcess (time, restart);
+    //if(M_mechanicsExporterPtr) std::cout << "\nMechanics exporter available.";
+    M_mechanicsExporterPtr -> postProcess (time, restart);
 }
 
 template<typename Mesh , typename ElectroSolver>
