@@ -579,7 +579,7 @@ int main (int argc, char** argv)
 
         
         // Set time variable
-        const unsigned int restartInputStr = std::stoi(restartInput);
+        const unsigned int restartInputStr = std::stoi(restartInput) / 10;
         const unsigned int nIter = (restartInputStr - 1);
         t = nIter * dt_mechanics;
         
