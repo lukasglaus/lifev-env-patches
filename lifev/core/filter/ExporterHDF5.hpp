@@ -145,7 +145,7 @@ public:
     virtual void postProcess (const Real& time);
 
 
-    void postProcess (const Real& time, const bool& restart);
+    void postProcess2 (const Real& time);
 
     
     //! Import data from previous simulations at a certain time
@@ -357,36 +357,26 @@ void ExporterHDF5<MeshType>::postProcess (const Real& time)
 
     
 template<typename MeshType>
-void ExporterHDF5<MeshType>::postProcess (const Real& time, const bool& restart)
+void ExporterHDF5<MeshType>::postProcess2 (const Real& time)
 {
-    if ( M_HDF5.get() == 0 && !restart )
+    if ( M_HDF5.get() == 0 )
     {
         M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
         M_outputFileName = this->M_prefix + ".h5";
-        M_HDF5->Create (this->M_postDir + M_outputFileName);
+        M_HDF5->Open (this->M_postDir + M_outputFileName);
 
         // write empty xdmf file
-        writeInitXdmf();
+        //writeInitXdmf();
 
         if (!this->M_multimesh)
         {
             writeGeometry(); // see also writeGeometry
             M_HDF5->Flush();
         }
+        return;
     }
 
     // typedef std::list< exporterData_Type >::const_iterator Iterator;
-    
-    if ( restart )
-    {
-        M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
-
-        if (this->M_procId == 0)
-        {
-            M_xdmf.open ( (this->M_postDir + this->M_prefix + ".xmf").c_str(), std::ios_base::out );
-        }
-
-    }
     
     this->computePostfix();
 

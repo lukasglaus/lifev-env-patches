@@ -155,11 +155,9 @@ int main (int argc, char** argv)
 #endif
 
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
-    if ( comm->MyPID() == 0 )
-    {
-        cout << "% using MPI" << std::endl;
-    }
-    //displayer->leaderPrint ("% using MPI");
+    
+    Displayer displayer ( comm );
+    displayer.leaderPrint ("\nUsing MPI\n");
 
     EMSolver<mesh_Type, monodomain_Type> solver(comm);
 
@@ -186,64 +184,22 @@ int main (int argc, char** argv)
     // Load mesh
     //============================================//
     
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "Load mesh...\n";
-    }
-    
-    const std::string meshFile = command_line.follow ("biVent", 2, "-m", "--mesh");
-    std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
-    std::string meshName;
-    std::string meshPath;
-    
-    if ( meshFile == "fine" && elementOrder == "P1" )
-    {
-        meshName = "biVentFine.mesh";
-        meshPath = "biVentFine/";
-    }
-    else if ( meshFile == "med" && elementOrder == "P1" )
-    {
-        meshName = "biVentMedium.mesh";
-        meshPath = "biVentMedium/";
-    }
-    else if ( meshFile == "coa" && elementOrder == "P1" )
-    {
-        meshName = "biVentCoarse.mesh";
-        meshPath = "biVentCoarse/";
-    }
-    else if ( meshFile == "med" && elementOrder == "P2" )
-    {
-        meshName = "biVentMedium.mesh";
-        meshPath = "biVentMediumP2/";
-    }
-    else if ( meshFile == "coa" && elementOrder == "P2" )
-    {
-        meshName = "biVentCoarse.mesh";
-        meshPath = "biVentCoarseP2/";
-    }
-    else
-    {
-        meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
-        meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
-    }
+    displayer.leaderPrint ("\nLoading mesh ... ");
+
+    std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
+    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
     
     solver.loadMesh (meshName, meshPath);
     
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << " Done!" << endl;
-    }
-    
+    displayer.leaderPrint ("\ndone!");
+
     
     //============================================//
     // Resize mesh
     //============================================//
     
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << "Resizing mesh..." << endl;
-    }
-    
+    displayer.leaderPrint ("\nResizing mesh ... ");
+
     std::vector<Real> scale (3, dataFile("solid/space_discretization/mesh_scaling", 1.0));
     std::vector<Real> rotate { dataFile("solid/space_discretization/mesh_rotation_0", 0.0) , dataFile("solid/space_discretization/mesh_rotation_1", 0.0) , dataFile("solid/space_discretization/mesh_rotation_2", 0.0) };
     std::vector<Real> translate { dataFile("solid/space_discretization/mesh_translation_0", 0.0) , dataFile("solid/space_discretization/mesh_translation_1", 0.0) , dataFile("solid/space_discretization/mesh_translation_2", 0.0) };
@@ -254,38 +210,26 @@ int main (int argc, char** argv)
     transformerFull.transformMesh (scale, rotate, translate);
     transformerLocal.transformMesh (scale, rotate, translate);
     
-    if ( comm->MyPID() == 0 )
-    {
-        std::cout << " Done!" << endl;
-    }
+    displayer.leaderPrint ("\ndone!");
     
     
     //============================================//
     // Setup solver (including fe-spaces & b.c.)
     //============================================//
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << "Setting up EM solver ... ";
-    }
+    displayer.leaderPrint ("\nSetting up EM solver ... ");
     
     solver.setup (dataFile);
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << " done!" << std::endl;
-    }
+    displayer.leaderPrint ("\ndone!");
 
     
     //============================================//
     // Setup anisotropy vectors
     //============================================//
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << "Setting up anisotropy vectors ...";
-    }
- 
+    displayer.leaderPrint ("\nSetting up anisotropy vectors ... ");
+
     bool anisotropy = dataFile ( "solid/space_discretization/anisotropic", false );
 
     if ( anisotropy )
@@ -296,7 +240,7 @@ int main (int argc, char** argv)
         std::string sheetFieldName =  dataFile ( "solid/space_discretization/sheet_fieldname", "sheets");
         std::string fiberDir       =  meshPath; //dataFile ( "solid/space_discretization/fiber_dir", "./");
         std::string sheetDir       =  meshPath; //dataFile ( "solid/space_discretization/sheet_dir", "./");
-        //std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
+        std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
 
         solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
         solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );
@@ -307,77 +251,42 @@ int main (int argc, char** argv)
         solver.setupSheetVector (0., 1., 0.);
     }
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << " done!" << std::endl;
-    }
+    displayer.leaderPrint ("\ndone!");
 
     
     //============================================//
     // Initialize electrophysiology
     //============================================//
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << "Initialize electrophysiology ... ";
-    }
-    
+    displayer.leaderPrint ("\nInitialize electrophysiology ... ");
+
     solver.initialize();
     
-    // Set potential on certain flags
-    //UInt lvendo = dataFile( "electrophysiology/flags/lvendo", 36 );
-    //UInt rvendo = dataFile( "electrophysiology/flags/rvendo", 37 );
-    //UInt rvseptum = dataFile( "electrophysiology/flags/rvseptum", 38 );
-    //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
-    //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvendo );
-    //ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, rvseptum);
-    
-    // Restrict the potential set by a function
-    //vectorPtr_Type potentialMultiplyer ( new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ) ); // or: vectorPtr_Type potentialMultiplyer ( new vector_Type ( *solver.electroSolverPtr()->potentialPtr() ) );
-    //function_Type potMult = &potentialMultiplyerFcn;
-    //solver.electroSolverPtr()->feSpacePtr()->interpolate( potMult, *potentialMultiplyer, 0 );
-    //*solver.electroSolverPtr()->potentialPtr() *= *potentialMultiplyer;
-    
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << " done!" << std::endl;
-    }
+    displayer.leaderPrint ("\ndone!");
 
     
     //============================================//
     // Building Matrices
     //============================================//
 
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << "Building matrices ... ";
-    }
-    
+    displayer.leaderPrint ("\nBuilding matrices ... ");
+
     solver.oneWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
-    if( 0 == comm->MyPID() )
-    {
-    	std::cout << " done!" << std::endl;
-    }
+    displayer.leaderPrint ("\ndone!");
 
     
     //============================================//
     // Setup exporter for EMSolver
     //============================================//
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "Setting up exporters .. " << std::endl;
-    }
+    displayer.leaderPrint ("\nSetting up exporters ... ");
 
     solver.setupExporters (problemFolder);
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << " done!" << std::endl;
-    }
+    displayer.leaderPrint ("\ndone!");
     
     
     //============================================//
@@ -461,7 +370,7 @@ int main (int argc, char** argv)
             std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
             ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
             ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
-            *pVecPtrs[i] = - bcValues[index] * 1333.224; // 0.001333224
+            *pVecPtrs[i] = - bcValues[index] * 1333.224;
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *pBCVecPtrs[i]);
         }
@@ -569,62 +478,46 @@ int main (int argc, char** argv)
     {
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
+        Real dtExport = 10.;
+        
         // Get most recent restart index
         if ( restartInput == "." )
         {
-            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", $1*1000/" + std::to_string(dt_mechanics) + " + 1}'").c_str() );
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", int($1*1000/" + std::to_string(dtExport) + ") + 1}'").c_str() );
         }
         
-        std::cout << comm->MyPID() << " ----------------------- " << restartInput << std::endl;
-
-        
         // Set time variable
-        const unsigned int restartInputStr = std::stoi(restartInput) / 10;
-        const unsigned int nIter = (restartInputStr - 1);
+        const unsigned int restartInputStr = std::stoi(restartInput);
+        const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
         t = nIter * dt_mechanics;
-        
-        activationTimeExporter.setTimeIndex(nIter + 2);
-        solver.setTimeIndex(nIter + 2);
 
-        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
         
-        // Todo: add other electrophysiology variables! solver.electroSolverPtr() -> importSolution ("ElectroSolution", problemFolder, t);
+        // Set time exporter time index
+        activationTimeExporter.setTimeIndex(restartInputStr + 1);
+        solver.setTimeIndex(restartInputStr + 1);
+
+        // Load restart solutions from output files
+        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
         
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
-        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(0), "ElectroSolution" , "Variable0", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(1), "ElectroSolution" , "Variable1", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(2), "ElectroSolution" , "Variable2", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(3), "ElectroSolution" , "Variable3", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
+        {
+            ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        }
         
         ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
-        
         ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
         
-        
-        std::cout << restartDir + "solution.dat" << "    " << nIter << std::endl;
-        
-        // Circulation
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
-        //circulationSolver.exportSolution( circulationOutputFile );
 
-        // Coupling boundary conditions
+        // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
-        
-        std::cout << "Volume 0: " << LV.volume(disp, dETFESpace, - 1) << " " << RV.volume(disp, dETFESpace, 1) << std::endl;
-        
         modifyFeBC(bcValues);
-        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-        solver.solveMechanics();
-        
-        std::cout << "Volume 1: " << LV.volume(disp, dETFESpace, - 1) << " " << RV.volume(disp, dETFESpace, 1) << std::endl;
-        
-        // Adjust time step
-        Real timestepFactor = dataFile ( "solid/time_discretization/timestepRestartFactor", 1. );
-        dt_mechanics *= timestepFactor;
-        saveIter = static_cast<UInt>( dt_mechanics / dt_activation );
-
     }
 
     
@@ -911,7 +804,7 @@ int main (int argc, char** argv)
             if ( save )
             {
                 solver.saveSolution(t, restart);
-                activationTimeExporter.postProcess(t, restart);
+                activationTimeExporter.postProcess(t);
             }
             
         }
