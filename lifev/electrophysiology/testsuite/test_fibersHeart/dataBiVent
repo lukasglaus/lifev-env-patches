@@ -29,67 +29,74 @@ hdf5_sheets_name       = sheets
 
 
     [./boundary_conditions]
-    list = 'EndocardiumLV Epicardium EndocardiumRV Septum Support Base SeptumEdge'
+    list = 'EndocardiumLV Epicardium Patch1 Patch2 EndocardiumRV Septum Base'
    
         [./EndocardiumLV]
         type       = Essential
-        flag       = 50
+        flag       = 65
         mode       = Full
         component  = 1
         function  = '0.0'
 
         [../Epicardium]
         type       = Essential
-        flag       = 54
+        flag       = 69
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
+        [../Patch1]
+        type       = Essential
+        flag       = 70
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
+        [../Patch2]
+        type       = Essential
+        flag       = 71
         mode       = Full
         component  = 1
         function  = '1.0'
 
         [../EndocardiumRV]
         type       = Essential
-        flag       = 51
-        mode       = Full
-        component  = 1
-        function  = '0.75'
-
-        [../Septum]
-        type       = Essential
-        flag       = 52
-        mode       = Full
-        component  = 1
-        function  = '0.75'
-
-        [../Support]
-        type       = Natural
-        flag       = 49
+        flag       = 66
         mode       = Full
         component  = 1
         function  = '0.0'
 
+        [../Septum]
+        type       = Essential
+        flag       = 67
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
         [../Base]
         type       = Natural
-        flag       = 48
+        flag       = 64
         mode       = Full
         component  = 1
         function  = '0.0'
 
         [../SeptumEdge]
-        type       = Essential
-        flag       = 53
+        type       = Natural
+        flag       = 68
         mode       = Full
         component  = 1
-        function  = '0.75'
+        function  = '0.0'
 
         [../]
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= biVentCoarse.mesh
-    elem_type   = P1
+    mesh_file 	= biVentCoarsePatches.mesh
+    elem_type   = P2
   
     [../solver]
     solver_name     = AztecOO #Belos
-    solver          = cg
+    solver          = gmres
     scaling         = none
     output          = all 			# none
     conv            = rhs

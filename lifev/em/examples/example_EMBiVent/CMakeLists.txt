@@ -32,20 +32,14 @@ SOURCE_FILES biVentCoarse
 SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentFine
-   CREATE_SYMLINK
-   SOURCE_FILES biVentFine
-   SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
-)
-
 TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentCoarseP2
    CREATE_SYMLINK
    SOURCE_FILES biVentCoarseP2
    SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
 )
 
-TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentMediumP2
-   CREATE_SYMLINK
-   SOURCE_FILES biVentMediumP2
-   SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
+TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentCoarsePatchesP2
+CREATE_SYMLINK
+SOURCE_FILES biVentCoarsePatchesP2
+SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
 )
