@@ -279,7 +279,7 @@ int main (int argc, char** argv)
 
     
     //============================================//
-    // Setup exporter for EMSolver
+    // Setup exporters for EMSolver
     //============================================//
     
     displayer.leaderPrint ("\nSetting up exporters ... ");
@@ -287,20 +287,6 @@ int main (int argc, char** argv)
     solver.setupExporters (problemFolder);
     
     displayer.leaderPrint ("\ndone!");
-    
-    
-    //============================================//
-    // Setup vector & exporter for activation time
-    //============================================//
-    
-    vectorPtr_Type activationTimeVector ( new vector_Type ( solver.electroSolverPtr()->potentialPtr() -> map() ) );
-    *activationTimeVector = -1.0;
-    
-    ExporterHDF5< RegionMesh <LinearTetra> > activationTimeExporter;
-    activationTimeExporter.setMeshProcId (solver.localMeshPtr(), solver.comm()->MyPID() );
-    activationTimeExporter.addVariable (ExporterData<mesh_Type>::ScalarField, "Activation Time", solver.electroSolverPtr()->feSpacePtr(), activationTimeVector, UInt (0) );
-    activationTimeExporter.setPrefix ("ActivationTime");
-    activationTimeExporter.setPostDir (problemFolder);
     
     
     //============================================//
@@ -497,7 +483,6 @@ int main (int argc, char** argv)
         }
         
         // Set time exporter time index
-        activationTimeExporter.setTimeIndex(restartInputStr + 1);
         solver.setTimeIndex(restartInputStr + 1);
 
         // Load restart solutions from output files
@@ -511,7 +496,7 @@ int main (int argc, char** argv)
         }
         
         ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        ElectrophysiologyUtility::importScalarField (activationTimeVector, "ActivationTime" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
         
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
 
@@ -536,7 +521,6 @@ int main (int argc, char** argv)
         };
         
         solver.saveSolution (-1.0);
-        activationTimeExporter.postProcess(-1.0);
         
         LifeChrono chronoPreload;
         chronoPreload.start();
@@ -556,8 +540,6 @@ int main (int argc, char** argv)
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            //solver.saveSolution ( i );
-            //activationTimeExporter.postProcess( i );
         }
         
         if ( 0 == comm->MyPID() )
@@ -598,7 +580,6 @@ int main (int argc, char** argv)
     if ( ! restart )
     {
         solver.saveSolution (t);
-        activationTimeExporter.postProcess(t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
     
@@ -616,13 +597,7 @@ int main (int argc, char** argv)
         //============================================//
         // Solve electrophysiology and activation
         //============================================//
-        
-//        if ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2)
-//        {
-//            ElectrophysiologyUtility::setValueOnBoundary ( * (solver.electroSolverPtr()->potentialPtr() ), solver.fullMeshPtr(), 1.0, lvendo );
-//        }
-        
-        solver.electroSolverPtr() -> registerActivationTime (*activationTimeVector, t, 0.9);
+
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
@@ -801,11 +776,7 @@ int main (int argc, char** argv)
             // Export FE-solution
             //============================================//
             bool save ( std::abs(std::remainder(t, 10.)) < 0.01 );
-            if ( save )
-            {
-                solver.saveSolution(t, restart);
-                activationTimeExporter.postProcess(t);
-            }
+            if ( save ) solver.saveSolution(t, restart);
             
         }
     }
@@ -814,9 +785,7 @@ int main (int argc, char** argv)
     //============================================//
     // Close all exporters
     //============================================//
-    
     solver.closeExporters();
-    activationTimeExporter.closeFile();
     
 
 #ifdef HAVE_MPI

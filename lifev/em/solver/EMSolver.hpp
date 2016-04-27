@@ -169,6 +169,11 @@ public:
     {
         EMUtility::setupExporter<Mesh> (*M_activationExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
     }
+    
+    void setupActivationTimeExporter ( std::string problemFolder = "./", std::string outputFileName = "ActivationTimeSolution" )
+    {
+        EMUtility::setupExporter<Mesh> (*M_activationTimeExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+    }
 
     void setupMechanicsExporter ( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
     {
@@ -181,6 +186,7 @@ public:
     void setupExporters (std::string problemFolder   = "./",
                          std::string electroFileName = "ElectroSolution",
                          std::string activationFileName  = "ActivationSolution",
+                         std::string activationTimeFileName  = "ActivationTimeSolution",
                          std::string mechanicsFileName  = "MechanicalSolution");
 
     void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list)
@@ -323,6 +329,11 @@ public:
     activationModelPtr_Type  activationModelPtr()
     {
         return M_activationModelPtr;
+    }
+    
+    vectorPtr_Type activationTimePtr()
+    {
+        return M_activationTimePtr;
     }
 
     void saveSolution (Real time, const bool& restart = 0);
@@ -595,6 +606,7 @@ void
 EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                                                 std::string electroFileName,
                                                                 std::string activationFileName,
+                                                                std::string activationTimeFileName,
                                                                 std::string mechanicsFileName)
 {
     if (M_commPtr -> MyPID() == 0)
@@ -621,28 +633,21 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                              UInt (0) );
     M_mechanicsExporterPtr.reset (new exporter_Type() );
 
-//    // Activation time
-//    M_activationTimeExporterPtr.reset (new exporter_Type() );
-//    setupActivationExporter (problemFolder, activationFileName );
-//    
-//    vectorPtr_Type M_activationTime ( new vector_Type ( M_electroSolverPtr()->potentialPtr() -> map() ) );
-//    *activationTimeVector = -1.0;
-//
-//    M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-//                                            "Activation Time",
-//                                            M_electroSolverPtr -> feSpacePtr(),
-//                                            M_activationModelPtr -> fiberActivationPtr(),
-//                                            UInt (0) );
-//    M_mechanicsExporterPtr.reset (new exporter_Type() );
-//    
-//    
-//    activationTimeExporter.addVariable (ExporterData<mesh_Type>::ScalarField, "Activation Time", solver.electroSolverPtr()->feSpacePtr(), activationTimeVector, UInt (0) );
-//    
-//    activationTimeExporter.setMeshProcId (solver.localMeshPtr(), solver.comm()->MyPID() );
-//    activationTimeExporter.setPrefix ("ActivationTime");
-//    activationTimeExporter.setPostDir (problemFolder);
+    // Activation time
+    M_activationTimeExporterPtr.reset (new exporter_Type() );
+    setupActivationTimeExporter (problemFolder, activationTimeFileName );
+    
+    M_activationTimePtr.reset (new vector_Type ( M_electroSolverPtr->potentialPtr() -> map() ) );
+    *M_activationTimePtr = -1.0;
 
+    M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                            "Activation Time",
+                                            M_electroSolverPtr -> feSpacePtr(),
+                                            M_activationTimePtr,
+                                            UInt (0) );
+    
     // Mechanics
+    M_mechanicsExporterPtr.reset (new exporter_Type() );
     setupMechanicsExporter (problemFolder, mechanicsFileName);
     M_mechanicsExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                             "displacement",
@@ -667,6 +672,7 @@ EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
 {
     M_electroExporterPtr -> setTimeIndex (time);
     M_activationExporterPtr -> setTimeIndex (time);
+    M_activationTimeExporterPtr -> setTimeIndex (time);
     M_mechanicsExporterPtr -> setTimeIndex (time);
 }
     
@@ -678,6 +684,7 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
     //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
     //if(M_activationModelPtr -> fiberActivationPtr()) std::cout << "\nFiber activation exporter available.";
     M_activationExporterPtr -> postProcess (time);//, restart);
+    M_activationTimeExporterPtr -> postProcess (time);
     //if(M_mechanicsExporterPtr) std::cout << "\nMechanics exporter available.";
     M_mechanicsExporterPtr -> postProcess (time);//, restart);
 }
@@ -688,6 +695,7 @@ EMSolver<Mesh, ElectroSolver>::closeExporters()
 {
     M_electroExporterPtr -> closeFile();
     M_activationExporterPtr -> closeFile();
+    M_activationTimeExporterPtr -> closeFile();
     M_mechanicsExporterPtr -> closeFile();
 }
 
@@ -728,6 +736,7 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     M_electroSolverPtr -> solveOneStepGatingVariablesFE();
 //    M_electroSolverPtr -> solveOneStepGatingVariablesRL();
     M_electroSolverPtr -> solveOneICIStep();
+    M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
 }
 
 template<typename Mesh , typename ElectroSolver>
