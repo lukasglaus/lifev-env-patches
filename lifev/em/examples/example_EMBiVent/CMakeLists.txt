@@ -43,3 +43,9 @@ CREATE_SYMLINK
 SOURCE_FILES biVentCoarsePatchesP2
 SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
 )
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(biVentMediumPatchesP2
+CREATE_SYMLINK
+SOURCE_FILES biVentMediumPatchesP2
+SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMBiVent
+)

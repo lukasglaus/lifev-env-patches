@@ -105,7 +105,7 @@ monodomain_xml_file = ParamList.xml
     Tmax = 500000 #30000 #500000 # 500000 value is thought for Holzapfel
 
     # NeoHokean & Mooney-Rivlin
-    mu = 5000 #4960
+    mu = 10000 #4960
     C2 = 5000
 
     # Holzapfel
@@ -197,8 +197,8 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarsePatchesP2/
-    mesh_file           = biVentCoarsePatches.mesh
+    mesh_dir            = biVentMediumPatchesP2/
+    mesh_file           = biVentMediumPatches.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
     order               = P2
