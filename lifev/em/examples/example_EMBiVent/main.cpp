@@ -619,13 +619,13 @@ int main (int argc, char** argv)
         // Load step mechanics
         //============================================//
         
-        if ( k % mechanicsLoadstepIter == 0 )
-        {
-            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-            modifyFeBC(bcValues);
-            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            solver.solveMechanics();
-        }
+//        if ( k % mechanicsLoadstepIter == 0 )
+//        {
+//            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+//            modifyFeBC(bcValues);
+//            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+//            solver.solveMechanics();
+//        }
         
         
         //============================================//
@@ -650,7 +650,7 @@ int main (int argc, char** argv)
             }
             
             ABdplv(0) = bcValues[0] - bcValuesPre[0];
-            ABdplv(1) = bcValues[1] - bcValuesPre[1];
+            ABdprv(0) = bcValues[1] - bcValuesPre[1];
 
             bcValuesPre = bcValues;
             
@@ -660,8 +660,8 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n*********************************************************";
-                std::cout << "\LV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
-                std::cout << "\RV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
+                std::cout << "\nLV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
+                std::cout << "\nRV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
                 std::cout << "\n*********************************************************\n\n";
             }
 
