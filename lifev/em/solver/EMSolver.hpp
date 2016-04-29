@@ -640,7 +640,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
     M_activationTimePtr.reset (new vector_Type ( M_electroSolverPtr->potentialPtr() -> map() ) );
     *M_activationTimePtr = -1.0;
 
-    M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_activationTimeExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                             "Activation Time",
                                             M_electroSolverPtr -> feSpacePtr(),
                                             M_activationTimePtr,

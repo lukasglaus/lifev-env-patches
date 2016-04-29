@@ -400,9 +400,11 @@ int main (int argc, char** argv)
     //============================================//
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
+    Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1e-2 );
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     Real endtime = solver.data().electroParameter<Real>("endtime");
-    UInt saveIter = static_cast<UInt>( dt_mechanics / dt_activation );
+    UInt mechanicsLoadstepIter = static_cast<UInt>( dt_loadstep / dt_activation );
+    UInt mechanicsCouplingIter = static_cast<UInt>( dt_mechanics / dt_activation );
     UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
     
     Real pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
@@ -411,12 +413,16 @@ int main (int argc, char** argv)
     UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
     UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
     UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
-
+    
     Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
 
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
-    
+    std::vector<double> bcValuesPre ( bcValues );
+
+    VectorSmall<4> ABdplv, ABdprv, ABcoef;
+    ABcoef (1) = 55/24; ABcoef (2) = -59/24; ABcoef (3) = 37/24; ABcoef (4) = -3/8;
+
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
 
@@ -600,12 +606,65 @@ int main (int argc, char** argv)
 
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
+        
+        
+        //============================================//
+        // 4th order Adam-Bashforth pressure extrapol.
+        //============================================//
 
-        if ( k % saveIter == 0 )
+            // todo!
+        
+        
+        //============================================//
+        // Load step mechanics
+        //============================================//
+        
+        if ( k % mechanicsLoadstepIter == 0 )
+        {
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+            modifyFeBC(bcValues);
+            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            solver.solveMechanics();
+        }
+        
+        
+        //============================================//
+        // Iterate mechanics / circulation
+        //============================================//
+        
+        if ( k % mechanicsCouplingIter == 0 )
         {
             iter = 0;
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+            
+            
+            //============================================//
+            // 4th order Adam-Bashforth pressure extrapol.
+            //============================================//
+            
+            for ( unsigned int i = ABcoef.size() - 1; i > 0; --i )
+            {
+                ABdplv(i) = ABdplv(i+1);
+                ABdprv(i) = ABdprv(i+1);
+            }
+            
+            ABdplv(0) = bcValues[0] - bcValuesPre[0];
+            ABdplv(1) = bcValues[1] - bcValuesPre[1];
+
+            bcValuesPre = bcValues;
+            
+            bcValues[0] += ABcoef.dot( ABdplv );
+            bcValues[1] += ABcoef.dot( ABdprv );
+            
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*********************************************************";
+                std::cout << "\LV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
+                std::cout << "\RV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
+                std::cout << "\n*********************************************************\n\n";
+            }
+
             
             //============================================//
             // Solve mechanics
@@ -661,7 +720,7 @@ int main (int argc, char** argv)
                 // Jacobian fe
                 //============================================//
 
-                const bool jFeIter ( ! ( k % (couplingJFeIter * saveIter) ) );
+                const bool jFeIter ( ! ( k % (couplingJFeIter * mechanicsCouplingIter) ) );
                 const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
                 const bool jFeEmpty ( JFe.norm() == 0 );
                 
