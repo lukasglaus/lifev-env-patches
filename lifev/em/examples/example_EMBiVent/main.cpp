@@ -645,8 +645,8 @@ int main (int argc, char** argv)
             
             for ( unsigned int i = ABcoef.size() - 1; i > 0; --i )
             {
-                ABdplv(i) = ABdplv(i+1);
-                ABdprv(i) = ABdprv(i+1);
+                ABdplv(i) = ABdplv(i-1);
+                ABdprv(i) = ABdprv(i-1);
             }
             
             ABdplv(0) = bcValues[0] - bcValuesPre[0];
