@@ -42,7 +42,7 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-    Tmax = 20
+    Tmax = 30
     ActiveStress_Beta = 2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
     EMActiveStrainType = TransverselyIsotropic
@@ -91,7 +91,7 @@ monodomain_xml_file = ParamList.xml
     BulkModulus = 3500000
 
     [../boundary_conditions]
-    list = 'BaseNormal BaseRobin'
+    list = 'BaseNormal BaseRobin Patch1 Patch2'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
     numPreloadSteps  = 50
 
@@ -117,6 +117,20 @@ monodomain_xml_file = ParamList.xml
 
             [../]
 
+        [../Patch1]
+        type       = Natural
+        flag       = 70
+        mode       = Component
+        component  = 0
+        function  = '-t'
+
+        [../Patch2]
+        type       = Natural
+        flag       = 71
+        mode       = Component
+        component  = 0
+        function  = 't'
+
         [../LVEndo]
             flag    = 65 #50
             index   = 0
@@ -138,7 +152,7 @@ monodomain_xml_file = ParamList.xml
     [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
-    dpMax                   = 0.2
+    dpMax                   = 0.3
     couplingError           = 1e-7
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
@@ -147,7 +161,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 0.5
+    timestep        = 1.0
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
