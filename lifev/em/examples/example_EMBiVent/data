@@ -42,7 +42,7 @@ monodomain_xml_file = ParamList.xml
     ActivationModel = ActiveStressRossi14
     CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
     ActiveForceCoefficient = -4.0
-    Tmax = 15
+    Tmax = 20
     ActiveStress_Beta = 2.279
     EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
     EMActiveStrainType = TransverselyIsotropic
@@ -67,7 +67,7 @@ monodomain_xml_file = ParamList.xml
     gammaf		= 0.0
     solidType 	= EMMaterial 
     lawType     = nonlinear
-    EMPassiveMaterialType = PMR
+    EMPassiveMaterialType = PTIE
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
@@ -93,7 +93,7 @@ monodomain_xml_file = ParamList.xml
     [../boundary_conditions]
     list = 'BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
-    numPreloadSteps  = 10
+    numPreloadSteps  = 50
 
         [./BaseNormal]
         type       = Essential
@@ -156,11 +156,11 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarsePatches/
+    mesh_dir            = biVentCoarsePatchesP2/
     mesh_file           = biVentCoarsePatches.mesh
     mesh_scaling        = 0.1
     mesh_rotation_2     = 0.0
-    order               = P1
+    order               = P2
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
