@@ -36,7 +36,7 @@
 #include <lifev/em/solver/circulation/CirculationVolumeIntegrator.hpp>
 
 // Heart data
-#include <lifev/em/examples/example_EMBiVent/HeartSolver.hpp>
+//#include <lifev/em/examples/example_EMBiVent/HeartSolver.hpp>
 
 // Track nan
 // #include <fenv.h>
