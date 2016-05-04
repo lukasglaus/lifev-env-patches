@@ -35,6 +35,9 @@
 // Volume computation
 #include <lifev/em/solver/circulation/CirculationVolumeIntegrator.hpp>
 
+// Heart data
+#include <lifev/em/examples/example_EMBiVent/HeartSolver.hpp>
+
 // Track nan
 // #include <fenv.h>
 
@@ -340,7 +343,6 @@ int main (int argc, char** argv)
 
         pVecPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
         pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        //solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Normal, *pBCVecPtrs[i]);
         solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Full, *pBCVecPtrs[i], 3);
     }
 
@@ -398,6 +400,7 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
+    HeartSolver<EMSolver<mesh_Type, monodomain_Type>, Circulation> heartSolver (solver, circulationSolver);
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1e-2 );

@@ -77,7 +77,7 @@ monodomain_xml_file = ParamList.xml
     mu = 10000 #4960
     C2 = 5000
 
-    # Holzapfel
+    # Holzapfel O.
     a           = 3330
     af          = 185350
     as          = 25640
