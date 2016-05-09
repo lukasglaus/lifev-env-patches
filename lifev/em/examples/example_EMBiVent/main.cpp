@@ -390,7 +390,7 @@ int main (int argc, char** argv)
     {
         for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
         {
-            if ( 0 == comm->MyPID() std::cout << "\nPatch force: " << patchForce(time, Tmax) << std::endl;
+            if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax) << std::endl;
             *pVecPatchesPtrs[i] = - patchForce(time, Tmax) * 1333.224;
             pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
