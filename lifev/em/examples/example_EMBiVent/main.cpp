@@ -93,6 +93,13 @@ externalPower ( const VectorEpetra& dispCurrent,
     return traction.dot(velocity);
 }
 
+Real patchForce (const Real& t, const Real& Tmax)
+{
+    bool time ( fmod(t, 800.) < 300 && fmod(t, 800.) > 0);
+    Real force = std::pow( std::sin(fmod(t, 800.)*3.14159265359/300) , 2 ) * Tmax;
+    return ( time ? force : 0 );
+}
+
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y > 1.5 && Y < 3 );
@@ -325,46 +332,74 @@ int main (int argc, char** argv)
     
     //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
     // Todo: Normal boundary condition!!
-    
+
     
     //============================================//
-    // Modifiable-value boundary condition
+    // B.C. endocardia and patches
     //============================================//
 
     std::vector<vectorPtr_Type> pVecPtrs;
     std::vector<bcVectorPtr_Type> pBCVecPtrs;
-    
+    std::vector<vectorPtr_Type> pVecPatchesPtrs;
+    std::vector<bcVectorPtr_Type> pBCVecPatchesPtrs;
+
+    std::vector<ID> flagsBC;
+    std::vector<ID> flagsBCPatches;
+    std::vector<UInt> ventIdx;
+
+    // Endocardia
     UInt nVarBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listVariableBC" ) );
     for ( UInt i (0) ; i < nVarBC ; ++i )
     {
         std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
-        ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
-        ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
-
+        flagsBC.push_back( dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 ) );
+        ventIdx.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 ) );
+        
         pVecPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
         pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flag, Natural, Full, *pBCVecPtrs[i], 3);
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
+    }
+    
+    // Patches
+    UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchesBC" ) );
+    for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
+    {
+        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listPatchesBC" ), " ", i );
+        flagsBCPatches.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 ) );
+        
+        pVecPatchesPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
+        pBCVecPatchesPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flagsBCPatches[i], Natural, Full, *pBCVecPatchesPtrs[i], 3);
     }
 
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
-    if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
-
-    
+    // Functions to modify b.c.
     auto modifyFeBC = [&] (const std::vector<Real>& bcValues)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
-            std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
-            ID flag  =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 );
-            ID index =  dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 );
-            *pVecPtrs[i] = - bcValues[index] * 1333.224;
+            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-            solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *pBCVecPtrs[i]);
+            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
         }
     };
 
+    Real Tmax = dataFile ( "solid/patches/Tmax", 0. );
+    auto modifyFeBCPatches = [&] (const Real& time)
+    {
+        for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
+        {
+            if ( 0 == comm->MyPID() std::cout << "\nPatch force: " << patchForce(time, Tmax) << std::endl;
+            *pVecPatchesPtrs[i] = - patchForce(time, Tmax) * 1333.224;
+            pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
+        }
+    };
 
+    if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
+    
+    
     //============================================//
     // Volume integrators
     //============================================//
@@ -641,6 +676,7 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
+            modifyFeBCPatches(t);
             
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.

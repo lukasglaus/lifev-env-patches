@@ -91,8 +91,10 @@ monodomain_xml_file = ParamList.xml
     BulkModulus = 3500000
 
     [../boundary_conditions]
-    list = 'BaseNormal BaseRobin Patch1 Patch2'
+    list = 'BaseNormal BaseRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
+    listPatchesBC = 'Patch1 Patch2'
+
     numPreloadSteps  = 50
 
         [./BaseNormal]
@@ -118,18 +120,10 @@ monodomain_xml_file = ParamList.xml
             [../]
 
         [../Patch1]
-        type       = Natural
         flag       = 70
-        mode       = Component
-        component  = 0
-        function  = '-t'
 
         [../Patch2]
-        type       = Natural
         flag       = 71
-        mode       = Component
-        component  = 0
-        function  = 't'
 
         [../LVEndo]
             flag    = 65 #50
@@ -148,6 +142,9 @@ monodomain_xml_file = ParamList.xml
             index   = 1
 
         [../]
+
+    [../patches]
+    Tmax            = 100
 
     [../coupling]
     pPerturbationFe         = 1e-3
