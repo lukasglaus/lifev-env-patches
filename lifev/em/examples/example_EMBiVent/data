@@ -67,7 +67,7 @@ monodomain_xml_file = ParamList.xml
     gammaf		= 0.0
     solidType 	= EMMaterial 
     lawType     = nonlinear
-    EMPassiveMaterialType = PTIE
+    EMPassiveMaterialType = PHO
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
@@ -144,7 +144,7 @@ monodomain_xml_file = ParamList.xml
         [../]
 
     [../patches]
-    Tmax            = 100
+    Tmax            = 0
 
     [../coupling]
     pPerturbationFe         = 1e-3
