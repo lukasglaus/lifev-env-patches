@@ -92,7 +92,7 @@ Int NonLinearRichardson ( VectorEpetra& sol,
                           const Real& time = 0
                         )
 {
-    /*
+    /*x
         */
 
     /*

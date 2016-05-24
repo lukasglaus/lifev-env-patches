@@ -537,8 +537,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     //  computeJacobian(disp);
 
     this->M_jacobian->globalAssemble();
-    displayer->leaderPrint (" \n*********************************\n  ");
-    std::cout << std::endl;
+    displayer->leaderPrint (" \n*********************************\n\n  ");
+    //std::cout << std::endl;
 }
 
 template <typename MeshType>
@@ -580,7 +580,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                                                        M_scalarETFESpacePtr,
                                                        M_residualVectorPtr);
 
-    	std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
+        if(vec->map().commPtr() ->MyPID() == 0)
+        {
+            std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
+        }
 	}
     //  computeResidual(disp);
     this->M_residualVectorPtr->globalAssemble();

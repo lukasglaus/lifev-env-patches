@@ -8,6 +8,7 @@ ADD_SUBDIRECTORIES(
 SET(solver_HEADERS
 #  solver/EMActiveStrainSolver.hpp
 #  solver/EMEvaluate.hpp
+  solver/EMMixedSolver.hpp
   solver/EMSolver.hpp
   solver/EMETAFunctors.hpp
   solver/EMData.hpp

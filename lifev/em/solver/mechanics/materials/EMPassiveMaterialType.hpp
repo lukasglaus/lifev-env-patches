@@ -141,16 +141,16 @@ EMPassiveMaterialType<Mesh>::computeResidual ( const vector_Type& disp,
 {
     if (residualVectorPtr)
     {
-        std::cout << "EM Material Type: ResidualVectorPtr available\n";
+        //std::cout << "EM Material Type: ResidualVectorPtr available\n";
     }
     if (dispETFESpace)
     {
-        std::cout << "EM Material Type: dispETFESpace available\n";
+        //std::cout << "EM Material Type: dispETFESpace available\n";
     }
     int n = this->M_materialFunctionList.size();
     for (int j (0); j < n; j++)
     {
-    	std::cout << "Passive residual function " << j << " = " << residualVectorPtr->norm2() << "\n";
+    	//std::cout << "Passive residual function " << j << " = " << residualVectorPtr->norm2() << "\n";
     	this->M_materialFunctionList[j]->computeResidual (disp, dispETFESpace, fibers, sheets, residualVectorPtr);
 
     }

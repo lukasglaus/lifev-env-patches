@@ -24,5 +24,7 @@ ADD_SUBDIRECTORIES(
    example_EMCoupling
    example_XBridge
    example_EMBiVent
+   example_EMBiVentMixed
    example_EMSiVent
+   linear_solver_preconditioner
 )
