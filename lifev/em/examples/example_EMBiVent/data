@@ -67,7 +67,7 @@ monodomain_xml_file = ParamList.xml
     gammaf		= 0.0
     solidType 	= EMMaterial 
     lawType     = nonlinear
-    EMPassiveMaterialType = PTIE
+    EMPassiveMaterialType = PHO
     EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
@@ -209,7 +209,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 3
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -217,10 +217,10 @@ monodomain_xml_file = ParamList.xml
             relax_value             = 0
 
             [../amesos]
-            solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+            solvertype 		=  Amesos_Superludist 	# Amesos_KLU or Amesos_Umfpack
 
             [../partitioner]
-            overlap 		= 4
+            overlap 		= 2
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
