@@ -265,7 +265,7 @@ computeI8ResidualTerms ( const vector_Type& disp,
         std::cout << "EMETA - Computing I8 residual terms while orthonormalizing ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dot (  P, grad (phi_i) )
                   ) >> residualVectorPtr;
@@ -289,7 +289,7 @@ computeI8ResidualTerms ( const vector_Type& disp,
         std::cout << "EMETA - Computing I8 residual terms ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
-                    quadRuleTetra4pt,
+                    quadRuleTetra15pt,
                     dispETFESpace,
                     dot (  P, grad (phi_i) )
                   ) >> residualVectorPtr;
