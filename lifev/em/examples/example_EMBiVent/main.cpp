@@ -43,6 +43,8 @@
 
 
 
+
+
 // Namespaces
 using namespace LifeV;
 
@@ -228,6 +230,11 @@ int main (int argc, char** argv)
     //============================================//
     
     displayer.leaderPrint ("\nSetting up EM solver ... ");
+    
+    if ( dataFile ( "solid/physics/EMPassiveMaterialType", "4pt") == "PHO" )
+    {
+        EMAssembler::quadRule.setQuadRule("15pt");
+    }
     
     solver.setup (dataFile);
     
