@@ -322,7 +322,12 @@ public:
                                                                 const Epetra_SerialDenseMatrix& tensorF,
                                                                 const Epetra_SerialDenseMatrix& cofactorF,
                                                                 const std::vector<Real>& invariants,
-                                                                const UInt material) {}
+                                                                const UInt material)
+    {
+    
+        firstPiola = tensorF; //.Scale(2.);
+
+    }
     //! Get the Stiffness matrix
     matrixPtr_Type const stiffMatrix() const
     {

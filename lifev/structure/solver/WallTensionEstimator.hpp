@@ -396,6 +396,11 @@ public:
         stressVonMises = *M_sigmaVonMises;
     }
 
+    solutionVectPtr_Type vonMisesStressPtr()
+    {
+         return M_sigmaVonMises;
+    }
+    
     //! Get the global vector for the eigenvalues
     solutionVect_Type principalStresses() const
     {
