@@ -602,7 +602,6 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
     M_EMStructuralOperatorPtr->EMMaterial()->setParameters(M_data);
 
     M_wte.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0);
-    M_wte.analyzeTensionsRecoveryVonMisesStress();
 }
 
 /////////////////////
@@ -673,6 +672,8 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                             UInt (0) );
     
     // Von Mises stress
+    M_wte.analyzeTensionsRecoveryVonMisesStress();
+    
     M_vonMisesStressExporterPtr.reset (new exporter_Type() );
     setupVonMisesStressExporter (problemFolder, vonMisesStressFileName );
     
