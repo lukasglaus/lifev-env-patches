@@ -324,8 +324,10 @@ public:
                                                                 const std::vector<Real>& invariants,
                                                                 const UInt material)
     {
-    
+
+        
         firstPiola = tensorF; //.Scale(2.);
+        
 
     }
     //! Get the Stiffness matrix
