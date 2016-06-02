@@ -672,8 +672,6 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                             UInt (0) );
     
     // Von Mises stress
-    M_wte.analyzeTensionsRecoveryVonMisesStress();
-    
     M_vonMisesStressExporterPtr.reset (new exporter_Type() );
     setupVonMisesStressExporter (problemFolder, vonMisesStressFileName );
     
@@ -718,10 +716,13 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
+    M_wte.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    M_wte.analyzeTensionsRecoveryVonMisesStress();
+    
     M_electroExporterPtr -> postProcess (time);//, restart);
     //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
     //if(M_activationModelPtr -> fiberActivationPtr()) std::cout << "\nFiber activation exporter available.";
-    M_activationExporterPtr -> postProcess (time);//, restart);
+    M_activationExporterPtr -> postProcess (time);//, restart );
     M_activationTimeExporterPtr -> postProcess (time);
     M_vonMisesStressExporterPtr -> postProcess (time);
 

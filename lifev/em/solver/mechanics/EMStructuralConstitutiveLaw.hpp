@@ -324,12 +324,25 @@ public:
                                                                 const std::vector<Real>& invariants,
                                                                 const UInt material)
     {
+        // Volumetric part
+        auto Pvol = tensorF;
+        Pvol.Scale( invariants[3] * (3500000 / 2.0) * (invariants[3] - 1 + (1.0 / invariants[3]) * std::log (invariants[3]) ) );
 
-        
-        firstPiola = tensorF; //.Scale(2.);
-        
+        // Isotropic part
+        auto Piso = tensorF;
+        Piso.Scale( 3300 * std::exp( 9.242*(invariants[0] - 3) ) );
 
+        // Anisotropic fiber part
+        auto Pi4 = tensorF;
+        Pi4.Scale( 2 * invariants[1] * 185350 * (invariants[1] - 1) * std::exp( 15.972*std::pow(invariants[1] - 1, 2.0 ) ) );
+
+        // Assemble first piola kirchhoff tensor
+        firstPiola.Scale(0.0);
+        firstPiola += Pvol;
+        firstPiola += Piso;
+        firstPiola += Pi4;
     }
+    
     //! Get the Stiffness matrix
     matrixPtr_Type const stiffMatrix() const
     {
