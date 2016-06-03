@@ -1273,9 +1273,9 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     invariants[1] = I4f; // Fourth invariant C
     invariants[2] = H; // Fiber activation
     invariants[3] = tensorF (0, 0) * ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) ) - tensorF (0, 1) * ( tensorF (1, 0) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 0) ) + tensorF (0, 2) * ( tensorF (1, 0) * tensorF (2, 1) - tensorF (1, 1) * tensorF (2, 0) ); // Determinant F
-    if (M_stressType == "total") invariants[5] = 0.0;
-    if (M_stressType == "passive") invariants[5] = 1.0;
-    if (M_stressType == "active") invariants[5] = 2.0;
+    if (M_stressType == "total") invariants[4] = 0.0;
+    if (M_stressType == "passive") invariants[4] = 1.0;
+    if (M_stressType == "active") invariants[4] = 2.0;
     
     //Computation of the Cofactor of F
     cofactorF ( 0 , 0 ) =   ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) );
