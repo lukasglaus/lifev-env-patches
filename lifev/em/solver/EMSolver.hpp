@@ -792,10 +792,10 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
     M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
     M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
-    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
+//    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+//    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
+//    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+//    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
     
     M_electroExporterPtr -> postProcess (time);//, restart);
     //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
