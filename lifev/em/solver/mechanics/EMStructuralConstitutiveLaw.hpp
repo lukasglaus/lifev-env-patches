@@ -335,12 +335,17 @@ public:
         // Anisotropic fiber part
         auto Pi4 = tensorF;
         Pi4.Scale( 2 * invariants[1] * 185350 * (invariants[1] - 1) * std::exp( 15.972*std::pow(invariants[1] - 1, 2.0 ) ) );
+        
+        // Active stress part
+        auto Pact = tensorF;
+        Pact.Scale( invariants[1] * 0.5 * std::pow(invariants[2], 2.0) * 1300000 );
 
         // Assemble first piola kirchhoff tensor
         firstPiola.Scale(0.0);
         firstPiola += Pvol;
         firstPiola += Piso;
         firstPiola += Pi4;
+        firstPiola += Pact;
     }
     
     //! Get the Stiffness matrix
