@@ -608,8 +608,8 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
     M_EMStructuralOperatorPtr->EMMaterial()->setParameters(M_data);
 
     M_wteTotal.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "total");
-    M_wtePassive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "passive");
-    M_wteActive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "active");
+//    M_wtePassive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "passive");
+//    M_wteActive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "active");
 }
 
 /////////////////////
@@ -791,10 +791,10 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
     M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
     M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
-    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
+//    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+//    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
+//    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+//    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
     
     M_electroExporterPtr -> postProcess (time);//, restart);
     //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
