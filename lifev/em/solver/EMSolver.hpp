@@ -689,21 +689,21 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                                 M_wteTotal.vonMisesStressPtr(),
                                                 UInt (0) );
     
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "X Stress Total",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wteTotal.sigmaXPtr(),
                                                 UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "Y Stress Total",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wteTotal.sigmaYPtr(),
                                                 UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "Z Stress Total",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wteTotal.sigmaZPtr(),
                                                 UInt (0) );
 
@@ -713,21 +713,21 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                                 M_wtePassive.vonMisesStressPtr(),
                                                 UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "X Stress Passive",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wtePassive.sigmaXPtr(),
                                                 UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "Y Stress Passive",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wtePassive.sigmaYPtr(),
                                                 UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "Z Stress Passive",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wtePassive.sigmaZPtr(),
                                                 UInt (0) );
 
@@ -737,21 +737,21 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                                 M_wteActive.vonMisesStressPtr(),
                                                 UInt (0) );
     
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "X Stress Active",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wteActive.sigmaXPtr(),
                                                 UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "Y Stress Active",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wteActive.sigmaYPtr(),
                                                 UInt (0) );
     
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                                 "Z Stress Active",
-                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                                 M_wteActive.sigmaZPtr(),
                                                 UInt (0) );
     
@@ -867,147 +867,6 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 
 
 } // namespace LifeV
-
-//void constructGlobalStressVector()
-//{
-//    //Chrono
-//    LifeChrono chrono;
-//    chrono.start();
-//    
-//    // Reset stress components
-//    boost::shared_ptr<Epetra_SerialDenseMatrix> sigma ( new Epetra_SerialDenseMatrix ( M_FESpace->fieldDim(), M_FESpace->fieldDim() ) );
-//    boost::shared_ptr<VectorEpetra> sigmaX ( new VectorEpetra (*M_FESpace->mapPtr() ) );
-//    boost::shared_ptr<VectorEpetra> sigmaY ( new VectorEpetra (*M_FESpace->mapPtr() ) );
-//    boost::shared_ptr<VectorEpetra> sigmaZ ( new VectorEpetra (*M_FESpace->mapPtr() ) );
-////    *sigmaX *= 0.;
-////    *sigmaY *= 0.;
-////    *sigmaZ *= 0.;
-//    
-//    //Constructing the patch area vector for reconstruction purposes
-//    VectorEpetra patchArea (*M_displacement, Unique, Add);
-//    patchArea *= 0.0;
-//    
-//    constructPatchAreaVector ( patchArea );
-//    
-//    //Before assembling the reconstruction process is done
-//    solutionVect_Type patchAreaR (patchArea, Repeated);
-//    
-//    //Compute the area of reference element
-//    Real refElemArea (0);
-//    for (UInt iq (0); iq < M_FESpace->qr().nbQuadPt(); ++iq)
-//    {
-//        refElemArea += M_FESpace->qr().weight (iq);
-//    }
-//    
-//    //Setting the quadrature Points = DOFs of the element and weight = 1
-//    Real wQuad (refElemArea / M_FESpace->refFE().nbDof() );
-//    std::vector<Real> weights (M_FESpace->fe().nbFEDof(), wQuad);
-//    std::vector<GeoVector> coords = M_FESpace->refFE().refCoor();
-//    
-//    QuadratureRule fakeQuadratureRule;
-//    fakeQuadratureRule.setDimensionShape ( shapeDimension (M_FESpace->refFE().shape() ), M_FESpace->refFE().shape() );
-//    fakeQuadratureRule.setPoints (coords, weights);
-//    
-//    //Creating a copy of the FESpace
-//    feSpace_Type fakeFESpace ( M_FESpace->mesh(), M_FESpace->refFE(), M_FESpace->qr(), M_FESpace->bdQr(), 3, M_FESpace->map().commPtr() );
-//    
-//    //Set the new quadrature rule
-//    fakeFESpace.setQuadRule (fakeQuadratureRule);
-//    
-//    //Preliminary variables
-//    UInt totalDof = fakeFESpace.dof().numTotalDof();
-//    VectorElemental dk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-//    
-//    //Vectors for the deformation tensor
-//    (*M_deformationF).Scale (0.0);
-//    std::vector<matrix_Type> vectorDeformationF (fakeFESpace.fe().nbFEDof(), *M_deformationF);
-//    
-//    //Copying the displacement field into a vector with repeated map for parallel computations
-//    solutionVect_Type dRep (*M_displacement, Repeated);
-//    
-//    //Creating the local stress tensors
-//    VectorElemental elVecSigmaX (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-//    VectorElemental elVecSigmaY (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-//    VectorElemental elVecSigmaZ (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-//    
-//    //Loop on each volume
-//    for ( UInt i (0); i < fakeFESpace.mesh()->numVolumes(); ++i )
-//    {
-//        //fakeFESpace.fe().update ( fakeFESpace.mesh()->volumeList ( i ), UPDATE_DPHI | UPDATE_WDET );
-//        fakeFESpace.fe().updateFirstDerivQuadPt ( fakeFESpace.mesh()->volumeList ( i ) );
-//        
-//        elVecSigmaX.zero();
-//        elVecSigmaY.zero();
-//        elVecSigmaZ.zero();
-//        
-//        M_marker = fakeFESpace.mesh()->volumeList ( i ).markerID();
-//        
-//        UInt eleID = fakeFESpace.fe().currentLocalId();
-//        
-//        //Extracting the local displacement
-//        for ( UInt iNode (0); iNode < ( UInt ) fakeFESpace.fe().nbFEDof(); ++iNode )
-//        {
-//            UInt  iloc = fakeFESpace.fe().patternFirst ( iNode );
-//            
-//            for ( UInt iComp = 0; iComp < fakeFESpace.fieldDim(); ++iComp )
-//            {
-//                UInt ig = fakeFESpace.dof().localToGlobalMap ( eleID, iloc ) + iComp * fakeFESpace.dim() + M_offset;
-//                dk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = dRep[ig];
-//            }
-//        }
-//        
-//        //Compute the element tensor F
-//        AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
-//        
-//        //Compute the local vector of the principal stresses
-//        for ( UInt nDOF (0); nDOF < ( UInt ) fakeFESpace.fe().nbFEDof(); ++nDOF )
-//        {
-//            UInt  iloc = fakeFESpace.fe().patternFirst ( nDOF );
-//            
-//            sigma->Scale (0.0);
-//            M_firstPiola->Scale (0.0);
-//            M_cofactorF->Scale (0.0);
-//            
-//            //Compute the rightCauchyC tensor
-//            AssemblyElementalStructure::computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF);
-//            
-//            //Compute the first Piola-Kirchhoff tensor
-//            M_material->computeLocalFirstPiolaKirchhoffTensor (*M_firstPiola, vectorDeformationF[nDOF], *M_cofactorF, M_invariants, M_marker);
-//            
-//            //Compute the Cauchy tensor
-//            AssemblyElementalStructure::computeCauchyStressTensor (*sigma, *M_firstPiola, M_invariants[3], vectorDeformationF[nDOF]);
-//            
-//            //Assembling the local vectors for local tensions Component X, Y, Z
-//            for ( UInt coor (0); coor < fakeFESpace.fieldDim(); ++coor )
-//            {
-//                (elVecSigmaX) [iloc + coor * fakeFESpace.fe().nbFEDof() ] = (*sigma) (coor, 0);
-//                (elVecSigmaY) [iloc + coor * fakeFESpace.fe().nbFEDof() ] = (*sigma) (coor, 1);
-//                (elVecSigmaZ) [iloc + coor * fakeFESpace.fe().nbFEDof() ] = (*sigma) (coor, 2);
-//            }
-//        }
-//        
-//        reconstructElementaryVector ( elVecSigmaX, patchAreaR, fakeFESpace );
-//        reconstructElementaryVector ( elVecSigmaY, patchAreaR, fakeFESpace );
-//        reconstructElementaryVector ( elVecSigmaZ, patchAreaR, fakeFESpace );
-//        
-//        //Assembling the three elemental vector in the three global
-//        for ( UInt ic = 0; ic < fakeFESpace.fieldDim(); ++ic )
-//        {
-//            assembleVector (*sigmaX, elVecSigmaX, fakeFESpace.fe(), fakeFESpace.dof(), ic, M_offset +  ic * totalDof );
-//            assembleVector (*sigmaY, elVecSigmaY, fakeFESpace.fe(), fakeFESpace.dof(), ic, M_offset +  ic * totalDof );
-//            assembleVector (*sigmaZ, elVecSigmaZ, fakeFESpace.fe(), fakeFESpace.dof(), ic, M_offset +  ic * totalDof );
-//        }
-//    }
-//    
-//    sigmaX->globalAssemble();
-//    sigmaY->globalAssemble();
-//    sigmaZ->globalAssemble();
-//    
-//    //Chrono
-//    chrono.stop();
-//    M_displayer->leaderPrint ("  S-  Cauchy stresses recovered in:             ", chrono.globalDiff ( *M_displayer->comm() ), " s\n" );
-//}
-
 
 
 #endif //_MONODOMAINSOLVER_H_
