@@ -342,7 +342,7 @@ public:
 
         // Assemble first piola kirchhoff tensor
         firstPiola.Scale(0.0);
-        if (std::fabs(invariants[5]) < 0.1 ||  std::fabs(invariants[5] - 1.0) < 0.1 )
+        if ( std::fabs(invariants[5]) < 0.1 || std::fabs(invariants[5] - 1.0) < 0.1 )
         {
             firstPiola += Pvol;
             firstPiola += Piso;
