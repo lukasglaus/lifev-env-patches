@@ -635,12 +635,12 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalBC (std::string data_file_name,
 //Setup exporters
 template<typename Mesh , typename ElectroSolver>
 void
-EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
-                                                                std::string electroFileName,
-                                                                std::string activationFileName,
-                                                                std::string activationTimeFileName,
-                                                                std::string mechanicsFileName,
-                                                                std::string vonMisesStressFileName)
+EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
+                                                std::string electroFileName,
+                                                std::string activationFileName,
+                                                std::string activationTimeFileName,
+                                                std::string mechanicsFileName,
+                                                std::string vonMisesStressFileName)
 {
     if (M_commPtr -> MyPID() == 0)
     {
@@ -664,7 +664,6 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                              M_electroSolverPtr -> feSpacePtr(),
                                              M_activationModelPtr -> fiberActivationPtr(),
                                              UInt (0) );
-    M_mechanicsExporterPtr.reset (new exporter_Type() );
 
     // Activation time
     M_activationTimeExporterPtr.reset (new exporter_Type() );
@@ -689,71 +688,71 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
                                                 M_wteTotal.vonMisesStressPtr(),
                                                 UInt (0) );
     
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "X Stress Total",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wteTotal.sigmaXPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "X Stress Total",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wteTotal.sigmaXPtr(),
+//                                                UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "Y Stress Total",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wteTotal.sigmaYPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "Y Stress Total",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wteTotal.sigmaYPtr(),
+//                                                UInt (0) );
+//
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "Z Stress Total",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wteTotal.sigmaZPtr(),
+//                                                UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "Z Stress Total",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wteTotal.sigmaZPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+//                                                "Von Mises Stress Passive",
+//                                                M_electroSolverPtr -> feSpacePtr(),
+//                                                M_wtePassive.vonMisesStressPtr(),
+//                                                UInt (0) );
+//
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "X Stress Passive",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wtePassive.sigmaXPtr(),
+//                                                UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                "Von Mises Stress Passive",
-                                                M_electroSolverPtr -> feSpacePtr(),
-                                                M_wtePassive.vonMisesStressPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "Y Stress Passive",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wtePassive.sigmaYPtr(),
+//                                                UInt (0) );
+//
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "Z Stress Passive",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wtePassive.sigmaZPtr(),
+//                                                UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "X Stress Passive",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wtePassive.sigmaXPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+//                                                "Von Mises Stress Active",
+//                                                M_electroSolverPtr -> feSpacePtr(),
+//                                                M_wteActive.vonMisesStressPtr(),
+//                                                UInt (0) );
+//    
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "X Stress Active",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wteActive.sigmaXPtr(),
+//                                                UInt (0) );
 
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "Y Stress Passive",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wtePassive.sigmaYPtr(),
-                                                UInt (0) );
-
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "Z Stress Passive",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wtePassive.sigmaZPtr(),
-                                                UInt (0) );
-
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                "Von Mises Stress Active",
-                                                M_electroSolverPtr -> feSpacePtr(),
-                                                M_wteActive.vonMisesStressPtr(),
-                                                UInt (0) );
-    
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "X Stress Active",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wteActive.sigmaXPtr(),
-                                                UInt (0) );
-
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "Y Stress Active",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wteActive.sigmaYPtr(),
-                                                UInt (0) );
-    
-    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                                "Z Stress Active",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
-                                                M_wteActive.sigmaZPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "Y Stress Active",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wteActive.sigmaYPtr(),
+//                                                UInt (0) );
+//    
+//    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+//                                                "Z Stress Active",
+//                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+//                                                M_wteActive.sigmaZPtr(),
+//                                                UInt (0) );
     
     // Mechanics
     M_mechanicsExporterPtr.reset (new exporter_Type() );

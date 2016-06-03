@@ -36,7 +36,7 @@
     		<Parameter name="scaling" type="string" value="none"/>
 	    	<Parameter name="output" type="string" value="all"/>
     		<Parameter name="tol" type="double" value="1.e-9"/>
-	    	<Parameter name="max_iter" type="int" value="200"/>
+	    	<Parameter name="max_iter" type="int" value="250"/>
     		<Parameter name="kspace" type="int" value="800"/>
     		<!-- az_aztec_defs.h -->
     		<!-- #define AZ_classic 0 /* Does double classic */ -->
