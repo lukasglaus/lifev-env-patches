@@ -342,10 +342,16 @@ public:
 
         // Assemble first piola kirchhoff tensor
         firstPiola.Scale(0.0);
-        firstPiola += Pvol;
-        firstPiola += Piso;
-        firstPiola += Pi4;
-        firstPiola += Pact;
+        if ( invariants[5] == 0.0 || invariants[5] == 1.0 )
+        {
+            firstPiola += Pvol;
+            firstPiola += Piso;
+            firstPiola += Pi4;
+        }
+        if ( invariants[5] == 0.0 || invariants[5] == 2.0 )
+        {
+            firstPiola += Pact;
+        }
     }
     
     //! Get the Stiffness matrix

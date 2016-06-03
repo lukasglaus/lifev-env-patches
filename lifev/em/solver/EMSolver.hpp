@@ -443,11 +443,13 @@ public:
     meshPtr_Type                         M_fullMeshPtr;
     
     vectorPtr_Type                       M_activationTimePtr;
-    vectorPtr_Type                       M_vonMisesStressPtr;
 
     bool                                 M_oneWayCoupling;
     
-    WallTensionEstimator<RegionMesh<LinearTetra> > M_wte;
+    WallTensionEstimator<RegionMesh<LinearTetra> > M_wteTotal;
+    WallTensionEstimator<RegionMesh<LinearTetra> > M_wtePassive;
+    WallTensionEstimator<RegionMesh<LinearTetra> > M_wteActive;
+
 
     commPtr_Type                         M_commPtr;
 
@@ -471,7 +473,9 @@ EMSolver<Mesh, ElectroSolver>::EMSolver(commPtr_Type comm) :
     M_fullMeshPtr      ( ),
     M_activationTimePtr     ( ),
     M_oneWayCoupling     (true),
-    M_wte ( ),
+    M_wteTotal ( ),
+    M_wtePassive ( ),
+    M_wteActive ( ),
     M_commPtr               (comm),
     M_data                    ()
 {
@@ -493,7 +497,9 @@ EMSolver<Mesh, ElectroSolver>::EMSolver (const EMSolver& solver) :
     M_fullMeshPtr      ( solver.M_fullMeshPtr),
     M_activationTimePtr     ( solver.M_activationTimePtr),
     M_oneWayCoupling     ( solver.M_oneWayCoupling),
-    M_wte                   (solver.M_wte),
+    M_wteTotal                   (solver.M_wteTotal),
+    M_wtePassive                   (solver.M_wtePassive),
+    M_wteActive                   (solver.M_wteActive),
     M_commPtr               ( solver.M_commPtr),
     M_data                   (solver.M_data)
 
@@ -601,7 +607,9 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
     M_EMStructuralOperatorPtr->setDataFromGetPot (dataFile);
     M_EMStructuralOperatorPtr->EMMaterial()->setParameters(M_data);
 
-    M_wte.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0);
+    M_wteTotal.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "total");
+    M_wtePassive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "passive");
+    M_wteActive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "active");
 }
 
 /////////////////////
@@ -675,11 +683,76 @@ EMSolver<Mesh, ElectroSolver>::setupExporters (std::string problemFolder,
     M_vonMisesStressExporterPtr.reset (new exporter_Type() );
     setupVonMisesStressExporter (problemFolder, vonMisesStressFileName );
     
-    M_vonMisesStressPtr.reset (new vector_Type ( M_electroSolverPtr->potentialPtr() -> map() ) );
     M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                "Von Mises Stress",
+                                                "Von Mises Stress Total",
                                                 M_electroSolverPtr -> feSpacePtr(),
-                                                M_wte.vonMisesStressPtr(),
+                                                M_wteTotal.vonMisesStressPtr(),
+                                                UInt (0) );
+    
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "X Stress Total",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteTotal.sigmaXPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Y Stress Total",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteTotal.sigmaYPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Z Stress Total",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteTotal.sigmaZPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Von Mises Stress Passive",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wtePassive.vonMisesStressPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "X Stress Passive",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wtePassive.sigmaXPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Y Stress Passive",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wtePassive.sigmaYPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Z Stress Passive",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wtePassive.sigmaZPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Von Mises Stress Active",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteActive.vonMisesStressPtr(),
+                                                UInt (0) );
+    
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "X Stress Active",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteActive.sigmaXPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Y Stress Active",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteActive.sigmaYPtr(),
+                                                UInt (0) );
+    
+    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Z Stress Active",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteActive.sigmaZPtr(),
                                                 UInt (0) );
     
     // Mechanics
@@ -709,6 +782,7 @@ EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
     M_electroExporterPtr -> setTimeIndex (time);
     M_activationExporterPtr -> setTimeIndex (time);
     M_activationTimeExporterPtr -> setTimeIndex (time);
+    M_vonMisesStressExporterPtr -> setTimeIndex (time);
     M_mechanicsExporterPtr -> setTimeIndex (time);
 }
     
@@ -716,8 +790,12 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-    M_wte.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    M_wte.analyzeTensionsRecoveryVonMisesStress();
+    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
+    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
     
     M_electroExporterPtr -> postProcess (time);//, restart);
     //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";

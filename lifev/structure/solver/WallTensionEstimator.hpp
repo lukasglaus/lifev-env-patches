@@ -190,7 +190,8 @@ public:
                  const feSpacePtr_Type& feSpace,
                  const feSpaceETPtr_Type& feSpaceET,
                  const commPtr_Type& comm,
-                 UInt marker);
+                 UInt marker,
+                 std::string stressType);
 
     //! This method computes the Cauchy stress tensor and its principal values. It uses the displacement vector that has to be set
     virtual void analyzeTensions();
@@ -306,6 +307,20 @@ public:
         return *M_sigmaZ;
     }
 
+    solutionVectPtr_Type sigmaXPtr() const
+    {
+        return M_sigmaX;
+    }
+    
+    solutionVectPtr_Type sigmaYPtr() const
+    {
+        return M_sigmaY;
+    }
+    
+    solutionVectPtr_Type sigmaZPtr() const
+    {
+        return M_sigmaZ;
+    }
     //! Export the XX component of the stress by copying it to an external vector
     /*!
      * @param stressXX vector to be filled with the XX component of the stress
@@ -527,6 +542,8 @@ protected:
 
     //! Material class
     materialPtr_Type                               M_material;
+    
+    std::string                                    M_stressType;
 
     //@}
 };
@@ -587,7 +604,8 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
                                      const feSpacePtr_Type& feSpace,
                                      const feSpaceETPtr_Type& feSpaceET,
                                      const commPtr_Type& comm,
-                                     UInt marker)
+                                     UInt marker,
+                                     std::string stressType)
 {
     // Data classes & Volumes markers
     M_dataMaterial = dataMaterial;
@@ -628,7 +646,7 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
 
     M_globalEigenvalues.reset ( new solutionVect_Type (*M_FESpace->mapPtr() ) );
 
-    M_invariants.resize   ( M_FESpace->fieldDim() + 1 );
+    M_invariants.resize   ( M_FESpace->fieldDim() + 2 );
     M_eigenvaluesR.resize ( M_FESpace->fieldDim() );
     M_eigenvaluesI.resize ( M_FESpace->fieldDim() );
 
@@ -637,6 +655,8 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
     M_material.reset ( new EMStructuralConstitutiveLaw<Mesh> );
     //ElectrophysiologyUtility::importVectorField (M_material -> fiberVectorPtr(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
     M_material->setup ( M_FESpace, feSpaceET, M_FESpace->mapPtr(), M_offset, M_dataMaterial, M_displayer );
+    
+    M_stressType = stressType;
 }
 
 template <typename Mesh>
@@ -1253,6 +1273,9 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     invariants[1] = I4f; // Fourth invariant C
     invariants[2] = H; // Fiber activation
     invariants[3] = tensorF (0, 0) * ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) ) - tensorF (0, 1) * ( tensorF (1, 0) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 0) ) + tensorF (0, 2) * ( tensorF (1, 0) * tensorF (2, 1) - tensorF (1, 1) * tensorF (2, 0) ); // Determinant F
+    if (M_stressType == "total") invariants[5] = 0.0;
+    if (M_stressType == "passive") invariants[5] = 1.0;
+    if (M_stressType == "active") invariants[5] = 2.0;
     
     //Computation of the Cofactor of F
     cofactorF ( 0 , 0 ) =   ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) );
