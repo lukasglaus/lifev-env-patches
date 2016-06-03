@@ -181,6 +181,16 @@ public:
     {
         EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
     }
+    
+    void setupVonMisesStressExporterP ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStressP" )
+    {
+        EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtrP, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+    }
+    
+    void setupVonMisesStressExporterA ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStressA" )
+    {
+        EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtrA, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+    }
 
     void setupMechanicsExporter ( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
     {
@@ -195,7 +205,9 @@ public:
                          std::string activationFileName  = "ActivationSolution",
                          std::string activationTimeFileName  = "ActivationTimeSolution",
                          std::string mechanicsFileName  = "MechanicalSolution",
-                         std::string vonMisesStressFileName  = "VonMisesStress");
+                         std::string vonMisesStressFileName  = "VonMisesStress",
+                         std::string vonMisesStressFileNameP  = "VonMisesStressP",
+                         std::string vonMisesStressFileNameA  = "VonMisesStressA");
 
     void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list)
     {
@@ -438,6 +450,8 @@ public:
     exporterPtr_Type                     M_mechanicsExporterPtr;
     exporterPtr_Type                     M_activationTimeExporterPtr;
     exporterPtr_Type                     M_vonMisesStressExporterPtr;
+    exporterPtr_Type                     M_vonMisesStressExporterPtrP;
+    exporterPtr_Type                     M_vonMisesStressExporterPtrA;
     
     meshPtr_Type                         M_localMeshPtr;
     meshPtr_Type                         M_fullMeshPtr;
@@ -447,8 +461,8 @@ public:
     bool                                 M_oneWayCoupling;
     
     WallTensionEstimator<RegionMesh<LinearTetra> > M_wteTotal;
-    WallTensionEstimator<RegionMesh<LinearTetra> > M_wtePassive;
-    WallTensionEstimator<RegionMesh<LinearTetra> > M_wteActive;
+//    WallTensionEstimator<RegionMesh<LinearTetra> > M_wtePassive;
+//    WallTensionEstimator<RegionMesh<LinearTetra> > M_wteActive;
 
 
     commPtr_Type                         M_commPtr;
@@ -474,8 +488,8 @@ EMSolver<Mesh, ElectroSolver>::EMSolver(commPtr_Type comm) :
     M_activationTimePtr     ( ),
     M_oneWayCoupling     (true),
     M_wteTotal ( ),
-    M_wtePassive ( ),
-    M_wteActive ( ),
+//    M_wtePassive ( ),
+//    M_wteActive ( ),
     M_commPtr               (comm),
     M_data                    ()
 {
@@ -498,8 +512,8 @@ EMSolver<Mesh, ElectroSolver>::EMSolver (const EMSolver& solver) :
     M_activationTimePtr     ( solver.M_activationTimePtr),
     M_oneWayCoupling     ( solver.M_oneWayCoupling),
     M_wteTotal                   (solver.M_wteTotal),
-    M_wtePassive                   (solver.M_wtePassive),
-    M_wteActive                   (solver.M_wteActive),
+//    M_wtePassive                   (solver.M_wtePassive),
+//    M_wteActive                   (solver.M_wteActive),
     M_commPtr               ( solver.M_commPtr),
     M_data                   (solver.M_data)
 
@@ -640,7 +654,9 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
                                                 std::string activationFileName,
                                                 std::string activationTimeFileName,
                                                 std::string mechanicsFileName,
-                                                std::string vonMisesStressFileName)
+                                                std::string vonMisesStressFileName,
+                                               std::string vonMisesStressFileNameP,
+                                               std::string vonMisesStressFileNameA)
 {
     if (M_commPtr -> MyPID() == 0)
     {
@@ -688,6 +704,24 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
                                                 M_wteTotal.vonMisesStressPtr(),
                                                 UInt (0) );
     
+    M_vonMisesStressExporterPtrP.reset (new exporter_Type() );
+    setupVonMisesStressExporterP (problemFolder, vonMisesStressFileNameP );
+    
+    M_vonMisesStressExporterPtrP -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Von Mises Stress Total P",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteTotal.vonMisesStressPtr(),
+                                                UInt (0) );
+
+    M_vonMisesStressExporterPtrA.reset (new exporter_Type() );
+    setupVonMisesStressExporterA (problemFolder, vonMisesStressFileNameA );
+    
+    M_vonMisesStressExporterPtrA -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                "Von Mises Stress Total A",
+                                                M_electroSolverPtr -> feSpacePtr(),
+                                                M_wteTotal.vonMisesStressPtr(),
+                                                UInt (0) );
+
 //    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
 //                                                "X Stress Total",
 //                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
@@ -790,20 +824,28 @@ void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
     M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    
+    M_wteTotal.setStressType ( "total" );
     M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_vonMisesStressExporterPtr -> postProcess (time);
+    
+    M_wteTotal.setStressType ( "passiv" );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_vonMisesStressExporterPtrP -> postProcess (time);
+
+    M_wteTotal.setStressType ( "active" );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_vonMisesStressExporterPtrA -> postProcess (time);
+
 //    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
 //    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
 //    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
 //    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
+
     
     M_electroExporterPtr -> postProcess (time);//, restart);
-    //if(M_activationExporterPtr) std::cout << "\nActivation exporter available.";
-    //if(M_activationModelPtr -> fiberActivationPtr()) std::cout << "\nFiber activation exporter available.";
     M_activationExporterPtr -> postProcess (time);//, restart );
     M_activationTimeExporterPtr -> postProcess (time);
-    M_vonMisesStressExporterPtr -> postProcess (time);
-
-    //if(M_mechanicsExporterPtr) std::cout << "\nMechanics exporter available.";
     M_mechanicsExporterPtr -> postProcess (time);//, restart);
 }
 
