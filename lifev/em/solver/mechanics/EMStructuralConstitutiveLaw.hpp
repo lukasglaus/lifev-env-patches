@@ -339,6 +339,9 @@ public:
         // Active stress part
         auto Pact = tensorF;
         Pact.Scale( invariants[1] * 0.5 * std::pow(invariants[2], 2.0) * 1300000 );
+        //if ( invariants[2] > 0. ) {
+           // std::cout << invariants[2] << std::endl;
+            //Pact.Print(std::cout); }
 
         // Assemble first piola kirchhoff tensor
         firstPiola.Scale(0.0);

@@ -576,6 +576,13 @@ int main (int argc, char** argv)
         LifeChrono chronoPreload;
         chronoPreload.start();
         
+        for (int j (0); j < 25; ++j) {
+            solver.solveElectrophysiology (stim, j*0.1);
+            solver.solveActivation (0.1);
+            solver.saveSolution (j);
+
+        }
+        
         for (int i (1); i <= preloadSteps; i++)
         {
             if ( 0 == comm->MyPID() )

@@ -621,7 +621,7 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
     M_EMStructuralOperatorPtr->setDataFromGetPot (dataFile);
     M_EMStructuralOperatorPtr->EMMaterial()->setParameters(M_data);
 
-    M_wteTotal.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "total");
+    M_wteTotal.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, M_EMStructuralOperatorPtr->EMMaterial());
 //    M_wtePassive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "passive");
 //    M_wteActive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "active");
 }
@@ -816,6 +816,8 @@ EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
     M_activationExporterPtr -> setTimeIndex (time);
     M_activationTimeExporterPtr -> setTimeIndex (time);
     M_vonMisesStressExporterPtr -> setTimeIndex (time);
+    M_vonMisesStressExporterPtrP -> setTimeIndex (time);
+    M_vonMisesStressExporterPtrA -> setTimeIndex (time);
     M_mechanicsExporterPtr -> setTimeIndex (time);
 }
     

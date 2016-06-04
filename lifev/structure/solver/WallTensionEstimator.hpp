@@ -191,7 +191,7 @@ public:
                  const feSpaceETPtr_Type& feSpaceET,
                  const commPtr_Type& comm,
                  UInt marker,
-                 std::string stressType);
+                 const boost::shared_ptr< EMStructuralConstitutiveLaw<Mesh> >& EMMaterial);
 
     //! This method computes the Cauchy stress tensor and its principal values. It uses the displacement vector that has to be set
     virtual void analyzeTensions();
@@ -610,7 +610,7 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
                                      const feSpaceETPtr_Type& feSpaceET,
                                      const commPtr_Type& comm,
                                      UInt marker,
-                                     std::string stressType)
+                                     const boost::shared_ptr< EMStructuralConstitutiveLaw<Mesh> >& EMMaterial )
 {
     // Data classes & Volumes markers
     M_dataMaterial = dataMaterial;
@@ -657,11 +657,11 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
 
     // Materials
     //M_material.reset ( material_Type::StructureMaterialFactory::instance().createObject ( M_dataMaterial->solidType() ) );
-    M_material.reset ( new EMStructuralConstitutiveLaw<Mesh> );
+    M_material = EMMaterial;
     //ElectrophysiologyUtility::importVectorField (M_material -> fiberVectorPtr(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
-    M_material->setup ( M_FESpace, feSpaceET, M_FESpace->mapPtr(), M_offset, M_dataMaterial, M_displayer );
+    //M_material->setup ( M_FESpace, feSpaceET, M_FESpace->mapPtr(), M_offset, M_dataMaterial, M_displayer );
     
-    M_stressType = stressType;
+    M_stressType = "total";
 }
 
 template <typename Mesh>
@@ -1115,8 +1115,9 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     //Copying the displacement field into a vector with repeated map for parallel computations
     solutionVect_Type dRep (*M_displacement, Repeated);
     solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
-    solutionVect_Type ARep (*(M_material -> fiberActivationPtr()), Repeated);
-
+    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
+    //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
+    
     //Creating the local stress tensors
     VectorElemental elVecSigmaX (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
     VectorElemental elVecSigmaY (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
@@ -1147,9 +1148,13 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
                 dk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = dRep[ig + iComp * fakeFESpace.dim()];
                 fk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = fRep[ig + iComp * fakeFESpace.dim()];
             }
-            
-            fAk_loc[iloc] = fRep[ig];
+            //if ( fARep[ig] > 0. ) std::cout << fARep[ig] << "iiiiiii" << std::endl;
+            fAk_loc[iloc] = fARep[ig];
         }
+        
+        //if (dRep.maxValue() > 0. ) std::cout << dRep.maxValue() << "maxd" << std::endl;
+        //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
+        //if (fRep.maxValue() > 0. ) std::cout << fRep.maxValue() << "maxf" << std::endl;
 
         //Compute the element tensor F
         AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
