@@ -1180,7 +1180,8 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
 
             //Compute the Cauchy tensor
             AssemblyElementalStructure::computeCauchyStressTensor (*M_sigma, *M_firstPiola, M_invariants[3], vectorDeformationF[nDOF]);
-
+            //M_sigma -> Print(std::cout);
+            
             //Assembling the local vectors for local tensions Component X, Y, Z
             for ( UInt coor (0); coor < fakeFESpace.fieldDim(); ++coor )
             {
@@ -1253,7 +1254,7 @@ WallTensionEstimator<Mesh >::computeLocalFiberActivation (const VectorElemental&
         {
             s += fe.phi ( i, k ) * fAk_loc.vec() [ i ];
         }
-        fiberActivation[k] = s;
+        fiberActivation[k] (0) = s;
     }
 }
     
@@ -1278,7 +1279,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     }
     
     Real H ( fiberActivation(0) );
-    
+
     invariants[0] = C(0,0) + C(1,1) + C(2,2); //C11 + C22 + C33; // First invariant C
     invariants[1] = I4f; // Fourth invariant C
     invariants[2] = H; // Fiber activation
