@@ -334,7 +334,8 @@ public:
 
         // Anisotropic fiber part
         auto Pi4 = tensorF;
-        Pi4.Scale( 2 * invariants[1] * 185350 * (invariants[1] - 1) * std::exp( 15.972*std::pow(invariants[1] - 1, 2.0 ) ) );
+        if ( invariants[1] > 1. ) Pi4.Scale( 2 * invariants[1] * 185350 * (invariants[1] - 1) * std::exp( 15.972*std::pow(invariants[1] - 1, 2.0 ) ) );
+        else Pi4.Scale( 0. );
         
         // Active stress part
         auto Pact = tensorF;
