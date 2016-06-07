@@ -98,6 +98,9 @@ externalPower ( const VectorEpetra& dispCurrent,
 Real patchForce (const Real& t, const Real& Tmax)
 {
     bool time ( fmod(t, 800.) < 300 && fmod(t, 800.) > 0);
+    
+    Real R =
+    
     Real force = std::pow( std::sin(fmod(t, 800.)*3.14159265359/300) , 2 ) * Tmax;
     return ( time ? force : 0 );
 }
@@ -598,7 +601,6 @@ int main (int argc, char** argv)
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-                        solver.saveSolution (i);
         }
 
         if ( 0 == comm->MyPID() )
