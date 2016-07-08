@@ -577,13 +577,6 @@ int main (int argc, char** argv)
         LifeChrono chronoPreload;
         chronoPreload.start();
         
-//        for (int j (0); j < 25; ++j) {
-//            solver.solveElectrophysiology (stim, j*0.1);
-//            solver.solveActivation (0.1);
-//            solver.saveSolution (j);
-//
-//        }
-        
         for (int i (1); i <= preloadSteps; i++)
         {
             if ( 0 == comm->MyPID() )
@@ -781,11 +774,12 @@ int main (int argc, char** argv)
                 if ( jFeIter || jFeSubIter || jFeEmpty )
                 {
                     JFe *= 0.0;
-
+                    vector_Type dispCurrent = disp;
+                    
                     // Left ventricle
                     modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                    solver.solveMechanics();
+                    solver.solveMechanicsLin();
                     
                     VFePert[0] = LV.volume(disp, dETFESpace, - 1);
                     VFePert[1] = RV.volume(disp, dETFESpace, 1);
@@ -793,17 +787,20 @@ int main (int argc, char** argv)
                     JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
                     JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                     
+                    disp = dispCurrent;
+                    
                     // Right ventricle
                     modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                    solver.solveMechanics();
+                    solver.solveMechanicsLin();
                     
                     VFePert[0] = LV.volume(disp, dETFESpace, - 1);
                     VFePert[1] = RV.volume(disp, dETFESpace, 1);
                     
                     JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
                     JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-                
+                    
+                    disp = dispCurrent;
                 }
 
 //                //============================================//

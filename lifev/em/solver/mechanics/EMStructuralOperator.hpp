@@ -153,6 +153,8 @@ public:
 
     void solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol);
 
+    void solveLin ();
+
     void computePressureBC(const VectorEpetra& disp,
 			boost::shared_ptr<VectorEpetra> bcVectorPtr,
 			const ETFESpacePtr_Type dETFESpace,
@@ -341,6 +343,23 @@ solveJac ( vector_Type& step, const vector_Type& res, Real& linear_rel_tol)
     this->solveJacobian (step,  res, linear_rel_tol, this->M_BCh);
 }
 
+template <typename Mesh>
+void EMStructuralOperator<Mesh>::
+solveLin ()
+{
+    VectorEpetra residual ( this->M_disp->map() );
+    VectorEpetra step     ( this->M_disp->map() );
+    
+    step *= 0.;
+    this->evalResidual ( residual, *this->M_disp, 0 );
+    const vector_Type& res = residual;
+    
+    Real eta_max  = std::fabs( this->M_nonlinearParameters.M_etamax );
+    this->solveJacobian (step,  res, eta_max, this->M_BCh);
+    
+    *this->M_disp -= step;
+}
+    
 template <typename Mesh>
 void EMStructuralOperator<Mesh>::computePressureBCJacobian(const VectorEpetra& disp,
 		matrixPtr_Type& jacobian,

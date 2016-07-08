@@ -388,6 +388,11 @@ public:
         M_EMStructuralOperatorPtr -> iterate ( M_bcInterfacePtr -> handler() );
     }
 
+    void solveMechanicsLin()
+    {
+        M_EMStructuralOperatorPtr -> solveLin ();
+    }
+
     void solveElectrophysiology (function_Type& stimulus, Real time = 0.0);
 
 
