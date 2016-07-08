@@ -240,8 +240,10 @@ computeI4JacobianTerms ( const vector_Type& disp,
 
 	auto F = _F (dispETFESpace, disp, 0);
 
-    auto dP = eval (W4, _I4bar ( F, s0 ) )
-              *  _d2I4bardF (F, s0, _dF );
+    auto dP = eval (W4, _I4 ( F, s0 ) ) *  _d2I4dF ( s0, _dF );
+    
+    //auto dP = eval (W4, _I4bar ( F, s0 ) )
+    //          *  _d2I4bardF (F, s0, _dF );
 
 	if(disp.comm().MyPID() == 0)
     std::cout << "EMETA - Computing I4 s jacobian terms ... \n";
@@ -275,7 +277,8 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
     boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
     auto f0 = eval (normalize0, f_0);
 
-    auto s_00 = s_0 - dot (f0, s_0) * s_0;
+    //auto s_00 = s_0 - dot (f0, s_0) * s_0;
+    auto s_00 = s_0 - dot (f0, s_0) * f0;
 
     auto s0 = eval (normalize1, s_00);
 
