@@ -91,7 +91,7 @@ monodomain_xml_file = ParamList.xml
     BulkModulus = 3500000
 
     [../boundary_conditions]
-    list = 'BaseNormal BaseRobin'
+    list = 'BaseNormal BaseRobin EpiRobin'
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
     listPatchesBC = 'Patch1 Patch2'
 
@@ -112,7 +112,22 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '100000' #' 5.00 * 1000' # D
+            function = '10000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../EpiRobin]
+        type       = Robin
+        flag       = 69 #48
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '1000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -167,11 +182,12 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentCoarsePatchesP2/
-    mesh_file           = biVentCoarsePatches.mesh
+    mesh_dir            = biVentMediumPatchesP2/
+    mesh_file           = biVentMediumPatches.mesh
     mesh_scaling        = 0.13
     mesh_rotation_2     = 0.0
     order               = P2
+    quad_rule           = 4pt
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
@@ -209,7 +225,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 2
+        overlap  	= 3
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -217,10 +233,10 @@ monodomain_xml_file = ParamList.xml
             relax_value             = 0
 
             [../amesos]
-            solvertype 		=  Amesos_Superludist 	# Amesos_KLU or Amesos_Umfpack
+            solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
 
             [../partitioner]
-            overlap 		= 2
+            overlap 		= 3
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
