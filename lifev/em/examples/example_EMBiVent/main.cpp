@@ -613,6 +613,7 @@ int main (int argc, char** argv)
     VCirc = VFe;
     
     VectorEpetra dispPre ( disp );
+    VectorEpetra dispCurrent ( disp );
     ID bdPowerFlag  =  dataFile ( ("solid/boundary_conditions/LVEndo/flag") , 0 );
     
     printCoupling("Initial values");
@@ -774,7 +775,7 @@ int main (int argc, char** argv)
                 if ( jFeIter || jFeSubIter || jFeEmpty )
                 {
                     JFe *= 0.0;
-                    vector_Type dispCurrent = disp;
+                    dispCurrent = disp;
                     
                     // Left ventricle
                     modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
