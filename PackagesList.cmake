@@ -86,7 +86,7 @@ SET( LifeV_PACKAGES_AND_DIRS_AND_CLASSIFICATIONS
   Heart                 lifev/heart                       EX
   FSI                   lifev/fsi                         PS
   ZeroDimensional       lifev/zero_dimensional            PS
-  Multiscale            lifev/multiscale                  PS
+  Multiscale            lifev/multiscale                  EX
   Dummy                 lifev/dummy                       EX
 )
 

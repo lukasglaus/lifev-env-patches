@@ -95,6 +95,9 @@
 #include <lifev/structure/solver/VenantKirchhoffMaterialNonLinearPenalized.hpp>
 #include <lifev/structure/solver/SecondOrderExponentialMaterialNonLinear.hpp>
 
+#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
+
+
 namespace LifeV
 {
 /*!
