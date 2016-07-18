@@ -478,7 +478,8 @@ int main (int argc, char** argv)
     
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() )
     {
-        std::cout << "\n============= Coupling: " << label << " =============";
+        std::cout << "\n===============================================================";
+        std::cout << "\nCoupling: " << label;
         std::cout << "\nNewton iteration nr. " << iter << " at time " << t;
         std::cout << "\nLV - Pressure: \t\t\t" << bcValues[0];
         std::cout << "\nLV - FE-Volume: \t\t" << VFeNew[0];
@@ -491,7 +492,7 @@ int main (int argc, char** argv)
         //std::cout << "\nJFe   = " << JFe;
         //std::cout << "\nJCirc = " << JCirc;
         //std::cout << "\nJR    = " << JR;
-        std::cout << "\n============= Coupling: " << label << " =============\n\n"; }
+        std::cout << "\n==============================================================="; }
     };
     
     auto pipeToString = [] ( const char* command )
@@ -582,9 +583,9 @@ int main (int argc, char** argv)
         {
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n***************************************************************";
+                std::cout << "\n*****************************************************************";
                 std::cout << "\nPreload step: " << i << " / " << preloadSteps;
-                std::cout << "\n***************************************************************\n";
+                std::cout << "\n*****************************************************************\n";
             }
             
             // Update pressure b.c.
@@ -597,9 +598,9 @@ int main (int argc, char** argv)
 
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\n***************************************************************";
+            std::cout << "\n*****************************************************************";
             std::cout << "\nPreload done in: " << chronoPreload.diff();
-            std::cout << "\n***************************************************************\n";
+            std::cout << "\n*****************************************************************\n";
         }
 
     }
@@ -641,9 +642,9 @@ int main (int argc, char** argv)
     {
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\n***************************************************************";
+            std::cout << "\n*****************************************************************";
             std::cout << "\nTIME = " << t+dt_activation;
-            std::cout << "\n***************************************************************\n";
+            std::cout << "\n*****************************************************************\n";
         }
 
         t = t + dt_activation;
@@ -708,10 +709,10 @@ int main (int argc, char** argv)
             
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n*********************************************************";
+                std::cout << "\n***************************************************************";
                 std::cout << "\nLV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
                 std::cout << "\nRV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
-                std::cout << "\n*********************************************************\n\n";
+                std::cout << "\n***************************************************************\n\n";
             }
 
             
@@ -857,9 +858,9 @@ int main (int argc, char** argv)
  
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n***************************************************************";
+                std::cout << "\n*****************************************************************";
                 std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
-                std::cout << "\n***************************************************************\n\n";
+                std::cout << "\n*****************************************************************\n\n";
             }
             
 //            Real extPow = externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, bdPowerFlag);
