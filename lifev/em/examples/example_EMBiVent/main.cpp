@@ -448,6 +448,7 @@ int main (int argc, char** argv)
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1e-2 );
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
+    Real dt_save = dataFile ( "exporter/save", 10. );
     Real endtime = solver.data().electroParameter<Real>("endtime");
     UInt mechanicsLoadstepIter = static_cast<UInt>( dt_loadstep / dt_activation );
     UInt mechanicsCouplingIter = static_cast<UInt>( dt_mechanics / dt_activation );
@@ -479,14 +480,14 @@ int main (int argc, char** argv)
     {
         std::cout << "\n============= Coupling: " << label << " =============";
         std::cout << "\nNewton iteration nr. " << iter << " at time " << t;
-        std::cout << "\nLV - Pressure: \t\t" << bcValues[0];
+        std::cout << "\nLV - Pressure: \t\t\t" << bcValues[0];
         std::cout << "\nLV - FE-Volume: \t\t" << VFeNew[0];
         std::cout << "\nLV - Circulation-Volume: \t" << VCircNew[0];
-        std::cout << "\nLV - Residual: \t\t" << std::abs(VFeNew[0] - VCircNew[0]);
-        std::cout << "\nRV - Pressure: \t\t" << bcValues[1];
+        std::cout << "\nLV - Residual: \t\t\t" << std::abs(VFeNew[0] - VCircNew[0]);
+        std::cout << "\nRV - Pressure: \t\t\t" << bcValues[1];
         std::cout << "\nRV - FE-Volume : \t\t" << VFeNew[1];
         std::cout << "\nRV - Circulation-Volume: \t" << VCircNew[1];
-        std::cout << "\nRV - Residual: \t\t" << std::abs(VFeNew[1] - VCircNew[1]);
+        std::cout << "\nRV - Residual: \t\t\t" << std::abs(VFeNew[1] - VCircNew[1]);
         //std::cout << "\nJFe   = " << JFe;
         //std::cout << "\nJCirc = " << JCirc;
         //std::cout << "\nJR    = " << JR;
@@ -577,8 +578,6 @@ int main (int argc, char** argv)
         LifeChrono chronoPreload;
         chronoPreload.start();
         
-        printCoupling("Initial values");
-
         for (int i (1); i <= preloadSteps; i++)
         {
             if ( 0 == comm->MyPID() )
@@ -888,7 +887,7 @@ int main (int argc, char** argv)
             //============================================//
             // Export FE-solution
             //============================================//
-            bool save ( std::abs(std::remainder(t, 10.)) < 0.01 );
+            bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
             if ( save ) solver.saveSolution(t, restart);
             
         }
