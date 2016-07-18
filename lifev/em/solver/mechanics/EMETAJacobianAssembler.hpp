@@ -86,8 +86,8 @@ computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
                                         FunctorPtr               W)
 {
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
 
     using namespace ExpressionAssembly;
 
@@ -124,8 +124,8 @@ computeModifiedFiberActiveStressJacobianTerms ( const vector_Type& disp,
                                         FunctorPtr               W)
 {
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing Fibers Active Stress Jacobian terms ... \n";
 
     using namespace ExpressionAssembly;
 
@@ -171,8 +171,8 @@ computeI4JacobianTerms ( const vector_Type& disp,
     auto dP = eval (W4, _I4 ( F, f0 ) )
               *  _d2I4dF ( f0, _dF );
 
-    if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
+    //if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 f jacobian terms ... \n";
 
 	integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRule(),
@@ -193,8 +193,8 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 f jacobian terms second derivative ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 f jacobian terms second derivative ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
 
@@ -245,8 +245,8 @@ computeI4JacobianTerms ( const vector_Type& disp,
     //auto dP = eval (W4, _I4bar ( F, s0 ) )
     //          *  _d2I4bardF (F, s0, _dF );
 
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 s jacobian terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 s jacobian terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRule(),
                 dispETFESpace,
@@ -267,8 +267,8 @@ computeI4JacobianTermsSecondDerivative ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 s jacobian terms second derivative ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 s jacobian terms second derivative ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto s_0 = _v0 (dispETFESpace, sheets);
@@ -327,8 +327,8 @@ computeI8JacobianTerms ( const vector_Type& disp,
         auto dP = eval (W8, _I8 ( F, f0, s0 ) )
                   *  _d2I8dF (f0, s0, _dF );
 
-    	if(disp.comm().MyPID() == 0)
-        std::cout << "EMETA - Computing I8 jacobian terms orthonormalizing ... \n";
+    	//if(disp.comm().MyPID() == 0)
+        //std::cout << "EMETA - Computing I8 jacobian terms orthonormalizing ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRule(),
                     dispETFESpace,
@@ -351,8 +351,8 @@ computeI8JacobianTerms ( const vector_Type& disp,
         auto dP = eval (W8, _I8 ( F, f0, s0 ) )
                   *  _d2I8dF (f0, s0, _dF );
 
-    	if(disp.comm().MyPID() == 0)
-        std::cout << "EMETA - Computing I8 jacobian terms ... \n";
+    	//if(disp.comm().MyPID() == 0)
+        //std::cout << "EMETA - Computing I8 jacobian terms ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRule(),
                     dispETFESpace,
@@ -394,8 +394,8 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
                   *  _dI8dF ( F, f0, s0, _dF )
                   *  _dI8 ( F, f0, s0 );
 
-    	if(disp.comm().MyPID() == 0)
-    		std::cout << "EMETA - Computing I8 jacobian terms second derivative orthonormalizing ... \n";
+    	//if(disp.comm().MyPID() == 0)
+    		//std::cout << "EMETA - Computing I8 jacobian terms second derivative orthonormalizing ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRule(),
                     dispETFESpace,
@@ -419,8 +419,8 @@ computeI8JacobianTermsSecondDerivative ( const vector_Type& disp,
                   *  _dI8dF ( F, f0, s0, _dF )
                   *  _dI8 ( F, f0, s0 );
 
-    	if(disp.comm().MyPID() == 0)
-        std::cout << "EMETA - Computing I8 jacobian terms second derivative ... \n";
+    	//if(disp.comm().MyPID() == 0)
+        //std::cout << "EMETA - Computing I8 jacobian terms second derivative ... \n";
         integrate ( elements ( dispETFESpace->mesh() ) ,
                     quadRule(),
                     dispETFESpace,

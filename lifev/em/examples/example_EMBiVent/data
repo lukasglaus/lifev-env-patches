@@ -95,7 +95,7 @@ monodomain_xml_file = ParamList.xml
     listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
     listPatchesBC = 'Patch1 Patch2'
 
-    numPreloadSteps  = 50
+    numPreloadSteps  = 10
 
         [./BaseNormal]
         type       = Essential
@@ -173,7 +173,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 1.0
+    timestep        = 5.0
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
@@ -182,8 +182,8 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = biVentMediumPatchesP2/
-    mesh_file           = biVentMediumPatches.mesh
+    mesh_dir            = biVentCoarsePatchesP2/
+    mesh_file           = biVentCoarsePatches.mesh
     mesh_scaling        = 0.13
     mesh_rotation_2     = 0.0
     order               = P2
@@ -225,7 +225,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 3
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -236,7 +236,7 @@ monodomain_xml_file = ParamList.xml
             solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
 
             [../partitioner]
-            overlap 		= 3
+            overlap 		= 2
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none

@@ -477,20 +477,20 @@ int main (int argc, char** argv)
     
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() )
     {
-        std::cout << "\n****************************** Coupling: " << label << " *******************************";
+        std::cout << "\n============= Coupling: " << label << " =============";
         std::cout << "\nNewton iteration nr. " << iter << " at time " << t;
-        std::cout << "\nLV - Pressure: " << bcValues[0];
-        std::cout << "\nLV - FE-Volume (Current - Pert - New - J): \t\t" << VFe[0] << "\t" << VFePert[0] << "\t" << VFeNew[0];
-        std::cout << "\nLV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc[0] << "\t" << VCircPert[0] << "\t" << VCircNew[0];
-        std::cout << "\nLV - Residual = " << std::abs(VFeNew[0] - VCircNew[0]);
-        std::cout << "\nRV - Pressure: " << bcValues[1];
-        std::cout << "\nRV - FE-Volume (Current - Pert - New - J): \t\t" << VFe[1] << "\t" << VFePert[1] << "\t" << VFeNew[1];
-        std::cout << "\nRV - Circulation-Volume (Current - Pert - New - J): \t" << VCirc[1] << "\t" << VCircPert[1] << "\t" << VCircNew[1];
-        std::cout << "\nRV - Residual = " << std::abs(VFeNew[1] - VCircNew[1]);
-        std::cout << "\nJFe   = " << JFe;
-        std::cout << "\nJCirc = " << JCirc;
-        std::cout << "\nJR    = " << JR;
-        std::cout << "\n****************************** Coupling: " << label << " *******************************\n\n"; }
+        std::cout << "\nLV - Pressure: \t\t" << bcValues[0];
+        std::cout << "\nLV - FE-Volume: \t\t" << VFeNew[0];
+        std::cout << "\nLV - Circulation-Volume: \t" << VCircNew[0];
+        std::cout << "\nLV - Residual: \t\t" << std::abs(VFeNew[0] - VCircNew[0]);
+        std::cout << "\nRV - Pressure: \t\t" << bcValues[1];
+        std::cout << "\nRV - FE-Volume : \t\t" << VFeNew[1];
+        std::cout << "\nRV - Circulation-Volume: \t" << VCircNew[1];
+        std::cout << "\nRV - Residual: \t\t" << std::abs(VFeNew[1] - VCircNew[1]);
+        //std::cout << "\nJFe   = " << JFe;
+        //std::cout << "\nJCirc = " << JCirc;
+        //std::cout << "\nJR    = " << JR;
+        std::cout << "\n============= Coupling: " << label << " =============\n\n"; }
     };
     
     auto pipeToString = [] ( const char* command )
@@ -577,13 +577,15 @@ int main (int argc, char** argv)
         LifeChrono chronoPreload;
         chronoPreload.start();
         
+        printCoupling("Initial values");
+
         for (int i (1); i <= preloadSteps; i++)
         {
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n*********************";
+                std::cout << "\n***************************************************************";
                 std::cout << "\nPreload step: " << i << " / " << preloadSteps;
-                std::cout << "\n*********************\n";
+                std::cout << "\n***************************************************************\n";
             }
             
             // Update pressure b.c.
@@ -596,9 +598,9 @@ int main (int argc, char** argv)
 
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\n*********************";
+            std::cout << "\n***************************************************************";
             std::cout << "\nPreload done in: " << chronoPreload.diff();
-            std::cout << "\n*********************\n";
+            std::cout << "\n***************************************************************\n";
         }
 
     }
@@ -640,9 +642,9 @@ int main (int argc, char** argv)
     {
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\n*********************";
+            std::cout << "\n***************************************************************";
             std::cout << "\nTIME = " << t+dt_activation;
-            std::cout << "\n*********************\n";
+            std::cout << "\n***************************************************************\n";
         }
 
         t = t + dt_activation;
@@ -856,9 +858,9 @@ int main (int argc, char** argv)
  
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n******************************************";
+                std::cout << "\n***************************************************************";
                 std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
-                std::cout << "\n******************************************\n\n";
+                std::cout << "\n***************************************************************\n\n";
             }
             
 //            Real extPow = externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, bdPowerFlag);

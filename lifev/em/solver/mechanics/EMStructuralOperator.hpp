@@ -288,7 +288,7 @@ EMStructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_T
     {
         if(M_LVPressure != 0 && M_LVPressureFlag != 0)
         {
-            this->M_Displayer->leaderPrint ("\n    S- Updating the pressure boundary conditions: pressure = ", M_LVPressure, "\n");
+            this->M_Displayer->leaderPrint ("\n Updating the pressure boundary conditions: pressure = ", M_LVPressure, "\n");
             computePressureBC(  solution, M_boundaryVectorPtr, this->M_dispETFESpace, M_LVPressure, M_LVPressureFlag);
             M_bcVectorPtr.reset( new BCVector (*M_boundaryVectorPtr, this->M_dispFESpace -> dof().numTotalDof(), 0 ) );
 
@@ -438,7 +438,7 @@ EMStructuralOperator<Mesh>::iterate ( const bcHandler_Type& bch, bool pressureBC
 
     M_LVpressureBC = pressureBC;
     // matrix and vector assembling communication
-    this->M_Displayer->leaderPrint ("  EMSolver -  Solving the system ... \n");
+    this->M_Displayer->leaderPrint ("\n EMSolver -  Solving the system ... \n");
 
     this->M_BCh = bch;
 
@@ -506,7 +506,7 @@ template <typename Mesh>
 void
 EMStructuralOperator<Mesh>::updateJacobian ( const vector_Type& sol, matrixPtr_Type& jacobian  )
 {
-    this->M_Displayer->leaderPrint ("  S-  Solid: Updating JACOBIAN... ");
+    this->M_Displayer->leaderPrint (" Updating jacobian ... \t\t\t");
 
     LifeChrono chrono;
     chrono.start();
@@ -524,7 +524,7 @@ EMStructuralOperator<Mesh>::updateJacobian ( const vector_Type& sol, matrixPtr_T
 
 
     chrono.stop();
-    this->M_Displayer->leaderPrintMax ("   ... done in ", chrono.diff() );
+    this->M_Displayer->leaderPrintMax (" done in ", chrono.diff() );
 
 }
 

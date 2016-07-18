@@ -105,8 +105,8 @@ computeVolumetricJacobianTerms ( const vector_Type& disp,
     {
         using namespace ExpressionAssembly;
         //
-    	if(disp.comm().MyPID() == 0)
-    		std::cout << "EMETA - Computing Volumetric jacobian terms  ... \n";
+    	//if(disp.comm().MyPID() == 0)
+    	//	std::cout << "EMETA - Computing Volumetric jacobian terms  ... \n";
 
     	auto F = _F (dispETFESpace, disp, 0);
 
@@ -133,8 +133,8 @@ computeVolumetricJacobianTermsSecondDerivative ( const vector_Type& disp,
         using namespace ExpressionAssembly;
 
         //
-    	if(disp.comm().MyPID() == 0)
-    		std::cout << "EMETA - Computing Volumetric jacobian terms with second derivative of the energy ... \n";
+    	//if(disp.comm().MyPID() == 0)
+    	//	std::cout << "EMETA - Computing Volumetric jacobian terms with second derivative of the energy ... \n";
 
     	auto F = _F (dispETFESpace, disp, 0);
 
@@ -163,8 +163,8 @@ computeLinearizedVolumetricJacobianTerms ( const vector_Type& disp,
     auto dFT = transpose (dF);
     auto dP = eval (W, I ) * (dF + dFT) * value (1. / 2.);
 
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing linear volumetric Jacobian terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing linear volumetric Jacobian terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRule(),
                 dispETFESpace,
@@ -187,8 +187,8 @@ computeLinearizedDeviatoricJacobianTerms ( const vector_Type& disp,
     auto dFT = transpose (dF);
     auto dP = eval (W, I) * trace (dF + dFT) * value (1. / 2.) * I;
 
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing linear deviatoric Jacobian terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing linear deviatoric Jacobian terms ... \n";
     integrate ( elements ( dispETFESpace->mesh() ) ,
                 quadRule(),
                 dispETFESpace,
@@ -207,8 +207,8 @@ computeI1JacobianTerms ( const vector_Type& disp,
     using namespace ExpressionAssembly;
 
     //
-	if(disp.comm().MyPID() == 0)
-		std::cout << "Computing I1 jacobian terms  ... \n";
+	//if(disp.comm().MyPID() == 0)
+	//	std::cout << "Computing I1 jacobian terms  ... \n";
 //	auto I = _I;
 //	auto dF = grad(phi_j);
 //	auto GradU = _Grad_u(dispETFESpace, disp, 0);
@@ -250,8 +250,8 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-		std::cout << "Computing I1 jacobian terms with second derivative of the energy ... \n";
+	//if(disp.comm().MyPID() == 0)
+	//	std::cout << "Computing I1 jacobian terms with second derivative of the energy ... \n";
 
 //	auto I = _I;
 //	auto dF = grad(phi_j);
@@ -294,8 +294,8 @@ computeI1JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I1 jacobian mixed terms with second derivative of the energy  (derivative on I2)... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing I1 jacobian mixed terms with second derivative of the energy  (derivative on I2)... \n";
 
 	auto F = _F (dispETFESpace, disp, 0);
 
@@ -319,8 +319,8 @@ computeI2JacobianTerms ( const vector_Type& disp,
     using namespace ExpressionAssembly;
 
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I2 jacobian terms  ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing I2 jacobian terms  ... \n";
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (W2, F ) * _d2I2bardF (F, _dF);
@@ -341,8 +341,8 @@ computeI2JacobianTermsSecondDerivative ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I2 jacobian terms with second derivative of the energy ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing I2 jacobian terms with second derivative of the energy ... \n";
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (dW2, F ) * _dI2bardF (F, _dF)  * _dI2bar (F);
@@ -365,8 +365,8 @@ computeI2JacobianMixedTermsSecondDerivative ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I2 jacobian mixed terms with second derivative of the energy (derivative on I1 ) ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing I2 jacobian mixed terms with second derivative of the energy (derivative on I1 ) ... \n";
 	auto F = _F (dispETFESpace, disp, 0);
 
     auto dP = eval (dW2dI1, F ) * (_dI1bardF (F, _dF ) ) * (_dI2bar (F) );
@@ -404,8 +404,8 @@ computeI1JacobianTermsSecondDerivative ( const vector_Type& disp,
 
     auto s0 = eval (normalize1, s_00);
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "Computing I1 jacobian terms with second derivative of the energy  (Fung)... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "Computing I1 jacobian terms with second derivative of the energy  (Fung)... \n";
 
 	auto F = _F (dispETFESpace, disp, 0);
 

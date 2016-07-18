@@ -1221,7 +1221,7 @@ StructuralOperator<Mesh>::showMe ( std::ostream& c  ) const
 template <typename Mesh>
 void StructuralOperator<Mesh>::computeMatrix ( matrixPtr_Type& stiff, const vector_Type& sol,  Real const& /*factor*/)
 {
-    M_Displayer->leaderPrint ( " Computing residual ... \t\t\t");
+    M_Displayer->leaderPrint ("\n Computing residual ... \t\t");
 
     LifeChrono chrono;
     chrono.start();
@@ -1494,7 +1494,7 @@ StructuralOperator<Mesh>::evalResidual ( vector_Type& residual, const vector_Typ
     computeMatrix (M_systemMatrix, solution, 1.);
 
 
-    M_Displayer->leaderPrint ("    S- Updating the boundary conditions ... \t");
+    M_Displayer->leaderPrint (" Updating the boundary conditions ... \t");
     LifeChrono chrono;
 
     if ( !M_BCh->bcUpdateDone() )
@@ -1735,9 +1735,9 @@ solveJacobian (vector_Type&           step,
     matrixPtr_Type matrFull (new matrix_Type (*M_localMap) );
     *matrFull += *M_jacobian;
 
-    M_Displayer->leaderPrint ("\tS'-  Solving the linear system ... \n");
+    //M_Displayer->leaderPrint ("\nSolving the linear system ... \n");
 
-    M_Displayer->leaderPrint ("\tS'-  Applying boundary conditions      ... ");
+    M_Displayer->leaderPrint (" Applying boundary conditions ... \t");
 
 
     if ( !M_BCh->bcUpdateDone() )
@@ -1748,7 +1748,7 @@ solveJacobian (vector_Type&           step,
 
     M_Displayer->leaderPrintMax ( "done in ", chrono.diff() );
 
-    M_Displayer->leaderPrint ("\tS'-  Solving system                    ... \n");
+    M_Displayer->leaderPrint (" Solving linear system ... \n\n");
     chrono.start();
 
     //Setting up the quantities

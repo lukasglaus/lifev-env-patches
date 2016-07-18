@@ -140,8 +140,8 @@ computeI1ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
 
-	if(disp.comm().MyPID() == 0)
-		std::cout << "EMETA - Computing I1 residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+	//	std::cout << "EMETA - Computing I1 residual terms ... \n";
 
 	auto I = _I;
 	auto GradU = _Grad_u(dispETFESpace, disp, 0);
@@ -173,8 +173,8 @@ computeI2ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
 
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I2 residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I2 residual terms ... \n";
 	auto F = _F (dispETFESpace, disp, 0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,
@@ -193,8 +193,8 @@ computeVolumetricResidualTerms ( const vector_Type& disp,
                                  FunctorPtr                  Wvol)
 {
     //
-	if(disp.comm().MyPID() == 0)
-		std::cout << "EMETA - Computing Volumetric residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+	//	std::cout << "EMETA - Computing Volumetric residual terms ... \n";
 
     using namespace ExpressionAssembly;
 	auto F = _F (dispETFESpace, disp, 0);
@@ -230,8 +230,8 @@ computeI1ResidualTerms ( const vector_Type& disp,
 
     auto s0 = eval (normalize1, s_00);
 
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I1 residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I1 residual terms ... \n";
 	auto F = _F (dispETFESpace, disp, 0);
 
     integrate ( elements ( dispETFESpace->mesh() ) ,

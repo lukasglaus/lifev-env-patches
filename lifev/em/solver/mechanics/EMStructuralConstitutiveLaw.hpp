@@ -541,9 +541,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
     //    matrixPtr_Type jac(new matrix_Type(*this->M_localMap));
 
-    displayer->leaderPrint (" \n*********************************\n  ");
-    displayer->leaderPrint (" Non-Linear S-  Computing the EM material  Jacobian"     );
-    displayer->leaderPrint (" \n*********************************\n  ");
+    //displayer->leaderPrint (" \n*********************************\n  ");
+    //displayer->leaderPrint (" Non-Linear S-  Computing the EM material  Jacobian"     );
+    //displayer->leaderPrint (" \n*********************************\n  ");
     * (this->M_jacobian) *= 0.0;
     if (M_passiveMaterialPtr)
     {
@@ -569,7 +569,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     //  computeJacobian(disp);
 
     this->M_jacobian->globalAssemble();
-    displayer->leaderPrint (" \n*********************************\n\n  ");
+    //displayer->leaderPrint (" \n*********************************\n\n  ");
     //std::cout << std::endl;
 }
 
@@ -581,9 +581,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                                                                const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                                                const displayerPtr_Type& displayer )
 {
-    displayer->leaderPrint (" \n******************************************************************\n  ");
-    displayer->leaderPrint (" Non-Linear S-  Computing the EM material residual vector"     );
-    displayer->leaderPrint (" \n******************************************************************\n  ");
+    //displayer->leaderPrint (" \n******************************************************************\n  ");
+    //displayer->leaderPrint (" Non-Linear S-  Computing the EM material residual vector"     );
+    //displayer->leaderPrint (" \n******************************************************************\n  ");
     * (M_residualVectorPtr) *= 0.0;
     vectorPtr_Type vec (new vector_Type ( M_residualVectorPtr -> map() ) );
     Real passive_residual(0.0);
@@ -597,7 +597,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         passive_residual = M_residualVectorPtr -> norm2();
         if(vec->map().commPtr() ->MyPID() == 0)
         {
-        	std::cout << "\nPassive Residual: " << passive_residual << "\n";
+        	//std::cout << "\nPassive Residual: " << passive_residual << "\n";
         }
     }
     if (M_activeStressMaterialPtr)
@@ -614,7 +614,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 
         if(vec->map().commPtr() ->MyPID() == 0)
         {
-            std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
+            //std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
         }
 	}
     //  computeResidual(disp);

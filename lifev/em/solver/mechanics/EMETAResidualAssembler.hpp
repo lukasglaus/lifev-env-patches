@@ -43,8 +43,8 @@ computeFiberActiveStressResidualTerms ( const vector_Type& disp,
                                         FunctorPtr               W)
 {
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing Fibers Active Stress residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing Fibers Active Stress residual terms ... \n";
 
     using namespace ExpressionAssembly;
 
@@ -116,8 +116,8 @@ computeI4ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 f residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 f residual terms ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
     boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
@@ -151,8 +151,8 @@ computeI4ResidualTerms ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 s residual terms ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 s residual terms ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto s_0 = _v0 (dispETFESpace, sheets);
@@ -191,8 +191,8 @@ computeI4ResidualTermsFung ( const vector_Type& disp,
 {
     using namespace ExpressionAssembly;
     //
-	if(disp.comm().MyPID() == 0)
-    std::cout << "EMETA - Computing I4 s residual terms (Fung) ... \n";
+	//if(disp.comm().MyPID() == 0)
+    //std::cout << "EMETA - Computing I4 s residual terms (Fung) ... \n";
 
     auto f_0 = _v0 (dispETFESpace, fibers);
     auto s_0 = _v0 (dispETFESpace, sheets);
@@ -261,8 +261,8 @@ computeI8ResidualTerms ( const vector_Type& disp,
         auto P = eval (W8, _I8 ( F, f0, s0 ) )
                  * _dI8 ( F, f0, s0);
 
-    	if(disp.comm().MyPID() == 0)
-        std::cout << "EMETA - Computing I8 residual terms while orthonormalizing ... \n";
+    	//if(disp.comm().MyPID() == 0)
+        //std::cout << "EMETA - Computing I8 residual terms while orthonormalizing ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
                     quadRule(),
@@ -285,8 +285,8 @@ computeI8ResidualTerms ( const vector_Type& disp,
         auto P = eval (W8, _I8 ( F, f0, s0 ) )
                  * _dI8 (F, f0, s0);
 
-    	if(disp.comm().MyPID() == 0)
-        std::cout << "EMETA - Computing I8 residual terms ... \n";
+    	//if(disp.comm().MyPID() == 0)
+        //std::cout << "EMETA - Computing I8 residual terms ... \n";
 
         integrate ( elements ( dispETFESpace->mesh() ),
                     quadRule(),
