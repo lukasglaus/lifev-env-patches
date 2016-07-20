@@ -7,7 +7,7 @@
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
 start      = 0
-save       = 10
+save       = 800
 
 [electrophysiology]
 
@@ -242,7 +242,7 @@ monodomain_xml_file = ParamList.xml
             reordering_type 	= none 			# metis, rcm, none
             filter_singletons 	= true
 
-        [../]
+            [../]
 
     [../]
 

@@ -121,7 +121,7 @@ public:
             solve(dt, bcNames, bcValues, iter, plotError, plotSystem);
             VectorEigen residuum ( M_u - uPrevIter );
 
-            std::cout << "=============================================================\n";
+            std::cout << "\n\n=============================================================\n";
             std::cout << "Compute circulation\n";
             std::cout << "t = " << M_time << "\titer = " << subiter << "\tL2-Norm = " << residuum.norm() << std::endl;
             
@@ -135,7 +135,7 @@ public:
                 std::cout << "\t\titer = " << subiter << "\tL2-Norm = " << residuum.norm() << std::endl;
             }
             
-            std::cout << "=============================================================\n\n";
+            std::cout << "=============================================================\n";
         }
 	
         MPI_Barrier(MPI_COMM_WORLD);
