@@ -7,7 +7,7 @@
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
 start      = 0
-save       = 800
+save       = 10
 
 [electrophysiology]
 
@@ -225,7 +225,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 2
+        overlap  	= 1
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -236,7 +236,7 @@ monodomain_xml_file = ParamList.xml
             solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
 
             [../partitioner]
-            overlap 		= 2
+            overlap 		= 3
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
