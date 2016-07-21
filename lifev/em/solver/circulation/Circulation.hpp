@@ -135,7 +135,7 @@ public:
                 std::cout << "\t\titer = " << subiter << "\tL2-Norm = " << residuum.norm() << std::endl;
             }
             
-            std::cout << "=============================================================\n";
+            std::cout << "=============================================================\n\n";
         }
 	
         MPI_Barrier(MPI_COMM_WORLD);

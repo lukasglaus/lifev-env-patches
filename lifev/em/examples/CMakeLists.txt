@@ -26,5 +26,6 @@ ADD_SUBDIRECTORIES(
    example_EMBiVent
    example_EMBiVentMixed
    example_EMSiVent
+   example_EMHeart
    linear_solver_preconditioner
 )

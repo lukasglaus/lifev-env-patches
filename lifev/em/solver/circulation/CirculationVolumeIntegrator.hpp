@@ -35,7 +35,7 @@ public:
             std::cout << "\nVolume integrator " << M_domain << " created." << std::endl;
         }
        
-        initialize();
+        //initialize();
         
         if ( M_boundaryPoints.size() > 0 && M_fullMesh.comm()->MyPID() == 0 )
         {
@@ -238,16 +238,16 @@ public:
         }
         
         // Compute volume over open-end-boundary
-        Real volumeOpenEnd = computeOpenEndVolume(disp, direction, component);
+        //Real volumeOpenEnd = computeOpenEndVolume(disp, direction, component);
         
         // Compute total volume
-        Real totalVolume = volumeBoundary + volumeOpenEnd;
+        Real totalVolume = volumeBoundary;// + volumeOpenEnd;
         
         if (comm->MyPID() == 0)
         {
             std::cout << "\n\n=============================================================\n";
             std::cout << "Volume (boundary) in " << M_domain << ": \t" << volumeBoundary << std::endl;
-            std::cout << "Volume (open-end) in " << M_domain << ": \t" << volumeOpenEnd << std::endl;
+            //std::cout << "Volume (open-end) in " << M_domain << ": \t" << volumeOpenEnd << std::endl;
             std::cout << "Volume (total) in " << M_domain << ": \t" << totalVolume << std::endl;
             std::cout << "=============================================================\n\n";
         }

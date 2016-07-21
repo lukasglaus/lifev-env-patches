@@ -1646,6 +1646,7 @@ bool buildFaces ( MeshType& mesh,
         }
         if (! existingFacesMap_insert.second)
         {
+            errorStream << point1Id << " " << point2Id << " " << point3Id << " " << jFaceId << std::endl;
             errorStream << "ERROR in BuildFaces. Mesh stores two identical faces" << std::endl;
             if ( !externalContainerIsProvided )
             {

@@ -1,0 +1,281 @@
+#-------------------------------------------------
+#      Data file for EM-BiVent
+#-------------------------------------------------
+
+
+[exporter]
+type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+multimesh  = false
+start      = 0
+save       = 10
+
+[electrophysiology]
+
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml
+
+    [./physics]
+    IonicModel = MinimalModel
+    fiberDiffusion = 10 #1.33 #10.0
+    sheetDiffusion = 3 #0.176 #3.0
+    normalDiffusion = 3 #0.176 #3.0
+    
+    [../time_discretization]
+    endtime         = 100000
+    timestep        = 0.05
+    
+    [../discretization]
+    LumpedMass = false // use when too coarse mesh
+    #elementsOrder   = P1
+
+    [../flags]
+    lvendo = 65 #50
+    # rvedno = 51
+    # rvseptum = 52
+
+    [../]
+
+
+[activation]
+
+    [./physics]
+    ActivationModel = ActiveStressRossi14
+    CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
+    ActiveForceCoefficient = -4.0
+    Tmax = 3.8
+    ActiveStress_Beta = 2.279
+    EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
+    EMActiveStrainType = TransverselyIsotropic
+
+    [../time_discretization]
+    endtime         = 100000
+    timestep        = 0.05
+
+    [../]
+
+
+[solid]
+
+    [./physics]
+    density   	= 0
+    material_flag   = 1000 #101 #1000
+    young     	= 29760 #9920
+    poisson   	= 0.5
+    bulk		= 100000 #1.3333e+8
+    alpha 		= 2.684564e+6
+    gamma		= 1.0
+    gammaf		= 0.0
+    solidType 	= EMMaterial 
+    lawType     = nonlinear
+    EMPassiveMaterialType = PHO
+    EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
+
+    # Simple Fiber Active Stress
+    Tmax = 1300000 #30000 #500000 # 500000 value is thought for Holzapfel
+
+    # NeoHokean & Mooney-Rivlin
+    mu = 10000 #4960
+    C2 = 5000
+
+    # Holzapfel O.
+    a           = 3330
+    af          = 185350
+    as          = 25640
+    afs         = 4170
+    b           = 9.242
+    bf          = 15.972
+    bs          = 10.446
+    bfs         = 11.602
+
+    # Volumetric
+    BulkModulus = 3500000
+
+    [../boundary_conditions]
+    list =  'BaseSemilunar BaseAV Epicardium'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop AorticRing MitralRing TricuspidRing'
+    listPatchesBC = #'Patch1 Patch2'
+
+    numPreloadSteps  = 10
+
+        [./BaseSemilunar]
+        type       = Robin
+        flag       = 462
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '10000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../BaseAV]
+        type       = Robin
+        flag       = 463
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '10000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../Epicardium]
+        type       = Robin
+        flag       = 464
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '1000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../EndocardiumLV]
+            flag    = 454
+            index   = 0
+
+        [../EndocardiumRV]
+            flag    = 455
+            index   = 1
+
+        [../Septum]
+            flag    = 456
+            index   = 1
+
+        [../SeptumEdgeBottom]
+            flag    = 457
+            index   = 1
+
+        [../SeptumEdgeTop]
+            flag    = 458
+            index   = 1
+
+        [../AorticRing]
+            flag    = 461
+            index   = 0
+
+        [../MitralRing]
+            flag    = 460
+            index   = 0
+
+        [../TricuspidRing]
+            flag    = 459
+            index   = 1
+
+
+        [../Patch1]
+            flag       = 70
+
+        [../Patch2]
+            flag       = 71
+
+        [../]
+
+    [../patches]
+    Tmax            = 0
+
+    [../coupling]
+    pPerturbationFe         = 1e-3
+    pPerturbationCirc       = 1e-3
+    dpMax                   = 0.3
+    couplingError           = 1e-7
+    couplingJFeIter         = 20
+    couplingJFeSubStart     = 2
+    couplingJFeSubIter      = 1
+
+    [../time_discretization]
+    initialtime 	= 0.
+    endtime         = 100000.
+    timestep        = 2.0
+    dt_loadstep     = 0.5
+    theta       	= 0.35
+    zeta        	= 0.75
+    BDF_order   	= 2
+
+
+    [../space_discretization]
+    mesh_type           = .mesh
+    mesh_dir            = heartVCoa/
+    mesh_file           = heartVCoa.mesh
+    mesh_scaling        = 0.13
+    mesh_rotation_2     = 0.0
+    order               = P2
+    quad_rule           = 4pt
+    anisotropic         = true
+    fiber_name          = FiberDirection
+    fiber_fieldname     = fibers
+    #fiber_dir           = biVentCoarse/
+    sheet_name          = SheetsDirection
+    sheet_fieldname     = sheets
+    #sheet_dir           = biVentCoarse/
+
+
+    [../miscellaneous]
+    factor    	= 1
+    verbose   	= 1
+
+
+    [../newton]
+    maxiter 	= 50
+    reltol  	= 1.e-7
+    abstol  	= 1.e-7
+    NonLinearLineSearch = 0
+
+    [../solver]
+    solver          = cg #gmres
+    scaling         = none
+    output          = all 			# none
+    conv            = rhs
+    max_iter        = 500
+    reuse           = true
+    max_iter_reuse  = 250
+    kspace          = 800
+    tol             = 1.e-9   # 1.e-10 		# AztecOO tolerance
+
+    [../prec]
+    prectype        = Ifpack	 		# Ifpack or ML
+    displayList     = true
+    xmlName         = ParamList.xml #xmlParameters.xml
+
+        [./ifpack]
+        overlap  	= 1
+
+            [./fact]
+            ilut_level-of-fill      = 1
+            drop_tolerance          = 1.e-5
+            relax_value             = 0
+
+            [../amesos]
+            solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
+
+            [../partitioner]
+            overlap 		= 3
+
+            [../schwarz]
+            reordering_type 	= none 			# metis, rcm, none
+            filter_singletons 	= true
+
+            [../]
+
+    [../]
+
+
+
+
+	# -*- getpot -*- (GetPot mode activation for emacs)
+#----------------------------------------------------------------
+#      Data file for heart test
+#----------------------------------------------------------------
+

@@ -1,0 +1,270 @@
+#-------------------------------------------------
+#      Data file for EM-Coupling
+#-------------------------------------------------
+
+
+[exporter]
+type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
+multimesh  = false
+start      = 0
+save       = 1
+
+[electrophysiology]
+
+monodomain_xml_path = ./
+monodomain_xml_file = ParamList.xml
+
+    [./physics]
+    IonicModel = MinimalModel
+    fiberDiffusion = 10 #1.33 #10.0
+    sheetDiffusion = 3 #0.176 #3.0
+    normalDiffusion = 3 #0.176 #3.0
+    
+    [../time_discretization]
+    endtime         = 100000
+    timestep        = 0.05
+    
+    [../discretization]
+    LumpedMass = false // use when too coarse mesh
+    #elementsOrder   = P1
+
+    [../flags]
+    lvendo = 65 #50
+    # rvedno = 51
+    # rvseptum = 52
+
+    [../]
+
+
+[activation]
+
+    [./physics]
+        #ActivationModels available and relative required parameters
+        # ActiveStressRossi14: # only correct with AlievPa., wrong parameters for others.
+        #     ActiveStress_Beta
+        #     ActiveStressMu
+        #     Tmax ( MaxActiveTension )
+        # ActiveStressNashPanfilov04
+        #     kTa
+        #     epsilon0
+        # ActiveStrainRossi14 # only use with minimalmodel and neoHoekan and Holzapfel and exponential
+        #     calciumIndex
+        #     InverseViscosity
+        #     ActiveForceCoefficient
+        #     ChemicalThreshold
+    ActivationModel = ActiveStressRossi14
+    CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
+    ActiveForceCoefficient = -4.0
+    Tmax = 10 #1 #5 #0.05 #1 #0.1 #2 # Default: 50
+    ActiveStress_Beta = 2.279 #45.6 #2.279 #45.6 #2.279
+    EMActiveStrainOrthotropicParameter = -666.0 # -666.0 for deactivated
+        #Active Strain types Available
+        # Anisotropic
+        # Orthotropic # set kappa = 3 or 4 positiv to be orthotropic
+        # TransverselyIsotropic
+    EMActiveStrainType = TransverselyIsotropic
+
+    [../time_discretization]
+    endtime         = 100000
+    timestep        = 0.05
+
+    [../]
+
+
+[solid]
+
+    [./physics]
+    density   	= 0
+    material_flag   = 1000 #101 #1000
+    young     	= 29760 #9920
+    poisson   	= 0.5
+    bulk		= 100000 #1.3333e+8
+    alpha 		= 2.684564e+6
+    gamma		= 1.0
+    gammaf		= 0.0
+    solidType 	= EMMaterial 
+    lawType     = nonlinear
+        #Passive material available types for EM
+        #PNH   = Passive NeoHookean
+        #PNHL  = Passive NeoHookean Linearized
+        #PIE   = Passive Isoptropic Exponential
+        #PTIE  = Passive Transversely Isoptropic Exponential
+        #PIEWS = Passive Isoptropic Exponential With Shear
+        #PHO   = Passive Holzapfel OgdenS
+        #POF   = Passive Orthotropic Fung
+        #PTIF  = Passive Transversely Isotropic Fung
+        #PV    = Passive Volumetric
+        #ANH   = Active (Strain) Neo Hookean
+        #PMR   = Passive Mooney Rivlin
+        #SimpleActiveStress  = Simple Fiber Active Stress
+
+    EMPassiveMaterialType = PMR
+    EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
+
+    # Simple Fiber Active Stress
+    Tmax = 500000 #30000 #500000 # 500000 value is thought for Holzapfel
+
+    # NeoHokean & Mooney-Rivlin
+    mu = 10000 #4960
+    C2 = 5000
+
+    # Holzapfel
+    a           = 3330
+    af          = 185350
+    as          = 25640
+    afs         = 4170
+    b           = 9.242
+    bf          = 15.972
+    bs          = 10.446
+    bfs         = 11.602
+
+    # Volumetric
+    BulkModulus = 3500000
+
+    # Fang type materials
+    C = 20000.0
+    bff = 8.0
+    bss = 2.0
+    bnn = 2.0
+    bfs = 4.0
+    bfn = 4.0
+    bsn = 2.0
+
+
+    [../boundary_conditions]
+    list = 'BaseNormal BaseRobin'
+    listVariableBC = 'LVEndo RVEndo RVSeptum RVRadii'
+    numPreloadSteps  = 10
+
+        [./BaseNormal]
+        type       = Essential
+        flag       = 64 #48
+        mode       = Component
+        component  = 1
+        function  = '0.0'
+
+        [../BaseRobin]
+        type       = Robin
+        flag       = 64 #48
+        mode       = Component
+        component  = '0 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '100000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../LVEndo]
+            flag    = 65 #50
+            index   = 0
+
+        [../RVEndo]
+            flag    = 66 #51
+            index   = 1
+
+        [../RVSeptum]
+            flag    = 67 #52
+            index   = 1
+
+        [../RVRadii]
+            flag    = 68 #53
+            index   = 1
+
+        [../]
+
+    [../coupling]
+    pPerturbationFe         = 1e-3
+    pPerturbationCirc       = 1e-3
+    dpMax                   = 0.2
+    couplingError           = 1e-7 #1e-7 #1e-8
+    couplingJFeIter         = 20
+    couplingJFeSubStart     = 2
+    couplingJFeSubIter      = 1
+
+    [../time_discretization]
+    initialtime 	= 0.
+    endtime         = 100000.
+    timestep        = 0.5
+    theta       	= 0.35
+    zeta        	= 0.75
+    BDF_order   	= 2
+    timestepRestartFactor = 1.0
+
+
+    [../space_discretization]
+    mesh_type           = .mesh
+    mesh_dir            = biVentMediumPatchesP2/
+    mesh_file           = biVentMediumPatches.mesh
+    mesh_scaling        = 0.1
+    mesh_rotation_2     = 0.0
+    order               = P2
+    anisotropic         = true
+    fiber_name          = FiberDirection
+    fiber_fieldname     = fibers
+    #fiber_dir           = biVentCoarse/
+    sheet_name          = SheetsDirection
+    sheet_fieldname     = sheets
+    #sheet_dir           = biVentCoarse/
+
+
+    [../miscellaneous]
+    factor    	= 1
+    verbose   	= 1
+
+
+    [../newton]
+    maxiter 	= 50
+    reltol  	= 1.e-7
+    abstol  	= 1.e-7
+    #NonLinearLineSearch = 0
+
+    [../solver]
+    solver          = cg #gmres
+    scaling         = none
+    output          = all 			# none
+    conv            = rhs
+    max_iter        = 500
+    reuse           = true
+    max_iter_reuse  = 250
+    kspace          = 800
+    tol             = 1.e-9   # 1.e-10 		# AztecOO tolerance
+
+    [../prec]
+    prectype        = Ifpack	 		# Ifpack or ML
+    displayList     = true
+    xmlName         = ParamList.xml #xmlParameters.xml
+
+        [./ifpack]
+        overlap  	= 3
+
+            [./fact]
+            ilut_level-of-fill      = 1
+            drop_tolerance          = 1.e-5
+            relax_value             = 0
+
+            [../amesos]
+            solvertype 		=  Amesos_Umfpack 	# Amesos_KLU or Amesos_Umfpack
+
+            [../partitioner]
+            overlap 		= 4
+
+            [../schwarz]
+            reordering_type 	= none 			# metis, rcm, none
+            filter_singletons 	= true
+
+        [../]
+
+    [../]
+
+
+
+
+	# -*- getpot -*- (GetPot mode activation for emacs)
+#----------------------------------------------------------------
+#      Data file for heart test
+#----------------------------------------------------------------
+
