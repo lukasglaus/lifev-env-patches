@@ -576,14 +576,14 @@ int main (int argc, char** argv)
         };
         
         LifeChrono chronoSave;
-        chronoPreload.start();
+        chronoSave.start();
 
         solver.saveSolution (-1.0);
         
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*****************************************************************";
-            std::cout << "\nData stored in " << chronoPreload.diff() << " s";
+            std::cout << "\nData stored in " << chronoSave.diff() << " s";
             std::cout << "\n*****************************************************************\n";
         }
         
