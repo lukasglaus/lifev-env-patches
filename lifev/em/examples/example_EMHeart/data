@@ -105,7 +105,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '10000' #' 5.00 * 1000' # D
+            function = '100000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -120,7 +120,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '10000' #' 5.00 * 1000' # D
+            function = '100000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -198,7 +198,7 @@ monodomain_xml_file = ParamList.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 2.0
+    timestep        = 1.0
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
@@ -209,8 +209,13 @@ monodomain_xml_file = ParamList.xml
     mesh_type           = .mesh
     mesh_dir            = heartVVCoa/
     mesh_file           = heartVVCoa.mesh
-    mesh_scaling        = 0.13
-    mesh_rotation_2     = 0.0
+    mesh_scaling        = 0.1
+    mesh_translation_0  = -86
+    mesh_translation_1  = -94
+    mesh_translation_2  = -122.5
+    mesh_rotation_0     = 0.9
+    mesh_rotation_1     = 0.0
+    mesh_rotation_2     = -0.5
     order               = P2
     quad_rule           = 4pt
     anisotropic         = true
