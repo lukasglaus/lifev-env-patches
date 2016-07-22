@@ -104,7 +104,8 @@ Real patchForce (const Real& t, const Real& Tmax)
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
+    bool coords ( Y < -7. );
+    //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
     return ( coords && time ? 30 : 0 );
 }
@@ -574,7 +575,17 @@ int main (int argc, char** argv)
             return p;
         };
         
+        LifeChrono chronoSave;
+        chronoPreload.start();
+
         solver.saveSolution (-1.0);
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nData stored in " << chronoPreload.diff() << " s";
+            std::cout << "\n*****************************************************************\n";
+        }
         
         LifeChrono chronoPreload;
         chronoPreload.start();
