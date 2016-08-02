@@ -245,7 +245,18 @@ int main ( int argc, char** argv )
     //*************************************************************//
     meshPtr_Type meshPart (new mesh_Type ( Comm ) );
     MeshUtility::loadMesh (meshPart, meshName, meshPath);
-
+    
+    //============================================//
+    // Resize mesh
+    //============================================//
+    
+    std::vector<Real> scale (3, dataFile("problem/mesh_transformation/mesh_scaling", 1.0));
+    std::vector<Real> rotate { dataFile("problem/mesh_transformation/mesh_rotation_0", 0.0) , dataFile("problem/mesh_transformation/mesh_rotation_1", 0.0) , dataFile("problem/mesh_transformation/mesh_rotation_2", 0.0) };
+    std::vector<Real> translate { dataFile("problem/mesh_transformation/mesh_translation_0", 0.0) , dataFile("problem/mesh_transformation/mesh_translation_1", 0.0) , dataFile("problem/mesh_transformation/mesh_translation_2", 0.0) };
+    
+    MeshUtility::MeshTransformer<mesh_Type> transformerLocal ( *meshPart );
+    transformerLocal.transformMesh (scale, rotate, translate);
+    
     //*************************************************************//
     // Here we define the finite element spaces. In particular
     // - uSpace is the finite element space for Expression Template Assembly

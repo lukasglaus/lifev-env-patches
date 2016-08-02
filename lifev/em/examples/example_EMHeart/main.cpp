@@ -232,11 +232,6 @@ int main (int argc, char** argv)
     
     displayer.leaderPrint ("\nSetting up EM solver ... ");
     
-//    if ( dataFile ( "solid/physics/EMPassiveMaterialType", "4pt") == "PHO" && dataFile ( "solid/space_discretization/order", "P1") == "P2" )
-//    {
-//        EMAssembler::quadRule.setQuadRule("15pt");
-//    }
-    
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
     solver.setup (dataFile);
     
