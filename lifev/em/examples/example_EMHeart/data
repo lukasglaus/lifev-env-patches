@@ -91,8 +91,8 @@ monodomain_xml_file = ParamList.xml
     BulkModulus = 3500000
 
     [../boundary_conditions]
-    list =  'BaseSemilunar BaseAV Epicardium'
-    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop AorticRing MitralRing TricuspidRing'
+    list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop'
     listPatchesBC = ''#'Patch1 Patch2'
 
     numPreloadSteps  = 30
@@ -142,6 +142,52 @@ monodomain_xml_file = ParamList.xml
 
             [../]
 
+        [../AorticRing]
+        type       = Robin
+        flag       = 461
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '100000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../MitralRing]
+        type       = Robin
+        flag       = 460
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '100000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+        [../TricuspidRing]
+        type       = Robin
+        flag       = 459
+        mode       = Component
+        component  = '0 1 2'
+        function = '0.0'
+
+            [./RobinAlpha]
+            function = '100000' #' 5.00 * 1000' # D
+
+            [../RobinBeta]
+            function = '1' #' 5.00 * 1000' # D
+
+            [../]
+
+
         [../EndocardiumLV]
             flag    = 454
             index   = 0
@@ -161,19 +207,6 @@ monodomain_xml_file = ParamList.xml
         [../SeptumEdgeTop]
             flag    = 458
             index   = 1
-
-        [../AorticRing]
-            flag    = 461
-            index   = 0
-
-        [../MitralRing]
-            flag    = 460
-            index   = 0
-
-        [../TricuspidRing]
-            flag    = 459
-            index   = 1
-
 
         [../Patch1]
             flag       = 70
