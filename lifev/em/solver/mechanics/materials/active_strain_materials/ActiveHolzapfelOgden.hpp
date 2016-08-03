@@ -28,10 +28,8 @@ namespace LifeV
 
     template<typename Mesh>
     ActiveHolzapfelOgden<Mesh>::ActiveHolzapfelOgden() :
-        super ("Active Strain Holzapfel Ogden", 10)
+        super ("Active Strain Holzapfel Ogden", 8)
     {
-        this -> M_materialFunctionList[8].reset ( new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
-        this -> M_materialFunctionList[9].reset ( new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
         this -> M_materialFunctionList[0].reset ( new MaterialFunctions::ActiveStrainIsotropicExponential<Mesh> (3330.0, 9.242)  );
         this -> M_materialFunctionList[1].reset ( new MaterialFunctions::dActiveStrainIsotropicExponential<Mesh> (3330.0, 9.242)  );
         this -> M_materialFunctionList[2].reset ( new MaterialFunctions::ActiveStrainAnisotropicExponential<Mesh> (185350, 15.972)  );
