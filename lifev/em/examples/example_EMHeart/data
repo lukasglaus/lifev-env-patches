@@ -107,7 +107,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '1000' #' 5.00 * 1000' # D
+            function = '100000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -122,7 +122,7 @@ monodomain_xml_file = ParamList.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '1000' #' 5.00 * 1000' # D
+            function = '100000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
