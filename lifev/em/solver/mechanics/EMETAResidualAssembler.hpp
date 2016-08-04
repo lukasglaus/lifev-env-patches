@@ -32,6 +32,84 @@ typedef boost::shared_ptr<matrix_Type>         matrixPtr_Type;
 namespace EMAssembler
 {
 
+
+template <typename Mesh, typename FunctorPtr >
+void
+computeOrthotropicActiveStressResidualTerms ( const vector_Type& disp,
+                                       boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > >  dispETFESpace,
+                                       const vector_Type& fibers,
+                                       const vector_Type& sheets,
+                                       const vector_Type& activation,
+                                       boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > >  activationETFESpace,
+                                       vectorPtr_Type           residualVectorPtr,
+                                       FunctorPtr               W,
+                                       const std::string& field)
+{
+    using namespace ExpressionAssembly;
+
+    auto I = _I;
+    
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
+
+    auto F = _F (dispETFESpace, disp, 0);
+    auto H = value (activationETFESpace, activation);
+    auto Wa = eval (W, H);
+    auto Wm = eval (W, I);
+    
+    if ( field == "Sheets" )
+    {
+        auto s_0 = _v0 (dispETFESpace, sheets);
+        auto s_00 = s_0 - dot (f0, s_0) * f0;
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto s0 = eval (normalize1, s_00);
+        
+        auto i = F * s0;
+        auto ixi0 = outerProduct (i, f0);
+        
+        auto P = Wa * /*Wm*/ ixi0;
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRule(),
+                   dispETFESpace,
+                   dot ( P , grad (phi_i) )
+                   ) >> residualVectorPtr;
+    }
+    else if ( field == "Normal" )
+    {
+        auto s_0 = _v0 (dispETFESpace, sheets);
+        auto s_00 = s_0 - dot (f0, s_0) * f0;
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto s0 = eval (normalize1, s_00);
+        
+        boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+        auto n0 = eval ( wedge, f0, s0);
+        
+        auto i = F * n0;
+        auto ixi0 = outerProduct (i, f0);
+        
+        auto P = Wa * /*Wm*/ ixi0;
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRule(),
+                   dispETFESpace,
+                   dot ( P , grad (phi_i) )
+                   ) >> residualVectorPtr;
+    }
+    else
+    {
+        auto i = F * f0;
+        auto ixi0 = outerProduct (i, f0);
+        
+        auto P = Wa * /*Wm*/ ixi0;
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRule(),
+                   dispETFESpace,
+                   dot ( P , grad (phi_i) )
+                   ) >> residualVectorPtr;
+    }
+}
+
+    
 template <typename Mesh, typename FunctorPtr >
 void
 computeFiberActiveStressResidualTerms ( const vector_Type& disp,

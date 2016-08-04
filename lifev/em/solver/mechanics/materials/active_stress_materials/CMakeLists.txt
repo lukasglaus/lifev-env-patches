@@ -1,5 +1,6 @@
 SET( solver_mechanics_materials_activeStress_HEADERS
  solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp
+ solver/mechanics/materials/active_stress_materials/OrthotropicFibersActiveStress.hpp
  CACHE INTERNAL "")
 
 SET( solver_mechanics_materials_activeStress_SOURCES

@@ -77,6 +77,87 @@ public:
 
 template <typename Mesh, typename FunctorPtr >
 void
+computeOrthotropicActiveStressJacobianTerms (  const vector_Type&                                    disp,
+                                               boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
+                                               const vector_Type&                                    fibers,
+                                               const vector_Type&                                    sheets,
+                                               const vector_Type&                                    activation,
+                                               boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 1 > > activationETFESpace,
+                                               matrixPtr_Type                                        jacobianPtr,
+                                               FunctorPtr                                            W,
+                                               const std::string&                                    field  )
+{
+    using namespace ExpressionAssembly;
+    
+    auto dF = _dF;
+    auto I = _I;
+    
+    auto f_0 = _v0 (dispETFESpace, fibers);
+    boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+    auto f0 = eval (normalize0, f_0);
+
+    auto F = _F (dispETFESpace, disp, 0);
+    auto H = value (activationETFESpace, activation);
+    auto Wa = eval (W, H);
+    auto Wm = eval (W, I);
+    
+    if ( field == "Sheets" )
+    {
+        auto s_0 = _v0 (dispETFESpace, sheets);
+        auto s_00 = s_0 - dot (f0, s_0) * f0;
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto s0 = eval (normalize1, s_00);
+        
+        auto di = dF * s0;
+        auto dixi0 = outerProduct (di, s0);
+        
+        auto dP = Wa * Wm * dixi0;
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRule(),
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dP, grad (phi_i) )
+                   ) >> jacobianPtr;
+    }
+    else if ( field == "Normal" )
+    {
+        auto s_0 = _v0 (dispETFESpace, sheets);
+        auto s_00 = s_0 - dot (f0, s_0) * f0;
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto s0 = eval (normalize1, s_00);
+        
+        boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+        auto n0 = eval ( wedge, f0, s0);
+        
+        auto di = dF * n0;
+        auto dixi0 = outerProduct (di, n0);
+        
+        auto dP = Wa * Wm * dixi0;
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRule(),
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dP, grad (phi_i) )
+                   ) >> jacobianPtr;
+    }
+    else
+    {
+        auto di = dF * f0;
+        auto dixi0 = outerProduct (di, f0);
+        
+        auto dP = Wa * Wm * dixi0;
+        integrate ( elements ( dispETFESpace->mesh() ) ,
+                   quadRule(),
+                   dispETFESpace,
+                   dispETFESpace,
+                   dot ( dP, grad (phi_i) )
+                   ) >> jacobianPtr;
+    }
+}
+
+    
+template <typename Mesh, typename FunctorPtr >
+void
 computeFiberActiveStressJacobianTerms ( const vector_Type& disp,
                                         boost::shared_ptr<ETFESpace<Mesh, MapEpetra, 3, 3 > > dispETFESpace,
                                         const vector_Type& fibers,

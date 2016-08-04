@@ -24,6 +24,7 @@
 
 // ACTIVE STRESS MATERIAL
 #include <lifev/em/solver/mechanics/materials/active_stress_materials/SimpleFibersActiveStress.hpp>
+#include <lifev/em/solver/mechanics/materials/active_stress_materials/OrthotropicFibersActiveStress.hpp>
 
 // ACTIVE STRAIN MATERIAL
 #include <lifev/em/solver/mechanics/materials/active_strain_materials/ActiveNeoHookean.hpp>
