@@ -68,10 +68,12 @@ monodomain_xml_file = ParamList.xml
     solidType 	= EMMaterial 
     lawType     = nonlinear
     EMPassiveMaterialType = PHO
-    EMActiveStressMaterialType = SimpleActiveStress #AHO #SFAS
+    EMActiveStressMaterialType = OAS #SimpleActiveStress #AHO #SFAS
 
     # Simple Fiber Active Stress
     Tmax = 1300000 #30000 #500000 # 500000 value is thought for Holzapfel
+    Cs = -0.5
+    Cn = 0.3
 
     # NeoHokean & Mooney-Rivlin
     mu = 10000 #4960
@@ -91,8 +93,8 @@ monodomain_xml_file = ParamList.xml
     BulkModulus = 3500000
 
     [../boundary_conditions]
-    list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
-    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop'
+    list =  'BaseSemilunar BaseAV Epicardium' #' AorticRing MitralRing TricuspidRing'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop AorticRingP MitralRingP TricuspidRingP'
     listPatchesBC = ''#'Patch1 Patch2'
 
     numPreloadSteps  = 30
@@ -208,6 +210,18 @@ monodomain_xml_file = ParamList.xml
             flag    = 458
             index   = 1
 
+        [../AorticRingP]
+            flag    = 461
+            index   = 0
+
+        [../MitralRingP]
+            flag    = 460
+            index   = 0
+
+        [../TricuspidRingP]
+            flag    = 459
+            index   = 1
+
         [../Patch1]
             flag       = 70
 
@@ -264,7 +278,7 @@ monodomain_xml_file = ParamList.xml
     factor    	= 1
     verbose   	= 1
 
-q
+
     [../newton]
     maxiter 	= 50
     reltol  	= 1.e-7
