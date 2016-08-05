@@ -82,6 +82,10 @@ EMData::setupSolidParameters(GetPot& dataFile, const std::string& section)
 
     double Tmax = dataFile ( ( section + "/physics/Tmax" ).data(), 50.0 );
     M_solidParametersList.set ("MaxActiveTension", Tmax);
+    double Cs = dataFile ( ( section + "/physics/Cs" ).data(), 0. );
+    M_solidParametersList.set ("Cs", Cs);
+    double Cn = dataFile ( ( section + "/physics/Cn" ).data(), 0. );
+    M_solidParametersList.set ("Cn", Cn);
 
     double endtime = dataFile ( ( section + "/time_discretization/endtime" ).data(), 1.0 );
     M_solidParametersList.set ("endtime", endtime);

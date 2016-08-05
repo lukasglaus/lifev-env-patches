@@ -61,8 +61,9 @@ namespace LifeV
 
                 auto I = _I;
                 auto dF = grad(phi_j);
-                auto GradU = _Grad_u(dispETFESpace, disp, 0);
-                auto F = I + GradU;
+//                auto GradU = _Grad_u(dispETFESpace, disp, 0);
+//                auto F = I + GradU;
+                auto F = _F (dispETFESpace, disp, 0);
 
                 auto f_0 = _v0 (dispETFESpace, fibers);
                 auto s_0 = _v0 (dispETFESpace, sheets);
@@ -192,8 +193,9 @@ namespace LifeV
 
                 auto I = _I;
                 auto dF = grad(phi_j);
-                auto GradU = _Grad_u(dispETFESpace, disp, 0);
-                auto F = I + GradU;
+//                auto GradU = _Grad_u(dispETFESpace, disp, 0);
+//                auto F = I + GradU;
+                auto F = _F (dispETFESpace, disp, 0);
 
                 auto f_0 = _v0 (dispETFESpace, fibers);
                 auto s_0 = _v0 (dispETFESpace, sheets);
@@ -956,8 +958,9 @@ namespace LifeV
 
                 auto I = _I;
                 auto dF = grad(phi_j);
-                auto GradU = _Grad_u(dispETFESpace, disp, 0);
-                auto F = I + GradU;
+//                auto GradU = _Grad_u(dispETFESpace, disp, 0);
+//                auto F = I + GradU;
+                auto F = _F (dispETFESpace, disp, 0);
 
                 auto f_0 = _v0 (dispETFESpace, fibers);
                 auto s_0 = _v0 (dispETFESpace, sheets);
