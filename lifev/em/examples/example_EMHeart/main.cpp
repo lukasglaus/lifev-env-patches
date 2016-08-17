@@ -553,6 +553,7 @@ int main (int argc, char** argv)
 
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
+        bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
         modifyFeBC(bcValues);
     }
 
