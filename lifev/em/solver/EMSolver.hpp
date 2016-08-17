@@ -200,6 +200,8 @@ public:
         }
     }
 
+    void importHdf5 ();
+
     void setupExporters (std::string problemFolder   = "./",
                          std::string electroFileName = "ElectroSolution",
                          std::string activationFileName  = "ActivationSolution",
@@ -649,6 +651,22 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalBC (std::string data_file_name,
     // M_bcInterfacePtr->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
 }
 
+    
+/////////////////////
+//restart hdf5
+template<typename Mesh , typename ElectroSolver>
+void
+EMSolver<Mesh, ElectroSolver>::importHdf5 ()
+{
+    M_electroExporterPtr -> importHdf5 ();
+    M_activationExporterPtr -> importHdf5 ();
+    M_activationTimeExporterPtr -> importHdf5 ();
+    M_vonMisesStressExporterPtr -> importHdf5 ();
+    M_vonMisesStressExporterPtrP -> importHdf5 ();
+    M_vonMisesStressExporterPtrA -> importHdf5 ();
+    M_mechanicsExporterPtr -> importHdf5 ();
+}
+                                                   
 
 /////////////////////
 //Setup exporters

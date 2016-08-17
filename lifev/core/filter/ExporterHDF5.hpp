@@ -145,7 +145,7 @@ public:
     virtual void postProcess (const Real& time);
 
 
-    void postProcess2 (const Real& time);
+    void importHdf5 ();
 
     
     //! Import data from previous simulations at a certain time
@@ -357,61 +357,13 @@ void ExporterHDF5<MeshType>::postProcess (const Real& time)
 
     
 template<typename MeshType>
-void ExporterHDF5<MeshType>::postProcess2 (const Real& time)
+void ExporterHDF5<MeshType>::importHdf5 ()
 {
     if ( M_HDF5.get() == 0 )
     {
         M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
         M_outputFileName = this->M_prefix + ".h5";
         M_HDF5->Open (this->M_postDir + M_outputFileName);
-
-        // write empty xdmf file
-        //writeInitXdmf();
-
-        if (!this->M_multimesh)
-        {
-            writeGeometry(); // see also writeGeometry
-            M_HDF5->Flush();
-        }
-        return;
-    }
-
-    // typedef std::list< exporterData_Type >::const_iterator Iterator;
-    
-    this->computePostfix();
-
-    std::size_t found ( this->M_postfix.find ( "*" ) );
-    if ( found == std::string::npos )
-    {
-        if (!this->M_procId)
-        {
-            std::cout << "  X-  HDF5 post-processing ...                 " << std::flush;
-        }
-        LifeChrono chrono;
-        chrono.start();
-        for (typename super::dataVectorIterator_Type i = this->M_dataVector.begin(); i != this->M_dataVector.end(); ++i)
-        {
-            writeVariable (*i);
-        }
-        // pushing time
-        this->M_timeSteps.push_back (time);
-
-        writeXdmf (time);
-
-        if (this->M_multimesh)
-        {
-            writeGeometry(); // see also writeGeometry
-        }
-
-        chrono.stop();
-
-        // Write to file without closing the file
-        M_HDF5->Flush();
-
-        if (!this->M_procId)
-        {
-            std::cout << "done in " << chrono.diff() << " s." << std::endl;
-        }
     }
 }
     
