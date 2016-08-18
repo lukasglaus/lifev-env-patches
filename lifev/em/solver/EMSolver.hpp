@@ -658,7 +658,7 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::importHdf5 ()
 {
-    M_electroExporterPtr -> import (30);
+    M_electroExporterPtr -> importHdf5 (30);
     M_activationExporterPtr -> importHdf5 (30);
     M_activationTimeExporterPtr -> importHdf5 (30);
     M_vonMisesStressExporterPtr -> importHdf5 (30);
