@@ -145,7 +145,7 @@ public:
     virtual void postProcess (const Real& time);
 
 
-    void importHdf5 ();
+    void importHdf5 (Real t);
 
     
     //! Import data from previous simulations at a certain time
@@ -357,13 +357,24 @@ void ExporterHDF5<MeshType>::postProcess (const Real& time)
 
     
 template<typename MeshType>
-void ExporterHDF5<MeshType>::importHdf5 ()
+void ExporterHDF5<MeshType>::importHdf5 (Real t)
 {
     if ( M_HDF5.get() == 0 )
     {
         M_HDF5.reset (new hdf5_Type (this->M_dataVector.begin()->storedArrayPtr()->comm() ) );
         M_outputFileName = this->M_prefix + ".h5";
         M_HDF5->Open (this->M_postDir + M_outputFileName);
+        
+        Real time (0.0);
+        
+        this->M_timeSteps.push_back (-1.0);
+        
+        for ( Real time (0.0); time <= t; time = time + 10 )
+        {
+            this->M_timeSteps.push_back (time);
+        }
+        
+        this->computePostfix();
     }
 }
     
