@@ -868,7 +868,7 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 //    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
 
     
-    M_electroExporterPtr -> postProcess (time);//, restart);
+    //M_electroExporterPtr -> postProcess (time);//, restart);
     M_activationExporterPtr -> postProcess (time);//, restart );
     M_activationTimeExporterPtr -> postProcess (time);
     M_mechanicsExporterPtr -> postProcess (time);//, restart);
