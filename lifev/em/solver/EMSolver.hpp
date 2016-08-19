@@ -848,19 +848,19 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    
-    M_wteTotal.setStressType ( "total" );
-    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_vonMisesStressExporterPtr -> postProcess (time);
-    
-    M_wteTotal.setStressType ( "passiv" );
-    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_vonMisesStressExporterPtrP -> postProcess (time);
-
-    M_wteTotal.setStressType ( "active" );
-    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_vonMisesStressExporterPtrA -> postProcess (time);
+//    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+//    
+//    M_wteTotal.setStressType ( "total" );
+//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+//    M_vonMisesStressExporterPtr -> postProcess (time);
+//    
+//    M_wteTotal.setStressType ( "passiv" );
+//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+//    M_vonMisesStressExporterPtrP -> postProcess (time);
+//
+//    M_wteTotal.setStressType ( "active" );
+//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+//    M_vonMisesStressExporterPtrA -> postProcess (time);
 
 //    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
 //    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
