@@ -698,7 +698,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
     // Activation
     M_activationExporterPtr.reset (new exporter_Type() );
     setupActivationExporter (problemFolder, activationFileName );
-    M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+    //M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                              "Activation",
                                              M_electroSolverPtr -> feSpacePtr(),
                                              M_activationModelPtr -> fiberActivationPtr(),
@@ -870,8 +870,8 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
     
     //M_electroExporterPtr -> postProcess (time);//, restart);
     M_activationExporterPtr -> postProcess (time);//, restart );
-    M_activationTimeExporterPtr -> postProcess (time);
-    M_mechanicsExporterPtr -> postProcess (time);//, restart);
+    //M_activationTimeExporterPtr -> postProcess (time);
+    //M_mechanicsExporterPtr -> postProcess (time);//, restart);
 }
 
 template<typename Mesh , typename ElectroSolver>
