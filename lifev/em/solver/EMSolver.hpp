@@ -659,7 +659,7 @@ void
 EMSolver<Mesh, ElectroSolver>::importHdf5 ()
 {
     M_electroExporterPtr -> importHdf5 (30);
-    M_activationExporterPtr -> importHdf5 (30);
+    M_activationExporterPtr -> import (10);
     M_activationTimeExporterPtr -> importHdf5 (30);
     M_vonMisesStressExporterPtr -> importHdf5 (30);
     M_vonMisesStressExporterPtrP -> importHdf5 (30);

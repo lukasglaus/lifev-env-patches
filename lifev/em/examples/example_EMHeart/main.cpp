@@ -888,16 +888,18 @@ int main (int argc, char** argv)
             VCirc = VCircNew;
             VFe = VFeNew;
             
-            //============================================//
-            // Export circulation solution
-            //============================================//
-            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
-        
+            
             //============================================//
             // Export FE-solution
             //============================================//
             bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
             if ( save ) solver.saveSolution(t, restart);
+            
+            
+            //============================================//
+            // Export circulation solution
+            //============================================//
+            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             
         }
 
