@@ -658,10 +658,8 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::importHdf5 ()
 {
-    M_electroExporterPtr -> importHdf5 (30);
-    M_activationExporterPtr -> import (-1);
-    M_activationExporterPtr -> import (0);
-    M_activationExporterPtr -> import (10);
+    M_electroExporterPtr -> import (30);
+    M_activationExporterPtr -> importHdf5 (30);
     M_activationTimeExporterPtr -> importHdf5 (30);
     M_vonMisesStressExporterPtr -> importHdf5 (30);
     M_vonMisesStressExporterPtrP -> importHdf5 (30);
@@ -702,7 +700,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
     setupActivationExporter (problemFolder, activationFileName );
     M_activationExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                              "Activation",
-                                              M_electroSolverPtr -> feSpacePtr(),
+                                             M_electroSolverPtr -> feSpacePtr(),
                                              M_activationModelPtr -> fiberActivationPtr(),
                                              UInt (0) );
 
@@ -850,19 +848,19 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-//    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-//    
-//    M_wteTotal.setStressType ( "total" );
-//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//    M_vonMisesStressExporterPtr -> postProcess (time);
-//    
-//    M_wteTotal.setStressType ( "passiv" );
-//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//    M_vonMisesStressExporterPtrP -> postProcess (time);
-//
-//    M_wteTotal.setStressType ( "active" );
-//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//    M_vonMisesStressExporterPtrA -> postProcess (time);
+    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    
+    M_wteTotal.setStressType ( "total" );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_vonMisesStressExporterPtr -> postProcess (time);
+    
+    M_wteTotal.setStressType ( "passiv" );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_vonMisesStressExporterPtrP -> postProcess (time);
+
+    M_wteTotal.setStressType ( "active" );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    M_vonMisesStressExporterPtrA -> postProcess (time);
 
 //    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
 //    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
@@ -870,10 +868,10 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 //    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
 
     
-    //M_electroExporterPtr -> postProcess (time);//, restart);
+    M_electroExporterPtr -> postProcess (time);//, restart);
     M_activationExporterPtr -> postProcess (time);//, restart );
-    //M_activationTimeExporterPtr -> postProcess (time);
-    //M_mechanicsExporterPtr -> postProcess (time);//, restart);
+    M_activationTimeExporterPtr -> postProcess (time);
+    M_mechanicsExporterPtr -> postProcess (time);//, restart);
 }
 
 template<typename Mesh , typename ElectroSolver>

@@ -534,7 +534,7 @@ int main (int argc, char** argv)
         
         // Set time exporter time index
         solver.setTimeIndex(restartInputStr + 1);
-        solver.importHdf5();
+        //solver.importHdf5();
 
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
