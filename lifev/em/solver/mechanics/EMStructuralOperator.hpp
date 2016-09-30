@@ -42,7 +42,7 @@ along with LifeV.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef _EMSTRUCTURALOPERATOR_H_
 #define _EMSTRUCTURALOPERATOR_H_ 1
 
-#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLaw.hpp>
+#include <lifev/em/solver/mechanics/EMStructuralConstitutiveLawAHO.hpp>
 #include <lifev/core/fem/BCVector.hpp>
 #include <lifev/structure/solver/StructuralOperator.hpp>
 #include <lifev/em/util/EMUtility.hpp>

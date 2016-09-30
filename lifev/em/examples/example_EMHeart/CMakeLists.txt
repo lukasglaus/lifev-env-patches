@@ -10,7 +10,7 @@ TRIBITS_ADD_EXECUTABLE(
   )
 
  TRIBITS_COPY_FILES_TO_BINARY_DIR(data_example_EMHeart
-   SOURCE_FILES ParamList.xml data circulation
+   SOURCE_FILES ParamList.xml data dataAHO circulation
    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
  )
 

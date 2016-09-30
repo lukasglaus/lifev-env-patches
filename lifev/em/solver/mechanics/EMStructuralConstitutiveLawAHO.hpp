@@ -52,6 +52,8 @@
 #include <lifev/em/solver/mechanics/materials/MaterialsList.hpp>
 //#include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
 
+#include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
+#include <lifev/em/solver/EMETAFunctors.hpp>
 
 
 
@@ -598,205 +600,331 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     Real passive_residual(0.0);
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    using namespace ExpressionAssembly;
-    
-    ///this->M_stiff.reset (new vector_Type (*this->M_localMap) );
-    
-    displayer->leaderPrint (" \n******************************************************************\n  ");
-    displayer->leaderPrint (" Non-Linear S-  Computing the Holzapfel-Ogden nonlinear stiffness vector"     );
-    displayer->leaderPrint (" \n******************************************************************\n  ");
-    
-    ///M_stiff.reset (new vector_Type (*this->M_localMap) );
-    ///* (M_stiff) *= 0.0;
-    
-    // Activation is Fa = gamma (fo x fo) + 1/sqrt(gamma) * (I - fo x fo)
-    BOOST_AUTO_TPL (gamma,  value (1.0) + value (this->M_activationSpace, *M_Gammaf) );
-    
-    MatrixSmall<3, 3> Id;
-    Id (0, 0) = 1.;
-    Id (0, 1) = 0., Id (0, 2) = 0.;
-    Id (1, 0) = 0.;
-    Id (1, 1) = 1., Id (1, 2) = 0.;
-    Id (2, 0) = 0.;
-    Id (2, 1) = 0., Id (2, 2) = 1.;
-    
-    // Strain-energy terms
-    boost::shared_ptr<StrainEnergyHO::dW1> dW1fun (new StrainEnergyHO::dW1 (M_aiso, M_biso) );
-    boost::shared_ptr<StrainEnergyHO::d2W1> d2W1fun (new StrainEnergyHO::d2W1 (M_aiso, M_biso) );
-    
-    boost::shared_ptr<StrainEnergyHO::dW4> dW4ffun (new StrainEnergyHO::dW4 (M_af, M_bf) );
-    boost::shared_ptr<StrainEnergyHO::d2W4> d2W4ffun (new StrainEnergyHO::d2W4 (M_af, M_bf) );
-    
-    boost::shared_ptr<StrainEnergyHO::dW4> dW4sfun (new StrainEnergyHO::dW4 (M_as, M_bs) );
-    boost::shared_ptr<StrainEnergyHO::d2W4> d2W4sfun (new StrainEnergyHO::d2W4 (M_as, M_bs) );
-    
-    boost::shared_ptr<StrainEnergyHO::dW8> dW8fsfun (new StrainEnergyHO::dW8 (M_afs, M_bfs) );
-    boost::shared_ptr<StrainEnergyHO::d2W8> d2W8fsfun (new StrainEnergyHO::d2W8 (M_afs, M_bfs) );
-    
-    boost::shared_ptr<StrainEnergyHO::dWvol> dWvolfun (new StrainEnergyHO::dWvol (M_kappa) );
-    boost::shared_ptr<StrainEnergyHO::d2Wvol> d2Wvolfun (new StrainEnergyHO::d2Wvol (M_kappa) );
-    
-    // Kinematics
-    BOOST_AUTO_TPL (I,      value (Id) );
-    BOOST_AUTO_TPL (Grad_u, grad (this->M_dispETFESpace, disp, this->M_offset) );
-    BOOST_AUTO_TPL (F,      Grad_u + I);
-    BOOST_AUTO_TPL (FmT,    minusT (F) );
-    BOOST_AUTO_TPL (J,      det (F) );
-    // Fibres
-    BOOST_AUTO_TPL (f0,     value (this->M_dispETFESpace, *M_fiberVector) );
-    BOOST_AUTO_TPL (s0,     value (this->M_dispETFESpace, *M_sheetVector) );
-    // Invariants
-    BOOST_AUTO_TPL (I1,     dot (F, F) );
-    BOOST_AUTO_TPL (I4f,    dot (F * f0, F * f0) );
-    BOOST_AUTO_TPL (I4s,    dot (F * s0, F * s0) );
-    BOOST_AUTO_TPL (I8fs,   dot (F * f0, F * s0) );
-    // Reduced invariants
-    BOOST_AUTO_TPL (Jm23,    pow (J, -2. / 3) );
-    BOOST_AUTO_TPL (I1iso,   Jm23 * I1);
-    BOOST_AUTO_TPL (I4fiso,  Jm23 * I4f);
-    BOOST_AUTO_TPL (I4siso,  Jm23 * I4s);
-    BOOST_AUTO_TPL (I8fsiso, Jm23 * I8fs);
-    // Generalised invariants
-    BOOST_AUTO_TPL (gammac, pow (gamma, -2) - gamma);
-    
-    BOOST_AUTO_TPL (I1eiso,   gamma * I1iso + gammac * I4fiso);
-    BOOST_AUTO_TPL (I4feiso,  pow (gamma, -2) * I4fiso);
-    BOOST_AUTO_TPL (I4seiso,  gamma * I4siso);
-    BOOST_AUTO_TPL (I8fseiso, pow (gamma, -1. / 2) * I8fsiso);
-    
-    // Strain-energy derivatives
-    BOOST_AUTO_TPL (dW1,    eval (dW1fun, I1eiso) );
-    BOOST_AUTO_TPL (d2W1,   eval (d2W1fun, I1eiso) );
-    BOOST_AUTO_TPL (dW4f,   eval (dW4ffun, I4feiso) );
-    BOOST_AUTO_TPL (d2W4f,  eval (d2W4ffun, I4feiso) );
-    BOOST_AUTO_TPL (dW4s,   eval (dW4sfun, I4seiso) );
-    BOOST_AUTO_TPL (d2W4s,  eval (d2W4sfun, I4seiso) );
-    BOOST_AUTO_TPL (dW8fs,  eval (dW8fsfun, I8fseiso) );
-    BOOST_AUTO_TPL (d2W8fs, eval (d2W8fsfun, I8fseiso) );
-    
-    BOOST_AUTO_TPL (dWvol,  eval (dWvolfun, J) );
-    BOOST_AUTO_TPL (d2Wvol, eval (d2Wvolfun, J) );
-    
-    // Deviatorics
-    BOOST_AUTO_TPL (Fdev1,   F - value (1. / 3) *I1 * FmT);
-    BOOST_AUTO_TPL (Fdev4f,  outerProduct (F * f0, f0) - value (1. / 3) *I4f * FmT);
-    BOOST_AUTO_TPL (Fdev4s,  outerProduct (F * s0, s0) - value (1. / 3) *I4s * FmT);
-    BOOST_AUTO_TPL (Fdev8fs, value (0.5) * (outerProduct (F * s0, f0) + outerProduct (F * f0, s0) ) - value (1. / 3) *I8fs * FmT);
-    
-    // Derivatives
-    BOOST_AUTO_TPL (dF,   grad (phi_j) );
-    BOOST_AUTO_TPL (dJ,   J * FmT);
-    BOOST_AUTO_TPL (dFmT, value (-1.0) *FmT * transpose (dF) *FmT);
-    
-    BOOST_AUTO_TPL (dI1eiso,   value (2.) *Jm23 * (gamma * Fdev1 + gammac * Fdev4f) );
-    BOOST_AUTO_TPL (dI4feiso,  value (2.) *Jm23 * pow (gamma, -2) *Fdev4f);
-    BOOST_AUTO_TPL (dI4seiso,  value (2.) *Jm23 * gamma * Fdev4s);
-    BOOST_AUTO_TPL (dI8fseiso, value (2.) *Jm23 * pow (gamma, -1. / 2) *Fdev8fs);
-    
-    BOOST_AUTO_TPL (dFdev1,   dF + value (-1. / 3) * (value (2.0) *dot (F, dF) *FmT + I1 * dFmT) );
-    BOOST_AUTO_TPL (dFdev4f,  outerProduct (dF * f0, f0) - value (1. / 3) * (value (2.0) *dot (F * f0, dF * f0) *FmT + I4f * dFmT) );
-    BOOST_AUTO_TPL (dFdev4s,  outerProduct (dF * s0, s0) - value (1. / 3) * (value (2.0) *dot (F * s0, dF * s0) *FmT + I4s * dFmT) );
-    BOOST_AUTO_TPL (dFdev8fs,   value (0.5) * (outerProduct (dF * s0, f0) + outerProduct (dF * f0, s0) )
-                    - value (1. / 3) * ( (dot (F * s0, dF * f0) + dot (F * f0, dF * s0) ) *FmT + I8fs * dFmT) );
-    
-    BOOST_AUTO_TPL (d2I1eiso,    value (2.) *Jm23 * (gamma * dFdev1 + gammac * dFdev4f
-                                                     - value (2. / 3) *dot (FmT, dF) * (gamma * Fdev1 + gammac * Fdev4f) ) );
-    BOOST_AUTO_TPL (d2I4feiso,   value (2.) *Jm23 * pow (gamma, -2) * (dFdev4f
-                                                                       - value (2. / 3) *dot (FmT, dF) *Fdev4f) );
-    BOOST_AUTO_TPL (d2I4seiso,   value (2.) *Jm23 * gamma * (dFdev4s
-                                                             - value (2. / 3) *dot (FmT, dF) *Fdev4s) );
-    BOOST_AUTO_TPL (d2I8fseiso,   value (2.) *Jm23 * pow (gamma, -1. / 2) * (dFdev8fs
-                                                                             - value (2. / 3) *dot (FmT, dF) *Fdev8fs) );
-    
-    // Isochoric part
-    BOOST_AUTO_TPL (Piso_1,   dW1 * dI1eiso);
-    BOOST_AUTO_TPL (Piso_4f,  dW4f * dI4feiso);
-    BOOST_AUTO_TPL (Piso_4s,  dW4s * dI4seiso);
-    BOOST_AUTO_TPL (Piso_8fs, dW8fs * dI8fseiso);
-    
-    BOOST_AUTO_TPL (dPiso_1,   d2W1 * dot (dI1eiso, dF) *dI1eiso + dW1 * d2I1eiso );
-    BOOST_AUTO_TPL (dPiso_4f,  d2W4f * dot (dI4feiso, dF) *dI4feiso + dW4f * d2I4feiso );
-    BOOST_AUTO_TPL (dPiso_4s,  d2W4s * dot (dI4seiso, dF) *dI4seiso + dW4s * d2I4seiso );
-    BOOST_AUTO_TPL (dPiso_8fs, d2W8fs * dot (dI8fseiso, dF) *dI8fseiso + dW8fs * d2I8fseiso );
-    
-    // Volumetric part
-    BOOST_AUTO_TPL (Pvol,  dWvol * dJ);
-    BOOST_AUTO_TPL (dPvol, (d2Wvol + J * dWvol) *dot (FmT, dF) *dJ + dWvol * J * dFmT);
-    
-    // Assemble residual
-    integrate ( elements ( this->M_dispETFESpace->mesh() ),
-               this->M_dispFESpace->qr(),
-               this->M_dispETFESpace,
-               dot (Piso_1 + Pvol, grad (phi_i) )
-               ) >> M_stiff;
-    // Assemble residual
-    if (M_af > 0)
+    class HeavisideFct
     {
-        integrate ( elements ( this->M_dispETFESpace->mesh() ),
-                   this->M_dispFESpace->qr(),
-                   this->M_dispETFESpace,
-                   dot ( Piso_4f , grad (phi_i) )
-                   ) >> M_stiff;
-    }
-    // Assemble residual
-    if (M_as > 0)
-    {
+    public:
+        typedef Real return_Type;
+        return_Type operator() (const Real& I4f)
+        {
+            return (I4f > 0. ? 1. : 0.);
+        }
         
-        integrate ( elements ( this->M_dispETFESpace->mesh() ),
-                   this->M_dispFESpace->qr(),
-                   this->M_dispETFESpace,
-                   dot ( Piso_4s , grad (phi_i) )
-                   ) >> M_stiff;
-    }
-    // Assemble residual
-    if (M_afs > 0)
-    {
-        integrate ( elements ( this->M_dispETFESpace->mesh() ),
-                   this->M_dispFESpace->qr(),
-                   this->M_dispETFESpace,
-                   dot ( Piso_8fs, grad (phi_i) )
-                   ) >> M_stiff;
-    }
-    this->M_stiff->globalAssemble();
-    
-    
-    
-    
-    
-    
-    
+        HeavisideFct() {}
+        HeavisideFct (const HeavisideFct&) {}
+        ~HeavisideFct() {}
+    };
+
+    boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     
     if (M_passiveMaterialPtr)
     {
-        M_passiveMaterialPtr -> computeResidual (disp,
-                                                 this->M_dispETFESpace,
-                                                 *M_fiberVectorPtr,
-                                                 *M_sheetVectorPtr,
-                                                 M_residualVectorPtr);
-        passive_residual = M_residualVectorPtr -> norm2();
-        if(vec->map().commPtr() ->MyPID() == 0)
-        {
-        	//std::cout << "\nPassive Residual: " << passive_residual << "\n";
-        }
+        
+        using namespace ExpressionAssembly;
+        
+        auto F = _F (super::M_dispETFESpace, disp, 0);
+        auto I = _I;
+        auto J = det(F);
+        auto Jm23 = pow(J, 2 / (-3.) );
+        auto FmT = minusT(F);
+        auto I1 = dot(F, F);
+        auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
+
+        
+        
+        
+        auto f_0 = _v0 (super::M_dispETFESpace, *M_fiberVectorPtr);
+        auto s_0 = _v0 (super::M_dispETFESpace, *M_sheetVectorPtr);
+        
+        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+        auto f0 = eval (normalize0, f_0);
+        auto f = F * f0;
+        
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto s0 = eval (normalize1, f0, s_0);
+        auto s = F * s0;
+
+        boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+        auto n0 = eval ( wedge, f0, s0);
+        
+        
+        
+        // Volumetric
+        auto dWvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
+        auto Pvol = dWvol * _dJ (F);
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   dot ( Pvol , grad (phi_i) )
+                   ) >> M_residualVectorPtr;
+        
+        
+        // I1
+        auto I1bar = _I1bar (F);
+        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+        auto Pw1 = dW1 * dI1bar ;
+        //	auto P = eval (W1, F ) * _dI1bar(F) ;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   dot ( Pw1, grad (phi_i) )
+                   ) >> M_residualVectorPtr;
+
+
+        // I4f
+        auto I4f = dot (f,f);
+        auto I4m1f = I4f - 1.0;
+        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+        auto Pw4f = dW4f * _dI4 (F, f0);
+        //
+        //    auto P = eval (W4, _I4bar ( dispETFESpace, disp, 0, f0 ) )
+        //             * _dI4bar (dispETFESpace, disp, 0, f0);
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   dot ( Pw4f , grad (phi_i) )
+                   ) >> M_residualVectorPtr;
+        
+        
+        // I4s
+        auto I4s = dot (s,s);
+        auto I4m1s = I4s - 1.0;
+        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) *  eval(heaviside, I4m1s);
+        auto Pw4s = dW4s * _dI4 ( F, s0);
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   dot ( Pw4s , grad (phi_i) )
+                   ) >> M_residualVectorPtr;
+        
+        
+        // I8fs
+        auto I8fs = dot (f,s);
+        auto dW8fs = 4170 * I8fs * exp ( 11.602 * I8fs * I8fs );
+        auto Pw8fs = dW8fs * _dI8 ( F, f0, s0);
+        integrate ( elements ( super::M_dispETFESpace->mesh() ),
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   dot (  Pw8fs, grad (phi_i) )
+                   ) >> M_residualVectorPtr;
+
     }
+    
+    
+    
+    
+//    // Active strain I1
+//    auto gf = value (activationETFESpace, *gammaf);
+//
+//    auto k = value(orthotropicParameter);
+//    auto FAinv = _FAinv(gf, k, f0, s0, n0);
+//    
+//    auto FE =  F * FAinv;
+//    auto P = eval (W1, FE ) * _dI1bar (FE) * FAinv;
+//    
+//    integrate ( elements ( dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               dispETFESpace,
+//               dot ( P, grad (phi_i) )
+//               ) >> residualVectorPtr;
+//    }
+//
+//    
+//    
+//    // + I1isotropic?
+//    
+//    // Active strain I4f
+//    // + I4fAnisotropic?
+//    
+//    // Active strain I4s
+//    // + I4sAnisotropic?
+//
+//    // Active strain I8fs
+//    // + I8fs?
+//
+//    
+//    
+//    
+//    using namespace ExpressionAssembly;
+//    
+//    ///this->M_stiff.reset (new vector_Type (*this->M_localMap) );
+//    
+//    displayer->leaderPrint (" \n******************************************************************\n  ");
+//    displayer->leaderPrint (" Non-Linear S-  Computing the Holzapfel-Ogden nonlinear stiffness vector"     );
+//    displayer->leaderPrint (" \n******************************************************************\n  ");
+//    
+//    ///M_stiff.reset (new vector_Type (*this->M_localMap) );
+//    ///* (M_stiff) *= 0.0;
+//    
+//    // Activation is Fa = gamma (fo x fo) + 1/sqrt(gamma) * (I - fo x fo)
+//    BOOST_AUTO_TPL (gamma,  value (1.0) + value (this->M_activationSpace, *M_Gammaf) );
+//    
+//    MatrixSmall<3, 3> Id;
+//    Id (0, 0) = 1.;
+//    Id (0, 1) = 0., Id (0, 2) = 0.;
+//    Id (1, 0) = 0.;
+//    Id (1, 1) = 1., Id (1, 2) = 0.;
+//    Id (2, 0) = 0.;
+//    Id (2, 1) = 0., Id (2, 2) = 1.;
+//    
+//    // Strain-energy terms
+//    boost::shared_ptr<StrainEnergyHO::dW1> dW1fun (new StrainEnergyHO::dW1 (M_aiso, M_biso) );
+//    boost::shared_ptr<StrainEnergyHO::d2W1> d2W1fun (new StrainEnergyHO::d2W1 (M_aiso, M_biso) );
+//    
+//    boost::shared_ptr<StrainEnergyHO::dW4> dW4ffun (new StrainEnergyHO::dW4 (M_af, M_bf) );
+//    boost::shared_ptr<StrainEnergyHO::d2W4> d2W4ffun (new StrainEnergyHO::d2W4 (M_af, M_bf) );
+//    
+//    boost::shared_ptr<StrainEnergyHO::dW4> dW4sfun (new StrainEnergyHO::dW4 (M_as, M_bs) );
+//    boost::shared_ptr<StrainEnergyHO::d2W4> d2W4sfun (new StrainEnergyHO::d2W4 (M_as, M_bs) );
+//    
+//    boost::shared_ptr<StrainEnergyHO::dW8> dW8fsfun (new StrainEnergyHO::dW8 (M_afs, M_bfs) );
+//    boost::shared_ptr<StrainEnergyHO::d2W8> d2W8fsfun (new StrainEnergyHO::d2W8 (M_afs, M_bfs) );
+//    
+//    boost::shared_ptr<StrainEnergyHO::dWvol> dWvolfun (new StrainEnergyHO::dWvol (M_kappa) );
+//    boost::shared_ptr<StrainEnergyHO::d2Wvol> d2Wvolfun (new StrainEnergyHO::d2Wvol (M_kappa) );
+//    
+//    // Kinematics
+//    BOOST_AUTO_TPL (I,      value (Id) );
+//    BOOST_AUTO_TPL (Grad_u, grad (this->M_dispETFESpace, disp, this->M_offset) );
+//    BOOST_AUTO_TPL (F,      Grad_u + I);
+//    BOOST_AUTO_TPL (FmT,    minusT (F) );
+//    BOOST_AUTO_TPL (J,      det (F) );
+//    // Fibres
+//    BOOST_AUTO_TPL (f0,     value (this->M_dispETFESpace, *M_fiberVector) );
+//    BOOST_AUTO_TPL (s0,     value (this->M_dispETFESpace, *M_sheetVector) );
+//    // Invariants
+//    BOOST_AUTO_TPL (I1,     dot (F, F) );
+//    BOOST_AUTO_TPL (I4f,    dot (F * f0, F * f0) );
+//    BOOST_AUTO_TPL (I4s,    dot (F * s0, F * s0) );
+//    BOOST_AUTO_TPL (I8fs,   dot (F * f0, F * s0) );
+//    // Reduced invariants
+//    BOOST_AUTO_TPL (Jm23,    pow (J, -2. / 3) );
+//    BOOST_AUTO_TPL (I1iso,   Jm23 * I1);
+//    BOOST_AUTO_TPL (I4fiso,  Jm23 * I4f);
+//    BOOST_AUTO_TPL (I4siso,  Jm23 * I4s);
+//    BOOST_AUTO_TPL (I8fsiso, Jm23 * I8fs);
+//    // Generalised invariants
+//    BOOST_AUTO_TPL (gammac, pow (gamma, -2) - gamma);
+//    
+//    BOOST_AUTO_TPL (I1eiso,   gamma * I1iso + gammac * I4fiso);
+//    BOOST_AUTO_TPL (I4feiso,  pow (gamma, -2) * I4fiso);
+//    BOOST_AUTO_TPL (I4seiso,  gamma * I4siso);
+//    BOOST_AUTO_TPL (I8fseiso, pow (gamma, -1. / 2) * I8fsiso);
+//    
+//    // Strain-energy derivatives
+//    BOOST_AUTO_TPL (dW1,    eval (dW1fun, I1eiso) );
+//    BOOST_AUTO_TPL (d2W1,   eval (d2W1fun, I1eiso) );
+//    BOOST_AUTO_TPL (dW4f,   eval (dW4ffun, I4feiso) );
+//    BOOST_AUTO_TPL (d2W4f,  eval (d2W4ffun, I4feiso) );
+//    BOOST_AUTO_TPL (dW4s,   eval (dW4sfun, I4seiso) );
+//    BOOST_AUTO_TPL (d2W4s,  eval (d2W4sfun, I4seiso) );
+//    BOOST_AUTO_TPL (dW8fs,  eval (dW8fsfun, I8fseiso) );
+//    BOOST_AUTO_TPL (d2W8fs, eval (d2W8fsfun, I8fseiso) );
+//    
+//    BOOST_AUTO_TPL (dWvol,  eval (dWvolfun, J) );
+//    BOOST_AUTO_TPL (d2Wvol, eval (d2Wvolfun, J) );
+//    
+//    // Deviatorics
+//    BOOST_AUTO_TPL (Fdev1,   F - value (1. / 3) *I1 * FmT);
+//    BOOST_AUTO_TPL (Fdev4f,  outerProduct (F * f0, f0) - value (1. / 3) *I4f * FmT);
+//    BOOST_AUTO_TPL (Fdev4s,  outerProduct (F * s0, s0) - value (1. / 3) *I4s * FmT);
+//    BOOST_AUTO_TPL (Fdev8fs, value (0.5) * (outerProduct (F * s0, f0) + outerProduct (F * f0, s0) ) - value (1. / 3) *I8fs * FmT);
+//    
+//    // Derivatives
+//    BOOST_AUTO_TPL (dF,   grad (phi_j) );
+//    BOOST_AUTO_TPL (dJ,   J * FmT);
+//    BOOST_AUTO_TPL (dFmT, value (-1.0) *FmT * transpose (dF) *FmT);
+//    
+//    BOOST_AUTO_TPL (dI1eiso,   value (2.) *Jm23 * (gamma * Fdev1 + gammac * Fdev4f) );
+//    BOOST_AUTO_TPL (dI4feiso,  value (2.) *Jm23 * pow (gamma, -2) *Fdev4f);
+//    BOOST_AUTO_TPL (dI4seiso,  value (2.) *Jm23 * gamma * Fdev4s);
+//    BOOST_AUTO_TPL (dI8fseiso, value (2.) *Jm23 * pow (gamma, -1. / 2) *Fdev8fs);
+//    
+//    BOOST_AUTO_TPL (dFdev1,   dF + value (-1. / 3) * (value (2.0) *dot (F, dF) *FmT + I1 * dFmT) );
+//    BOOST_AUTO_TPL (dFdev4f,  outerProduct (dF * f0, f0) - value (1. / 3) * (value (2.0) *dot (F * f0, dF * f0) *FmT + I4f * dFmT) );
+//    BOOST_AUTO_TPL (dFdev4s,  outerProduct (dF * s0, s0) - value (1. / 3) * (value (2.0) *dot (F * s0, dF * s0) *FmT + I4s * dFmT) );
+//    BOOST_AUTO_TPL (dFdev8fs,   value (0.5) * (outerProduct (dF * s0, f0) + outerProduct (dF * f0, s0) )
+//                    - value (1. / 3) * ( (dot (F * s0, dF * f0) + dot (F * f0, dF * s0) ) *FmT + I8fs * dFmT) );
+//    
+//    BOOST_AUTO_TPL (d2I1eiso,    value (2.) *Jm23 * (gamma * dFdev1 + gammac * dFdev4f
+//                                                     - value (2. / 3) *dot (FmT, dF) * (gamma * Fdev1 + gammac * Fdev4f) ) );
+//    BOOST_AUTO_TPL (d2I4feiso,   value (2.) *Jm23 * pow (gamma, -2) * (dFdev4f
+//                                                                       - value (2. / 3) *dot (FmT, dF) *Fdev4f) );
+//    BOOST_AUTO_TPL (d2I4seiso,   value (2.) *Jm23 * gamma * (dFdev4s
+//                                                             - value (2. / 3) *dot (FmT, dF) *Fdev4s) );
+//    BOOST_AUTO_TPL (d2I8fseiso,   value (2.) *Jm23 * pow (gamma, -1. / 2) * (dFdev8fs
+//                                                                             - value (2. / 3) *dot (FmT, dF) *Fdev8fs) );
+//    
+//    // Isochoric part
+//    BOOST_AUTO_TPL (Piso_1,   dW1 * dI1eiso);
+//    BOOST_AUTO_TPL (Piso_4f,  dW4f * dI4feiso);
+//    BOOST_AUTO_TPL (Piso_4s,  dW4s * dI4seiso);
+//    BOOST_AUTO_TPL (Piso_8fs, dW8fs * dI8fseiso);
+//    
+//    BOOST_AUTO_TPL (dPiso_1,   d2W1 * dot (dI1eiso, dF) *dI1eiso + dW1 * d2I1eiso );
+//    BOOST_AUTO_TPL (dPiso_4f,  d2W4f * dot (dI4feiso, dF) *dI4feiso + dW4f * d2I4feiso );
+//    BOOST_AUTO_TPL (dPiso_4s,  d2W4s * dot (dI4seiso, dF) *dI4seiso + dW4s * d2I4seiso );
+//    BOOST_AUTO_TPL (dPiso_8fs, d2W8fs * dot (dI8fseiso, dF) *dI8fseiso + dW8fs * d2I8fseiso );
+//    
+//    // Volumetric part
+//    BOOST_AUTO_TPL (Pvol,  dWvol * dJ);
+//    BOOST_AUTO_TPL (dPvol, (d2Wvol + J * dWvol) *dot (FmT, dF) *dJ + dWvol * J * dFmT);
+//    
+//    // Assemble residual
+//    integrate ( elements ( this->M_dispETFESpace->mesh() ),
+//               this->M_dispFESpace->qr(),
+//               this->M_dispETFESpace,
+//               dot (Piso_1 + Pvol, grad (phi_i) )
+//               ) >> M_stiff;
+//    // Assemble residual
+//    if (M_af > 0)
+//    {
+//        integrate ( elements ( this->M_dispETFESpace->mesh() ),
+//                   this->M_dispFESpace->qr(),
+//                   this->M_dispETFESpace,
+//                   dot ( Piso_4f , grad (phi_i) )
+//                   ) >> M_stiff;
+//    }
+//    // Assemble residual
+//    if (M_as > 0)
+//    {
+//        
+//        integrate ( elements ( this->M_dispETFESpace->mesh() ),
+//                   this->M_dispFESpace->qr(),
+//                   this->M_dispETFESpace,
+//                   dot ( Piso_4s , grad (phi_i) )
+//                   ) >> M_stiff;
+//    }
+//    // Assemble residual
+//    if (M_afs > 0)
+//    {
+//        integrate ( elements ( this->M_dispETFESpace->mesh() ),
+//                   this->M_dispFESpace->qr(),
+//                   this->M_dispETFESpace,
+//                   dot ( Piso_8fs, grad (phi_i) )
+//                   ) >> M_stiff;
+//    }
+//    this->M_stiff->globalAssemble();
+//    
+//    
+//    
+//    
+//    
+//    
+//    
+//    
+//    if (M_passiveMaterialPtr)
+//    {
+//        M_passiveMaterialPtr -> computeResidual (disp,
+//                                                 this->M_dispETFESpace,
+//                                                 *M_fiberVectorPtr,
+//                                                 *M_sheetVectorPtr,
+//                                                 M_residualVectorPtr);
+//        passive_residual = M_residualVectorPtr -> norm2();
+//        if(vec->map().commPtr() ->MyPID() == 0)
+//        {
+//        	//std::cout << "\nPassive Residual: " << passive_residual << "\n";
+//        }
+//    }
     if (M_activeStressMaterialPtr)
 	{
     	M_activeStressMaterialPtr -> computeResidual ( disp,
