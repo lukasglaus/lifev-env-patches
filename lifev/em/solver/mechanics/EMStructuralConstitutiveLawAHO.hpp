@@ -742,7 +742,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 
     
     // Active strain I4f
-    auto I4fbarE =  _I4bar (FE, f0)
+    auto I4fbarE =  _I4bar (FE, f0);
     auto I4fbarEm1 = I4fbarE - 1.0;
     auto dW4fE = 185350 * I4fbarEm1 * exp (15.972 * I4fbarEm1 * I4fbarEm1 ) * eval(heaviside, I4fbarEm1);
     auto Pw4fE = dW4fE * _dI4bar (FE, f0) * FAinv;
@@ -764,7 +764,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     
     // Active strain I4s
-    auto I4sbarE =  _I4bar (FE, s0)
+    auto I4sbarE =  _I4bar (FE, s0);
     auto I4sbarEm1 = I4sbarE - 1.0;
     auto dW4sE = 185350 * I4sbarEm1 * exp (15.972 * I4sbarEm1 * I4sbarEm1 ) * eval(heaviside, I4sbarEm1);
     auto Pw4sE = dW4sE * _dI4bar (FE, s0) * FAinv;
