@@ -722,12 +722,12 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     auto I1barE = _I1bar (FE);
     auto dWI1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
 
-    auto P = dWI1E * _dI1bar (FE) * FAinv;
+    auto PI1barE = dWI1E * _dI1bar (FE) * FAinv;
     
     integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                quadRuleTetra4pt,
                super::M_dispETFESpace,
-               dot ( P, grad (phi_i) )
+               dot ( PI1barE, grad (phi_i) )
                ) >> M_residualVectorPtr;
     
     
@@ -785,8 +785,16 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     
     // Active strain I8fs
-    // Active strain I8fs Anisotropic
-    // both seem to be 0
+    auto I8barfsE = _I8bar(FE, f0, s0);
+    auto dW8fsE = 4170 * I8barfsE * exp ( 11.602 * I8barfsE * I8barfsE );
+        
+    auto Pw8fsE = dW8fsE * _dI8bar (FE, f0, s0) * FAinv;
+    
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw8fsE, grad (phi_i) )
+               ) >> M_residualVectorPtr;
     
  
     }
