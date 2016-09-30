@@ -731,49 +731,55 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                ) >> M_residualVectorPtr;
     
     
-    
-    // Active strain I1 isotropic
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw1, grad (phi_i) )
-               ) >> M_residualVectorPtr;
+//    
+//    // Active strain I1 isotropic
+//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               super::M_dispETFESpace,
+//               dot ( Pw1, grad (phi_i) )
+//               ) >> M_residualVectorPtr;
 
 
-
-    
-    
-    
-    
     
     // Active strain I4f
-    //auto P = eval (W4f, FE ) * _dI4bar (FE, f0) * FAinv;
-    // P will be zero!
-    /*integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( P, grad (phi_i) )
-               ) >> M_residualVectorPtr;*/
-    
-    
-    // Active strain I4f Anisotropic?
+    auto I4fbarE =  _I4bar (FE, f0)
+    auto I4fbarEm1 = I4fbarE - 1.0;
+    auto dW4fE = 185350 * I4fbarEm1 * exp (15.972 * I4fbarEm1 * I4fbarEm1 ) * eval(heaviside, I4fbarEm1);
+    auto Pw4fE = dW4fE * _dI4bar (FE, f0) * FAinv;
     integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                quadRuleTetra4pt,
                super::M_dispETFESpace,
-               dot ( Pw4f , grad (phi_i) )
+               dot ( Pw4fE, grad (phi_i) )
                ) >> M_residualVectorPtr;
+    
+    
+//    // Active strain I4f Anisotropic?
+//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               super::M_dispETFESpace,
+//               dot ( Pw4f , grad (phi_i) )
+//               ) >> M_residualVectorPtr;
     
     
     
     
     // Active strain I4s
-    
-    // Active strain I4s Anisotropic?
+    auto I4sbarE =  _I4bar (FE, s0)
+    auto I4sbarEm1 = I4sbarE - 1.0;
+    auto dW4sE = 185350 * I4sbarEm1 * exp (15.972 * I4sbarEm1 * I4sbarEm1 ) * eval(heaviside, I4sbarEm1);
+    auto Pw4sE = dW4sE * _dI4bar (FE, s0) * FAinv;
     integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                quadRuleTetra4pt,
                super::M_dispETFESpace,
-               dot ( Pw4s , grad (phi_i) )
+               dot ( Pw4sE, grad (phi_i) )
                ) >> M_residualVectorPtr;
+        
+//    // Active strain I4s Anisotropic?
+//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               super::M_dispETFESpace,
+//               dot ( Pw4s , grad (phi_i) )
+//               ) >> M_residualVectorPtr;
 
     
     
