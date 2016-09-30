@@ -707,43 +707,84 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                    dot (  Pw8fs, grad (phi_i) )
                    ) >> M_residualVectorPtr;
 
+    
+    
+    
+    
+    
+    // Active strain I1
+    auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+
+    auto k = 4.0;
+    auto FAinv = _FAinvO(gf, k, f0, s0, n0);
+    auto FE =  F * FAinv;
+    
+    auto I1barE = _I1bar (FE);
+    auto dWI1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
+
+    auto P = dWI1E * _dI1bar (FE) * FAinv;
+    
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( P, grad (phi_i) )
+               ) >> M_residualVectorPtr;
+    
+    
+    
+    // Active strain I1 isotropic
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw1, grad (phi_i) )
+               ) >> M_residualVectorPtr;
+
+
+
+    
+    
+    
+    
+    
+    // Active strain I4f
+    //auto P = eval (W4f, FE ) * _dI4bar (FE, f0) * FAinv;
+    // P will be zero!
+    /*integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( P, grad (phi_i) )
+               ) >> M_residualVectorPtr;*/
+    
+    
+    // Active strain I4f Anisotropic?
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw4f , grad (phi_i) )
+               ) >> M_residualVectorPtr;
+    
+    
+    
+    
+    // Active strain I4s
+    
+    // Active strain I4s Anisotropic?
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw4s , grad (phi_i) )
+               ) >> M_residualVectorPtr;
+
+    
+    
+    
+    // Active strain I8fs
+    // Active strain I8fs Anisotropic
+    // both seem to be 0
+    
+ 
     }
     
-    
-    
-    
-//    // Active strain I1
-//    auto gf = value (activationETFESpace, *gammaf);
-//
-//    auto k = value(orthotropicParameter);
-//    auto FAinv = _FAinv(gf, k, f0, s0, n0);
-//    
-//    auto FE =  F * FAinv;
-//    auto P = eval (W1, FE ) * _dI1bar (FE) * FAinv;
-//    
-//    integrate ( elements ( dispETFESpace->mesh() ) ,
-//               quadRuleTetra4pt,
-//               dispETFESpace,
-//               dot ( P, grad (phi_i) )
-//               ) >> residualVectorPtr;
-//    }
-//
-//    
-//    
-//    // + I1isotropic?
-//    
-//    // Active strain I4f
-//    // + I4fAnisotropic?
-//    
-//    // Active strain I4s
-//    // + I4sAnisotropic?
-//
-//    // Active strain I8fs
-//    // + I8fs?
-//
-//    
-//    
-//    
 //    using namespace ExpressionAssembly;
 //    
 //    ///this->M_stiff.reset (new vector_Type (*this->M_localMap) );
@@ -925,23 +966,24 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 //        	//std::cout << "\nPassive Residual: " << passive_residual << "\n";
 //        }
 //    }
-    if (M_activeStressMaterialPtr)
-	{
-    	M_activeStressMaterialPtr -> computeResidual ( disp,
-                                                      super::M_dispETFESpace,
-                                                       *M_fiberVectorPtr,
-                                                       *M_sheetVectorPtr,
-                                                       M_fiberActivationPtr,
-                                                       M_sheetActivationPtr,
-                                                       M_normalActivationPtr,
-                                                       M_scalarETFESpacePtr,
-                                                       M_residualVectorPtr);
 
-        if(vec->map().commPtr() ->MyPID() == 0)
-        {
-            //std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
-        }
-	}
+//    if (M_activeStressMaterialPtr)
+//	{
+//    	M_activeStressMaterialPtr -> computeResidual ( disp,
+//                                                      super::M_dispETFESpace,
+//                                                       *M_fiberVectorPtr,
+//                                                       *M_sheetVectorPtr,
+//                                                       M_fiberActivationPtr,
+//                                                       M_sheetActivationPtr,
+//                                                       M_normalActivationPtr,
+//                                                       M_scalarETFESpacePtr,
+//                                                       M_residualVectorPtr);
+//
+//        if(vec->map().commPtr() ->MyPID() == 0)
+//        {
+//            //std::cout << "\nActive Residual: " << M_residualVectorPtr -> norm2() - passive_residual << "\n";
+//        }
+//	}
     //  computeResidual(disp);
     this->M_residualVectorPtr->globalAssemble();
 }
