@@ -707,16 +707,18 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                    dot (  Pw8fs, grad (phi_i) )
                    ) >> M_residualVectorPtr;
 
-    
-    
-    
-    
-    
-    // Active strain I1
+
+        
+    // Active strain I1E
     auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
 
     auto k = 4.0;
-    auto FAinv = _FAinvO(gf, k, f0, s0, n0);
+    
+    //auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
+    //auto go = gf * ( k + gf * k + value(1.0) );
+    //auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
+        
+    auto FAinv = _FAinvO( gf, k, f0, s0, n0 ); // I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
     auto FE =  F * FAinv;
     
     auto I1barE = _I1bar (FE);
@@ -729,17 +731,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                super::M_dispETFESpace,
                dot ( PI1barE, grad (phi_i) )
                ) >> M_residualVectorPtr;
-    
-    // Active strain I1 isotropic
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw1, grad (phi_i) )
-               ) >> M_residualVectorPtr;
-
 
     
-    // Active strain I4f
+    // Active strain I4fE
     auto I4fbarE =  _I4bar (FE, f0);
     auto I4fbarEm1 = I4fbarE - 1.0;
     auto dW4fE = 185350 * I4fbarEm1 * exp (15.972 * I4fbarEm1 * I4fbarEm1 ) * eval(heaviside, I4fbarEm1);
@@ -751,17 +745,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                ) >> M_residualVectorPtr;
     
     
-    // Active strain I4f Anisotropic?
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw4f , grad (phi_i) )
-               ) >> M_residualVectorPtr;
-    
-    
-    
-    
-    // Active strain I4s
+    // Active strain I4sE
     auto I4sbarE =  _I4bar (FE, s0);
     auto I4sbarEm1 = I4sbarE - 1.0;
     auto dW4sE = 25640 * I4sbarEm1 * exp (10.446 * I4sbarEm1 * I4sbarEm1 ) * eval(heaviside, I4sbarEm1);
@@ -771,18 +755,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                super::M_dispETFESpace,
                dot ( Pw4sE, grad (phi_i) )
                ) >> M_residualVectorPtr;
-        
-    // Active strain I4s Anisotropic?
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw4s , grad (phi_i) )
-               ) >> M_residualVectorPtr;
-
     
     
-    
-    // Active strain I8fs
+    // Active strain I8fsE
     auto I8barfsE = _I8bar(FE, f0, s0);
     auto dW8fsE = 4170 * I8barfsE * exp ( 11.602 * I8barfsE * I8barfsE );
         
