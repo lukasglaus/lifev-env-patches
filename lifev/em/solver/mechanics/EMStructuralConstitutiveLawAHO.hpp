@@ -730,14 +730,12 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                dot ( PI1barE, grad (phi_i) )
                ) >> M_residualVectorPtr;
     
-    
-//    
-//    // Active strain I1 isotropic
-//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//               quadRuleTetra4pt,
-//               super::M_dispETFESpace,
-//               dot ( Pw1, grad (phi_i) )
-//               ) >> M_residualVectorPtr;
+    // Active strain I1 isotropic
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw1, grad (phi_i) )
+               ) >> M_residualVectorPtr;
 
 
     
@@ -753,12 +751,12 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                ) >> M_residualVectorPtr;
     
     
-//    // Active strain I4f Anisotropic?
-//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//               quadRuleTetra4pt,
-//               super::M_dispETFESpace,
-//               dot ( Pw4f , grad (phi_i) )
-//               ) >> M_residualVectorPtr;
+    // Active strain I4f Anisotropic?
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw4f , grad (phi_i) )
+               ) >> M_residualVectorPtr;
     
     
     
@@ -774,12 +772,12 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                dot ( Pw4sE, grad (phi_i) )
                ) >> M_residualVectorPtr;
         
-//    // Active strain I4s Anisotropic?
-//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//               quadRuleTetra4pt,
-//               super::M_dispETFESpace,
-//               dot ( Pw4s , grad (phi_i) )
-//               ) >> M_residualVectorPtr;
+    // Active strain I4s Anisotropic?
+    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+               quadRuleTetra4pt,
+               super::M_dispETFESpace,
+               dot ( Pw4s , grad (phi_i) )
+               ) >> M_residualVectorPtr;
 
     
     
