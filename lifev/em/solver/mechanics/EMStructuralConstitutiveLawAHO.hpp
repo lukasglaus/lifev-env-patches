@@ -733,41 +733,41 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                ) >> M_residualVectorPtr;
 
     
-    // Active strain I4fE
-    auto I4fbarE =  _I4bar (FE, f0);
-    auto I4fbarEm1 = I4fbarE - 1.0;
-    auto dW4fE = 185350 * I4fbarEm1 * exp (15.972 * I4fbarEm1 * I4fbarEm1 ) * eval(heaviside, I4fbarEm1);
-    auto Pw4fE = dW4fE * _dI4bar (FE, f0) * FAinv;
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw4fE, grad (phi_i) )
-               ) >> M_residualVectorPtr;
-    
-    
-    // Active strain I4sE
-    auto I4sbarE =  _I4bar (FE, s0);
-    auto I4sbarEm1 = I4sbarE - 1.0;
-    auto dW4sE = 25640 * I4sbarEm1 * exp (10.446 * I4sbarEm1 * I4sbarEm1 ) * eval(heaviside, I4sbarEm1);
-    auto Pw4sE = dW4sE * _dI4bar (FE, s0) * FAinv;
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw4sE, grad (phi_i) )
-               ) >> M_residualVectorPtr;
-    
-    
-    // Active strain I8fsE
-    auto I8barfsE = _I8bar(FE, f0, s0);
-    auto dW8fsE = 4170 * I8barfsE * exp ( 11.602 * I8barfsE * I8barfsE );
-        
-    auto Pw8fsE = dW8fsE * _dI8bar (FE, f0, s0) * FAinv;
-    
-    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-               quadRuleTetra4pt,
-               super::M_dispETFESpace,
-               dot ( Pw8fsE, grad (phi_i) )
-               ) >> M_residualVectorPtr;
+//    // Active strain I4fE
+//    auto I4fbarE =  _I4bar (FE, f0);
+//    auto I4fbarEm1 = I4fbarE - 1.0;
+//    auto dW4fE = 185350 * I4fbarEm1 * exp (15.972 * I4fbarEm1 * I4fbarEm1 ) * eval(heaviside, I4fbarEm1);
+//    auto Pw4fE = dW4fE * _dI4bar (FE, f0) * FAinv;
+//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               super::M_dispETFESpace,
+//               dot ( Pw4fE, grad (phi_i) )
+//               ) >> M_residualVectorPtr;
+//    
+//    
+//    // Active strain I4sE
+//    auto I4sbarE =  _I4bar (FE, s0);
+//    auto I4sbarEm1 = I4sbarE - 1.0;
+//    auto dW4sE = 25640 * I4sbarEm1 * exp (10.446 * I4sbarEm1 * I4sbarEm1 ) * eval(heaviside, I4sbarEm1);
+//    auto Pw4sE = dW4sE * _dI4bar (FE, s0) * FAinv;
+//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               super::M_dispETFESpace,
+//               dot ( Pw4sE, grad (phi_i) )
+//               ) >> M_residualVectorPtr;
+//    
+//    
+//    // Active strain I8fsE
+//    auto I8barfsE = _I8bar(FE, f0, s0);
+//    auto dW8fsE = 4170 * I8barfsE * exp ( 11.602 * I8barfsE * I8barfsE );
+//        
+//    auto Pw8fsE = dW8fsE * _dI8bar (FE, f0, s0) * FAinv;
+//    
+//    integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//               quadRuleTetra4pt,
+//               super::M_dispETFESpace,
+//               dot ( Pw8fsE, grad (phi_i) )
+//               ) >> M_residualVectorPtr;
     
  
     }
