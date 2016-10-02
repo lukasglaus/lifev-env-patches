@@ -694,7 +694,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto FE =  F * FAinv;
         
         auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
-        auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * F + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
+        auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
         
         auto dWI1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
 
