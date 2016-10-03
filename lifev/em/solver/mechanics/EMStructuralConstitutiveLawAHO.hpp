@@ -630,6 +630,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
 
         
+        // Anisotropy
         auto f_0 = _v0 (super::M_dispETFESpace, *M_fiberVectorPtr);
         auto s_0 = _v0 (super::M_dispETFESpace, *M_sheetVectorPtr);
         
@@ -645,64 +646,89 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto n0 = eval ( wedge, f0, s0);
         
         
+        // Orthotropic activation
+        auto k = 4.0;
+        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gn = k * gf;
+        auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
+        auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
+        auto go = gf * ( k + gf * k + value(1.0) );
+        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
         
-        // Volumetric
+        
+        // Active strain
+        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FE =  F * FAinv;
+        
+        
+        // Pvol
         auto dWvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
         auto dJ = det(F) * minusT(F);
         auto Pvol = dWvol * dJ;
         
         
-        // I1
-        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
-        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
-        auto P1 = dW1 * dI1bar ;
+//        // P1
+//        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
+//        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+//        auto P1 = dW1 * dI1bar ;
 
-
-        // I4f
-        auto I4f = dot (f,f);
-        auto I4m1f = I4f - 1.0;
-        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-        auto dI4f = value(2.0) * outerProduct( f, f0 );
-        auto P4f = dW4f * dI4f;
-        //    auto P = eval (W4, _I4bar ( dispETFESpace, disp, 0, f0 ) )
-        //             * _dI4bar (dispETFESpace, disp, 0, f0);
-        
-        
-        // I4s
-        auto I4s = dot (s,s);
-        auto I4m1s = I4s - 1.0;
-        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) *  eval(heaviside, I4m1s);
-        auto dI4s = value(2.0) * outerProduct( s, s0 );
-        auto P4s = dW4s * dI4s;
-        
-        
-        // I8fs
-        auto I8fs = dot (f,s);
-        auto dW8fs = 4170 * I8fs * exp ( 11.602 * I8fs * I8fs );
-        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto P8fs = dW8fs * dI8fs;
-
-
-        // Active strain I1E
-        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        auto k = 4.0;
-        auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
-        auto go = gf * ( k + gf * k + value(1.0) );
-        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
-            
-        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FE =  F * FAinv;
-        
+        // P1E
         auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
         auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
         
         auto dWI1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-
         auto P1E = dWI1E * dI1barE * FAinv;
+        
+
+//        // P4f
+//        auto I4f = dot (f,f);
+//        auto I4m1f = I4f - 1.0;
+//        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+//        auto dI4f = value(2.0) * outerProduct( f, f0 );
+//        auto P4f = dW4f * dI4f;
+        
+        // P4fE
+        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
+        auto I4m1fE = I4fE - 1.0;
+        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+        auto dI4fE = pow(gf + 1, -2.0);
+        auto dI4f = value(2.0) * outerProduct( f, f0 );
+        auto P4fE = dW4fE * dI4fE * dI4f;
+ 
+        
+//        // P4s
+//        auto I4s = dot (s,s);
+//        auto I4m1s = I4s - 1.0;
+//        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) *  eval(heaviside, I4m1s);
+//        auto dI4s = value(2.0) * outerProduct( s, s0 );
+//        auto P4s = dW4s * dI4s;
+        
+        // P4sE
+        auto I4sE = dot (f,f) / pow (gs + 1, 2.0);
+        auto I4m1sE = I4sE - 1.0;
+        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+        auto dI4sE = pow(gs + 1, -2.0);
+        auto dI4s = value(2.0) * outerProduct( s, s0 );
+        auto P4sE = dW4sE * dI4sE * dI4s;
+
+        
+//        // P8fs
+//        auto I8fs = dot (f,s);
+//        auto dW8fs = 4170 * I8fs * exp ( 11.602 * I8fs * I8fs );
+//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+//        auto P8fs = dW8fs * dI8fs;
+        
+        // P8fsE
+        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
+        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
+        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
+        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+        auto P8fsE = dW8fsE * dI8fsE * dI8fs;
+        
         
             
         // Sum up contributions and integrate
-        auto P = Pvol + P1 + P4f + P4s + P8fs + P1E;
+        auto P = Pvol + /*P1 +*/ P4fE + P4sE + P8fsE + P1E;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
