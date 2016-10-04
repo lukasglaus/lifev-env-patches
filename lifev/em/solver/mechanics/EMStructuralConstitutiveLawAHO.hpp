@@ -548,33 +548,190 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     //displayer->leaderPrint (" \n*********************************\n  ");
     * (this->M_jacobian) *= 0.0;
     
-    
-    
-    
-    
-    
-    
-    
-    
-    if (M_passiveMaterialPtr)
+    class HeavisideFct
     {
+    public:
+        typedef Real return_Type;
+        return_Type operator() (const Real& I4f)
+        {
+            return (I4f > 0. ? 1. : 0.);
+        }
+        
+        HeavisideFct() {}
+        HeavisideFct (const HeavisideFct&) {}
+        ~HeavisideFct() {}
+    };
+    
+    boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
+    
+    {
+        using namespace ExpressionAssembly;
+        
+        auto I = value (EMUtility::identity()); //_I;
+        auto F = grad(super::M_dispETFESpace, disp, 0) + I; //_F (super::M_dispETFESpace, disp, 0);
+        auto J = det(F);
+        auto Jm23 = pow(J, 2 / (-3.) );
+        auto FmT = minusT(F);
+        auto I1 = dot(F, F);
+        auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
+        
+        
+        // Anisotropy
+        auto f_0 = _v0 (super::M_dispETFESpace, *M_fiberVectorPtr);
+        auto s_0 = _v0 (super::M_dispETFESpace, *M_sheetVectorPtr);
+        
+        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
+        auto f0 = eval (normalize0, f_0);
+        auto f = F * f0;
+        
+        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
+        auto s0 = eval (normalize1, f0, s_0);
+        auto s = F * s0;
+        
+        boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
+        auto n0 = eval ( wedge, f0, s0);
+        
+        
+        // Orthotropic activation
+        auto k = 4.0;
+        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gn = k * gf;
+        auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
+        auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
+        auto go = gf * ( k + gf * k + value(1.0) );
+        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
+        
+        
+        // Active strain
+        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FE =  F * FAinv;
+        auto dFE = _dFE(FAinv);
 
-        M_passiveMaterialPtr -> computeJacobian (disp,
-                                                 this->M_dispETFESpace,
-                                                 *M_fiberVectorPtr,
-                                                 *M_sheetVectorPtr,
-                                                 this->M_jacobian);
+        
+        // Pvol
+        auto Wvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
+        auto dPvol = Wvol * _d2JdF (F, _dF);
+        
+        auto dWvol =( 3500000 * ( J + 1. ) ) / ( 2. * J * J);
+        auto ddPvol = dWvol * _dJdF (F, _dF) * _dJ (F);
+
+        
+//        // P1
+//        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
+//        auto W1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+//        auto dP1 = W1 * _d2I1bardF(F, _dF);
+//    
+//        auto dW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
+//        auto ddP1 = dW1 * _dI1bardF (F, _dF) * _dI1bar (F) ;
+//
+//        
+//        // P4f
+//        auto I4f = dot (f,f);
+//        auto I4m1f = I4f - 1.0;
+//        auto W4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+//        auto dP4f = W4f * _d2I4dF ( f0, _dF );
+//
+//        auto dW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+//        auto ddP4f = dW4f * _dI4dF ( F, f0, _dF ) * _dI4 ( F, f0 );
+//
+//        
+//        // P4s
+//        auto I4s = dot (s,s);
+//        auto I4m1s = I4s - 1.0;
+//        auto W4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+//        auto dP4s = W4s * _d2I4dF ( s0, _dF );
+//        
+//        auto dW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+//        auto ddP4s = dW4s * _dI4dF ( F, s0, _dF ) * _dI4 ( F, s0 );
+//        
+//        
+//        // P8fs
+//        auto I8fs = dot (f,s);
+//        auto W8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
+//        auto dP8fs = W8fs * _d2I8dF (f0, s0, _dF );
+//        
+//        auto dW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
+//        auto ddP8fs = dW8fs * _dI8dF ( F, f0, s0, _dF ) *  _dI8 ( F, f0, s0 );
+        
+        
+        // P1E
+        auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
+        auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
+        auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
+        auto dP1E = dW1E * (_d2I1bardF (FE, dFE) ) * FAinv;
+        
+        auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
+        auto ddP1E = ddW1E * (_dI1bardF (FE, dFE) ) * _dI1bar(FE) * FAinv;
+        
+        
+        // P4fE
+        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
+        auto I4m1fE = I4fE - 1.0;
+        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+//        auto dI4fE = pow(gf + 1, -2.0);
+//        auto dI4f = value(2.0) * outerProduct( f, f0 );
+        auto dP4fE = dW4fE * (_d2I4dF (f0, dFE) ) * FAinv;
+        
+        auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+        auto ddP4fE = ddW4fE * (_dI4dF (FE, f0, dFE) ) * _dI4(FE, f0) * FAinv;
+
+        
+        // P4sE
+        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
+        auto I4m1sE = I4sE - 1.0;
+        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+        auto dP4sE = dW4sE * (_d2I4dF (s0, dFE) ) * FAinv;
+
+        auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+        auto ddP4sE = ddW4sE * (_dI4dF (FE, s0, dFE) ) * _dI4(FE, s0) * FAinv;
+
+        
+        // P8fsE
+        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
+        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
+//        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
+//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+        auto dP8fsE = dW8fsE * (_d2I8dF (f0, s0, dFE) ) * FAinv;
+
+        auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
+        auto ddP8fsE = ddW8fsE * (_dI8dF (FE, f0, s0, dFE) ) * _dI8(FE, f0, s0) * FAinv;
+
+        
+        // Sum up contributions and integrate
+        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( dP, grad (phi_i) )
+                   ) >> this->M_jacobian;
+        
     }
-    if (M_activeStressMaterialPtr)
-        M_activeStressMaterialPtr -> computeJacobian ( disp,
-                                                       this->M_dispETFESpace,
-                                                       *M_fiberVectorPtr,
-                                                       *M_sheetVectorPtr,
-                                                       M_fiberActivationPtr,
-                                                       M_sheetActivationPtr,
-                                                       M_normalActivationPtr,
-                                                       M_scalarETFESpacePtr,
-                                                       this->M_jacobian);
+    
+    
+    
+//    
+//    
+//    if (M_passiveMaterialPtr)
+//    {
+//
+//        M_passiveMaterialPtr -> computeJacobian (disp,
+//                                                 this->M_dispETFESpace,
+//                                                 *M_fiberVectorPtr,
+//                                                 *M_sheetVectorPtr,
+//                                                 this->M_jacobian);
+//    }
+//    if (M_activeStressMaterialPtr)
+//        M_activeStressMaterialPtr -> computeJacobian ( disp,
+//                                                       this->M_dispETFESpace,
+//                                                       *M_fiberVectorPtr,
+//                                                       *M_sheetVectorPtr,
+//                                                       M_fiberActivationPtr,
+//                                                       M_sheetActivationPtr,
+//                                                       M_normalActivationPtr,
+//                                                       M_scalarETFESpacePtr,
+//                                                       this->M_jacobian);
 
 
     //  computeJacobian(disp);
@@ -616,13 +773,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     
-    if (M_passiveMaterialPtr)
     {
-        
         using namespace ExpressionAssembly;
         
-        auto F = _F (super::M_dispETFESpace, disp, 0);
-        auto I = _I;
+        auto I = value (EMUtility::identity()); //_I;
+        auto F = grad(super::M_dispETFESpace, disp, 0) + I; //_F (super::M_dispETFESpace, disp, 0);
         auto J = det(F);
         auto Jm23 = pow(J, 2 / (-3.) );
         auto FmT = minusT(F);
@@ -704,7 +859,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 //        auto P4s = dW4s * dI4s;
         
         // P4sE
-        auto I4sE = dot (f,f) / pow (gs + 1, 2.0);
+        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
         auto I4m1sE = I4sE - 1.0;
         auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
         auto dI4sE = pow(gs + 1, -2.0);

@@ -1,6 +1,7 @@
 ADD_SUBDIRECTORY(materials)
 
 SET( solver_mechanics_HEADERS
+ solver/mechanics/EMStructuralConstitutiveLawAHO.hpp
  solver/mechanics/EMStructuralConstitutiveLaw.hpp
  solver/mechanics/EMStructuralOperator.hpp
  solver/mechanics/EMMechanicalExpressions.hpp
