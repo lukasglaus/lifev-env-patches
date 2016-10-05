@@ -612,54 +612,66 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // Pvol
         auto dJdF = dot(dJ, dF);
-        auto d2JdF = dJdF * FmT + J * _dFmTdF(F, dF);
+        auto dFT = transpose( dF );
+        auto dFmTdF = value (-1.0) * FmT * dFT * FmT;
+        auto d2JdF = dJdF * FmT + J * dFmTdF;
         auto dWvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
         auto dPvol = dWvol * d2JdF;
         
-        auto ddWvol =( 3500000 * ( J + 1. ) ) / ( 2. * J * J);
+        auto ddWvol = ( 3500000 * ( J + 1. ) ) / ( 2. * J * J);
         auto ddPvol = ddWvol * dJdF * dJ;
 
         
-        // P1
-        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
-        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
-        auto dP1 = dW1 * _d2I1bardF(F, dF);
-    
-        auto ddW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
-        auto ddP1 = ddW1 * _dI1bardF (F, dF) * _dI1bar (F) ;
-
-        
-        // P4f
-        auto I4f = dot (f,f);
-        auto I4m1f = I4f - 1.0;
-        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-        auto dP4f = dW4f * _d2I4dF ( f0, dF );
-
-        auto ddW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-        auto ddP4f = ddW4f * _dI4dF ( F, f0, dF ) * _dI4 ( F, f0 );
-
-        
-        // P4s
-        auto I4s = dot (s,s);
-        auto I4m1s = I4s - 1.0;
-        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
-        auto dP4s = dW4s * _d2I4dF ( s0, dF );
-        
-        auto ddW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
-        auto ddP4s = ddW4s * _dI4dF ( F, s0, dF ) * _dI4 ( F, s0 );
-        
-        
-        // P8fs
-        auto I8fs = dot (f,s);
-        auto dW8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
-        auto dP8fs = dW8fs * _d2I8dF (f0, s0, dF );
-        
-        auto ddW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
-        auto ddP8fs = ddW8fs * _dI8dF ( F, f0, s0, dF ) *  _dI8 ( F, f0, s0 );
+//        // P1
+//        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
+//        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+//        auto dP1 = dW1 * _d2I1bardF(F, dF);
+//    
+//        auto ddW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
+//        auto ddP1 = ddW1 * _dI1bardF (F, dF) * _dI1bar (F) ;
+//
+//        
+//        // P4f
+//        auto I4f = dot (f,f);
+//        auto I4m1f = I4f - 1.0;
+//        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+//        auto dP4f = dW4f * _d2I4dF ( f0, dF );
+//
+//        auto ddW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+//        auto ddP4f = ddW4f * _dI4dF ( F, f0, dF ) * _dI4 ( F, f0 );
+//
+//        
+//        // P4s
+//        auto I4s = dot (s,s);
+//        auto I4m1s = I4s - 1.0;
+//        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+//        auto dP4s = dW4s * _d2I4dF ( s0, dF );
+//        
+//        auto ddW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+//        auto ddP4s = ddW4s * _dI4dF ( F, s0, dF ) * _dI4 ( F, s0 );
+//        
+//        
+//        // P8fs
+//        auto I8fs = dot (f,s);
+//        auto dW8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
+//        auto dP8fs = dW8fs * _d2I8dF (f0, s0, dF );
+//        
+//        auto ddW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
+//        auto ddP8fs = ddW8fs * _dI8dF ( F, f0, s0, dF ) *  _dI8 ( F, f0, s0 );
         
         
         // P1E
         auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
+        
+        auto dJm23 = value(-2.0/3.0) * Jm23 * FmT;
+        auto dJm23dF = dot(dJm23, dF);
+        auto dI1 = 2 * F;
+        auto dI1dF = dot(dI1, dF);
+        auto d2I1dF = 2 * dF;
+        auto d2Jm23dF = value(-2.0/3.0) * ( Jm23 *  _dFmTdF(F, dF) + dJm23dF * FmT );
+        auto d2I1bardF = dJm23dF * dI1 + Jm23 * d2I1dF + I1 * d2Jm23dF + dI1dF * dJm23;
+
+        
         //auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
         auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto dP1E = dW1E * (_d2I1bardF (FE, dFE) ) * FAinv;
