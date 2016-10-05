@@ -701,28 +701,28 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         auto dP = dPvol + ddPvol + /*dP1E + ddP1E +*/ dP1 + ddP1 + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
         
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ( dP, grad (phi_i) )
-                   ) >> this->M_jacobian;
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP, grad (phi_i) )
+//                   ) >> this->M_jacobian;
         
     }
     
     
     
-//    
-//    
-//    if (M_passiveMaterialPtr)
-//    {
-//
-//        M_passiveMaterialPtr -> computeJacobian (disp,
-//                                                 this->M_dispETFESpace,
-//                                                 *M_fiberVectorPtr,
-//                                                 *M_sheetVectorPtr,
-//                                                 this->M_jacobian);
-//    }
+    
+    
+    if (M_passiveMaterialPtr)
+    {
+
+        M_passiveMaterialPtr -> computeJacobian (disp,
+                                                 this->M_dispETFESpace,
+                                                 *M_fiberVectorPtr,
+                                                 *M_sheetVectorPtr,
+                                                 this->M_jacobian);
+    }
     if (M_activeStressMaterialPtr)
         M_activeStressMaterialPtr -> computeJacobian ( disp,
                                                        this->M_dispETFESpace,
