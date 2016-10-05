@@ -690,10 +690,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // Sum up contributions and integrate
-        //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
         auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra1pt,
+                   quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
                    dot ( dP, grad (phi_i) )
@@ -701,33 +700,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
     }
     
-    
-    
-    
-    
-//    if (M_passiveMaterialPtr)
-//    {
-//
-//        M_passiveMaterialPtr -> computeJacobian (disp,
-//                                                 this->M_dispETFESpace,
-//                                                 *M_fiberVectorPtr,
-//                                                 *M_sheetVectorPtr,
-//                                                 this->M_jacobian);
-//    }
-//    if (M_activeStressMaterialPtr)
-//        M_activeStressMaterialPtr -> computeJacobian ( disp,
-//                                                       this->M_dispETFESpace,
-//                                                       *M_fiberVectorPtr,
-//                                                       *M_sheetVectorPtr,
-//                                                       M_fiberActivationPtr,
-//                                                       M_sheetActivationPtr,
-//                                                       M_normalActivationPtr,
-//                                                       M_scalarETFESpacePtr,
-//                                                       this->M_jacobian);
-
-
-    //  computeJacobian(disp);
-
     this->M_jacobian->globalAssemble();
     //displayer->leaderPrint (" \n*********************************\n\n  ");
     //std::cout << std::endl;
@@ -873,12 +845,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto P8fsE = dW8fsE * dI8fsE * dI8fs;
         
         
-            
         // Sum up contributions and integrate
-        //auto P = Pvol + P1E + P4f + P4s + P8fs;
         auto P = Pvol + P1E + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra1pt,
+                   quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    dot ( P, grad (phi_i) )
                    ) >> M_residualVectorPtr;
