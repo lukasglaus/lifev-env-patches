@@ -702,10 +702,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // Sum up contributions and integrate
-        //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
-        //auto dP = dPvol + ddPvol + /*dP1E + ddP1E +*/ dP1 + ddP1 + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
-        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
-        
+        //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
+        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
@@ -848,13 +846,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto dI4f = value(2.0) * outerProduct( f, f0 );
         auto P4f = dW4f * dI4f;
         
-//        // P4fE
-//        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
-//        auto I4m1fE = I4fE - 1.0;
-//        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//        auto dI4fE = pow(gf + 1, -2.0);
-//        auto dI4f = value(2.0) * outerProduct( f, f0 );
-//        auto P4fE = dW4fE * dI4fE * dI4f;
+        // P4fE
+        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
+        auto I4m1fE = I4fE - 1.0;
+        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+        auto dI4fE = pow(gf + 1, -2.0);
+        //auto dI4f = value(2.0) * outerProduct( f, f0 );
+        auto P4fE = dW4fE * dI4fE * dI4f;
  
         
         // P4s
@@ -864,13 +862,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto dI4s = value(2.0) * outerProduct( s, s0 );
         auto P4s = dW4s * dI4s;
         
-//        // P4sE
-//        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
-//        auto I4m1sE = I4sE - 1.0;
-//        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-//        auto dI4sE = pow(gs + 1, -2.0);
-//        auto dI4s = value(2.0) * outerProduct( s, s0 );
-//        auto P4sE = dW4sE * dI4sE * dI4s;
+        // P4sE
+        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
+        auto I4m1sE = I4sE - 1.0;
+        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+        auto dI4sE = pow(gs + 1, -2.0);
+        //auto dI4s = value(2.0) * outerProduct( s, s0 );
+        auto P4sE = dW4sE * dI4sE * dI4s;
 
         
         // P8fs
@@ -879,17 +877,18 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
         auto P8fs = dW8fs * dI8fs;
         
-//        // P8fsE
-//        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
-//        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
-//        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
-//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-//        auto P8fsE = dW8fsE * dI8fsE * dI8fs;
+        // P8fsE
+        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
+        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
+        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
+        //auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+        auto P8fsE = dW8fsE * dI8fsE * dI8fs;
         
         
             
         // Sum up contributions and integrate
-        auto P = Pvol + P1E + P4f + P4s + P8fs;
+        //auto P = Pvol + P1E + P4f + P4s + P8fs;
+        auto P = Pvol + P1E + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
