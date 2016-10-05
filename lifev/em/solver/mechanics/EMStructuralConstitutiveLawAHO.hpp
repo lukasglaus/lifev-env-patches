@@ -700,7 +700,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         // Sum up contributions and integrate
         //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         //auto dP = dPvol + ddPvol + /*dP1E + ddP1E +*/ dP1 + ddP1 + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
-        auto dP = dP1E + ddP1E + dPvol + ddPvol + dP1 + ddP1 + dP4s + ddP4s dP8fs + ddP8fs;
+        auto dP = dP1E + ddP1E + dPvol + ddPvol + dP1 + ddP1 + dP4f + dP4s + ddP4s dP8fs + ddP8fs;
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
