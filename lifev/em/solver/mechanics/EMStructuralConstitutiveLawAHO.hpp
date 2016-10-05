@@ -572,7 +572,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
         auto J = det(F);
-        auto dJ = J * FmT
+        auto dJ = J * FmT;
         auto Jm23 = pow(J, 2 / (-3.) );
         auto I1 = dot(F, F);
         auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
