@@ -37,7 +37,7 @@ public:
 
 template<typename Mesh>
 PassiveHolzapfelOgden<Mesh>::PassiveHolzapfelOgden() :
-    super ("Passive Holzapfel Ogden", 2)
+    super ("Passive Holzapfel Ogden", 0)
 {
     //this -> M_materialFunctionList[0].reset ( new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
     //this -> M_materialFunctionList[1].reset ( new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
