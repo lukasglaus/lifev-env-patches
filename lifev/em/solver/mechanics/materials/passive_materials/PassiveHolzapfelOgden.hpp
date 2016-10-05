@@ -37,7 +37,7 @@ public:
 
 template<typename Mesh>
 PassiveHolzapfelOgden<Mesh>::PassiveHolzapfelOgden() :
-    super ("Passive Holzapfel Ogden", 4)
+    super ("Passive Holzapfel Ogden", 2)
 {
     //this -> M_materialFunctionList[0].reset ( new MaterialFunctions::Volumetric<Mesh> (3500000.0)  );
     //this -> M_materialFunctionList[1].reset ( new MaterialFunctions::dVolumetric<Mesh> (3500000.0) );
@@ -45,8 +45,8 @@ PassiveHolzapfelOgden<Mesh>::PassiveHolzapfelOgden() :
     //this -> M_materialFunctionList[3].reset ( new MaterialFunctions::dIsotropicExponential<Mesh> (3330.0, 9.242)  );
     this -> M_materialFunctionList[0].reset ( new MaterialFunctions::AnisotropicExponential<Mesh> (185350, 15.972)  );
     this -> M_materialFunctionList[1].reset ( new MaterialFunctions::dAnisotropicExponential<Mesh> (185350, 15.972)  );
-    this -> M_materialFunctionList[2].reset ( new MaterialFunctions::AnisotropicExponential<Mesh> ( 25640.0, 10.446, MaterialFunctions::AnisotropicExponential<Mesh>::Sheets )  );
-    this -> M_materialFunctionList[3].reset ( new MaterialFunctions::dAnisotropicExponential<Mesh> ( 25640.0, 10.446, MaterialFunctions::AnisotropicExponential<Mesh>::Sheets )  );
+    //this -> M_materialFunctionList[2].reset ( new MaterialFunctions::AnisotropicExponential<Mesh> ( 25640.0, 10.446, MaterialFunctions::AnisotropicExponential<Mesh>::Sheets )  );
+    //this -> M_materialFunctionList[3].reset ( new MaterialFunctions::dAnisotropicExponential<Mesh> ( 25640.0, 10.446, MaterialFunctions::AnisotropicExponential<Mesh>::Sheets )  );
     //this -> M_materialFunctionList[4].reset ( new MaterialFunctions::ShearExponential<Mesh> (4170.0, 11.602)  );
     //this -> M_materialFunctionList[5].reset ( new MaterialFunctions::dShearExponential<Mesh> (4170.0, 11.602)  );
 
