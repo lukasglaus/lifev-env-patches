@@ -616,42 +616,42 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddPvol = dWvol * _dJdF (F, _dF) * _dJ (F);
 
         
-//        // P1
-//        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
-//        auto W1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
-//        auto dP1 = W1 * _d2I1bardF(F, _dF);
-//    
-//        auto dW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
-//        auto ddP1 = dW1 * _dI1bardF (F, _dF) * _dI1bar (F) ;
-//
-//        
-//        // P4f
-//        auto I4f = dot (f,f);
-//        auto I4m1f = I4f - 1.0;
-//        auto W4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-//        auto dP4f = W4f * _d2I4dF ( f0, _dF );
-//
-//        auto dW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-//        auto ddP4f = dW4f * _dI4dF ( F, f0, _dF ) * _dI4 ( F, f0 );
-//
-//        
-//        // P4s
-//        auto I4s = dot (s,s);
-//        auto I4m1s = I4s - 1.0;
-//        auto W4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
-//        auto dP4s = W4s * _d2I4dF ( s0, _dF );
-//        
-//        auto dW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
-//        auto ddP4s = dW4s * _dI4dF ( F, s0, _dF ) * _dI4 ( F, s0 );
-//        
-//        
-//        // P8fs
-//        auto I8fs = dot (f,s);
-//        auto W8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
-//        auto dP8fs = W8fs * _d2I8dF (f0, s0, _dF );
-//        
-//        auto dW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
-//        auto ddP8fs = dW8fs * _dI8dF ( F, f0, s0, _dF ) *  _dI8 ( F, f0, s0 );
+        // P1
+        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
+        auto W1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+        auto dP1 = W1 * _d2I1bardF(F, _dF);
+    
+        auto dW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
+        auto ddP1 = dW1 * _dI1bardF (F, _dF) * _dI1bar (F) ;
+
+        
+        // P4f
+        auto I4f = dot (f,f);
+        auto I4m1f = I4f - 1.0;
+        auto W4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+        auto dP4f = W4f * _d2I4dF ( f0, _dF );
+
+        auto dW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+        auto ddP4f = dW4f * _dI4dF ( F, f0, _dF ) * _dI4 ( F, f0 );
+
+        
+        // P4s
+        auto I4s = dot (s,s);
+        auto I4m1s = I4s - 1.0;
+        auto W4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+        auto dP4s = W4s * _d2I4dF ( s0, _dF );
+        
+        auto dW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+        auto ddP4s = dW4s * _dI4dF ( F, s0, _dF ) * _dI4 ( F, s0 );
+        
+        
+        // P8fs
+        auto I8fs = dot (f,s);
+        auto W8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
+        auto dP8fs = W8fs * _d2I8dF (f0, s0, _dF );
+        
+        auto dW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
+        auto ddP8fs = dW8fs * _dI8dF ( F, f0, s0, _dF ) *  _dI8 ( F, f0, s0 );
         
         
         // P1E
@@ -664,41 +664,42 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP1E = ddW1E * (_dI1bardF (FE, dFE) ) * _dI1bar(FE) * FAinv;
         
         
-        // P4fE
-        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
-        auto I4m1fE = I4fE - 1.0;
-        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//        auto dI4fE = pow(gf + 1, -2.0);
-//        auto dI4f = value(2.0) * outerProduct( f, f0 );
-        auto dP4fE = dW4fE * (_d2I4dF (f0, dFE) ) * FAinv;
-        
-        auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-        auto ddP4fE = ddW4fE * (_dI4dF (FE, f0, dFE) ) * _dI4(FE, f0) * FAinv;
-
-        
-        // P4sE
-        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
-        auto I4m1sE = I4sE - 1.0;
-        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto dP4sE = dW4sE * (_d2I4dF (s0, dFE) ) * FAinv;
-
-        auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto ddP4sE = ddW4sE * (_dI4dF (FE, s0, dFE) ) * _dI4(FE, s0) * FAinv;
-
-        
-        // P8fsE
-        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
-        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
-//        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
-//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto dP8fsE = dW8fsE * (_d2I8dF (f0, s0, dFE) ) * FAinv;
-
-        auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
-        auto ddP8fsE = ddW8fsE * (_dI8dF (FE, f0, s0, dFE) ) * _dI8(FE, f0, s0) * FAinv;
+//        // P4fE
+//        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
+//        auto I4m1fE = I4fE - 1.0;
+//        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+////        auto dI4fE = pow(gf + 1, -2.0);
+////        auto dI4f = value(2.0) * outerProduct( f, f0 );
+//        auto dP4fE = dW4fE * (_d2I4dF (f0, dFE) ) * FAinv;
+//        
+//        auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+//        auto ddP4fE = ddW4fE * (_dI4dF (FE, f0, dFE) ) * _dI4(FE, f0) * FAinv;
+//
+//        
+//        // P4sE
+//        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
+//        auto I4m1sE = I4sE - 1.0;
+//        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+//        auto dP4sE = dW4sE * (_d2I4dF (s0, dFE) ) * FAinv;
+//
+//        auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+//        auto ddP4sE = ddW4sE * (_dI4dF (FE, s0, dFE) ) * _dI4(FE, s0) * FAinv;
+//
+//        
+//        // P8fsE
+//        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
+//        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
+////        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
+////        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+//        auto dP8fsE = dW8fsE * (_d2I8dF (f0, s0, dFE) ) * FAinv;
+//
+//        auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
+//        auto ddP8fsE = ddW8fsE * (_dI8dF (FE, f0, s0, dFE) ) * _dI8(FE, f0, s0) * FAinv;
 
         
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP1 + ddP1 + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
@@ -822,10 +823,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto Pvol = dWvol * dJ;
         
         
-//        // P1
-//        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
-//        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
-//        auto P1 = dW1 * dI1bar ;
+        // P1
+        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
+        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+        auto P1 = dW1 * dI1bar ;
 
         // P1E
         auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
@@ -835,55 +836,55 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto P1E = dWI1E * dI1barE * FAinv;
         
 
-//        // P4f
-//        auto I4f = dot (f,f);
-//        auto I4m1f = I4f - 1.0;
-//        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-//        auto dI4f = value(2.0) * outerProduct( f, f0 );
-//        auto P4f = dW4f * dI4f;
-        
-        // P4fE
-        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
-        auto I4m1fE = I4fE - 1.0;
-        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-        auto dI4fE = pow(gf + 1, -2.0);
+        // P4f
+        auto I4f = dot (f,f);
+        auto I4m1f = I4f - 1.0;
+        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
         auto dI4f = value(2.0) * outerProduct( f, f0 );
-        auto P4fE = dW4fE * dI4fE * dI4f;
+        auto P4f = dW4f * dI4f;
+        
+//        // P4fE
+//        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
+//        auto I4m1fE = I4fE - 1.0;
+//        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+//        auto dI4fE = pow(gf + 1, -2.0);
+//        auto dI4f = value(2.0) * outerProduct( f, f0 );
+//        auto P4fE = dW4fE * dI4fE * dI4f;
  
         
-//        // P4s
-//        auto I4s = dot (s,s);
-//        auto I4m1s = I4s - 1.0;
-//        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) *  eval(heaviside, I4m1s);
-//        auto dI4s = value(2.0) * outerProduct( s, s0 );
-//        auto P4s = dW4s * dI4s;
-        
-        // P4sE
-        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
-        auto I4m1sE = I4sE - 1.0;
-        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto dI4sE = pow(gs + 1, -2.0);
+        // P4s
+        auto I4s = dot (s,s);
+        auto I4m1s = I4s - 1.0;
+        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) *  eval(heaviside, I4m1s);
         auto dI4s = value(2.0) * outerProduct( s, s0 );
-        auto P4sE = dW4sE * dI4sE * dI4s;
+        auto P4s = dW4s * dI4s;
+        
+//        // P4sE
+//        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
+//        auto I4m1sE = I4sE - 1.0;
+//        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+//        auto dI4sE = pow(gs + 1, -2.0);
+//        auto dI4s = value(2.0) * outerProduct( s, s0 );
+//        auto P4sE = dW4sE * dI4sE * dI4s;
 
         
-//        // P8fs
-//        auto I8fs = dot (f,s);
-//        auto dW8fs = 4170 * I8fs * exp ( 11.602 * I8fs * I8fs );
-//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-//        auto P8fs = dW8fs * dI8fs;
-        
-        // P8fsE
-        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
-        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
-        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
+        // P8fs
+        auto I8fs = dot (f,s);
+        auto dW8fs = 4170 * I8fs * exp ( 11.602 * I8fs * I8fs );
         auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto P8fsE = dW8fsE * dI8fsE * dI8fs;
+        auto P8fs = dW8fs * dI8fs;
+        
+//        // P8fsE
+//        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
+//        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
+//        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
+//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+//        auto P8fsE = dW8fsE * dI8fsE * dI8fs;
         
         
             
         // Sum up contributions and integrate
-        auto P = Pvol + /*P1 +*/ P4fE + P4sE + P8fsE + P1E;
+        auto P = Pvol + P1 + P4f + P4s + P8fs + P1;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
