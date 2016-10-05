@@ -570,9 +570,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto I = value (EMUtility::identity()); //_I;
         auto F = grad(super::M_dispETFESpace, disp, 0) + I; //_F (super::M_dispETFESpace, disp, 0);
         auto dF = grad(phi_j);
-        auto J = det(F);
-        auto Jm23 = pow(J, 2 / (-3.) );
         auto FmT = minusT(F);
+        auto J = det(F);
+        auto dJ = J * FmT
+        auto Jm23 = pow(J, 2 / (-3.) );
         auto I1 = dot(F, F);
         auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
 
@@ -610,49 +611,51 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // Pvol
-        auto Wvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
-        auto dPvol = Wvol * _d2JdF (F, dF);
+        auto dJdF = dot(dJ, dF);
+        auto d2JdF = dJdF * FmT + J * _dFmTdF(F, dF) );
+        auto dWvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
+        auto dPvol = dWvol * d2JdF;
         
-        auto dWvol =( 3500000 * ( J + 1. ) ) / ( 2. * J * J);
-        auto ddPvol = dWvol * _dJdF (F, _dF) * _dJ (F);
+        auto ddWvol =( 3500000 * ( J + 1. ) ) / ( 2. * J * J);
+        auto ddPvol = ddWvol * dJdF * dJ;
 
         
         // P1
         auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
-        auto W1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
-        auto dP1 = W1 * _d2I1bardF(F, _dF);
+        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
+        auto dP1 = dW1 * _d2I1bardF(F, dF);
     
-        auto dW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
-        auto ddP1 = dW1 * _dI1bardF (F, _dF) * _dI1bar (F) ;
+        auto ddW1 = 0.5 * 3300 * 9.242 * exp ( 9.242 * ( I1bar - 3 ) );
+        auto ddP1 = ddW1 * _dI1bardF (F, dF) * _dI1bar (F) ;
 
         
         // P4f
         auto I4f = dot (f,f);
         auto I4m1f = I4f - 1.0;
-        auto W4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-        auto dP4f = W4f * _d2I4dF ( f0, _dF );
+        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+        auto dP4f = dW4f * _d2I4dF ( f0, dF );
 
-        auto dW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-        auto ddP4f = dW4f * _dI4dF ( F, f0, _dF ) * _dI4 ( F, f0 );
+        auto ddW4f = 185350 * exp ( 15.972 * I4m1f * I4m1f ) * ( 1.0 + 2.0 * 15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
+        auto ddP4f = ddW4f * _dI4dF ( F, f0, dF ) * _dI4 ( F, f0 );
 
         
         // P4s
         auto I4s = dot (s,s);
         auto I4m1s = I4s - 1.0;
-        auto W4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
-        auto dP4s = W4s * _d2I4dF ( s0, _dF );
+        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+        auto dP4s = dW4s * _d2I4dF ( s0, dF );
         
-        auto dW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
-        auto ddP4s = dW4s * _dI4dF ( F, s0, _dF ) * _dI4 ( F, s0 );
+        auto ddW4s = 25640 * exp ( 10.446 * I4m1s * I4m1s ) * ( 1.0 + 2.0 * 10.446 * I4m1s * I4m1s ) * eval(heaviside, I4m1s);
+        auto ddP4s = ddW4s * _dI4dF ( F, s0, dF ) * _dI4 ( F, s0 );
         
         
         // P8fs
         auto I8fs = dot (f,s);
-        auto W8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
-        auto dP8fs = W8fs * _d2I8dF (f0, s0, _dF );
+        auto dW8fs = 4170.0 * I8fs * exp ( 11.602 * I8fs * I8fs );
+        auto dP8fs = dW8fs * _d2I8dF (f0, s0, dF );
         
-        auto dW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
-        auto ddP8fs = dW8fs * _dI8dF ( F, f0, s0, _dF ) *  _dI8 ( F, f0, s0 );
+        auto ddW8fs = 4170.0 * exp ( 11.602 * I8fs * I8fs ) * ( 2.0 * 11.602 * I8fs * I8fs + 1.0 );
+        auto ddP8fs = ddW8fs * _dI8dF ( F, f0, s0, dF ) *  _dI8 ( F, f0, s0 );
         
         
         // P1E
