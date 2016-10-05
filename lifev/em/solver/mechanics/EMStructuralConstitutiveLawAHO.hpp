@@ -719,15 +719,15 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     
     
     
-    if (M_passiveMaterialPtr)
-    {
-
-        M_passiveMaterialPtr -> computeJacobian (disp,
-                                                 this->M_dispETFESpace,
-                                                 *M_fiberVectorPtr,
-                                                 *M_sheetVectorPtr,
-                                                 this->M_jacobian);
-    }
+//    if (M_passiveMaterialPtr)
+//    {
+//
+//        M_passiveMaterialPtr -> computeJacobian (disp,
+//                                                 this->M_dispETFESpace,
+//                                                 *M_fiberVectorPtr,
+//                                                 *M_sheetVectorPtr,
+//                                                 this->M_jacobian);
+//    }
 //    if (M_activeStressMaterialPtr)
 //        M_activeStressMaterialPtr -> computeJacobian ( disp,
 //                                                       this->M_dispETFESpace,
