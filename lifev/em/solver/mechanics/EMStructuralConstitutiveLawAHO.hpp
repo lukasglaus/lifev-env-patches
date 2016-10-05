@@ -632,7 +632,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // P1E
         auto dJEm23 = value(-2.0/3.0) * JEm23 * FEmT;
-        auto dJEm23dF = dot(dJEm23, dFE);
+        auto dJEm23dFE = dot(dJEm23, dFE);
         auto dI1EdFE = dot(dI1E, dFE);
         auto d2I1EdFE = 2 * dFE;
         auto dFEmTdFE = value (-1.0) * FEmT * transpose(dFE) * FEmT;
@@ -643,9 +643,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dP1E = dW1E * d2I1barEdFE * FAinv;
         
         auto dI1barEdFE = dot( dI1barE, dFE );
-
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-        auto ddP1E = ddW1E * dI1bardF * dI1bar * FAinv;
+        auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
         
         
         // P4fE
