@@ -52,7 +52,7 @@
 #include <lifev/em/solver/mechanics/materials/MaterialsList.hpp>
 //#include <lifev/em/solver/mechanics/materials/functions/FunctionsList.hpp>
 
-#include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
+//#include <lifev/em/solver/mechanics/EMMechanicalExpressions.hpp>
 #include <lifev/em/solver/EMETAFunctors.hpp>
 
 
@@ -653,20 +653,26 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
 //        auto dI4fE = pow(gf + 1, -2.0);
 //        auto dI4f = value(2.0) * outerProduct( f, f0 );
-        auto dP4fE = dW4fE * (_d2I4dF (f0, dFE) ) * FAinv;
+        auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
+        auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
         
+        auto dI4fE = value(2.0) ) * outerProduct( FE*f0, f0 );
+        auto dI4fEdFE =  dot ( dI4fE, dFE );
         auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-        auto ddP4fE = ddW4fE * (_dI4dF (FE, f0, dFE) ) * _dI4(FE, f0) * FAinv;
+        auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
         // P4sE
         auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
         auto I4m1sE = I4sE - 1.0;
         auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto dP4sE = dW4sE * (_d2I4dF (s0, dFE) ) * FAinv;
+        auto d2I4sEdFE = value(2.0) * outerProduct( dFE * s0, s0 );
+        auto dP4sE = dW4sE * d2I4sEdFE * FAinv;
 
+        auto dI4sE = value(2.0) ) * outerProduct( FE*s0, s0 );
+        auto dI4sEdFE =  dot ( dI4sE, dFE );
         auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto ddP4sE = ddW4sE * (_dI4dF (FE, s0, dFE) ) * _dI4(FE, s0) * FAinv;
+        auto ddP4sE = ddW4sE * dI4sEdFE * dI4sE * FAinv;
 
         
         // P8fsE
@@ -674,10 +680,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
 //        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
 //        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto dP8fsE = dW8fsE * (_d2I8dF (f0, s0, dFE) ) * FAinv;
+        auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+        auto dP8fsE = dW8fsE * d2I8EdFE * FAinv;
 
+        auto dI8E = FE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+        auto dI8EdFE = dot ( dI8E , dFE );
         auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
-        auto ddP8fsE = ddW8fsE * (_dI8dF (FE, f0, s0, dFE) ) * _dI8(FE, f0, s0) * FAinv;
+        auto ddP8fsE = ddW8fsE * dI8EdFE * dI8E * FAinv;
 
         
         // Sum up contributions and integrate
