@@ -654,14 +654,14 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP8fs = dW8fs * _dI8dF ( F, f0, s0, _dF ) *  _dI8 ( F, f0, s0 );
         
         
-        // P1E
-        auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
-        auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
-        auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-        auto dP1E = dW1E * (_d2I1bardF (FE, dFE) ) * FAinv;
-        
-        auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-        auto ddP1E = ddW1E * (_dI1bardF (FE, dFE) ) * _dI1bar(FE) * FAinv;
+//        // P1E
+//        auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
+//        auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
+//        auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
+//        auto dP1E = dW1E * (_d2I1bardF (FE, dFE) ) * FAinv;
+//        
+//        auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
+//        auto ddP1E = ddW1E * (_dI1bardF (FE, dFE) ) * _dI1bar(FE) * FAinv;
         
         
 //        // P4fE
@@ -699,7 +699,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // Sum up contributions and integrate
         //auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
-        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP1 + ddP1 + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
+        auto dP = dPvol + ddPvol + /*dP1E + ddP1E +*/ dP1 + ddP1 + dP4f + ddP4f + dP4s + ddP4s + dP8fs + ddP8fs;
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
@@ -723,16 +723,16 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 //                                                 *M_sheetVectorPtr,
 //                                                 this->M_jacobian);
 //    }
-//    if (M_activeStressMaterialPtr)
-//        M_activeStressMaterialPtr -> computeJacobian ( disp,
-//                                                       this->M_dispETFESpace,
-//                                                       *M_fiberVectorPtr,
-//                                                       *M_sheetVectorPtr,
-//                                                       M_fiberActivationPtr,
-//                                                       M_sheetActivationPtr,
-//                                                       M_normalActivationPtr,
-//                                                       M_scalarETFESpacePtr,
-//                                                       this->M_jacobian);
+    if (M_activeStressMaterialPtr)
+        M_activeStressMaterialPtr -> computeJacobian ( disp,
+                                                       this->M_dispETFESpace,
+                                                       *M_fiberVectorPtr,
+                                                       *M_sheetVectorPtr,
+                                                       M_fiberActivationPtr,
+                                                       M_sheetActivationPtr,
+                                                       M_normalActivationPtr,
+                                                       M_scalarETFESpacePtr,
+                                                       this->M_jacobian);
 
 
     //  computeJacobian(disp);
