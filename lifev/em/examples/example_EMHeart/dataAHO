@@ -68,8 +68,8 @@ monodomain_xml_file = ParamList.xml
     gammaf		= 0.0
     solidType 	= EMMaterial 
     lawType     = nonlinear
-    EMPassiveMaterialType = PHO
-    EMActiveStressMaterialType = AHO #SimpleActiveStress #AHO #SFAS
+#EMPassiveMaterialType = PHO
+#EMActiveStressMaterialType = AHO #SimpleActiveStress #AHO #SFAS
     EMActiveStrainOrthotropicParameter = 4 # -666.0 for deactivated
 
     # Simple Fiber Active Stress
@@ -264,7 +264,7 @@ monodomain_xml_file = ParamList.xml
     mesh_rotation_0     = 0.9
     mesh_rotation_1     = 0.0
     mesh_rotation_2     = -0.5
-    order               = P2
+    order               = P1
     quad_rule           = 4pt
     anisotropic         = true
     fiber_name          = FiberDirection
@@ -303,7 +303,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 3
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1

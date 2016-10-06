@@ -472,8 +472,6 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     this->M_displayer = displayer;
     this->M_dataMaterial  = dataMaterial;
 
-    //    std::cout<<"I am setting up the Material"<<std::endl;
-
     this->M_dispFESpace                 = dFESpace;
     this->M_dispETFESpace               = dETFESpace;
     this->M_localMap                    = monolithicMap;
@@ -496,10 +494,11 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 
     std::string passiveMaterialType ( dataMaterial -> passiveType() );
     std::string activeStressMaterialType (dataMaterial -> activeStressType() );
-    std::cout << "\n===========================";
-    std::cout << "\nPassive Type: " << passiveMaterialType;
-    std::cout << "\nActive Stress Type: " << activeStressMaterialType;
-    std::cout << "\n===========================\n";
+    displayer->leaderPrint ("\n===========================");
+    displayer->leaderPrint ("\nActive strain Holzapfel-Ogden material created");
+    //std::cout << "\nPassive Type: " << passiveMaterialType;
+    //std::cout << "\nActive Stress Type: " << activeStressMaterialType;
+    displayer->leaderPrint ("\n===========================");
 
     if (activeStressMaterialType != "NO_DEFAULT_ACTIVESTRESS_TYPE")
     {
@@ -541,11 +540,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                                                                    const displayerPtr_Type& displayer )
 {
     this->M_jacobian.reset (new matrix_Type (*this->M_localMap) );
-    //    matrixPtr_Type jac(new matrix_Type(*this->M_localMap));
 
-    //displayer->leaderPrint (" \n*********************************\n  ");
-    //displayer->leaderPrint (" Non-Linear S-  Computing the EM material  Jacobian"     );
-    //displayer->leaderPrint (" \n*********************************\n  ");
     * (this->M_jacobian) *= 0.0;
     
     class HeavisideFct
@@ -567,15 +562,15 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-        auto I = value (EMUtility::identity()); //_I;
-        auto F = grad(super::M_dispETFESpace, disp, 0) + I; //_F (super::M_dispETFESpace, disp, 0);
+        auto I = value (EMUtility::identity());
+        auto F = grad(super::M_dispETFESpace, disp, 0) + I;
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
         auto J = det(F);
         auto dJ = J * FmT;
         auto Jm23 = pow(J, 2 / (-3.) );
         auto I1 = dot(F, F);
-        auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
+        auto dI1bar = value(2.0) * Jm23 * ( F + value(1/(-3.)) * I1 * FmT );
 
         
         // Anisotropy
@@ -590,8 +585,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto s0 = eval (normalize1, f0, s_0);
         auto s = F * s0;
         
-        boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
-        auto n0 = eval ( wedge, f0, s0);
+        boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
+        auto n0 = eval (crossProduct, f0, s0);
         
         
         // Orthotropic activation
@@ -701,8 +696,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     }
     
     this->M_jacobian->globalAssemble();
-    //displayer->leaderPrint (" \n*********************************\n\n  ");
-    //std::cout << std::endl;
 }
 
 template <typename MeshType>
@@ -713,13 +706,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                                                                const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                                                const displayerPtr_Type& displayer )
 {
-    //displayer->leaderPrint (" \n******************************************************************\n  ");
-    //displayer->leaderPrint (" Non-Linear S-  Computing the EM material residual vector"     );
-    //displayer->leaderPrint (" \n******************************************************************\n  ");
     * (M_residualVectorPtr) *= 0.0;
-    vectorPtr_Type vec (new vector_Type ( M_residualVectorPtr -> map() ) );
-    Real passive_residual(0.0);
-    
     
     class HeavisideFct
     {
@@ -740,13 +727,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     {
         using namespace ExpressionAssembly;
         
-        auto I = value (EMUtility::identity()); //_I;
-        auto F = grad(super::M_dispETFESpace, disp, 0) + I; //_F (super::M_dispETFESpace, disp, 0);
+        auto I = value (EMUtility::identity());
+        auto F = grad(super::M_dispETFESpace, disp, 0) + I;
         auto J = det(F);
         auto Jm23 = pow(J, 2 / (-3.) );
         auto FmT = minusT(F);
         auto I1 = dot(F, F);
-        auto dI1bar = value(2.0) * Jm23 * (  F + value(1/(-3.)) * I1 * FmT );
+        auto dI1bar = value(2.0) * Jm23 * ( F + value(1/(-3.)) * I1 * FmT );
 
         
         // Anisotropy
@@ -761,8 +748,8 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto s0 = eval (normalize1, f0, s_0);
         auto s = F * s0;
 
-        boost::shared_ptr<CrossProduct> wedge (new CrossProduct);
-        auto n0 = eval ( wedge, f0, s0);
+        boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
+        auto n0 = eval (crossProduct, f0, s0);
         
         
         // Orthotropic activation
@@ -785,63 +772,37 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto dJ = det(F) * minusT(F);
         auto Pvol = dWvol * dJ;
         
-        
-        // P1
-        auto I1bar =  pow ( det(F), 2 / -3.0 ) *  dot( F, F );
-        auto dW1 = 0.5 * 3300 * exp ( 9.242 * ( I1bar - 3 ) );
-        auto P1 = dW1 * dI1bar ;
 
         // P1E
         auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
         auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
-        
         auto dWI1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto P1E = dWI1E * dI1barE * FAinv;
         
-
-        // P4f
-        auto I4f = dot (f,f);
-        auto I4m1f = I4f - 1.0;
-        auto dW4f = 185350 * I4m1f * exp (15.972 * I4m1f * I4m1f ) * eval(heaviside, I4m1f);
-        auto dI4f = value(2.0) * outerProduct( f, f0 );
-        auto P4f = dW4f * dI4f;
         
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto dI4fE = pow(gf + 1, -2.0);
-        //auto dI4f = value(2.0) * outerProduct( f, f0 );
+        auto dI4f = value(2.0) * outerProduct( f, f0 );
         auto P4fE = dW4fE * dI4fE * dI4f;
  
-        
-        // P4s
-        auto I4s = dot (s,s);
-        auto I4m1s = I4s - 1.0;
-        auto dW4s = 25640 * I4m1s * exp (10.446 * I4m1s * I4m1s ) *  eval(heaviside, I4m1s);
-        auto dI4s = value(2.0) * outerProduct( s, s0 );
-        auto P4s = dW4s * dI4s;
         
         // P4sE
         auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
         auto I4m1sE = I4sE - 1.0;
         auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
         auto dI4sE = pow(gs + 1, -2.0);
-        //auto dI4s = value(2.0) * outerProduct( s, s0 );
+        auto dI4s = value(2.0) * outerProduct( s, s0 );
         auto P4sE = dW4sE * dI4sE * dI4s;
 
-        
-        // P8fs
-        auto I8fs = dot (f,s);
-        auto dW8fs = 4170 * I8fs * exp ( 11.602 * I8fs * I8fs );
-        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto P8fs = dW8fs * dI8fs;
         
         // P8fsE
         auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
         auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
         auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
-        //auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
         auto P8fsE = dW8fsE * dI8fsE * dI8fs;
         
         
