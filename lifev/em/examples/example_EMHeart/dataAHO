@@ -255,8 +255,8 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoa/
-    mesh_file           = heartVVCoa.mesh
+    mesh_dir            = heartVVVCoa/
+    mesh_file           = heartVVVCoa.mesh
     mesh_scaling        = 0.1
     mesh_translation_0  = -66
     mesh_translation_1  = -72
@@ -264,7 +264,7 @@ monodomain_xml_file = ParamList.xml
     mesh_rotation_0     = 0.9
     mesh_rotation_1     = 0.0
     mesh_rotation_2     = -0.5
-    order               = P2
+    order               = P1
     quad_rule           = 4pt
     anisotropic         = true
     fiber_name          = FiberDirection
