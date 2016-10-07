@@ -561,7 +561,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         return_Type operator() (const VectorSmall<3>& v, const VectorSmall<3>& w)
         {
-            auto f (s);
+            auto f (v);
             auto s (w);
             
             s = normalize(s, 1);
