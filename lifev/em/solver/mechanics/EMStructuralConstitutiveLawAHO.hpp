@@ -543,27 +543,101 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
     * (this->M_jacobian) *= 0.0;
     
+    MatrixSmall<3,3> I;
+    I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+    I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+    I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+    
+    
+    class OrthonormalizeVector
+    {
+    public:
+        typedef LifeV::VectorSmall<3> return_Type;
+        
+        return_Type operator() (const VectorSmall<3>& v)
+        {
+            return normalize(v, 0);
+        }
+        
+        return_Type operator() (const VectorSmall<3>& v, const VectorSmall<3>& w)
+        {
+            auto f (w);
+            auto s (v);
+            
+            s = normalize(s, 1);
+            s = s - s.dot (f) * f;
+            s = normalize(s, 2);
+            
+            return s;
+        }
+        
+        return_Type normalize(const VectorSmall<3>& v, const UInt& comp)
+        {
+            auto V (v);
+            Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+            if ( norm >= 1e-13 )
+            {
+                V[0] = v[0] / norm;
+                V[1] = v[1] / norm;
+                V[2] = v[2] / norm;
+            }
+            else
+            {
+                V *= 0.0;
+                V[comp] = 1.0;
+            }
+            return V;
+        }
+        
+        OrthonormalizeVector () {}
+        ~OrthonormalizeVector () {}
+    };
+    
+    
+    class CrossProduct
+    {
+    public:
+        typedef LifeV::VectorSmall<3> return_Type;
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
+        {
+            VectorSmall<3> v;
+            v[0] = v1[1] * v2[2] - v1[2] * v2[1];
+            v[1] = v1[2] * v2[0] - v1[0] * v2[2];
+            v[2] = v1[0] * v2[1] - v1[1] * v2[0];
+            return v;
+        }
+        
+        CrossProduct() {}
+        ~CrossProduct() {}
+    };
+    
+    
     class HeavisideFct
     {
     public:
         typedef Real return_Type;
+        
         return_Type operator() (const Real& I4f)
         {
             return (I4f > 0. ? 1. : 0.);
         }
         
         HeavisideFct() {}
-        HeavisideFct (const HeavisideFct&) {}
         ~HeavisideFct() {}
     };
     
+    
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
+    boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
+    boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
+
     
     {
         using namespace ExpressionAssembly;
         
-        auto I = value (EMUtility::identity());
-        auto F = grad(super::M_dispETFESpace, disp, 0) + I;
+        
+        auto F = I + grad(super::M_dispETFESpace, disp, 0);
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
         auto J = det(F);
@@ -571,22 +645,17 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto Jm23 = pow(J, 2 / (-3.) );
         auto I1 = dot(F, F);
         auto dI1bar = value(2.0) * Jm23 * ( F + value(1/(-3.)) * I1 * FmT );
-
+        
         
         // Anisotropy
         auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
         auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-        
-        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
-        auto f0 = eval (normalize0, f_0);
-        auto f = F * f0;
-        
-        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
-        auto s0 = eval (normalize1, f0, s_0);
-        auto s = F * s0;
-        
-        boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
+        auto f0 = eval (orthonormalizeVector, f_0);
+        auto s0 = eval (orthonormalizeVector, f0, s_0);
         auto n0 = eval (crossProduct, f0, s0);
+        auto f = F * f0;
+        auto s = F * s0;
+
         
         
         // Orthotropic activation
@@ -610,7 +679,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto I1E = dot(FE, FE);
         auto dI1E = 2 * FE;
         auto I1barE = pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE );
-        auto dI1barE = value(2.0) * JEm23 * (  FE + value(1/(-3.)) * I1E * FEmT );
+        auto dI1barE = value(2.0) * JEm23 * ( FE + value(1/(-3.)) * I1E * FEmT );
 
         
         // Pvol
@@ -633,7 +702,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dFEmTdFE = value (-1.0) * FEmT * transpose(dFE) * FEmT;
         auto d2JEm23dFE = value(-2.0/3.0) * ( JEm23 *  dFEmTdFE + dJEm23dFE * FEmT );
         auto d2I1barEdFE = dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23;
-        //auto dI1barE = pow ( det(FE), 2 / -3.0 ) * ( value(2.0) * FE + dot( FE, FE ) * value(-2.0/3.0) * minusT(FE) );
         auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto dP1E = dW1E * d2I1barEdFE * FAinv;
         
@@ -646,8 +714,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//        auto dI4fE = pow(gf + 1, -2.0);
-//        auto dI4f = value(2.0) * outerProduct( f, f0 );
         auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
         auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
         
@@ -673,8 +739,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         // P8fsE
         auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
         auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
-//        auto dI8fsE = 1 / ( (gf + 1) * (gs + 1) );
-//        auto dI8fs = F * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
         auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
         auto dP8fsE = dW8fsE * d2I8EdFE * FAinv;
 
@@ -708,27 +772,101 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 {
     * (M_residualVectorPtr) *= 0.0;
     
+    MatrixSmall<3,3> I;
+    I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+    I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+    I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+    
+    
+    class OrthonormalizeVector
+    {
+    public:
+        typedef LifeV::VectorSmall<3> return_Type;
+        
+        return_Type operator() (const VectorSmall<3>& v)
+        {
+            return normalize(v, 0);
+        }
+        
+        return_Type operator() (const VectorSmall<3>& v, const VectorSmall<3>& w)
+        {
+            auto f (w);
+            auto s (v);
+            
+            s = normalize(s, 1);
+            s = s - s.dot (f) * f;
+            s = normalize(s, 2);
+
+            return s;
+        }
+        
+        return_Type normalize(const VectorSmall<3>& v, const UInt& comp)
+        {
+            auto V (v);
+            Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+            if ( norm >= 1e-13 )
+            {
+                V[0] = v[0] / norm;
+                V[1] = v[1] / norm;
+                V[2] = v[2] / norm;
+            }
+            else
+            {
+                V *= 0.0;
+                V[comp] = 1.0;
+            }
+            return V;
+        }
+        
+        OrthonormalizeVector () {}
+        ~OrthonormalizeVector () {}
+    };
+    
+    
+    class CrossProduct
+    {
+    public:
+        typedef LifeV::VectorSmall<3> return_Type;
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
+        {
+            VectorSmall<3> v;
+            v[0] = v1[1] * v2[2] - v1[2] * v2[1];
+            v[1] = v1[2] * v2[0] - v1[0] * v2[2];
+            v[2] = v1[0] * v2[1] - v1[1] * v2[0];
+            return v;
+        }
+        
+        CrossProduct() {}
+        ~CrossProduct() {}
+    };
+    
+    
     class HeavisideFct
     {
     public:
         typedef Real return_Type;
+        
         return_Type operator() (const Real& I4f)
         {
             return (I4f > 0. ? 1. : 0.);
         }
         
         HeavisideFct() {}
-        HeavisideFct (const HeavisideFct&) {}
         ~HeavisideFct() {}
     };
 
+    
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
+    boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
+    boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
+
     
     {
         using namespace ExpressionAssembly;
         
-        auto I = value (EMUtility::identity());
-        auto F = grad(super::M_dispETFESpace, disp, 0) + I;
+        
+        auto F = I + grad(super::M_dispETFESpace, disp, 0);
         auto J = det(F);
         auto Jm23 = pow(J, 2 / (-3.) );
         auto FmT = minusT(F);
@@ -739,17 +877,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         // Anisotropy
         auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
         auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-        
-        boost::shared_ptr<orthonormalizeFibers> normalize0 (new orthonormalizeFibers);
-        auto f0 = eval (normalize0, f_0);
-        auto f = F * f0;
-        
-        boost::shared_ptr<orthonormalizeFibers> normalize1 (new orthonormalizeFibers (1) );
-        auto s0 = eval (normalize1, f0, s_0);
-        auto s = F * s0;
-
-        boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
+        auto f0 = eval (orthonormalizeVector, f_0);
+        auto s0 = eval (orthonormalizeVector, f0, s_0);
         auto n0 = eval (crossProduct, f0, s0);
+        auto f = F * f0;
+        auto s = F * s0;
         
         
         // Orthotropic activation
