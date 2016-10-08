@@ -636,8 +636,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-        
         auto F = I + grad(super::M_dispETFESpace, disp, 0);
+        
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
         auto J = det(F);
