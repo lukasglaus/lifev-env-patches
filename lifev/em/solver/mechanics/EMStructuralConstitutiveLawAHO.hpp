@@ -56,9 +56,9 @@
 #include <lifev/em/solver/EMETAFunctors.hpp>
 
 
-
 namespace LifeV
 {
+    
 /*!
   \class EMStructuralConstitutiveLaw
   \brief
@@ -444,7 +444,85 @@ protected:
     vectorPtr_Type                                 M_sheetActivationPtr;
     vectorPtr_Type                                 M_normalActivationPtr;
 
-
+    
+    
+    class OrthonormalizeVector
+    {
+    public:
+        typedef LifeV::VectorSmall<3> return_Type;
+        
+        return_Type operator() (const VectorSmall<3>& v)
+        {
+            return normalize(v, 0);
+        }
+        
+        return_Type operator() (const VectorSmall<3>& v, const VectorSmall<3>& w)
+        {
+            auto f (v);
+            auto s (w);
+            
+            s = normalize(s, 1);
+            s = s - s.dot (f) * f;
+            s = normalize(s, 2);
+            
+            return s;
+        }
+        
+        return_Type normalize(const VectorSmall<3>& v, const UInt& comp)
+        {
+            auto V (v);
+            Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+            if ( norm >= 1e-13 )
+            {
+                V[0] = v[0] / norm;
+                V[1] = v[1] / norm;
+                V[2] = v[2] / norm;
+            }
+            else
+            {
+                V *= 0.0;
+                V[comp] = 1.0;
+            }
+            return V;
+        }
+        
+        OrthonormalizeVector () {}
+        ~OrthonormalizeVector () {}
+    };
+    
+    
+    class CrossProduct
+    {
+    public:
+        typedef LifeV::VectorSmall<3> return_Type;
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
+        {
+            VectorSmall<3> v;
+            v[0] = v1[1] * v2[2] - v1[2] * v2[1];
+            v[1] = v1[2] * v2[0] - v1[0] * v2[2];
+            v[2] = v1[0] * v2[1] - v1[1] * v2[0];
+            return v;
+        }
+        
+        CrossProduct() {}
+        ~CrossProduct() {}
+    };
+    
+    
+    class HeavisideFct
+    {
+    public:
+        typedef Real return_Type;
+        
+        return_Type operator() (const Real& I4f)
+        {
+            return (I4f > 0. ? 1. : 0.);
+        }
+        
+        HeavisideFct() {}
+        ~HeavisideFct() {}
+    };
 
 };
 
@@ -548,86 +626,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
-    
-    class OrthonormalizeVector
-    {
-    public:
-        typedef LifeV::VectorSmall<3> return_Type;
-        
-        return_Type operator() (const VectorSmall<3>& v)
-        {
-            return normalize(v, 0);
-        }
-        
-        return_Type operator() (const VectorSmall<3>& v, const VectorSmall<3>& w)
-        {
-            auto f (v);
-            auto s (w);
-            
-            s = normalize(s, 1);
-            s = s - s.dot (f) * f;
-            s = normalize(s, 2);
-            
-            return s;
-        }
-        
-        return_Type normalize(const VectorSmall<3>& v, const UInt& comp)
-        {
-            auto V (v);
-            Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-            if ( norm >= 1e-13 )
-            {
-                V[0] = v[0] / norm;
-                V[1] = v[1] / norm;
-                V[2] = v[2] / norm;
-            }
-            else
-            {
-                V *= 0.0;
-                V[comp] = 1.0;
-            }
-            return V;
-        }
-        
-        OrthonormalizeVector () {}
-        ~OrthonormalizeVector () {}
-    };
-    
-    
-    class CrossProduct
-    {
-    public:
-        typedef LifeV::VectorSmall<3> return_Type;
-        
-        return_Type operator() (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
-        {
-            VectorSmall<3> v;
-            v[0] = v1[1] * v2[2] - v1[2] * v2[1];
-            v[1] = v1[2] * v2[0] - v1[0] * v2[2];
-            v[2] = v1[0] * v2[1] - v1[1] * v2[0];
-            return v;
-        }
-        
-        CrossProduct() {}
-        ~CrossProduct() {}
-    };
-    
-    
-    class HeavisideFct
-    {
-    public:
-        typedef Real return_Type;
-        
-        return_Type operator() (const Real& I4f)
-        {
-            return (I4f > 0. ? 1. : 0.);
-        }
-        
-        HeavisideFct() {}
-        ~HeavisideFct() {}
-    };
-    
-    
+
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
@@ -777,85 +776,6 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
-    
-    class OrthonormalizeVector
-    {
-    public:
-        typedef LifeV::VectorSmall<3> return_Type;
-        
-        return_Type operator() (const VectorSmall<3>& v)
-        {
-            return normalize(v, 0);
-        }
-        
-        return_Type operator() (const VectorSmall<3>& v, const VectorSmall<3>& w)
-        {
-            auto f (v);
-            auto s (w);
-            
-            s = normalize(s, 1);
-            s = s - s.dot (f) * f;
-            s = normalize(s, 2);
-
-            return s;
-        }
-        
-        return_Type normalize(const VectorSmall<3>& v, const UInt& comp)
-        {
-            auto V (v);
-            Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-            if ( norm >= 1e-13 )
-            {
-                V[0] = v[0] / norm;
-                V[1] = v[1] / norm;
-                V[2] = v[2] / norm;
-            }
-            else
-            {
-                V *= 0.0;
-                V[comp] = 1.0;
-            }
-            return V;
-        }
-        
-        OrthonormalizeVector () {}
-        ~OrthonormalizeVector () {}
-    };
-    
-    
-    class CrossProduct
-    {
-    public:
-        typedef LifeV::VectorSmall<3> return_Type;
-        
-        return_Type operator() (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2)
-        {
-            VectorSmall<3> v;
-            v[0] = v1[1] * v2[2] - v1[2] * v2[1];
-            v[1] = v1[2] * v2[0] - v1[0] * v2[2];
-            v[2] = v1[0] * v2[1] - v1[1] * v2[0];
-            return v;
-        }
-        
-        CrossProduct() {}
-        ~CrossProduct() {}
-    };
-    
-    
-    class HeavisideFct
-    {
-    public:
-        typedef Real return_Type;
-        
-        return_Type operator() (const Real& I4f)
-        {
-            return (I4f > 0. ? 1. : 0.);
-        }
-        
-        HeavisideFct() {}
-        ~HeavisideFct() {}
-    };
-
     
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
