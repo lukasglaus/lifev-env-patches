@@ -12,7 +12,7 @@ ADD_SUBDIRECTORIES(
 	test_0DMitchellSchaefferModel
 	test_0DNoblePurkinje
 	test_0DTenTusscher06Model
-	test_benchmark 
+#	test_benchmark
 	test_fibers
 	test_pacing
 	test_restart

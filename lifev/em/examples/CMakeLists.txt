@@ -19,13 +19,13 @@ ADD_SUBDIRECTORIES(
 #  linearizedGHOventricle
 #  prestress
    example_EMMaterial
-   example_HeartOharaRudy
+#   example_HeartOharaRudy
 #   example_passiveEMMaterial
-   example_EMCoupling
-   example_XBridge
-   example_EMBiVent
-   example_EMBiVentMixed
-   example_EMSiVent
+#   example_EMCoupling
+#   example_XBridge
+#   example_EMBiVent
+#   example_EMBiVentMixed
+#   example_EMSiVent
    example_EMHeart
    linear_solver_preconditioner
 )
