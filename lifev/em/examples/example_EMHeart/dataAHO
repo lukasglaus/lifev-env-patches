@@ -303,7 +303,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 1
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -314,7 +314,7 @@ monodomain_xml_file = ParamList.xml
             solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
 
             [../partitioner]
-            overlap 		= 1
+            overlap 		= 4
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
