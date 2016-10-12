@@ -470,6 +470,7 @@ protected:
                                                   const Epetra_SerialDenseMatrix& tensorF,
                                                   Epetra_SerialDenseMatrix& cofactorF,
                                                   const Epetra_SerialDenseVector& fiberDirection,
+                                                  const Epetra_SerialDenseVector& sheetDirection,
                                                   const Epetra_SerialDenseVector& fiberActivation);
     
     void computeLocalFiberDirection (const VectorElemental& fk_loc, std::vector<Epetra_SerialDenseVector>& fiberDirection, const CurrentFE& fe );
@@ -1099,6 +1100,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     UInt totalDof = fakeFESpace.dof().numTotalDof();
     VectorElemental dk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
     VectorElemental fk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+    VectorElemental sk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
     VectorElemental fAk_loc (fakeFESpace.fe().nbFEDof(), 1 );
 
     //Vectors for the deformation tensor
@@ -1110,7 +1112,12 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     fibers.Scale (0.0);
     std::vector<Epetra_SerialDenseVector> vectorFiberDirection (fakeFESpace.fe().nbFEDof(), fibers);
 
-    //Fibers
+    //Sheets
+    Epetra_SerialDenseVector sheets (3);
+    fibers.Scale (0.0);
+    std::vector<Epetra_SerialDenseVector> vectorSheetDirection (fakeFESpace.fe().nbFEDof(), sheets);
+
+    //Activation
     Epetra_SerialDenseVector activation (1);
     activation.Scale (0.0);
     std::vector<Epetra_SerialDenseVector> vectorFiberActivation (fakeFESpace.fe().nbFEDof(), activation);
@@ -1118,6 +1125,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     //Copying the displacement field into a vector with repeated map for parallel computations
     solutionVect_Type dRep (*M_displacement, Repeated);
     solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
+    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
     solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
     //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
     
@@ -1150,6 +1158,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
             {
                 dk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = dRep[ig + iComp * fakeFESpace.dim()];
                 fk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = fRep[ig + iComp * fakeFESpace.dim()];
+                sk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = sRep[ig + iComp * fakeFESpace.dim()];
             }
             //if ( fARep[ig] > 0. ) std::cout << fARep[ig] << "iiiiiii" << std::endl;
             fAk_loc[iloc] = fARep[ig];
@@ -1163,7 +1172,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
         AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
 
         computeLocalFiberDirection ( fk_loc, vectorFiberDirection, fakeFESpace.fe() );
-
+        computeLocalFiberDirection ( sk_loc, vectorSheetDirection, fakeFESpace.fe() );
         computeLocalFiberActivation ( fAk_loc, vectorFiberActivation, fakeFESpace.fe() );
         
         //Compute the local vector of the principal stresses
@@ -1176,10 +1185,10 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
             M_cofactorF->Scale (0.0);
 
             //Compute the rightCauchyC tensor
-            computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorFiberActivation[nDOF]);
+            computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF],  vectorSheetDirection[nDOF], vectorFiberActivation[nDOF]);
 
             //Compute the first Piola-Kirchhoff tensor
-            M_material->computeLocalFirstPiolaKirchhoffTensor (*M_firstPiola, vectorDeformationF[nDOF], *M_cofactorF, M_invariants, M_marker);
+            M_material->computeLocalFirstPiolaKirchhoffTensor_ (*M_firstPiola, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorSheetDirection[nDOF], M_invariants, M_marker);
 
             //Compute the Cauchy tensor
             AssemblyElementalStructure::computeCauchyStressTensor (*M_sigma, *M_firstPiola, M_invariants[3], vectorDeformationF[nDOF]);
@@ -1267,31 +1276,39 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
                                               const Epetra_SerialDenseMatrix& tensorF,
                                               Epetra_SerialDenseMatrix& cofactorF,
                                               const Epetra_SerialDenseVector& fiberDirection,
+                                              const Epetra_SerialDenseVector& sheetDirection,
                                               const Epetra_SerialDenseVector& fiberActivation)
 {
+    // Right Cauchy-Green tensor C
     Epetra_SerialDenseMatrix C (3,3);
     C.Multiply('T', 'N', 1., tensorF, tensorF, 0.);
 
-    Real I4f;
+    // Invariants
+    Real I1, J, I4f, I4s, I8fs, gammaf;
+    
+    I1 =  C(0,0) + C(1,1) + C(2,2);
+    J = tensorF (0, 0) * ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) ) - tensorF (0, 1) * ( tensorF (1, 0) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 0) ) + tensorF (0, 2) * ( tensorF (1, 0) * tensorF (2, 1) - tensorF (1, 1) * tensorF (2, 0) );
+    
     for (UInt i (0); i < 3; ++i)
     {
         for (UInt j (0); j < 3; ++j)
         {
             I4f = C(i,j) * fiberDirection(i) * fiberDirection(j);
+            I4s = C(i,j) * sheetDirection(i) * sheetDirection(j);
+            I8fs = C(i,j) * fiberDirection(i) * sheetDirection(j);
         }
     }
     
-    Real H ( fiberActivation(0) );
+    gammaf = fiberActivation(0);
 
-    invariants[0] = C(0,0) + C(1,1) + C(2,2); //C11 + C22 + C33; // First invariant C
-    invariants[1] = I4f; // Fourth invariant C
-    invariants[2] = H; // Fiber activation
-    invariants[3] = tensorF (0, 0) * ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) ) - tensorF (0, 1) * ( tensorF (1, 0) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 0) ) + tensorF (0, 2) * ( tensorF (1, 0) * tensorF (2, 1) - tensorF (1, 1) * tensorF (2, 0) ); // Determinant F
-    if (M_stressType == "total") invariants[4] = 0.0;
-    if (M_stressType == "passive") invariants[4] = 1.0;
-    if (M_stressType == "active") invariants[4] = 2.0;
+    invariants[0] = I1;
+    invariants[1] = J;
+    invariants[2] = I4f;
+    invariants[3] = I4s;
+    invariants[4] = I8fs;
+    invariants[5] = gammaf;
     
-    //Computation of the Cofactor of F
+    // Computation of the Cofactor of F
     cofactorF ( 0 , 0 ) =   ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) );
     cofactorF ( 0 , 1 ) = - ( tensorF (1, 0) * tensorF (2, 2) - tensorF (2, 0) * tensorF (1, 2) );
     cofactorF ( 0 , 2 ) =   ( tensorF (1, 0) * tensorF (2, 1) - tensorF (1, 1) * tensorF (2, 0) );
@@ -1302,7 +1319,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     cofactorF ( 2 , 1 ) = - ( tensorF (0, 0) * tensorF (1, 2) - tensorF (0, 2) * tensorF (1, 0) );
     cofactorF ( 2 , 2 ) =   ( tensorF (0, 0) * tensorF (1, 1) - tensorF (1, 0) * tensorF (0, 1) );
     
-    cofactorF.Scale (1 / invariants[3]);
+    cofactorF.Scale (1 / J);
 }
     
 template <typename Mesh>
