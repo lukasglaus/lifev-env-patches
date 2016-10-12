@@ -722,28 +722,28 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
     setupVonMisesStressExporter (problemFolder, vonMisesStressFileName );
     
     M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                "Von Mises Stress Total",
+                                                "Von Mises Stress",
                                                 M_electroSolverPtr -> feSpacePtr(),
                                                 M_wteTotal.vonMisesStressPtr(),
                                                 UInt (0) );
     
-    M_vonMisesStressExporterPtrP.reset (new exporter_Type() );
-    setupVonMisesStressExporterP (problemFolder, vonMisesStressFileNameP );
-    
-    M_vonMisesStressExporterPtrP -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                "Von Mises Stress Total P",
-                                                M_electroSolverPtr -> feSpacePtr(),
-                                                M_wteTotal.vonMisesStressPtr(),
-                                                UInt (0) );
-
-    M_vonMisesStressExporterPtrA.reset (new exporter_Type() );
-    setupVonMisesStressExporterA (problemFolder, vonMisesStressFileNameA );
-    
-    M_vonMisesStressExporterPtrA -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                "Von Mises Stress Total A",
-                                                M_electroSolverPtr -> feSpacePtr(),
-                                                M_wteTotal.vonMisesStressPtr(),
-                                                UInt (0) );
+//    M_vonMisesStressExporterPtrP.reset (new exporter_Type() );
+//    setupVonMisesStressExporterP (problemFolder, vonMisesStressFileNameP );
+//    
+//    M_vonMisesStressExporterPtrP -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+//                                                "Von Mises Stress Total P",
+//                                                M_electroSolverPtr -> feSpacePtr(),
+//                                                M_wteTotal.vonMisesStressPtr(),
+//                                                UInt (0) );
+//
+//    M_vonMisesStressExporterPtrA.reset (new exporter_Type() );
+//    setupVonMisesStressExporterA (problemFolder, vonMisesStressFileNameA );
+//    
+//    M_vonMisesStressExporterPtrA -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+//                                                "Von Mises Stress Total A",
+//                                                M_electroSolverPtr -> feSpacePtr(),
+//                                                M_wteTotal.vonMisesStressPtr(),
+//                                                UInt (0) );
 
 //    M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
 //                                                "X Stress Total",
@@ -839,8 +839,8 @@ EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
     M_activationExporterPtr -> setTimeIndex (time);
     M_activationTimeExporterPtr -> setTimeIndex (time);
     M_vonMisesStressExporterPtr -> setTimeIndex (time);
-    M_vonMisesStressExporterPtrP -> setTimeIndex (time);
-    M_vonMisesStressExporterPtrA -> setTimeIndex (time);
+    //M_vonMisesStressExporterPtrP -> setTimeIndex (time);
+    //M_vonMisesStressExporterPtrA -> setTimeIndex (time);
     M_mechanicsExporterPtr -> setTimeIndex (time);
 }
     
@@ -850,17 +850,17 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
     M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
     
-    M_wteTotal.setStressType ( "total" );
+    //M_wteTotal.setStressType ( "total" );
     M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
     M_vonMisesStressExporterPtr -> postProcess (time);
     
-    M_wteTotal.setStressType ( "passiv" );
-    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_vonMisesStressExporterPtrP -> postProcess (time);
-
-    M_wteTotal.setStressType ( "active" );
-    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_vonMisesStressExporterPtrA -> postProcess (time);
+//    M_wteTotal.setStressType ( "passiv" );
+//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+//    M_vonMisesStressExporterPtrP -> postProcess (time);
+//
+//    M_wteTotal.setStressType ( "active" );
+//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+//    M_vonMisesStressExporterPtrA -> postProcess (time);
 
 //    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
 //    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
