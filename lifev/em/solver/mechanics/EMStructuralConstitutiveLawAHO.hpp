@@ -818,11 +818,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto go = gf * ( k + gf * k + value(1.0) );
         auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
         
-        //auto FAinv = (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
-
         
         // Active strain
-        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FAinv = (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
         auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
@@ -862,23 +861,23 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
         
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ((
-                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(F * FAinv), 2 / -3.0 ) *  dot( F * FAinv,  F * FAinv ) - 3 ) ) *
-                         dot( value(2.0) * pow(JE, 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * 2 *  F * FAinv * minusT( F * FAinv) ), grad(phi_j) * FAinv ) *
-                         value(2.0) * pow(det( F * FAinv), 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * dot( F * FAinv,  F * FAinv) * minusT( F * FAinv) )
-                         +
-                         3300 / 2.0 * exp ( 9.242 * (  pow ( det( F * FAinv), 2 / -3.0 ) *  dot(  F * FAinv,  F * FAinv ) - 3 ) ) *
-                         (
-                          dot(value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv), grad(phi_j)*FAinv) * 2 * F * FAinv + pow(det(F*FAinv), 2 / (-3.) ) * 2*grad(phi_j)*FAinv +   dot( F * FAinv,  F * FAinv ) * value(-2.0/3.0) * ( pow(det( F * FAinv), 2 / (-3.) ) *  value (-1.0) * minusT( F * FAinv) * transpose( grad(phi_j) * FAinv) * minusT( F * FAinv) + dot( value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT( F * FAinv),  grad(phi_j) * FAinv) * minusT( F * FAinv) ) +  dot(2*F*FAinv, grad(phi_j)*FAinv) * value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv)
-                         )
-                        ) * FAinv
-                        
-                        , grad (phi_i) )
-                   ) >> this->M_jacobian;
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ((
+//                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(F * FAinv), 2 / -3.0 ) *  dot( F * FAinv,  F * FAinv ) - 3 ) ) *
+//                         dot( value(2.0) * pow(JE, 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * 2 *  F * FAinv * minusT( F * FAinv) ), grad(phi_j) * FAinv ) *
+//                         value(2.0) * pow(det( F * FAinv), 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * dot( F * FAinv,  F * FAinv) * minusT( F * FAinv) )
+//                         +
+//                         3300 / 2.0 * exp ( 9.242 * (  pow ( det( F * FAinv), 2 / -3.0 ) *  dot(  F * FAinv,  F * FAinv ) - 3 ) ) *
+//                         (
+//                          dot(value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv), grad(phi_j)*FAinv) * 2 * F * FAinv + pow(det(F*FAinv), 2 / (-3.) ) * 2*grad(phi_j)*FAinv +   dot( F * FAinv,  F * FAinv ) * value(-2.0/3.0) * ( pow(det( F * FAinv), 2 / (-3.) ) *  value (-1.0) * minusT( F * FAinv) * transpose( grad(phi_j) * FAinv) * minusT( F * FAinv) + dot( value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT( F * FAinv),  grad(phi_j) * FAinv) * minusT( F * FAinv) ) +  dot(2*F*FAinv, grad(phi_j)*FAinv) * value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv)
+//                         )
+//                        ) * FAinv
+//                        
+//                        , grad (phi_i) )
+//                   ) >> this->M_jacobian;
         
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
@@ -919,7 +918,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol/* + dP1E + ddP1E*/ + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
