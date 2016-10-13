@@ -854,11 +854,11 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto d2JEm23dFE = value(-2.0/3.0) * ( JEm23 *  dFEmTdFE + dJEm23dFE * FEmT );
         auto d2I1barEdFE = dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23;
         auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-        auto dP1E = value(I);//dW1E * d2I1barEdFE * FAinv;
+        auto dP1E = dW1E * d2I1barEdFE * FAinv;
         
         auto dI1barEdFE = dot( dI1barE, dFE );
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-        auto ddP1E = value(I);//ddW1E * dI1barEdFE * dI1barE * FAinv;
+        auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
         
         
         // P4fE
@@ -900,7 +900,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol/* + dP1E + ddP1E*/ + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
