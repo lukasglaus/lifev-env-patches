@@ -915,6 +915,20 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dI4sEdFE =  dot ( dI4sE, dFE );
         auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
         auto ddP4sE = ddW4sE * dI4sEdFE * dI4sE * FAinv;
+        
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( ( 25640 *  (dot (s,s) / pow (gs + 1, 2.0)-1) * exp (10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) * value(2.0) * outerProduct( (grad(phi_j)*FAinv) * s0, s0 )
+                        +
+                         25640 * exp ( 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * ( 1.0 + 2.0 * 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) *  dot (  value(2.0) * outerProduct( (F*FAinv)*s0, s0 ) , grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*s0, s0 )
+                        
+                        ) * FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
+
 
         
         // P8fsE
