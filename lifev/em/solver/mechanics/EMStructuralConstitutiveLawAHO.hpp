@@ -814,7 +814,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // Orthotropic activation
         auto k = 4.0;
-        auto gf = value(0.);// (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
