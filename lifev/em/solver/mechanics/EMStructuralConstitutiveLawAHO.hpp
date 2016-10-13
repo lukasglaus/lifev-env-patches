@@ -695,24 +695,24 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     //    this->setupVectorsParameters();
 }
 
-VectorEpetra pathologic activation ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
-{
-    M_fiberActivationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map() ) );
-
-    for ( int j (0); j < vec.epetraVector().MyLength() ; ++j )
-    {
-        for ( UInt k (0); k < flags.size(); k++ )
-        {
-            if ( fullMesh -> point ( vec.blockMap().GID (j) ).markerID() == flags.at (k) )
-            {
-                if ( vec.blockMap().LID ( vec.blockMap().GID (j) ) != -1 )
-                {
-                    (vec) ( vec.blockMap().GID (j) ) = value;
-                }
-            }
-        }
-    }
-}
+//VectorEpetra pathologic activation ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
+//{
+//    VectorEpetra fiberActivation ( M_fiberActivationPtr );
+//
+//    for ( int j (0); j < vec.epetraVector().MyLength() ; ++j )
+//    {
+//        for ( UInt k (0); k < flags.size(); k++ )
+//        {
+//            if ( fullMesh -> point ( vec.blockMap().GID (j) ).markerID() == flags.at (k) )
+//            {
+//                if ( vec.blockMap().LID ( vec.blockMap().GID (j) ) != -1 )
+//                {
+//                    (vec) ( vec.blockMap().GID (j) ) = value;
+//                }
+//            }
+//        }
+//    }
+//}
 
 template <typename MeshType>
 void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
