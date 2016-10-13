@@ -777,6 +777,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
+    VectorSmall<3> VI;
+    VI(1) = 1.;
+    VI(0) = 0.;
+    VI(2) = 0.;
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
@@ -786,7 +790,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-        auto F = I + grad(super::M_dispETFESpace, disp, 0);
+        auto F = value(I);// + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
@@ -798,8 +802,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // Anisotropy
-        auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
-        auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
+        auto f_0 = value (VI);//value (super::M_dispETFESpace, *M_fiberVectorPtr);
+        auto s_0 = value(VI);// (super::M_dispETFESpace, *M_sheetVectorPtr);
         auto f0 = eval (orthonormalizeVector, f_0);
         auto s0 = eval (orthonormalizeVector, f0, s_0);
         auto n0 = eval (crossProduct, f0, s0);
@@ -810,7 +814,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // Orthotropic activation
         auto k = 4.0;
-        auto gf = 1.0;//value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gf = value(0.);// (M_scalarETFESpacePtr, *M_fiberActivationPtr);
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
