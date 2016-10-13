@@ -695,11 +695,45 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     //    this->setupVectorsParameters();
 }
 
+//const std::vector<Vector3D> currentPosition(const VectorEpetra& disp) const
+//{
+//    Int nLocalDof = disp.blockMap().NumGlobalElements(); //disp.epetraVector().MyLength();
+//    Int nComponentLocalDof = nLocalDof / 3;
+//    
+//    std::vector<Vector3D> boundaryCoordinates(M_boundaryPoints.size());
+//    
+//    for ( unsigned int i (0) ; i < M_boundaryPoints.size() ; ++i )
+//    {
+//        int root; int LID;
+//        disp.blockMap().RemoteIDList(1, &M_boundaryPoints[i], &root, &LID);
+//        
+//        if ( disp.blockMap().MyGID( M_boundaryPoints[i] ) )
+//        {
+//            Vector3D pointCoordinates;
+//            
+//            UInt iGID = M_boundaryPoints[i];
+//            UInt jGID = M_boundaryPoints[i] + nComponentLocalDof;
+//            UInt kGID = M_boundaryPoints[i] + 2 * nComponentLocalDof;
+//            
+//            pointCoordinates[0] = M_fullMesh.point (iGID).x() + disp[iGID];
+//            pointCoordinates[1] = M_fullMesh.point (iGID).y() + disp[jGID];
+//            pointCoordinates[2] = M_fullMesh.point (iGID).z() + disp[kGID];
+//            
+//            boundaryCoordinates[i] = pointCoordinates;
+//        }
+//        
+//        MPI_Bcast(&boundaryCoordinates[i], 3, MPI_DOUBLE, root, MPI_COMM_WORLD);
+//    }
+//    
+//    MPI_Barrier(MPI_COMM_WORLD);
+//    return boundaryCoordinates;
+//}
+//    
 //VectorEpetra pathologic activation ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
 //{
 //    VectorEpetra fiberActivation ( M_fiberActivationPtr );
 //
-//    for ( int j (0); j < vec.epetraVector().MyLength() ; ++j )
+//    for ( int j (0); j < fiberActivation.epetraVector().MyLength() ; ++j )
 //    {
 //        for ( UInt k (0); k < flags.size(); k++ )
 //        {
@@ -772,8 +806,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // Active strain
-        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FE =  F ;//* FAinv;
+        auto FAinv = I;// + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
         auto JE = det(FE);
