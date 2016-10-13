@@ -867,7 +867,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    dot ( 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
                          dot( dI1barE, dFE ) *
                          value(2.0) * JEm23 * ( FE + value(1/(-3.)) * I1E * FEmT ) *
-                         I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0) )
+                         ( I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0) )
                         
                         , grad (phi_i) )
                    ) >> this->M_jacobian;
