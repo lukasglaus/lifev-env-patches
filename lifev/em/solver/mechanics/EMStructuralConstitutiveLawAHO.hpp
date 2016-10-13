@@ -810,7 +810,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // Orthotropic activation
         auto k = 4.0;
-        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gf = 1.0;//value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
@@ -819,7 +819,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // Active strain
-        auto FAinv = I + gm * outerProduct(f0, f0);// + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
         auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
