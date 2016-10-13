@@ -943,22 +943,28 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP8fsE = ddW8fsE * dI8EdFE * dI8E * FAinv;
         
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dP, grad (phi_i) )
-//                   ) >> this->M_jacobian;
-//
-//        
-//        // Sum up contributions and integrate
-//        auto dP = dPvol + ddPvol + /*dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE +*/ dP8fsE + ddP8fsE;
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dP, grad (phi_i) )
-//                   ) >> this->M_jacobian;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( ( 4170 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) *  grad(phi_j)*FAinv * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
+                        +
+                         4170.0 * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) * ( 2.0 * 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) + 1.0 ) * dot (  (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) ) , grad(phi_j)*FAinv ) * (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
+                        
+                        ) * FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
+
+        
+        // Sum up contributions and integrate
+        auto dP = dPvol + ddPvol + /*dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE*/;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( dP, grad (phi_i) )
+                   ) >> this->M_jacobian;
         
     }
     
