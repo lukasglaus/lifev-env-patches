@@ -695,8 +695,10 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     //    this->setupVectorsParameters();
 }
 
-inline void setValueOnBoundary ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
+VectorEpetra pathologic activation ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
 {
+    M_fiberActivationPtr.reset (new vector_Type (M_scalarETFESpacePtr -> map() ) );
+
     for ( int j (0); j < vec.epetraVector().MyLength() ; ++j )
     {
         for ( UInt k (0); k < flags.size(); k++ )
@@ -737,7 +739,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-        auto F = value(I);// + grad(super::M_dispETFESpace, disp, 0);
+        auto F = I + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
@@ -771,7 +773,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // Active strain
         auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FE =  F * FAinv;
+        auto FE =  F ;//* FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
         auto JE = det(FE);
