@@ -864,9 +864,14 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
+                   dot ( (
+                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
                          dot( dI1barE, dFE ) *
                          value(2.0) * JEm23 * ( FE + value(1/(-3.)) * I1E * FEmT ) *
+                         ( I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0) )
+                         ) +
+                         3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
+                         ( dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23 ) *
                          ( I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0) )
                         
                         , grad (phi_i) )
