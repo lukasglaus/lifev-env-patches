@@ -695,6 +695,22 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     //    this->setupVectorsParameters();
 }
 
+inline void setValueOnBoundary ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
+{
+    for ( int j (0); j < vec.epetraVector().MyLength() ; ++j )
+    {
+        for ( UInt k (0); k < flags.size(); k++ )
+        {
+            if ( fullMesh -> point ( vec.blockMap().GID (j) ).markerID() == flags.at (k) )
+            {
+                if ( vec.blockMap().LID ( vec.blockMap().GID (j) ) != -1 )
+                {
+                    (vec) ( vec.blockMap().GID (j) ) = value;
+                }
+            }
+        }
+    }
+}
 
 template <typename MeshType>
 void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
@@ -721,7 +737,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-        auto F = I + grad(super::M_dispETFESpace, disp, 0);
+        auto F = value(I);// + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
@@ -775,7 +791,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dWvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
         auto dPvol = dWvol * d2JdF;
         
-        auto ddWvol = ( 3500000 * ( J + 1. ) ) / ( 2. * J * J);
+        auto ddWvol = ( 3500000 * ( J + 1. ) ) / ( 2. * J * J );
         auto ddPvol = ddWvol * dJdF * dJ;
 
         
