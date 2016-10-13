@@ -864,14 +864,17 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( (
+                   dot ((
                          3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(F * FAinv), 2 / -3.0 ) *  dot( F * FAinv,  F * FAinv ) - 3 ) ) *
                          dot( value(2.0) * pow(JE, 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * 2 *  F * FAinv * minusT( F * FAinv) ), grad(phi_j) * FAinv ) *
                          value(2.0) * pow(det( F * FAinv), 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * dot( F * FAinv,  F * FAinv) * minusT( F * FAinv) )
                          +
-                         3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
-                         ( dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23 )
-                         ) * FAinv
+                         3300 / 2.0 * exp ( 9.242 * (  pow ( det( F * FAinv), 2 / -3.0 ) *  dot(  F * FAinv,  F * FAinv ) - 3 ) ) *
+                         (
+                          value(-2.0/3.0) * ( pow(det( F * FAinv), 2 / (-3.) ) *  value (-1.0) * minusT( F * FAinv) * transpose( grad(phi_j) * FAinv) * minusT( F * FAinv) + dot( value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT( F * FAinv),  grad(phi_j) * FAinv) * minusT( F * FAinv) ) *
+                          2 * F * FAinv + pow(det(F*FAinv), 2 / (-3.) ) * 2*grad(phi_j)*FAinv +   dot( F * FAinv,  F * FAinv ) * d2JEm23dFE + dI1EdFE * value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv)
+                         )
+                        ) * FAinv
                         
                         , grad (phi_i) )
                    ) >> this->M_jacobian;
