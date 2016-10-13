@@ -941,16 +941,24 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dI8EdFE = dot ( dI8E , dFE );
         auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
         auto ddP8fsE = ddW8fsE * dI8EdFE * dI8E * FAinv;
-
         
-        // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol + /*dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE +*/ dP8fsE + ddP8fsE;
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ( dP, grad (phi_i) )
-                   ) >> this->M_jacobian;
+        
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP, grad (phi_i) )
+//                   ) >> this->M_jacobian;
+//
+//        
+//        // Sum up contributions and integrate
+//        auto dP = dPvol + ddPvol + /*dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE +*/ dP8fsE + ddP8fsE;
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP, grad (phi_i) )
+//                   ) >> this->M_jacobian;
         
     }
     
