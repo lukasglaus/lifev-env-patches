@@ -729,6 +729,19 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 //    return boundaryCoordinates;
 //}
 //    
+//    Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+//    for (int j (0); j < p1nCompLocalDof; j++)
+//    {
+//        UInt iGID = p1PositionVector.blockMap().GID (j);
+//        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+//        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+//        
+//        p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
+//        p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
+//        p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
+//    }
+//
+//    
 //VectorEpetra pathologic activation ( VectorEpetra& vec, boost::shared_ptr<  RegionMesh<LinearTetra> > fullMesh, Real value, std::vector<UInt> flags)
 //{
 //    VectorEpetra fiberActivation ( M_fiberActivationPtr );
@@ -806,7 +819,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // Active strain
-        auto FAinv = I;// + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FAinv = I + gm * outerProduct(f0, f0);// + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
         auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
