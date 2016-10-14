@@ -786,12 +786,12 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-#define deformationGradientTensor ( value(I) + grad(super::M_dispETFESpace, disp, 0) )
+//#define deformationGradientTensor ( value(I) + grad(super::M_dispETFESpace, disp, 0) )
 
         
         //todo: FE ganz ausgeschrieben, nur einmal integrate
         
-        auto F = deformationGradientTensor;//value(I) + grad(super::M_dispETFESpace, disp, 0);
+        auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
@@ -864,23 +864,23 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ((
-//                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(F * FAinv), 2 / -3.0 ) *  dot( F * FAinv,  F * FAinv ) - 3 ) ) *
-//                         dot( value(2.0) * pow(JE, 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * 2 *  F * FAinv * minusT( F * FAinv) ), grad(phi_j) * FAinv ) *
-//                         value(2.0) * pow(det( F * FAinv), 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * dot( F * FAinv,  F * FAinv) * minusT( F * FAinv) )
-//                         +
-//                         3300 / 2.0 * exp ( 9.242 * (  pow ( det( F * FAinv), 2 / -3.0 ) *  dot(  F * FAinv,  F * FAinv ) - 3 ) ) *
-//                         (
-//                          dot(value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv), grad(phi_j)*FAinv) * 2 * F * FAinv + pow(det(F*FAinv), 2 / (-3.) ) * 2*grad(phi_j)*FAinv +   dot( F * FAinv,  F * FAinv ) * value(-2.0/3.0) * ( pow(det( F * FAinv), 2 / (-3.) ) *  value (-1.0) * minusT( F * FAinv) * transpose( grad(phi_j) * FAinv) * minusT( F * FAinv) + dot( value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT( F * FAinv),  grad(phi_j) * FAinv) * minusT( F * FAinv) ) +  dot(2*F*FAinv, grad(phi_j)*FAinv) * value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv)
-//                         )
-//                        ) * FAinv
-//                        
-//                        , grad (phi_i) )
-//                   ) >> this->M_jacobian;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ((
+                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(F * FAinv), 2 / -3.0 ) *  dot( F * FAinv,  F * FAinv ) - 3 ) ) *
+                         dot( value(2.0) * pow(JE, 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * 2 *  F * FAinv * minusT( F * FAinv) ), grad(phi_j) * FAinv ) *
+                         value(2.0) * pow(det( F * FAinv), 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * dot( F * FAinv,  F * FAinv) * minusT( F * FAinv) )
+                         +
+                         3300 / 2.0 * exp ( 9.242 * (  pow ( det( F * FAinv), 2 / -3.0 ) *  dot(  F * FAinv,  F * FAinv ) - 3 ) ) *
+                         (
+                          dot(value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv), grad(phi_j)*FAinv) * 2 * F * FAinv + pow(det(F*FAinv), 2 / (-3.) ) * 2*grad(phi_j)*FAinv +   dot( F * FAinv,  F * FAinv ) * value(-2.0/3.0) * ( pow(det( F * FAinv), 2 / (-3.) ) *  value (-1.0) * minusT( F * FAinv) * transpose( grad(phi_j) * FAinv) * minusT( F * FAinv) + dot( value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT( F * FAinv),  grad(phi_j) * FAinv) * minusT( F * FAinv) ) +  dot(2*F*FAinv, grad(phi_j)*FAinv) * value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv)
+                         )
+                        ) * FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
         
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
@@ -895,16 +895,16 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( ( 185350 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * exp (15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) *  value(2.0) * outerProduct( grad(phi_j)*FAinv * f0, f0 ) +
-//                       185350 * exp ( 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * ( 1.0 + 2.0 * 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) * dot ( value(2.0) * outerProduct( (F*FAinv)*f0, f0 ), grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*f0, f0 )
-//                       ) * FAinv
-//                        
-//                        , grad (phi_i) )
-//                   ) >> this->M_jacobian;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( ( 185350 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * exp (15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) *  value(2.0) * outerProduct( grad(phi_j)*FAinv * f0, f0 ) +
+                       185350 * exp ( 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * ( 1.0 + 2.0 * 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) * dot ( value(2.0) * outerProduct( (F*FAinv)*f0, f0 ), grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*f0, f0 )
+                       ) * FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
         
         
         // P4sE
@@ -919,18 +919,18 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
         auto ddP4sE = ddW4sE * dI4sEdFE * dI4sE * FAinv;
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( ( 25640 *  (dot (s,s) / pow (gs + 1, 2.0)-1) * exp (10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) * value(2.0) * outerProduct( (grad(phi_j)*FAinv) * s0, s0 )
-//                        +
-//                         25640 * exp ( 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * ( 1.0 + 2.0 * 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) *  dot (  value(2.0) * outerProduct( (F*FAinv)*s0, s0 ) , grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*s0, s0 )
-//                        
-//                        ) * FAinv
-//                        
-//                        , grad (phi_i) )
-//                   ) >> this->M_jacobian;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( ( 25640 *  (dot (s,s) / pow (gs + 1, 2.0)-1) * exp (10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) * value(2.0) * outerProduct( (grad(phi_j)*FAinv) * s0, s0 )
+                        +
+                         25640 * exp ( 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * ( 1.0 + 2.0 * 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) *  dot (  value(2.0) * outerProduct( (F*FAinv)*s0, s0 ) , grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*s0, s0 )
+                        
+                        ) * FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
 
 
         
@@ -946,18 +946,18 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP8fsE = ddW8fsE * dI8EdFE * dI8E * FAinv;
         
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( ( 4170 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) *  grad(phi_j)*FAinv * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
-//                        +
-//                         4170.0 * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) * ( 2.0 * 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) + 1.0 ) * dot (  (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) ) , grad(phi_j)*FAinv ) * (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
-//                        
-//                        ) * FAinv
-//                        
-//                        , grad (phi_i) )
-//                   ) >> this->M_jacobian;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( ( 4170 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) *  grad(phi_j)*FAinv * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
+                        +
+                         4170.0 * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) * ( 2.0 * 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) + 1.0 ) * dot (  (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) ) , grad(phi_j)*FAinv ) * (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
+                        
+                        ) * FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
 
         
         // Sum up contributions and integrate
@@ -968,46 +968,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    super::M_dispETFESpace,
                    dot ( dP, grad (phi_i) )
                    ) >> this->M_jacobian;
-        
-        
-        
-        
-        
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ((
-                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(F * FAinv), 2 / -3.0 ) *  dot( F * FAinv,  F * FAinv ) - 3 ) ) *
-                         dot( value(2.0) * pow(JE, 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * 2 *  F * FAinv * minusT( F * FAinv) ), grad(phi_j) * FAinv ) *
-                         value(2.0) * pow(det( F * FAinv), 2 / (-3.) ) * (  F * FAinv + value(1/(-3.)) * dot( F * FAinv,  F * FAinv) * minusT( F * FAinv) )
-                         +
-                         3300 / 2.0 * exp ( 9.242 * (  pow ( det( F * FAinv), 2 / -3.0 ) *  dot(  F * FAinv,  F * FAinv ) - 3 ) ) *
-                         (
-                          dot(value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv), grad(phi_j)*FAinv) * 2 * F * FAinv + pow(det(F*FAinv), 2 / (-3.) ) * 2*grad(phi_j)*FAinv +   dot( F * FAinv,  F * FAinv ) * value(-2.0/3.0) * ( pow(det( F * FAinv), 2 / (-3.) ) *  value (-1.0) * minusT( F * FAinv) * transpose( grad(phi_j) * FAinv) * minusT( F * FAinv) + dot( value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT( F * FAinv),  grad(phi_j) * FAinv) * minusT( F * FAinv) ) +  dot(2*F*FAinv, grad(phi_j)*FAinv) * value(-2.0/3.0) * pow(det(F*FAinv), 2 / (-3.) ) * minusT(F*FAinv)
-                          )
-                         +
-                         185350 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * exp (15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) *  value(2.0) * outerProduct( grad(phi_j)*FAinv * f0, f0 ) +
-                         185350 * exp ( 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * ( 1.0 + 2.0 * 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) * dot ( value(2.0) * outerProduct( (F*FAinv)*f0, f0 ), grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*f0, f0 )
-                         +
-                         25640 *  (dot (s,s) / pow (gs + 1, 2.0)-1) * exp (10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) * value(2.0) * outerProduct( (grad(phi_j)*FAinv) * s0, s0 )
-                         +
-                         25640 * exp ( 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * ( 1.0 + 2.0 * 10.446 *  (dot (s,s) / pow (gs + 1, 2.0)-1) *  (dot (s,s) / pow (gs + 1, 2.0)-1) ) * eval(heaviside,  (dot (s,s) / pow (gs + 1, 2.0)-1)) *  dot (  value(2.0) * outerProduct( (F*FAinv)*s0, s0 ) , grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*s0, s0 )
-                         +
-                         4170 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) *  grad(phi_j)*FAinv * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
-                         +
-                         4170.0 * exp ( 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) ) * ( 2.0 * 11.602 * dot (f,s) / ( (gf + 1) * (gs + 1) ) * dot (f,s) / ( (gf + 1) * (gs + 1) ) + 1.0 ) * dot (  (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) ) , grad(phi_j)*FAinv ) * (F*FAinv) * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) )
-                         
-                         ) * FAinv
-
-                        
-                        
-                        , grad (phi_i) )
-                   ) >> this->M_jacobian;
-
-        
-        
-        
+    
         
     }
     
