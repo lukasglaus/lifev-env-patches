@@ -786,9 +786,12 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     {
         using namespace ExpressionAssembly;
         
-#define deformationGradientTensor ( value(I) + grad(super::M_dispETFESpace, disp, 0) )
+//#define deformationGradientTensor ( value(I) + grad(super::M_dispETFESpace, disp, 0) )
 
-        auto F = deformationGradientTensor;//value(I) + grad(super::M_dispETFESpace, disp, 0);
+        
+        //todo: FE ganz ausgeschrieben, nur einmal integrate
+        
+        auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
