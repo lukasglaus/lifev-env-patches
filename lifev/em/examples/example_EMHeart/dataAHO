@@ -255,8 +255,8 @@ monodomain_xml_file = ParamList.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVVCoa/
-    mesh_file           = heartVVVCoa.mesh
+    mesh_dir            = heartVCoa/
+    mesh_file           = heartVCoa.mesh
     mesh_scaling        = 0.1
     mesh_translation_0  = -66
     mesh_translation_1  = -72
