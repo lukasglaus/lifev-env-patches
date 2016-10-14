@@ -1030,8 +1030,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Active strain
-        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FE =  F * FAinv;
+        auto FAinv = (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FE = ( value(I) + grad(super::M_dispETFESpace, disp, 0) ) * (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        //auto FE =  F * FAinv;
         
         
         // Pvol
