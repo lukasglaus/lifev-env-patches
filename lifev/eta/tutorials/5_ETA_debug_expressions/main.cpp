@@ -109,7 +109,7 @@ int main ( int argc, char** argv )
         std::cout << " -- Building and partitioning the mesh ... " << std::flush;
     }
 
-    const UInt Nelements (10);
+    const UInt Nelements (100);
 
     boost::shared_ptr< mesh_Type > fullMeshPtr (new mesh_Type ( Comm ) );
 
