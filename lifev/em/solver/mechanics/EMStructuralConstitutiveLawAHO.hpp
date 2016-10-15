@@ -791,7 +791,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         //todo: FE ganz ausgeschrieben, nur einmal integrate
         
-        auto F = value(I);// + grad(super::M_dispETFESpace, disp, 0);
+        auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
