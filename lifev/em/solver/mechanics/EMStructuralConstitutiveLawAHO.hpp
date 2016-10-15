@@ -870,11 +870,11 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    super::M_dispETFESpace,
                    dot ( (
                          3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
-                         dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23
+                         ( dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23 )
                          +
                          3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) ) *
-                         dot( dI1barE, dFE ) *
-                         value(2.0) * JEm23 * ( FE + value(1/(-3.)) * I1E * FEmT )
+                         dot( dI1barE, grad(phi_j)*FAinv ) *
+                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
                          ) *
                          FAinv
                         
