@@ -823,10 +823,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // Active strain
-        auto FAinv = (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+//        auto FAinv = (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
         //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FE = ( value(I) + grad(super::M_dispETFESpace, disp, 0) ) * (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
-        //auto FE =  F * FAinv;
+        auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
         auto JE = det(FE);
@@ -1010,13 +1010,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 
         
         // Anisotropy
-        auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
-        auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-        auto f0 = eval (orthonormalizeVector, f_0);
-        auto s0 = eval (orthonormalizeVector, f0, s_0);
-        auto n0 = eval (crossProduct, f0, s0);
-        auto f = F * f0;
-        auto s = F * s0;
+//        auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
+//        auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
+//        auto f0 = eval (orthonormalizeVector, f_0);
+//        auto s0 = eval (orthonormalizeVector, f0, s_0);
+//        auto n0 = eval (crossProduct, f0, s0);
+//        auto f = F * f0;
+//        auto s = F * s0;
         
         
         // Orthotropic activation
@@ -1030,10 +1030,15 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Active strain
-        auto FAinv = (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        auto f0 = eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr));
+        auto s0 = eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr));
+        auto n0 = eval (crossProduct, f0, s0);
+        auto f = F * f0;
+        auto s = F * s0;
+
+        auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
         //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FE = ( value(I) + grad(super::M_dispETFESpace, disp, 0) ) * (I + value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 ) * outerProduct(value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_fiberVectorPtr)) + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( k + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * k + value(1.0) ) * outerProduct(value (super::M_dispETFESpace, *M_sheetVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)) +  value(-1.0) * ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( k*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )  * outerProduct(eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (crossProduct, value (super::M_dispETFESpace, *M_fiberVectorPtr), value (super::M_dispETFESpace, *M_sheetVectorPtr))));
-        //auto FE =  F * FAinv;
+        auto FE =  F * FAinv;
         
         
         // Pvol
