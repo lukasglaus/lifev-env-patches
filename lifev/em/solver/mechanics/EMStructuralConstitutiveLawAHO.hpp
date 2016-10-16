@@ -366,80 +366,80 @@ public:
                                                                const std::vector<Real>& invariants,
                                                                const UInt material)
     {
-        auto I1 = invariants[0];
-        auto J = invariants[1];
-        auto I4f = invariants[2];
-        auto I4s = invariants[3];
-        auto I8fs = invariants[4];
-        
-        auto gammaf = invariants[5];
-        auto gamman = 4.0 * gammaf;
-        auto gammas = 1.0 / ( (1.0+gammaf)*(1.0+gamman) ) - 1.0;
-        
-        auto g1 = 1 - ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) );
-        auto g4f = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammaf * ( gammaf + 2 ) / std::pow( gammaf+1 , 2.0 ) );
-        auto g4s = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammas * ( gammas + 2 ) / std::pow( gammas+1 , 2.0 ) );
-        
-        auto I1E = g1 * I1 + g4f * I4f + g4s * I4s;
-        auto JE = J;
-        auto I1barE = std::pow(JE, -2.0/3.0 ) * I1E;
-        auto I4fE = I4f / std::pow( gammaf + 1 , 2.0 );
-        auto I4sE = I4s / std::pow( gammas + 1 , 2.0 );
-        auto I8fsE = I8fs / ( (gammaf + 1) * (gammas + 1) );
-        
-        auto W1E = 0.5 * 3300 * std::exp( 9.242 * (I1barE - 3) );
-        auto W4fE = 185350 * (I4fE - 1) * std::exp( 15.972 * std::pow(I4fE - 1, 2.0) ) * (I4fE > 1.0);
-        auto W4sE = 25640 * (I4sE - 1) * std::exp (10.446 * std::pow(I4sE - 1, 2.0) ) * (I4sE > 1.0);
-        auto W8fsE = 4170 * I8fsE * std::exp ( 11.602 * I8fsE * I8fsE );
-
-        auto f = matrixTimesVector(tensorF, fiber);
-        auto s = matrixTimesVector(tensorF, sheet);
-        auto f_f0 = tensorProduct(f, fiber);
-        auto s_s0 = tensorProduct(s, sheet);
-        auto f_s0 = tensorProduct(f, sheet);
-        auto s_f0 = tensorProduct(s, fiber);
-
-        
-        // Pvol
-        Epetra_SerialDenseMatrix Pvol (3,3);
-        Pvol.Scale(0.0);
-        Pvol += cofactorF;
-        Pvol.Scale( J * (3500000 / 2.0) * (J - 1.0 + (1.0 / J) * std::log(J) ) );
-
-        // P1
-        Epetra_SerialDenseMatrix P1 (3,3);
-        P1.Scale(0.0);
-        P1 += cofactorF;
-        P1.Scale(-I1/3);
-        P1 += tensorF;
-        P1.Scale( 2.0 * g1 * W1E * std::pow(J, -2.0/3.0 ) );
-
-        // P4f
-        Epetra_SerialDenseMatrix P4f (3,3);
-        P4f.Scale(0.0);
-        P4f += f_f0;
-        P4f.Scale ( 2.0 * ( g4f * W1E + W4fE / std::pow( gammaf + 1.0 , 2.0 ) ) );
-
-        // P4s
-        Epetra_SerialDenseMatrix P4s (3,3);
-        P4s.Scale(0.0);
-        P4s += s_s0;
-        P4s.Scale ( 2 * ( g4s * W1E + W4sE / std::pow( gammas + 1.0 , 2.0 ) ) );
-
-        // P8fs
-        Epetra_SerialDenseMatrix P8fs (3,3);
-        P8fs.Scale(0.0);
-        P8fs += f_s0;
-        P8fs += s_f0;
-        P8fs.Scale( W8fsE / ( (gammaf + 1.0) * (gammas + 1.0) ) );
+//        auto I1 = invariants[0];
+//        auto J = invariants[1];
+//        auto I4f = invariants[2];
+//        auto I4s = invariants[3];
+//        auto I8fs = invariants[4];
+//        
+//        auto gammaf = invariants[5];
+//        auto gamman = 4.0 * gammaf;
+//        auto gammas = 1.0 / ( (1.0+gammaf)*(1.0+gamman) ) - 1.0;
+//        
+//        auto g1 = 1 - ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) );
+//        auto g4f = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammaf * ( gammaf + 2 ) / std::pow( gammaf+1 , 2.0 ) );
+//        auto g4s = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammas * ( gammas + 2 ) / std::pow( gammas+1 , 2.0 ) );
+//        
+//        auto I1E = g1 * I1 + g4f * I4f + g4s * I4s;
+//        auto JE = J;
+//        auto I1barE = std::pow(JE, -2.0/3.0 ) * I1E;
+//        auto I4fE = I4f / std::pow( gammaf + 1 , 2.0 );
+//        auto I4sE = I4s / std::pow( gammas + 1 , 2.0 );
+//        auto I8fsE = I8fs / ( (gammaf + 1) * (gammas + 1) );
+//        
+//        auto W1E = 0.5 * 3300 * std::exp( 9.242 * (I1barE - 3) );
+//        auto W4fE = 185350 * (I4fE - 1) * std::exp( 15.972 * std::pow(I4fE - 1, 2.0) ) * (I4fE > 1.0);
+//        auto W4sE = 25640 * (I4sE - 1) * std::exp (10.446 * std::pow(I4sE - 1, 2.0) ) * (I4sE > 1.0);
+//        auto W8fsE = 4170 * I8fsE * std::exp ( 11.602 * I8fsE * I8fsE );
+//
+//        auto f = matrixTimesVector(tensorF, fiber);
+//        auto s = matrixTimesVector(tensorF, sheet);
+//        auto f_f0 = tensorProduct(f, fiber);
+//        auto s_s0 = tensorProduct(s, sheet);
+//        auto f_s0 = tensorProduct(f, sheet);
+//        auto s_f0 = tensorProduct(s, fiber);
+//
+//        
+//        // Pvol
+//        Epetra_SerialDenseMatrix Pvol (3,3);
+//        Pvol.Scale(0.0);
+//        Pvol += cofactorF;
+//        Pvol.Scale( J * (3500000 / 2.0) * (J - 1.0 + (1.0 / J) * std::log(J) ) );
+//
+//        // P1
+//        Epetra_SerialDenseMatrix P1 (3,3);
+//        P1.Scale(0.0);
+//        P1 += cofactorF;
+//        P1.Scale(-I1/3);
+//        P1 += tensorF;
+//        P1.Scale( 2.0 * g1 * W1E * std::pow(J, -2.0/3.0 ) );
+//
+//        // P4f
+//        Epetra_SerialDenseMatrix P4f (3,3);
+//        P4f.Scale(0.0);
+//        P4f += f_f0;
+//        P4f.Scale ( 2.0 * ( g4f * W1E + W4fE / std::pow( gammaf + 1.0 , 2.0 ) ) );
+//
+//        // P4s
+//        Epetra_SerialDenseMatrix P4s (3,3);
+//        P4s.Scale(0.0);
+//        P4s += s_s0;
+//        P4s.Scale ( 2 * ( g4s * W1E + W4sE / std::pow( gammas + 1.0 , 2.0 ) ) );
+//
+//        // P8fs
+//        Epetra_SerialDenseMatrix P8fs (3,3);
+//        P8fs.Scale(0.0);
+//        P8fs += f_s0;
+//        P8fs += s_f0;
+//        P8fs.Scale( W8fsE / ( (gammaf + 1.0) * (gammas + 1.0) ) );
 
         // Assemble first piola kirchhoff tensor
         firstPiola.Scale(0.0);
-        firstPiola += Pvol;
-        firstPiola += P1;
-        firstPiola += P4f;
-        firstPiola += P4s;
-        firstPiola += P8fs;
+//        firstPiola += Pvol;
+//        firstPiola += P1;
+//        firstPiola += P4f;
+//        firstPiola += P4s;
+//        firstPiola += P8fs;
     }
 
     
