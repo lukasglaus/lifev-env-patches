@@ -419,10 +419,6 @@ public:
          return M_sigmaVonMises;
     }
     
-    void setStressType (std::string stressType)
-    {
-        M_stressType = stressType;
-    }
     
     //! Get the global vector for the eigenvalues
     solutionVect_Type principalStresses() const
