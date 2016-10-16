@@ -1117,9 +1117,9 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     
     //Copying the displacement field into a vector with repeated map for parallel computations
     solutionVect_Type dRep (*M_displacement, Repeated);
-    solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
-    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
-    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
+    solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Unique);
+    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Unique);
+    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Unique);
     //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
     
     //Creating the local stress tensors
