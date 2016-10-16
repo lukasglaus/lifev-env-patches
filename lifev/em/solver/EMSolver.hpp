@@ -844,10 +844,10 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-//    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//    
-//    M_vonMisesStressExporterPtr -> postProcess (time);
+    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+    
+    M_vonMisesStressExporterPtr -> postProcess (time);
     M_electroExporterPtr -> postProcess (time);//, restart);
     M_activationExporterPtr -> postProcess (time);//, restart );
     //M_activationTimeExporterPtr -> postProcess (time);
