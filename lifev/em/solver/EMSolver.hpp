@@ -172,10 +172,10 @@ public:
         EMUtility::setupExporter<Mesh> (*M_activationExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
     }
     
-    void setupActivationTimeExporter ( std::string problemFolder = "./", std::string outputFileName = "ActivationTimeSolution" )
-    {
-        EMUtility::setupExporter<Mesh> (*M_activationTimeExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
-    }
+//    void setupActivationTimeExporter ( std::string problemFolder = "./", std::string outputFileName = "ActivationTimeSolution" )
+//    {
+//        EMUtility::setupExporter<Mesh> (*M_activationTimeExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+//    }
 
     void setupVonMisesStressExporter ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStress" )
     {
@@ -361,10 +361,10 @@ public:
         return M_activationModelPtr;
     }
     
-    vectorPtr_Type activationTimePtr()
-    {
-        return M_activationTimePtr;
-    }
+//    vectorPtr_Type activationTimePtr()
+//    {
+//        return M_activationTimePtr;
+//    }
 
     void saveSolution (Real time, const bool& restart = 0);
     
@@ -850,7 +850,7 @@ EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 //    M_vonMisesStressExporterPtr -> postProcess (time);
     M_electroExporterPtr -> postProcess (time);//, restart);
     M_activationExporterPtr -> postProcess (time);//, restart );
-    M_activationTimeExporterPtr -> postProcess (time);
+    //M_activationTimeExporterPtr -> postProcess (time);
     M_mechanicsExporterPtr -> postProcess (time);//, restart);
 }
 
@@ -859,8 +859,8 @@ void
 EMSolver<Mesh, ElectroSolver>::closeExporters()
 {
     M_electroExporterPtr -> closeFile();
-    //M_activationExporterPtr -> closeFile();
-    M_activationTimeExporterPtr -> closeFile();
+    M_activationExporterPtr -> closeFile();
+    //M_activationTimeExporterPtr -> closeFile();
     M_mechanicsExporterPtr -> closeFile();
     M_vonMisesStressExporterPtr -> closeFile();
 }
@@ -902,7 +902,7 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     M_electroSolverPtr -> solveOneStepGatingVariablesFE();
 //    M_electroSolverPtr -> solveOneStepGatingVariablesRL();
     M_electroSolverPtr -> solveOneICIStep();
-    M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
+    //M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
 }
 
 template<typename Mesh , typename ElectroSolver>
