@@ -646,10 +646,10 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_residualVectorPtr.reset ( new vector_Type (*this->M_localMap, Repeated) );
     //   M_identity = EMUtility::identity();
 
-//    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
-//    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
-    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
-    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
+    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
+    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
+//    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
+//    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
     M_scalarETFESpacePtr.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
     																&( dETFESpace -> refFE() ),
                                                                     dFESpace->map().commPtr() ) );
