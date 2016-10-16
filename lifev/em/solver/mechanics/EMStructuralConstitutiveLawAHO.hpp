@@ -805,8 +805,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         // Anisotropy
         auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
         auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-        auto f0 = eval (orthonormalizeVector, f0);
-        auto s0 = eval (orthonormalizeVector, f0, s0);
+        auto f0 = eval (orthonormalizeVector, f_0);
+        auto s0 = eval (orthonormalizeVector, f0, s_0);
         auto n0 = eval (crossProduct, f0, s0);
         auto f = F * f0;
         auto s = F * s0;
