@@ -552,8 +552,6 @@ protected:
     //! Material class
     materialPtr_Type                               M_material;
     
-    std::string                                    M_stressType;
-
     //@}
 };
 
@@ -665,7 +663,6 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
     //ElectrophysiologyUtility::importVectorField (M_material -> fiberVectorPtr(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
     //M_material->setup ( M_FESpace, feSpaceET, M_FESpace->mapPtr(), M_offset, M_dataMaterial, M_displayer );
     
-    M_stressType = "total";
 }
 
 template <typename Mesh>

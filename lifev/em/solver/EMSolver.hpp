@@ -162,7 +162,7 @@ public:
 
     }
 
-    void setupElectroExporter ( std::string problemFolder = "./", std::string outputFileName = "MechanicalSolution" )
+    void setupElectroExporter ( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
     {
         M_electroSolverPtr -> setupExporter (*M_electroExporterPtr, outputFileName, problemFolder);
     }
@@ -182,17 +182,17 @@ public:
         EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtr, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
     }
     
-    void setupVonMisesStressExporterP ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStressP" )
-    {
-        EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtrP, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
-    }
-    
-    void setupVonMisesStressExporterA ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStressA" )
-    {
-        EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtrA, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
-    }
+//    void setupVonMisesStressExporterP ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStressP" )
+//    {
+//        EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtrP, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+//    }
+//    
+//    void setupVonMisesStressExporterA ( std::string problemFolder = "./", std::string outputFileName = "VonMisesStressA" )
+//    {
+//        EMUtility::setupExporter<Mesh> (*M_vonMisesStressExporterPtrA, M_localMeshPtr, M_commPtr, outputFileName, problemFolder);
+//    }
 
-    void setupMechanicsExporter ( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
+    void setupMechanicsExporter ( std::string problemFolder = "./", std::string outputFileName = "MechanicalSolution" )
     {
         if (M_mechanicsExporterPtr)
         {
@@ -205,11 +205,9 @@ public:
     void setupExporters (std::string problemFolder   = "./",
                          std::string electroFileName = "ElectroSolution",
                          std::string activationFileName  = "ActivationSolution",
-                         std::string activationTimeFileName  = "ActivationTimeSolution",
+                         //std::string activationTimeFileName  = "ActivationTimeSolution",
                          std::string mechanicsFileName  = "MechanicalSolution",
-                         std::string vonMisesStressFileName  = "VonMisesStress",
-                         std::string vonMisesStressFileNameP  = "VonMisesStressP",
-                         std::string vonMisesStressFileNameA  = "VonMisesStressA");
+                         std::string vonMisesStressFileName  = "VonMisesStress");
 
     void setupElectroSolver ( GetPot& dataFile, Teuchos::ParameterList& list)
     {
@@ -455,15 +453,15 @@ public:
     exporterPtr_Type                     M_electroExporterPtr;
     exporterPtr_Type                     M_activationExporterPtr;
     exporterPtr_Type                     M_mechanicsExporterPtr;
-    exporterPtr_Type                     M_activationTimeExporterPtr;
+//    exporterPtr_Type                     M_activationTimeExporterPtr;
     exporterPtr_Type                     M_vonMisesStressExporterPtr;
-    exporterPtr_Type                     M_vonMisesStressExporterPtrP;
-    exporterPtr_Type                     M_vonMisesStressExporterPtrA;
+//    exporterPtr_Type                     M_vonMisesStressExporterPtrP;
+//    exporterPtr_Type                     M_vonMisesStressExporterPtrA;
     
     meshPtr_Type                         M_localMeshPtr;
     meshPtr_Type                         M_fullMeshPtr;
     
-    vectorPtr_Type                       M_activationTimePtr;
+    //vectorPtr_Type                       M_activationTimePtr;
 
     bool                                 M_oneWayCoupling;
     
@@ -492,7 +490,7 @@ EMSolver<Mesh, ElectroSolver>::EMSolver(commPtr_Type comm) :
     M_mechanicsExporterPtr  ( ),
     M_localMeshPtr      ( ),
     M_fullMeshPtr      ( ),
-    M_activationTimePtr     ( ),
+    //M_activationTimePtr     ( ),
     M_oneWayCoupling     (true),
     M_wteTotal ( ),
 //    M_wtePassive ( ),
@@ -516,7 +514,7 @@ EMSolver<Mesh, ElectroSolver>::EMSolver (const EMSolver& solver) :
     M_mechanicsExporterPtr  ( solver.M_mechanicsExporterPtr),
     M_localMeshPtr      ( solver.M_localMeshPtr),
     M_fullMeshPtr      ( solver.M_fullMeshPtr),
-    M_activationTimePtr     ( solver.M_activationTimePtr),
+    //M_activationTimePtr     ( solver.M_activationTimePtr),
     M_oneWayCoupling     ( solver.M_oneWayCoupling),
     M_wteTotal                   (solver.M_wteTotal),
 //    M_wtePassive                   (solver.M_wtePassive),
@@ -660,10 +658,10 @@ EMSolver<Mesh, ElectroSolver>::importHdf5 ()
 {
     M_electroExporterPtr -> import (30);
     M_activationExporterPtr -> importHdf5 (30);
-    M_activationTimeExporterPtr -> importHdf5 (30);
+    //M_activationTimeExporterPtr -> importHdf5 (30);
     M_vonMisesStressExporterPtr -> importHdf5 (30);
-    M_vonMisesStressExporterPtrP -> importHdf5 (30);
-    M_vonMisesStressExporterPtrA -> importHdf5 (30);
+    //M_vonMisesStressExporterPtrP -> importHdf5 (30);
+    //M_vonMisesStressExporterPtrA -> importHdf5 (30);
     M_mechanicsExporterPtr -> importHdf5 (30);
 }
                                                    
@@ -675,11 +673,9 @@ void
 EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
                                                 std::string electroFileName,
                                                 std::string activationFileName,
-                                                std::string activationTimeFileName,
+                                                //std::string activationTimeFileName,
                                                 std::string mechanicsFileName,
-                                                std::string vonMisesStressFileName,
-                                               std::string vonMisesStressFileNameP,
-                                               std::string vonMisesStressFileNameA)
+                                                std::string vonMisesStressFileName)
 {
     if (M_commPtr -> MyPID() == 0)
     {
@@ -704,18 +700,18 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
                                              M_activationModelPtr -> fiberActivationPtr(),
                                              UInt (0) );
 
-    // Activation time
-    M_activationTimeExporterPtr.reset (new exporter_Type() );
-    setupActivationTimeExporter (problemFolder, activationTimeFileName );
-    
-    M_activationTimePtr.reset (new vector_Type ( M_electroSolverPtr->potentialPtr() -> map() ) );
-    *M_activationTimePtr = -1.0;
-
-    M_activationTimeExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                            "Activation Time",
-                                            M_electroSolverPtr -> feSpacePtr(),
-                                            M_activationTimePtr,
-                                            UInt (0) );
+//    // Activation time
+//    M_activationTimeExporterPtr.reset (new exporter_Type() );
+//    setupActivationTimeExporter (problemFolder, activationTimeFileName );
+//    
+//    M_activationTimePtr.reset (new vector_Type ( M_electroSolverPtr->potentialPtr() -> map() ) );
+//    *M_activationTimePtr = -1.0;
+//
+//    M_activationTimeExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+//                                            "Activation Time",
+//                                            M_electroSolverPtr -> feSpacePtr(),
+//                                            M_activationTimePtr,
+//                                            UInt (0) );
     
     // Von Mises stress
     M_vonMisesStressExporterPtr.reset (new exporter_Type() );
@@ -837,7 +833,7 @@ EMSolver<Mesh, ElectroSolver>::setTimeIndex (const UInt& time)
 {
     M_electroExporterPtr -> setTimeIndex (time);
     M_activationExporterPtr -> setTimeIndex (time);
-    M_activationTimeExporterPtr -> setTimeIndex (time);
+    //M_activationTimeExporterPtr -> setTimeIndex (time);
     M_vonMisesStressExporterPtr -> setTimeIndex (time);
     //M_vonMisesStressExporterPtrP -> setTimeIndex (time);
     //M_vonMisesStressExporterPtrA -> setTimeIndex (time);
@@ -848,26 +844,10 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::saveSolution (Real time, const bool& restart)
 {
-    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-    
-    //M_wteTotal.setStressType ( "total" );
-    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-    M_vonMisesStressExporterPtr -> postProcess (time);
-    
-//    M_wteTotal.setStressType ( "passiv" );
+//    M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
 //    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//    M_vonMisesStressExporterPtrP -> postProcess (time);
-//
-//    M_wteTotal.setStressType ( "active" );
-//    M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//    M_vonMisesStressExporterPtrA -> postProcess (time);
-
-//    M_wtePassive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-//    M_wtePassive.analyzeTensionsRecoveryVonMisesStress();
-//    M_wteActive.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-//    M_wteActive.analyzeTensionsRecoveryVonMisesStress();
-
-    
+//    
+//    M_vonMisesStressExporterPtr -> postProcess (time);
     M_electroExporterPtr -> postProcess (time);//, restart);
     M_activationExporterPtr -> postProcess (time);//, restart );
     M_activationTimeExporterPtr -> postProcess (time);
@@ -879,7 +859,7 @@ void
 EMSolver<Mesh, ElectroSolver>::closeExporters()
 {
     M_electroExporterPtr -> closeFile();
-    M_activationExporterPtr -> closeFile();
+    //M_activationExporterPtr -> closeFile();
     M_activationTimeExporterPtr -> closeFile();
     M_mechanicsExporterPtr -> closeFile();
     M_vonMisesStressExporterPtr -> closeFile();
