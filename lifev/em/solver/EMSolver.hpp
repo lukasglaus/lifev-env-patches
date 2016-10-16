@@ -719,7 +719,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
     
     M_vonMisesStressExporterPtr -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                                 "Von Mises Stress",
-                                                M_EMStructuralOperatorPtr -> dispFESpacePtr(),
+                                                M_electroSolverPtr -> feSpacePtr(),
                                                 M_wteTotal.vonMisesStressPtr(),
                                                 UInt (0) );
     
