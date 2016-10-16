@@ -1092,34 +1092,34 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     //Preliminary variables
     UInt totalDof = fakeFESpace.dof().numTotalDof();
     VectorElemental dk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-    VectorElemental fk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-    VectorElemental sk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-    VectorElemental fAk_loc (fakeFESpace.fe().nbFEDof(), 1 );
+//    VectorElemental fk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+//    VectorElemental sk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+//    VectorElemental fAk_loc (fakeFESpace.fe().nbFEDof(), 1 );
 
     //Vectors for the deformation tensor
     (*M_deformationF).Scale (0.0);
     std::vector<matrix_Type> vectorDeformationF (fakeFESpace.fe().nbFEDof(), *M_deformationF);
     
-    //Fibers
-    Epetra_SerialDenseVector fibers (3);
-    fibers.Scale (0.0);
-    std::vector<Epetra_SerialDenseVector> vectorFiberDirection (fakeFESpace.fe().nbFEDof(), fibers);
-
-    //Sheets
-    Epetra_SerialDenseVector sheets (3);
-    fibers.Scale (0.0);
-    std::vector<Epetra_SerialDenseVector> vectorSheetDirection (fakeFESpace.fe().nbFEDof(), sheets);
-
-    //Activation
-    Epetra_SerialDenseVector activation (1);
-    activation.Scale (0.0);
-    std::vector<Epetra_SerialDenseVector> vectorFiberActivation (fakeFESpace.fe().nbFEDof(), activation);
+//    //Fibers
+//    Epetra_SerialDenseVector fibers (3);
+//    fibers.Scale (0.0);
+//    std::vector<Epetra_SerialDenseVector> vectorFiberDirection (fakeFESpace.fe().nbFEDof(), fibers);
+//
+//    //Sheets
+//    Epetra_SerialDenseVector sheets (3);
+//    fibers.Scale (0.0);
+//    std::vector<Epetra_SerialDenseVector> vectorSheetDirection (fakeFESpace.fe().nbFEDof(), sheets);
+//
+//    //Activation
+//    Epetra_SerialDenseVector activation (1);
+//    activation.Scale (0.0);
+//    std::vector<Epetra_SerialDenseVector> vectorFiberActivation (fakeFESpace.fe().nbFEDof(), activation);
     
     //Copying the displacement field into a vector with repeated map for parallel computations
     solutionVect_Type dRep (*M_displacement, Repeated);
-    solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
-    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
-    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
+//    solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
+//    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
+//    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
     //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
     
     //Creating the local stress tensors
@@ -1150,11 +1150,11 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
             for ( UInt iComp = 0; iComp < fakeFESpace.fieldDim(); ++iComp )
             {
                 dk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = dRep[ig + iComp * fakeFESpace.dim()];
-                fk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = fRep[ig + iComp * fakeFESpace.dim()];
-                sk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = sRep[ig + iComp * fakeFESpace.dim()];
+//                fk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = fRep[ig + iComp * fakeFESpace.dim()];
+//                sk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = sRep[ig + iComp * fakeFESpace.dim()];
             }
             //if ( fARep[ig] > 0. ) std::cout << fARep[ig] << "iiiiiii" << std::endl;
-            fAk_loc[iloc] = fARep[ig];
+//            fAk_loc[iloc] = fARep[ig];
         }
         
         //if (dRep.maxValue() > 0. ) std::cout << dRep.maxValue() << "maxd" << std::endl;
@@ -1164,9 +1164,9 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
         //Compute the element tensor F
         AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
 
-        computeLocalFiberDirection ( fk_loc, vectorFiberDirection, fakeFESpace.fe() );
-        computeLocalFiberDirection ( sk_loc, vectorSheetDirection, fakeFESpace.fe() );
-        computeLocalFiberActivation ( fAk_loc, vectorFiberActivation, fakeFESpace.fe() );
+//        computeLocalFiberDirection ( fk_loc, vectorFiberDirection, fakeFESpace.fe() );
+//        computeLocalFiberDirection ( sk_loc, vectorSheetDirection, fakeFESpace.fe() );
+//        computeLocalFiberActivation ( fAk_loc, vectorFiberActivation, fakeFESpace.fe() );
         
         //Compute the local vector of the principal stresses
         for ( UInt nDOF (0); nDOF < ( UInt ) fakeFESpace.fe().nbFEDof(); ++nDOF )
@@ -1181,10 +1181,11 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
             computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF],  vectorSheetDirection[nDOF], vectorFiberActivation[nDOF]);
 
             //Compute the first Piola-Kirchhoff tensor
-            M_material->computeLocalFirstPiolaKirchhoffTensor_ (*M_firstPiola, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorSheetDirection[nDOF], M_invariants, M_marker);
+            Epetra_SerialDenseVector a;
+            M_material->computeLocalFirstPiolaKirchhoffTensor_ (*M_firstPiola, vectorDeformationF[nDOF], *M_cofactorF, a /*vectorFiberDirection[nDOF]*/, a /*vectorSheetDirection[nDOF]*/, M_invariants, M_marker);
 
             //Compute the Cauchy tensor
-            AssemblyElementalStructure::computeCauchyStressTensor (*M_sigma, *M_firstPiola, M_invariants[3], vectorDeformationF[nDOF]);
+            AssemblyElementalStructure::computeCauchyStressTensor (*M_sigma, *M_firstPiola, M_invariants[1], vectorDeformationF[nDOF]);
             //M_sigma -> Print(std::cout);
             
             //Assembling the local vectors for local tensions Component X, Y, Z
