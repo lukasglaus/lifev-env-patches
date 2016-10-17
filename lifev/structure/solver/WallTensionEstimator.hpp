@@ -1272,7 +1272,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
                                               const Epetra_SerialDenseVector& fiberDirection,
                                               const Epetra_SerialDenseVector& sheetDirection,
                                               const Epetra_SerialDenseVector& fiberActivation)
-{
+{/*
     // Right Cauchy-Green tensor C
     Epetra_SerialDenseMatrix C (3,3);
     C.Multiply('T', 'N', 1., tensorF, tensorF, 0.);
@@ -1313,7 +1313,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     cofactorF ( 2 , 1 ) = - ( tensorF (0, 0) * tensorF (1, 2) - tensorF (0, 2) * tensorF (1, 0) );
     cofactorF ( 2 , 2 ) =   ( tensorF (0, 0) * tensorF (1, 1) - tensorF (1, 0) * tensorF (0, 1) );
     
-    cofactorF.Scale (1 / J);
+    cofactorF.Scale (1 / J);*/
 }
     
 template <typename Mesh>
