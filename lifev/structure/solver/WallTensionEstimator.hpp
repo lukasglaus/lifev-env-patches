@@ -1092,7 +1092,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     //Preliminary variables
     UInt totalDof = fakeFESpace.dof().numTotalDof();
     VectorElemental dk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-//    VectorElemental fk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+    VectorElemental fk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
 //    VectorElemental sk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
 //    VectorElemental fAk_loc (fakeFESpace.fe().nbFEDof(), 1 );
 
@@ -1100,10 +1100,10 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     (*M_deformationF).Scale (0.0);
     std::vector<matrix_Type> vectorDeformationF (fakeFESpace.fe().nbFEDof(), *M_deformationF);
     
-//    //Fibers
-//    Epetra_SerialDenseVector fibers (3);
-//    fibers.Scale (0.0);
-//    std::vector<Epetra_SerialDenseVector> vectorFiberDirection (fakeFESpace.fe().nbFEDof(), fibers);
+    //Fibers
+    Epetra_SerialDenseVector fibers (3);
+    fibers.Scale (0.0);
+    std::vector<Epetra_SerialDenseVector> vectorFiberDirection (fakeFESpace.fe().nbFEDof(), fibers);
 //
 //    //Sheets
 //    Epetra_SerialDenseVector sheets (3);
@@ -1117,7 +1117,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     
     //Copying the displacement field into a vector with repeated map for parallel computations
     solutionVect_Type dRep (*M_displacement, Repeated);
-//    solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
+    solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
 //    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
 //    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
     //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
@@ -1164,7 +1164,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
         //Compute the element tensor F
         AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
 
-//        computeLocalFiberDirection ( fk_loc, vectorFiberDirection, fakeFESpace.fe() );
+        computeLocalFiberDirection ( fk_loc, vectorFiberDirection, fakeFESpace.fe() );
 //        computeLocalFiberDirection ( sk_loc, vectorSheetDirection, fakeFESpace.fe() );
 //        computeLocalFiberActivation ( fAk_loc, vectorFiberActivation, fakeFESpace.fe() );
         
