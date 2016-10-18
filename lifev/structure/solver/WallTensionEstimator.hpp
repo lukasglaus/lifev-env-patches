@@ -1093,7 +1093,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     UInt totalDof = fakeFESpace.dof().numTotalDof();
     VectorElemental dk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
     VectorElemental fk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
-//    VectorElemental sk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+    VectorElemental sk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
 //    VectorElemental fAk_loc (fakeFESpace.fe().nbFEDof(), 1 );
 
     //Vectors for the deformation tensor
@@ -1104,12 +1104,12 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     Epetra_SerialDenseVector fibers (3);
     fibers.Scale (0.0);
     std::vector<Epetra_SerialDenseVector> vectorFiberDirection (fakeFESpace.fe().nbFEDof(), fibers);
-//
-//    //Sheets
-//    Epetra_SerialDenseVector sheets (3);
-//    fibers.Scale (0.0);
-//    std::vector<Epetra_SerialDenseVector> vectorSheetDirection (fakeFESpace.fe().nbFEDof(), sheets);
-//
+
+    //Sheets
+    Epetra_SerialDenseVector sheets (3);
+    fibers.Scale (0.0);
+    std::vector<Epetra_SerialDenseVector> vectorSheetDirection (fakeFESpace.fe().nbFEDof(), sheets);
+
 //    //Activation
 //    Epetra_SerialDenseVector activation (1);
 //    activation.Scale (0.0);
@@ -1118,7 +1118,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
     //Copying the displacement field into a vector with repeated map for parallel computations
     solutionVect_Type dRep (*M_displacement, Repeated);
     solutionVect_Type fRep (*(M_material -> fiberVectorPtr()), Repeated);
-//    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
+    solutionVect_Type sRep (*(M_material -> sheetVectorPtr()), Repeated);
 //    solutionVect_Type fARep (*(M_material -> fiberActivationPtr()), Repeated);
     //if (fARep.maxValue() > 0. ) std::cout << fARep.maxValue() << "maxV" << std::endl;
     
@@ -1150,7 +1150,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
             for ( UInt iComp = 0; iComp < fakeFESpace.fieldDim(); ++iComp )
             {
                 dk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = dRep[ig + iComp * fakeFESpace.dim()];
-//                fk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = fRep[ig + iComp * fakeFESpace.dim()];
+                fk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = fRep[ig + iComp * fakeFESpace.dim()];
 //                sk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = sRep[ig + iComp * fakeFESpace.dim()];
             }
             //if ( fARep[ig] > 0. ) std::cout << fARep[ig] << "iiiiiii" << std::endl;
@@ -1165,7 +1165,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
         AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
 
         computeLocalFiberDirection ( fk_loc, vectorFiberDirection, fakeFESpace.fe() );
-//        computeLocalFiberDirection ( sk_loc, vectorSheetDirection, fakeFESpace.fe() );
+        computeLocalFiberDirection ( sk_loc, vectorSheetDirection, fakeFESpace.fe() );
 //        computeLocalFiberActivation ( fAk_loc, vectorFiberActivation, fakeFESpace.fe() );
         
         //Compute the local vector of the principal stresses
