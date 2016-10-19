@@ -1179,7 +1179,7 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
 
             //Compute the rightCauchyC tensor
             Epetra_SerialDenseVector a;
-//            computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorSheetDirection[nDOF], vectorFiberActivation[nDOF]);
+            computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorSheetDirection[nDOF], vectorFiberActivation[nDOF]);
 
             //Compute the first Piola-Kirchhoff tensor
 //            M_material->computeLocalFirstPiolaKirchhoffTensor_ (*M_firstPiola, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorSheetDirection[nDOF], M_invariants, M_marker);
