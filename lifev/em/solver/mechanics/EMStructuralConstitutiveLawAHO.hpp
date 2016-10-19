@@ -434,7 +434,7 @@ public:
 //        P8fs.Scale( W8fsE / ( (gammaf + 1.0) * (gammas + 1.0) ) );
 
         // Assemble first piola kirchhoff tensor
-        firstPiola.Scale(0.0);
+//        firstPiola.Scale(0.0);
 //        firstPiola += Pvol;
 //        firstPiola += P1;
 //        firstPiola += P4f;
