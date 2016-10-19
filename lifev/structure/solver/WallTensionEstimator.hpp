@@ -1178,7 +1178,6 @@ WallTensionEstimator<Mesh >::constructGlobalStressVector ()
             M_cofactorF->Scale (0.0);
 
             //Compute the rightCauchyC tensor
-            Epetra_SerialDenseVector a;
             computeInvariantsRightCauchyGreenTensor (M_invariants, vectorDeformationF[nDOF], *M_cofactorF, vectorFiberDirection[nDOF], vectorSheetDirection[nDOF], vectorFiberActivation[nDOF]);
 
             //Compute the first Piola-Kirchhoff tensor
@@ -1267,11 +1266,11 @@ WallTensionEstimator<Mesh >::computeLocalFiberActivation (const VectorElemental&
 template <typename Mesh>
 void
 WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vector<LifeV::Real>& invariants,
-                                              const Epetra_SerialDenseMatrix& tensorF,
-                                              Epetra_SerialDenseMatrix& cofactorF,
-                                              const Epetra_SerialDenseVector& fiberDirection,
-                                              const Epetra_SerialDenseVector& sheetDirection,
-                                              const Epetra_SerialDenseVector& fiberActivation)
+                                                                      const Epetra_SerialDenseMatrix& tensorF,
+                                                                      Epetra_SerialDenseMatrix& cofactorF,
+                                                                      const Epetra_SerialDenseVector& fiberDirection,
+                                                                      const Epetra_SerialDenseVector& sheetDirection,
+                                                                      const Epetra_SerialDenseVector& fiberActivation)
 {
     // Right Cauchy-Green tensor C
     Epetra_SerialDenseMatrix C (3,3);
@@ -1294,7 +1293,11 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     }
     
     gammaf = fiberActivation(0);
-    if (std::abs(J)<0.2) std::cout << "\nJ: " << J;
+    
+    std::cout << "\n********************" << I1 << "\n" << J << "\n" << I4f << "\n" << I4s << "\n" << I8fs << "\n" << gammaf;
+    
+    
+    
     invariants[0] = I1;
     invariants[1] = J;
     invariants[2] = I4f;
