@@ -1294,7 +1294,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     }
     
     gammaf = fiberActivation(0);
-
+    if (std::abs(J)<0.2) std::cout << "\nJ: " << J;
     invariants[0] = I1;
     invariants[1] = J;
     invariants[2] = I4f;
