@@ -1275,7 +1275,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     // Right Cauchy-Green tensor C
     Epetra_SerialDenseMatrix C (3,3);
     C.Multiply('T', 'N', 1., tensorF, tensorF, 0.);
-/*
+
     // Invariants
     Real I1, J, I4f, I4s, I8fs, gammaf;
     
@@ -1293,7 +1293,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     }
     
     gammaf = fiberActivation(0);
-    
+    /*
     std::cout << "\n********************" << I1 << "\n" << J << "\n" << I4f << "\n" << I4s << "\n" << I8fs << "\n" << gammaf;
     
     
