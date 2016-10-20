@@ -1271,11 +1271,11 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
                                                                       const Epetra_SerialDenseVector& fiberDirection,
                                                                       const Epetra_SerialDenseVector& sheetDirection,
                                                                       const Epetra_SerialDenseVector& fiberActivation)
-{/*
+{
     // Right Cauchy-Green tensor C
     Epetra_SerialDenseMatrix C (3,3);
     C.Multiply('T', 'N', 1., tensorF, tensorF, 0.);
-
+/*
     // Invariants
     Real I1, J, I4f, I4s, I8fs, gammaf;
     
