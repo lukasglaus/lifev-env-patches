@@ -865,7 +865,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
+                   quadRuleTetra1pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
                    dot ( (
