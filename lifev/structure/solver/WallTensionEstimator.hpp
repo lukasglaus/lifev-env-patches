@@ -1300,10 +1300,10 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     
     invariants[0] = I1;
     invariants[1] = J;
-    /*
     invariants[2] = I4f;
     invariants[3] = I4s;
     invariants[4] = I8fs;
+    /*
     invariants[5] = gammaf;
     
     // Computation of the Cofactor of F
