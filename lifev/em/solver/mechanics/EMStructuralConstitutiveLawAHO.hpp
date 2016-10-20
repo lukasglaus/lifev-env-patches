@@ -366,80 +366,80 @@ public:
                                                                const std::vector<Real>& invariants,
                                                                const UInt material)
     {
-//        auto I1 = invariants[0];
-//        auto J = invariants[1];
-//        auto I4f = invariants[2];
-//        auto I4s = invariants[3];
-//        auto I8fs = invariants[4];
-//        
-//        auto gammaf = invariants[5];
-//        auto gamman = 4.0 * gammaf;
-//        auto gammas = 1.0 / ( (1.0+gammaf)*(1.0+gamman) ) - 1.0;
-//        
-//        auto g1 = 1 - ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) );
-//        auto g4f = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammaf * ( gammaf + 2 ) / std::pow( gammaf+1 , 2.0 ) );
-//        auto g4s = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammas * ( gammas + 2 ) / std::pow( gammas+1 , 2.0 ) );
-//        
-//        auto I1E = g1 * I1 + g4f * I4f + g4s * I4s;
-//        auto JE = J;
-//        auto I1barE = std::pow(JE, -2.0/3.0 ) * I1E;
-//        auto I4fE = I4f / std::pow( gammaf + 1 , 2.0 );
-//        auto I4sE = I4s / std::pow( gammas + 1 , 2.0 );
-//        auto I8fsE = I8fs / ( (gammaf + 1) * (gammas + 1) );
-//        
-//        auto W1E = 0.5 * 3300 * std::exp( 9.242 * (I1barE - 3) );
-//        auto W4fE = 185350 * (I4fE - 1) * std::exp( 15.972 * std::pow(I4fE - 1, 2.0) ) * (I4fE > 1.0);
-//        auto W4sE = 25640 * (I4sE - 1) * std::exp (10.446 * std::pow(I4sE - 1, 2.0) ) * (I4sE > 1.0);
-//        auto W8fsE = 4170 * I8fsE * std::exp ( 11.602 * I8fsE * I8fsE );
-//
-//        auto f = matrixTimesVector(tensorF, fiber);
-//        auto s = matrixTimesVector(tensorF, sheet);
-//        auto f_f0 = tensorProduct(f, fiber);
-//        auto s_s0 = tensorProduct(s, sheet);
-//        auto f_s0 = tensorProduct(f, sheet);
-//        auto s_f0 = tensorProduct(s, fiber);
-//
-//        
-//        // Pvol
-//        Epetra_SerialDenseMatrix Pvol (3,3);
-//        Pvol.Scale(0.0);
-//        Pvol += cofactorF;
-//        Pvol.Scale( J * (3500000 / 2.0) * (J - 1.0 + (1.0 / J) * std::log(J) ) );
-//
-//        // P1
-//        Epetra_SerialDenseMatrix P1 (3,3);
-//        P1.Scale(0.0);
-//        P1 += cofactorF;
-//        P1.Scale(-I1/3);
-//        P1 += tensorF;
-//        P1.Scale( 2.0 * g1 * W1E * std::pow(J, -2.0/3.0 ) );
-//
-//        // P4f
-//        Epetra_SerialDenseMatrix P4f (3,3);
-//        P4f.Scale(0.0);
-//        P4f += f_f0;
-//        P4f.Scale ( 2.0 * ( g4f * W1E + W4fE / std::pow( gammaf + 1.0 , 2.0 ) ) );
-//
-//        // P4s
-//        Epetra_SerialDenseMatrix P4s (3,3);
-//        P4s.Scale(0.0);
-//        P4s += s_s0;
-//        P4s.Scale ( 2 * ( g4s * W1E + W4sE / std::pow( gammas + 1.0 , 2.0 ) ) );
-//
-//        // P8fs
-//        Epetra_SerialDenseMatrix P8fs (3,3);
-//        P8fs.Scale(0.0);
-//        P8fs += f_s0;
-//        P8fs += s_f0;
-//        P8fs.Scale( W8fsE / ( (gammaf + 1.0) * (gammas + 1.0) ) );
+        auto I1 = invariants[0];
+        auto J = invariants[1];
+        auto I4f = invariants[2];
+        auto I4s = invariants[3];
+        auto I8fs = invariants[4];
+        
+        auto gammaf = invariants[5];
+        auto gamman = 4.0 * gammaf;
+        auto gammas = 1.0 / ( (1.0+gammaf)*(1.0+gamman) ) - 1.0;
+        
+        auto g1 = 1 - ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) );
+        auto g4f = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammaf * ( gammaf + 2 ) / std::pow( gammaf+1 , 2.0 ) );
+        auto g4s = ( gamman * ( gamman + 2 ) / std::pow( gamman+1 , 2.0 ) ) - ( gammas * ( gammas + 2 ) / std::pow( gammas+1 , 2.0 ) );
+        
+        auto I1E = g1 * I1 + g4f * I4f + g4s * I4s;
+        auto JE = J;
+        auto I1barE = std::pow(JE, -2.0/3.0 ) * I1E;
+        auto I4fE = I4f / std::pow( gammaf + 1 , 2.0 );
+        auto I4sE = I4s / std::pow( gammas + 1 , 2.0 );
+        auto I8fsE = I8fs / ( (gammaf + 1) * (gammas + 1) );
+        
+        auto W1E = 0.5 * 3300 * std::exp( 9.242 * (I1barE - 3) );
+        auto W4fE = 185350 * (I4fE - 1) * std::exp( 15.972 * std::pow(I4fE - 1, 2.0) ) * (I4fE > 1.0);
+        auto W4sE = 25640 * (I4sE - 1) * std::exp (10.446 * std::pow(I4sE - 1, 2.0) ) * (I4sE > 1.0);
+        auto W8fsE = 4170 * I8fsE * std::exp ( 11.602 * I8fsE * I8fsE );
 
-        // Assemble first piola kirchhoff tensor
-//        firstPiola.Scale(0.0);
-//        firstPiola += Pvol;
-//        firstPiola += P1;
-//        firstPiola += P4f;
-//        firstPiola += P4s;
-//        firstPiola += P8fs;
+        auto f = matrixTimesVector(tensorF, fiber);
+        auto s = matrixTimesVector(tensorF, sheet);
+        auto f_f0 = tensorProduct(f, fiber);
+        auto s_s0 = tensorProduct(s, sheet);
+        auto f_s0 = tensorProduct(f, sheet);
+        auto s_f0 = tensorProduct(s, fiber);
+
+        
+        // Pvol
+        Epetra_SerialDenseMatrix Pvol (3,3);
+        Pvol.Scale(0.0);
+        Pvol += cofactorF;
+        Pvol.Scale( J * (3500000 / 2.0) * (J - 1.0 + (1.0 / J) * std::log(J) ) );
+
+        // P1
+        Epetra_SerialDenseMatrix P1 (3,3);
+        P1.Scale(0.0);
+        P1 += cofactorF;
+        P1.Scale(-I1/3);
+        P1 += tensorF;
+        P1.Scale( 2.0 * g1 * W1E * std::pow(J, -2.0/3.0 ) );
+
+        // P4f
+        Epetra_SerialDenseMatrix P4f (3,3);
+        P4f.Scale(0.0);
+        P4f += f_f0;
+        P4f.Scale ( 2.0 * ( g4f * W1E + W4fE / std::pow( gammaf + 1.0 , 2.0 ) ) );
+
+        // P4s
+        Epetra_SerialDenseMatrix P4s (3,3);
+        P4s.Scale(0.0);
+        P4s += s_s0;
+        P4s.Scale ( 2 * ( g4s * W1E + W4sE / std::pow( gammas + 1.0 , 2.0 ) ) );
+
+        // P8fs
+        Epetra_SerialDenseMatrix P8fs (3,3);
+        P8fs.Scale(0.0);
+        P8fs += f_s0;
+        P8fs += s_f0;
+        P8fs.Scale( W8fsE / ( (gammaf + 1.0) * (gammas + 1.0) ) );
+
+         Assemble first piola kirchhoff tensor
+        firstPiola.Scale(0.0);
+        firstPiola += Pvol;
+        firstPiola += P1;
+        firstPiola += P4f;
+        firstPiola += P4s;
+        firstPiola += P8fs;
     }
 
     
@@ -823,8 +823,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // Active strain
-        //auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
-        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
         auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
@@ -864,22 +864,22 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( (
-//                         3300 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
-//                         ( dot(value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE), grad(phi_j)*FAinv) * 2*FE + pow(det(FE), 2 / (-3.) ) * 2*grad(phi_j)*FAinv + dot(FE, FE) * value(-2.0/3.0) * ( pow(det(FE), 2 / (-3.) ) *  value (-1.0) * minusT(FE) * transpose(grad(phi_j)*FAinv) * minusT(FE) + dot(value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE), grad(phi_j)*FAinv) * minusT(FE) ) + dot(2*FE, grad(phi_j)*FAinv) *  value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE) )
-//                         +
-//                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
-//                         dot(  value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) *  minusT(FE) ), grad(phi_j)*FAinv ) *
-//                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
-//                         ) *
-//                         FAinv
-//                        
-//                        , grad (phi_i) )
-//                   ) >> this->M_jacobian;
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( (
+                         3300 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
+                         ( dot(value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE), grad(phi_j)*FAinv) * 2*FE + pow(det(FE), 2 / (-3.) ) * 2*grad(phi_j)*FAinv + dot(FE, FE) * value(-2.0/3.0) * ( pow(det(FE), 2 / (-3.) ) *  value (-1.0) * minusT(FE) * transpose(grad(phi_j)*FAinv) * minusT(FE) + dot(value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE), grad(phi_j)*FAinv) * minusT(FE) ) + dot(2*FE, grad(phi_j)*FAinv) *  value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE) )
+                         +
+                         3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
+                         dot(  value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) *  minusT(FE) ), grad(phi_j)*FAinv ) *
+                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
+                         ) *
+                         FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
         
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
@@ -960,7 +960,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
@@ -1008,13 +1008,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 
         
         // Anisotropy
-        auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
-        auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-        auto f0 = eval (orthonormalizeVector, f_0);
-        auto s0 = eval (orthonormalizeVector, f0, s_0);
-        auto n0 = eval (crossProduct, f0, s0);
-        auto f = F * f0;
-        auto s = F * s0;
+//        auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
+//        auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
+//        auto f0 = eval (orthonormalizeVector, f_0);
+//        auto s0 = eval (orthonormalizeVector, f0, s_0);
+//        auto n0 = eval (crossProduct, f0, s0);
+//        auto f = F * f0;
+//        auto s = F * s0;
         
         
         // Orthotropic activation
@@ -1028,14 +1028,14 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Active strain
-//        auto f0 = eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr));
-//        auto s0 = eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr));
-//        auto n0 = eval (crossProduct, f0, s0);
-//        auto f = F * f0;
-//        auto s = F * s0;
+        auto f0 = eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr));
+        auto s0 = eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr));
+        auto n0 = eval (crossProduct, f0, s0);
+        auto f = F * f0;
+        auto s = F * s0;
 
-        //auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
-        auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
+        auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
+        //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
         auto FE =  F * FAinv;
         
         

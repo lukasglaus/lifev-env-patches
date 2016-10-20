@@ -649,7 +649,7 @@ WallTensionEstimator<Mesh >::setup ( const dataPtr_Type& dataMaterial,
 
     M_globalEigenvalues.reset ( new solutionVect_Type (*M_FESpace->mapPtr() ) );
 
-    M_invariants.resize   ( M_FESpace->fieldDim() + 2 );
+    M_invariants.resize   ( M_FESpace->fieldDim() + 3 );
     M_eigenvaluesR.resize ( M_FESpace->fieldDim() );
     M_eigenvaluesI.resize ( M_FESpace->fieldDim() );
 
@@ -1294,17 +1294,13 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     
     gammaf = fiberActivation(0);
     
-    std::cout << "\n********************" << I1 << "\n" << J << "\n" << I4f << "\n" << I4s << "\n" << I8fs << "\n" << gammaf;
-    
-    
-    
     invariants[0] = I1;
     invariants[1] = J;
     invariants[2] = I4f;
     invariants[3] = I4s;
     invariants[4] = I8fs;
     invariants[5] = gammaf;
-    /*
+    
     // Computation of the Cofactor of F
     cofactorF ( 0 , 0 ) =   ( tensorF (1, 1) * tensorF (2, 2) - tensorF (1, 2) * tensorF (2, 1) );
     cofactorF ( 0 , 1 ) = - ( tensorF (1, 0) * tensorF (2, 2) - tensorF (2, 0) * tensorF (1, 2) );
@@ -1316,7 +1312,7 @@ WallTensionEstimator<Mesh >::computeInvariantsRightCauchyGreenTensor (std::vecto
     cofactorF ( 2 , 1 ) = - ( tensorF (0, 0) * tensorF (1, 2) - tensorF (0, 2) * tensorF (1, 0) );
     cofactorF ( 2 , 2 ) =   ( tensorF (0, 0) * tensorF (1, 1) - tensorF (1, 0) * tensorF (0, 1) );
   
-    cofactorF.Scale (1 / J);*/
+    cofactorF.Scale (1 / J);
 }
     
 template <typename Mesh>
