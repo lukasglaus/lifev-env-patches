@@ -535,20 +535,35 @@ int main (int argc, char** argv)
         // Set time exporter time index
         solver.setTimeIndex(restartInputStr + 1);
         //solver.importHdf5();
-
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
-        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
         for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
         {
             ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
         }
-        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
         ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
         //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
 
         // Set boundary mechanics conditions
