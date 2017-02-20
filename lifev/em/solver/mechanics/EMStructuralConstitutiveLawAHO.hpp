@@ -782,7 +782,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
 
-    
+    LifeChrono chrono;
+    chrono.start();
+
     {
         using namespace ExpressionAssembly;
         
@@ -863,7 +865,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dI1barEdFE = dot( dI1barE, dFE );
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
-        
+        std::cout << "\n\nInt P1E\n\n";
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
@@ -880,7 +882,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                         
                         , grad (phi_i) )
                    ) >> this->M_jacobian;
-        
+        std::cout << "\n\ndone in " << chrono.diff() << "\n\n";
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
@@ -958,7 +960,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 //                        , grad (phi_i) )
 //                   ) >> this->M_jacobian;
 
-        
+            std::cout << "\n\nInt rest\n\n";
         // Sum up contributions and integrate
         auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
@@ -967,7 +969,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    super::M_dispETFESpace,
                    dot ( dP, grad (phi_i) )
                    ) >> this->M_jacobian;
-    
+        std::cout << "\n\ndone in " << chrono.diff() << "\n\n";
         
     }
     
