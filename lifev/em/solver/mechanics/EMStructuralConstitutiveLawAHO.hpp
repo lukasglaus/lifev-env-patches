@@ -798,6 +798,7 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
         const FESpacePtr_Type& dFESpace,
         const vector_Type& disp)
 {
+    std::cout << "\n Starting computeGloDefGradVec method" << std::endl;
     //Chrono
     LifeChrono chrono;
     chrono.start();
