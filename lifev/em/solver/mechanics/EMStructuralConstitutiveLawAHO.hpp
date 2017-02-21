@@ -819,6 +819,9 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     std::cout << "\ndisp size: " << disp.size() << std::endl;
 
     this->M_dispFESpace->dof().showMe(std::cout);
+    std::cout << "\ndisp size: " << this->M_dispFESpace->dof().numTotalDof() << std::endl;
+
+    
     
     //Preliminary variables
     UInt totalDof = dFESpace->dof().numTotalDof();
