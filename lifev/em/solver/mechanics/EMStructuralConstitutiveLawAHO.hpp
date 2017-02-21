@@ -817,7 +817,8 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
 
     std::cout << "\nvdf size: " << vectorDeformationF.size() << std::endl;
     std::cout << "\ndisp size: " << disp.size() << std::endl;
-    std::cout << "\nETFE dof: " << (*super::M_dispETFESpace).dof() << std::endl;
+
+    this->M_dispFESpace->dof().showMe(std::cout);
     
     //Preliminary variables
     UInt totalDof = dFESpace->dof().numTotalDof();
