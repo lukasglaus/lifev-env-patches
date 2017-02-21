@@ -303,7 +303,10 @@ public:
     */
     inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ) {}
 
-
+    
+    std::vector<VectorEpetra> computeGlobalDeformationGradientVector(const FESpacePtr_Type& dFESpace, const vector_Type& disp);
+    
+    
     //! Output of the class
     /*!
        \param fileNamelinearStiff the filename where to apply the spy method for the linear part of the Stiffness matrix
@@ -328,6 +331,7 @@ public:
     {
         
     }
+    
     
     
     Epetra_SerialDenseVector matrixTimesVector( const Epetra_SerialDenseMatrix& A, const Epetra_SerialDenseVector& x ) const
@@ -609,6 +613,30 @@ protected:
         HeavisideFct() {}
         ~HeavisideFct() {}
     };
+    
+    class DeformationGradientReAssembler
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& Fx, const LifeV::VectorSmall<3>& Fy, const LifeV::VectorSmall<3>& Fz)
+        {
+            MatrixSmall<3,3> v;
+            v[0.0] = Fx[0];
+            v[1,0] = Fx[1];
+            v[2,0] = Fx[2];
+            v[0,1] = Fy[0];
+            v[1,1] = Fy[1];
+            v[2,1] = Fy[2];
+            v[0.2] = Fz[0];
+            v[1,2] = Fz[1];
+            v[2,2] = Fz[2];
+            return v;
+        }
+        
+        DeformationGradientReAssembler() {}
+        ~DeformationGradientReAssembler() {}
+    };
 
 };
 
@@ -761,6 +789,123 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 //    }
 //}
 
+    
+    
+    
+
+template <typename MeshType>
+std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDeformationGradientVector(
+        const FESpacePtr_Type& dFESpace,
+        const vector_Type& disp)
+{
+    //Chrono
+    LifeChrono chrono;
+    chrono.start();
+    
+    VectorEpetra globalDeformationGradientVectorX(disp, Repeated);
+    VectorEpetra globalDeformationGradientVectorY(disp, Repeated);
+    VectorEpetra globalDeformationGradientVectorZ(disp, Repeated);
+
+    globalDeformationGradientVectorX *= 0.0;
+    globalDeformationGradientVectorY *= 0.0;
+    globalDeformationGradientVectorZ *= 0.0;
+    
+    Epetra_SerialDenseMatrix deformationF ( dFESpace->fieldDim() , dFESpace->fieldDim() );
+    deformationF.Scale (0.0);
+    std::vector<Epetra_SerialDenseMatrix> vectorDeformationF (dFESpace->fe().nbFEDof(), deformationF);
+
+    //Preliminary variables
+    UInt totalDof = dFESpace->dof().numTotalDof();
+
+    VectorElemental dk_loc (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
+
+    //Copying the displacement field into a vector with repeated map for parallel computations
+    VectorEpetra dRep (disp, Repeated);
+    
+    //Creating the local stress tensors
+    VectorElemental localDeformationGradientVectorX (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
+    VectorElemental localDeformationGradientVectorY (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
+    VectorElemental localDeformationGradientVectorZ (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
+    
+    Real offset (0);
+    
+    //Loop on each volume
+    for ( UInt i (0); i < dFESpace->mesh()->numVolumes(); ++i )
+    {
+        dFESpace->fe().update ( dFESpace->mesh()->volumeList ( i ), UPDATE_DPHI | UPDATE_WDET );
+        //dFESpace.fe().updateFirstDerivQuadPt ( dFESpace.mesh()->volumeList ( i ) );
+        
+        localDeformationGradientVectorX.zero();
+        localDeformationGradientVectorY.zero();
+        localDeformationGradientVectorZ.zero();
+        
+        UInt eleID = dFESpace->fe().currentLocalId();
+        
+        //Extracting the local displacement
+        for ( UInt iNode (0); iNode < ( UInt ) dFESpace->fe().nbFEDof(); ++iNode )
+        {
+            UInt iloc = dFESpace->fe().patternFirst ( iNode );
+            UInt ig = dFESpace->dof().localToGlobalMap ( eleID, iloc ) + offset;
+            
+            for ( UInt iComp = 0; iComp < dFESpace->fieldDim(); ++iComp )
+            {
+                dk_loc[iloc + iComp * dFESpace->fe().nbFEDof() ] = dRep[ig + iComp * dFESpace->dim()];
+            }
+        }
+
+        //Compute the element tensor F
+        AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, dFESpace->fe() );
+        
+        for ( UInt nDOF (0); nDOF < ( UInt ) dFESpace->fe().nbFEDof(); ++nDOF )
+        {
+            UInt  iloc = dFESpace->fe().patternFirst ( nDOF );
+            
+            //Assembling the local vectors for local tensions Component X, Y, Z
+            for ( UInt coor (0); coor < dFESpace->fieldDim(); ++coor )
+            {
+                auto deformF = vectorDeformationF[nDOF];
+                (localDeformationGradientVectorX) [iloc + coor * dFESpace->fe().nbFEDof() ] = deformF(coor,0);
+                (localDeformationGradientVectorY) [iloc + coor * dFESpace->fe().nbFEDof() ] = deformF(coor,1);
+                (localDeformationGradientVectorZ) [iloc + coor * dFESpace->fe().nbFEDof() ] = deformF(coor,2);
+            }
+        }
+        
+        //Assembling the three elemental vector in the three global
+        for ( UInt ic = 0; ic < dFESpace->fieldDim(); ++ic )
+        {
+            assembleVector (globalDeformationGradientVectorX, localDeformationGradientVectorX, dFESpace->fe(), dFESpace->dof(), ic, offset +  ic * totalDof );
+            assembleVector (globalDeformationGradientVectorY, localDeformationGradientVectorY, dFESpace->fe(), dFESpace->dof(), ic, offset +  ic * totalDof );
+            assembleVector (globalDeformationGradientVectorZ, localDeformationGradientVectorZ, dFESpace->fe(), dFESpace->dof(), ic, offset +  ic * totalDof );
+        }
+
+        
+    }
+    
+    globalDeformationGradientVectorX.globalAssemble();
+    globalDeformationGradientVectorY.globalAssemble();
+    globalDeformationGradientVectorZ.globalAssemble();
+
+    std::vector<VectorEpetra> defF;
+    
+    defF.push_back(globalDeformationGradientVectorX);
+    defF.push_back(globalDeformationGradientVectorY);
+    defF.push_back(globalDeformationGradientVectorZ);
+    
+    //Chrono
+    chrono.stop();
+    this->M_displayer->leaderPrint ("Deformation gradient tensor F computed in ", chrono.globalDiff ( *this->M_displayer->comm() ), " s\n" );
+    
+    return defF;
+}
+
+
+
+    
+
+    
+    
+    
+    
 template <typename MeshType>
 void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_Type&       disp,
                                                                    const dataPtr_Type&      dataMaterial,
@@ -777,10 +922,14 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
+    
+    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
+    
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
+    boost::shared_ptr<DeformationGradientReAssembler> defGReAssembler (new DeformationGradientReAssembler);
 
     LifeChrono chrono;
     chrono.start();
@@ -792,7 +941,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         //todo: FE ganz ausgeschrieben, nur einmal integrate
-        
+        //auto Fx = value((super::M_dispETFESpace, defF[0]);
+        //auto Fy = value((super::M_dispETFESpace, defF[1]);
+        //auto Fz = value((super::M_dispETFESpace, defF[2]);
+        //auto F = eval(defGReAssembler, Fx, Fy, Fz);
         auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
