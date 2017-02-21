@@ -814,6 +814,8 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     deformationF.Scale (0.0);
     std::vector<Epetra_SerialDenseMatrix> vectorDeformationF (dFESpace->fe().nbFEDof(), deformationF);
 
+    std::cout << "\nvdf size: " vectorDeformationF.size() << std::endl;
+    
     //Preliminary variables
     UInt totalDof = dFESpace->dof().numTotalDof();
 
