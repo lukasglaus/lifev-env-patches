@@ -961,13 +961,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
 
-    //std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
+    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
 
     
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
-    //boost::shared_ptr<DeformationGradientReAssembler> defGReAssembler (new DeformationGradientReAssembler);
+    boost::shared_ptr<DeformationGradientReAssembler> defGReAssembler (new DeformationGradientReAssembler);
 
     LifeChrono chrono;
     chrono.start();
