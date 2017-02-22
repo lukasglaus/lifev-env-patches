@@ -958,9 +958,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
-//    std::cout << "\nupdate Jac. 1\n";
-//    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
-//    std::cout << "\nupdate Jac. 2\n";
+    std::cout << "\nupdate Jac. 1\n";
+    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
+    std::cout << "\nupdate Jac. 2\n";
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
