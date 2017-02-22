@@ -255,8 +255,8 @@ ActiveForceCoefficient = -6.0 #-8.0
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVVCoa/
-    mesh_file           = heartVVVCoa.mesh
+    mesh_dir            = heartVVCoa/
+    mesh_file           = heartVVCoa.mesh
     mesh_scaling        = 0.1
     mesh_translation_0  = -66
     mesh_translation_1  = -72
