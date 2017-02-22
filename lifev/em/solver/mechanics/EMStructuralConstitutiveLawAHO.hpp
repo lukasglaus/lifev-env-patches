@@ -804,6 +804,8 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     chrono.start();
     
     
+    
+    
     //Compute the area of reference element
     Real refElemArea (0);
     for (UInt iq (0); iq < dFESpace->qr().nbQuadPt(); ++iq)
@@ -811,10 +813,15 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
         refElemArea += dFESpace->qr().weight (iq);
     }
     
+    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\refEA: " << refElemArea << std::endl;
+
     //Setting the quadrature Points = DOFs of the element and weight = 1
     Real wQuad (refElemArea / dFESpace->refFE().nbDof() );
+    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\nwQuad: " << wQuad << std::endl;
+
     std::vector<Real> weights (dFESpace->fe().nbFEDof(), wQuad);
     std::vector<GeoVector> coords = dFESpace->refFE().refCoor();
+    
     
     QuadratureRule fakeQuadratureRule;
     fakeQuadratureRule.setDimensionShape ( shapeDimension (dFESpace->refFE().shape() ), dFESpace->refFE().shape() );
@@ -827,6 +834,8 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     fakeFESpace.setQuadRule (fakeQuadratureRule);
     
     if(dFESpace->map().commPtr() ->MyPID() == 0) fakeQuadratureRule.showMe(std::cout);
+    
+    
     
     
     VectorEpetra globalDeformationGradientVectorX(disp, Repeated);

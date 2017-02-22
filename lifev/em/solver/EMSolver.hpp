@@ -573,9 +573,9 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
     M_electroSolverPtr.reset ( new ElectroSolver() );
     M_electroSolverPtr -> setIonicModelPtr (ionicModelPtr);
     M_electroSolverPtr->setParameters();
-    M_electroSolverPtr ->showParameters();
+    if (M_commPtr -> MyPID() == 0) M_electroSolverPtr ->showParameters();
 	M_electroSolverPtr -> setParametersFromEMData ( M_data );
-    M_electroSolverPtr ->showParameters();
+    if (M_commPtr -> MyPID() == 0) M_electroSolverPtr ->showParameters();
     M_electroSolverPtr->init (M_localMeshPtr); //(M_commPtr);
 
 //    if (M_localMeshPtr)
