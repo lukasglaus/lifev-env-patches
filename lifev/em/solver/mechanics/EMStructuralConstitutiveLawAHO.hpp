@@ -813,15 +813,10 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
         refElemArea += dFESpace->qr().weight (iq);
     }
     
-    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\refEA: " << refElemArea << std::endl;
-
     //Setting the quadrature Points = DOFs of the element and weight = 1
     Real wQuad (refElemArea / dFESpace->refFE().nbDof() );
-    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\nwQuad: " << wQuad << std::endl;
-
     std::vector<Real> weights (dFESpace->fe().nbFEDof(), wQuad);
     std::vector<GeoVector> coords = dFESpace->refFE().refCoor();
-    
     
     QuadratureRule fakeQuadratureRule;
     fakeQuadratureRule.setDimensionShape ( shapeDimension (dFESpace->refFE().shape() ), dFESpace->refFE().shape() );
@@ -832,8 +827,7 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     
     //Set the new quadrature rule
     fakeFESpace.setQuadRule (fakeQuadratureRule);
-    
-    if(dFESpace->map().commPtr() ->MyPID() == 0) fakeQuadratureRule.showMe(std::cout);
+    // if(dFESpace->map().commPtr() ->MyPID() == 0) fakeQuadratureRule.showMe(std::cout);
     
     
     
@@ -850,77 +844,76 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     deformationF.Scale (0.0);
     std::vector<Epetra_SerialDenseMatrix> vectorDeformationF (dFESpace->fe().nbFEDof(), deformationF);
 
-    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\nvdf size: " << vectorDeformationF.size() << std::endl;
-    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\ndisp size: " << disp.size() << std::endl;
+//    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\nvdf size: " << vectorDeformationF.size() << std::endl;
+//    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\ndisp size: " << disp.size() << std::endl;
+//    if(dFESpace->map().commPtr() ->MyPID() == 0) this->M_dispFESpace->dof().showMe(std::cout);
 
-    if(dFESpace->map().commPtr() ->MyPID() == 0) this->M_dispFESpace->dof().showMe(std::cout);
-    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\ndisp size: " << this->M_dispFESpace->dof().numTotalDof() << std::endl;
 
     
     
     //Preliminary variables
-    UInt totalDof = dFESpace->dof().numTotalDof();
+    UInt totalDof = fakeFESpace.dof().numTotalDof();
 
-    VectorElemental dk_loc (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
+    VectorElemental dk_loc (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
 
     //Copying the displacement field into a vector with repeated map for parallel computations
     VectorEpetra dRep (disp, Repeated);
     
     //Creating the local stress tensors
-    VectorElemental localDeformationGradientVectorX (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
-    VectorElemental localDeformationGradientVectorY (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
-    VectorElemental localDeformationGradientVectorZ (dFESpace->fe().nbFEDof(), dFESpace->fieldDim() );
+    VectorElemental localDeformationGradientVectorX (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+    VectorElemental localDeformationGradientVectorY (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
+    VectorElemental localDeformationGradientVectorZ (fakeFESpace.fe().nbFEDof(), fakeFESpace.fieldDim() );
     
     Real offset (0);
     
     //Loop on each volume
-    for ( UInt i (0); i < dFESpace->mesh()->numVolumes(); ++i )
+    for ( UInt i (0); i < fakeFESpace.mesh()->numVolumes(); ++i )
     {
-        dFESpace->fe().update ( dFESpace->mesh()->volumeList ( i ), UPDATE_DPHI | UPDATE_WDET );
+        fakeFESpace.fe().update ( fakeFESpace.mesh()->volumeList ( i ), UPDATE_DPHI | UPDATE_WDET );
         //dFESpace.fe().updateFirstDerivQuadPt ( dFESpace.mesh()->volumeList ( i ) );
         
         localDeformationGradientVectorX.zero();
         localDeformationGradientVectorY.zero();
         localDeformationGradientVectorZ.zero();
         
-        UInt eleID = dFESpace->fe().currentLocalId();
+        UInt eleID = fakeFESpace.fe().currentLocalId();
         
         //Extracting the local displacement
-        for ( UInt iNode (0); iNode < ( UInt ) dFESpace->fe().nbFEDof(); ++iNode )
+        for ( UInt iNode (0); iNode < ( UInt ) fakeFESpace.fe().nbFEDof(); ++iNode )
         {
-            UInt iloc = dFESpace->fe().patternFirst ( iNode );
-            UInt ig = dFESpace->dof().localToGlobalMap ( eleID, iloc ) + offset;
+            UInt iloc = fakeFESpace.fe().patternFirst ( iNode );
+            UInt ig = fakeFESpace.dof().localToGlobalMap ( eleID, iloc ) + offset;
             
-            for ( UInt iComp = 0; iComp < dFESpace->fieldDim(); ++iComp )
+            for ( UInt iComp = 0; iComp < fakeFESpace.fieldDim(); ++iComp )
             {
-                dk_loc[iloc + iComp * dFESpace->fe().nbFEDof() ] = dRep[ig + iComp * dFESpace->dim()];
+                dk_loc[iloc + iComp * fakeFESpace.fe().nbFEDof() ] = dRep[ig + iComp * fakeFESpace.dim()];
             }
         }
 
         //Compute the element tensor F
-        AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, dFESpace->fe() );
+        AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, fakeFESpace.fe() );
         
         
-        for ( UInt nDOF (0); nDOF < ( UInt ) dFESpace->fe().nbFEDof(); ++nDOF )
+        for ( UInt nDOF (0); nDOF < ( UInt ) fakeFESpace.fe().nbFEDof(); ++nDOF )
         {
-            UInt  iloc = dFESpace->fe().patternFirst ( nDOF );
+            UInt  iloc = fakeFESpace.fe().patternFirst ( nDOF );
             
             //Assembling the local vectors for local tensions Component X, Y, Z
-            for ( UInt coor (0); coor < dFESpace->fieldDim(); ++coor )
+            for ( UInt coor (0); coor < fakeFESpace.fieldDim(); ++coor )
             {
                 auto deformF = vectorDeformationF[nDOF];
-                (localDeformationGradientVectorX) [iloc + coor * dFESpace->fe().nbFEDof() ] = deformF(coor,0);
-                (localDeformationGradientVectorY) [iloc + coor * dFESpace->fe().nbFEDof() ] = deformF(coor,1);
-                (localDeformationGradientVectorZ) [iloc + coor * dFESpace->fe().nbFEDof() ] = deformF(coor,2);
+                (localDeformationGradientVectorX) [iloc + coor * fakeFESpace.fe().nbFEDof() ] = deformF(coor,0);
+                (localDeformationGradientVectorY) [iloc + coor * fakeFESpace.fe().nbFEDof() ] = deformF(coor,1);
+                (localDeformationGradientVectorZ) [iloc + coor * fakeFESpace.fe().nbFEDof() ] = deformF(coor,2);
             }
         }
         
         //Assembling the three elemental vector in the three global
-        for ( UInt ic = 0; ic < dFESpace->fieldDim(); ++ic )
+        for ( UInt ic = 0; ic < fakeFESpace.fieldDim(); ++ic )
         {
-            assembleVector (globalDeformationGradientVectorX, localDeformationGradientVectorX, dFESpace->fe(), dFESpace->dof(), ic, offset +  ic * totalDof );
-            assembleVector (globalDeformationGradientVectorY, localDeformationGradientVectorY, dFESpace->fe(), dFESpace->dof(), ic, offset +  ic * totalDof );
-            assembleVector (globalDeformationGradientVectorZ, localDeformationGradientVectorZ, dFESpace->fe(), dFESpace->dof(), ic, offset +  ic * totalDof );
+            assembleVector (globalDeformationGradientVectorX, localDeformationGradientVectorX, fakeFESpace.fe(), fakeFESpace.dof(), ic, offset +  ic * totalDof );
+            assembleVector (globalDeformationGradientVectorY, localDeformationGradientVectorY, fakeFESpace.fe(), fakeFESpace.dof(), ic, offset +  ic * totalDof );
+            assembleVector (globalDeformationGradientVectorZ, localDeformationGradientVectorZ, fakeFESpace.fe(), fakeFESpace.dof(), ic, offset +  ic * totalDof );
         }
 
         
