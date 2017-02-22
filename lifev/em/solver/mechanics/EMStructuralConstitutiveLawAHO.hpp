@@ -960,10 +960,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
-    std::cout << "\nupdate Jac. 1\n";
-    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
-    std::cout << "\nupdate Jac. 2\n";
 
+    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
+
+    
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
@@ -979,12 +979,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         //todo: FE ganz ausgeschrieben, nur einmal integrate
-        //auto Fx = value((super::M_dispETFESpace, defF[0]);
-        //auto Fy = value((super::M_dispETFESpace, defF[1]);
-        //auto Fz = value((super::M_dispETFESpace, defF[2]);
-        //auto F = eval(defGReAssembler, Fx, Fy, Fz);
         
-        auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
+        auto Fx = value((super::M_dispETFESpace, defF[0]);
+        auto Fy = value((super::M_dispETFESpace, defF[1]);
+        auto Fz = value((super::M_dispETFESpace, defF[2]);
+        auto F = eval(defGReAssembler, Fx, Fy, Fz);
+        
+        //auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
@@ -1069,11 +1070,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                          dot(  value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) *  minusT(FE) ), grad(phi_j)*FAinv ) *
                          value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
                          ) *
-                         FAinv
-                        
-                        , grad (phi_i) )
-                   ) >> this->M_jacobian;
-        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+                         FAinv        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
@@ -1084,6 +1081,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
         auto dI4fEdFE =  dot ( dI4fE, dFE );
         auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
+
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
