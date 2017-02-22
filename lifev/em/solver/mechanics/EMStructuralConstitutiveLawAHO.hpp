@@ -821,7 +821,7 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     fakeQuadratureRule.setPoints (coords, weights);
     
     //Creating a copy of the FESpace
-    feSpace_Type fakeFESpace ( dFESpace->mesh(), dFESpace->refFE(), dFESpace->qr(), dFESpace->bdQr(), 3, dFESpace->map().commPtr() );
+    FESpace_Type fakeFESpace ( dFESpace->mesh(), dFESpace->refFE(), dFESpace->qr(), dFESpace->bdQr(), 3, dFESpace->map().commPtr() );
     
     //Set the new quadrature rule
     fakeFESpace.setQuadRule (fakeQuadratureRule);
