@@ -622,13 +622,13 @@ protected:
         return_Type operator() (const LifeV::VectorSmall<3>& Fx, const LifeV::VectorSmall<3>& Fy, const LifeV::VectorSmall<3>& Fz)
         {
             MatrixSmall<3,3> v;
-            v[0.0] = Fx[0];
+            v[0,0] = Fx[0];
             v[1,0] = Fx[1];
             v[2,0] = Fx[2];
             v[0,1] = Fy[0];
             v[1,1] = Fy[1];
             v[2,1] = Fy[2];
-            v[0.2] = Fz[0];
+            v[0,2] = Fz[0];
             v[1,2] = Fz[1];
             v[2,2] = Fz[2];
             return v;
