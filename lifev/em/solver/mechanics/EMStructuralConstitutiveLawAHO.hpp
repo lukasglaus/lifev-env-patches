@@ -1070,8 +1070,11 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                          dot(  value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) *  minusT(FE) ), grad(phi_j)*FAinv ) *
                          value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
                          ) *
-                         FAinv        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-        // P4fE
+                         FAinv
+                        
+                        , grad (phi_i) )
+                   ) >> this->M_jacobian;
+        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");        // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
