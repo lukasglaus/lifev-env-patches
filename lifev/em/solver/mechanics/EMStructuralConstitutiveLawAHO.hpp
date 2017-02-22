@@ -803,6 +803,32 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     LifeChrono chrono;
     chrono.start();
     
+    
+    //Compute the area of reference element
+    Real refElemArea (0);
+    for (UInt iq (0); iq < dFESpace->qr().nbQuadPt(); ++iq)
+    {
+        refElemArea += dFESpace->qr().weight (iq);
+    }
+    
+    //Setting the quadrature Points = DOFs of the element and weight = 1
+    Real wQuad (refElemArea / dFESpace->refFE().nbDof() );
+    std::vector<Real> weights (dFESpace->fe().nbFEDof(), wQuad);
+    std::vector<GeoVector> coords = dFESpace->refFE().refCoor();
+    
+    QuadratureRule fakeQuadratureRule;
+    fakeQuadratureRule.setDimensionShape ( shapeDimension (dFESpace->refFE().shape() ), dFESpace->refFE().shape() );
+    fakeQuadratureRule.setPoints (coords, weights);
+    
+    //Creating a copy of the FESpace
+    feSpace_Type fakeFESpace ( dFESpace->mesh(), dFESpace->refFE(), dFESpace->qr(), dFESpace->bdQr(), 3, dFESpace->map().commPtr() );
+    
+    //Set the new quadrature rule
+    fakeFESpace.setQuadRule (fakeQuadratureRule);
+    
+    fakeQuadratureRule.showMe(std::cout);
+    
+    
     VectorEpetra globalDeformationGradientVectorX(disp, Repeated);
     VectorEpetra globalDeformationGradientVectorY(disp, Repeated);
     VectorEpetra globalDeformationGradientVectorZ(disp, Repeated);
@@ -864,6 +890,7 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
 
         //Compute the element tensor F
         AssemblyElementalStructure::computeLocalDeformationGradient ( dk_loc, vectorDeformationF, dFESpace->fe() );
+        
         
         for ( UInt nDOF (0); nDOF < ( UInt ) dFESpace->fe().nbFEDof(); ++nDOF )
         {
