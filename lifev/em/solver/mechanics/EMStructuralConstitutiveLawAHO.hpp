@@ -931,14 +931,14 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
-    std::cout << "\nupdate Jac. 1\n";
-    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
-    std::cout << "\nupdate Jac. 2\n";
+//    std::cout << "\nupdate Jac. 1\n";
+//    std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
+//    std::cout << "\nupdate Jac. 2\n";
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
-    boost::shared_ptr<DeformationGradientReAssembler> defGReAssembler (new DeformationGradientReAssembler);
+    %boost::shared_ptr<DeformationGradientReAssembler> defGReAssembler (new DeformationGradientReAssembler);
 
     LifeChrono chrono;
     chrono.start();
@@ -954,6 +954,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         //auto Fy = value((super::M_dispETFESpace, defF[1]);
         //auto Fz = value((super::M_dispETFESpace, defF[2]);
         //auto F = eval(defGReAssembler, Fx, Fy, Fz);
+        
         auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
