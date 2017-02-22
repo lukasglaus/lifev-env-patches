@@ -983,9 +983,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto Fx = value(super::M_dispETFESpace, defF[0]);
         auto Fy = value(super::M_dispETFESpace, defF[1]);
         auto Fz = value(super::M_dispETFESpace, defF[2]);
-        auto F = eval(defGReAssembler, Fx, Fy, Fz);
+        //auto F = eval(defGReAssembler, Fx, Fy, Fz);
         
-        //auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
+        auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
