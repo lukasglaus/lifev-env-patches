@@ -798,7 +798,7 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
         const FESpacePtr_Type& dFESpace,
         const vector_Type& disp)
 {
-    std::cout << "\n Starting computeGloDefGradVec method" << std::endl;
+    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\n Starting computeGloDefGradVec method" << std::endl;
     //Chrono
     LifeChrono chrono;
     chrono.start();
@@ -826,7 +826,7 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     //Set the new quadrature rule
     fakeFESpace.setQuadRule (fakeQuadratureRule);
     
-    fakeQuadratureRule.showMe(std::cout);
+    if(dFESpace->map().commPtr() ->MyPID() == 0) fakeQuadratureRule.showMe(std::cout);
     
     
     VectorEpetra globalDeformationGradientVectorX(disp, Repeated);
@@ -841,11 +841,11 @@ std::vector<VectorEpetra> EMStructuralConstitutiveLaw<MeshType>::computeGlobalDe
     deformationF.Scale (0.0);
     std::vector<Epetra_SerialDenseMatrix> vectorDeformationF (dFESpace->fe().nbFEDof(), deformationF);
 
-    std::cout << "\nvdf size: " << vectorDeformationF.size() << std::endl;
-    std::cout << "\ndisp size: " << disp.size() << std::endl;
+    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\nvdf size: " << vectorDeformationF.size() << std::endl;
+    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\ndisp size: " << disp.size() << std::endl;
 
-    this->M_dispFESpace->dof().showMe(std::cout);
-    std::cout << "\ndisp size: " << this->M_dispFESpace->dof().numTotalDof() << std::endl;
+    if(dFESpace->map().commPtr() ->MyPID() == 0) this->M_dispFESpace->dof().showMe(std::cout);
+    if(dFESpace->map().commPtr() ->MyPID() == 0) std::cout << "\ndisp size: " << this->M_dispFESpace->dof().numTotalDof() << std::endl;
 
     
     
