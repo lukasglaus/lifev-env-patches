@@ -745,6 +745,30 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 			std::cout << "\nCreated Passive Material!\n";
         }
     }
+    
+    
+    
+    
+    M_stiff.reset                     ( new vector_Type (*this->M_localMap) );
+    
+    M_FirstPiolaKStress.reset        ( new vector_Type (*this->M_localMap) );
+    M_elvecK.reset            ( new VectorElemental (this->M_FESpace->fe().nbFEDof(), nDimensions) );
+    this->M_elmatK.reset                ( new MatrixElemental ( this->M_FESpace->fe().nbFEDof(), nDimensions, nDimensions ) );
+    
+    //! Local tensors initilization
+    M_Fk.reset ( new boost::multi_array<Real, 3> (boost::extents[nDimensions][nDimensions][dFESpace->fe().nbQuadPt()]) );
+    M_CofFk.reset ( new boost::multi_array<Real, 3> (boost::extents[nDimensions][nDimensions][dFESpace->fe().nbQuadPt()]) );
+    
+    M_Jack.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_trCisok.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_trCk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    
+
+    
+    
+    
+    
+    
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
     //    // another way would be to set up the number of constitutive parameters of the law
