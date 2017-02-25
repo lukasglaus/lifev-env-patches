@@ -121,6 +121,26 @@ public:
     typedef EMActiveMaterialType<MeshType>                activeMaterial_Type;
     typedef boost::shared_ptr<activeMaterial_Type>        activeMaterialPtr_Type;
 
+    
+    
+//    typedef StructuralConstitutiveLaw<Mesh>                 super;
+//    
+//    typedef typename super::data_Type                data_Type;
+//    
+//    typedef typename super::vector_Type              vector_Type;
+//    typedef typename super::matrix_Type              matrix_Type;
+//    
+//    typedef typename super::matrixPtr_Type           matrixPtr_Type;
+//    typedef typename super::vectorPtr_Type           vectorPtr_Type;
+//    typedef typename super::dataPtr_Type             dataPtr_Type;
+//    typedef typename super::displayerPtr_Type        displayerPtr_Type;
+    
+//    typedef typename super::mapMarkerVolumesPtr_Type mapMarkerVolumesPtr_Type;
+//    typedef typename super::mapMarkerVolumes_Type mapMarkerVolumes_Type;
+    typedef typename mapMarkerVolumes_Type::const_iterator mapIterator_Type;
+    
+    
+    
     //@}
 
 
@@ -295,13 +315,20 @@ public:
                                             const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                                             const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                             const displayerPtr_Type& displayer );
+    
+    void computeStiffness ( const vector_Type& sol,
+                      Real /*factor*/,
+                      const dataPtr_Type& dataMaterial,
+                      const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                           const displayerPtr_Type& displayer );
+
 
     //! Computes the deformation Gradient F, the cofactor of F Cof(F),
     //! the determinant of F J = det(F), the trace of C Tr(C).
     /*!
       \param dk_loc: local displacement vector
     */
-    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ) {}
+    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ); // {}
 
     
     std::vector<VectorEpetra> computeGlobalDeformationGradientVector(const FESpacePtr_Type& dFESpace, const vector_Type& disp);
@@ -752,8 +779,8 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_stiff.reset                     ( new vector_Type (*this->M_localMap) );
     
     M_FirstPiolaKStress.reset        ( new vector_Type (*this->M_localMap) );
-    M_elvecK.reset            ( new VectorElemental (this->M_FESpace->fe().nbFEDof(), nDimensions) );
-    this->M_elmatK.reset                ( new MatrixElemental ( this->M_FESpace->fe().nbFEDof(), nDimensions, nDimensions ) );
+    M_elvecK.reset            ( new VectorElemental (this->M_dispFESpace->fe().nbFEDof(), nDimensions) );
+    this->M_elmatK.reset                ( new MatrixElemental ( this->M_dispFESpace->fe().nbFEDof(), nDimensions, nDimensions ) );
     
     //! Local tensors initilization
     M_Fk.reset ( new boost::multi_array<Real, 3> (boost::extents[nDimensions][nDimensions][dFESpace->fe().nbQuadPt()]) );
@@ -849,14 +876,14 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 
     
     
-    template <typename Mesh>
+    template <typename MeshType>
     void EMStructuralConstitutiveLaw<MeshType>::computeKinematicsVariables ( const VectorElemental& dk_loc )
     {
         
         Real s;
         
         //! loop on quadrature points (ig)
-        for ( UInt ig = 0; ig < this->M_FESpace->fe().nbQuadPt(); ig++ )
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
             //! loop on space coordinates (icoor)
             for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
@@ -865,11 +892,11 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                 for ( UInt jcoor = 0; jcoor < nDimensions; jcoor++ )
                 {
                     s = 0.0;
-                    for ( UInt i = 0; i < this->M_FESpace->fe().nbFEDof(); i++ )
+                    for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
                     {
                         //! \grad u^k at a quadrature point
-                        s += this->M_FESpace->fe().phiDer ( i, jcoor, ig ) *
-                        dk_loc[ i + icoor * this->M_FESpace->fe().nbFEDof() ];
+                        s += this->M_dispFESpace->fe().phiDer ( i, jcoor, ig ) *
+                        dk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
                     }
                     //! gradient of displacement
                     (*M_Fk) [ icoor ][ jcoor ][ig ] = s;
@@ -878,7 +905,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         }
         
         //! loop on quadrature points (ig)
-        for ( UInt ig = 0; ig < this->M_FESpace->fe().nbQuadPt(); ig++ )
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
             //! loop on space coordinates (icoor)
             for ( UInt  icoor = 0; icoor < nDimensions; icoor++ )
@@ -890,7 +917,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         
         Real a, b, c, d, e, f, g, h, i;
         
-        for ( UInt ig = 0; ig < this->M_FESpace->fe().nbQuadPt(); ig++ )
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
             a = (*M_Fk) [ 0 ][ 0 ][ ig ];
             b = (*M_Fk) [ 0 ][ 1 ][ ig ];
@@ -919,7 +946,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         }
         
         //! loop on quadrature points
-        for ( UInt ig = 0; ig < this->M_FESpace->fe().nbQuadPt(); ig++ )
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
             s = 0.0;
             for ( UInt i = 0; i < nDimensions; i++)
@@ -933,7 +960,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             (*M_trCk) [ ig ] = s;
         }
         
-        for ( UInt ig = 0; ig <  this->M_FESpace->fe().nbQuadPt(); ig++ )
+        for ( UInt ig = 0; ig <  this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
             //! trace of deviatoric C
             (*M_trCisok) [ ig ] =  pow ( (*M_Jack) [ ig ], -2. / 3.) * (*M_trCk) [ ig ];
@@ -941,7 +968,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     }
     
 
-template <typename Mesh>
+template <typename MeshType>
 void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type& sol,
                                                            Real /*factor*/,
                                                            const dataPtr_Type& dataMaterial,
