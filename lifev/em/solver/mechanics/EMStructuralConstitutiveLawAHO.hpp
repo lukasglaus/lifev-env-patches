@@ -1035,9 +1035,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     vector_Type dRep (sol, Repeated);
     
     
-    const UInt nbElements (M_dispFESpace->mesh()->numElements() );
-//    const UInt fieldDim (M_dispFESpace->fieldDim() );
-//    const UInt nbTotalDof (M_dispFESpace->dof().numTotalDof() );
+    const UInt nbElements (this->M_dispFESpace->mesh()->numElements() );
+//    const UInt fieldDim (this->M_dispFESpace->fieldDim() );
+//    const UInt nbTotalDof (this->M_dispFESpace->dof().numTotalDof() );
     
     
 //    mapIterator_Type it;
