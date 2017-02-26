@@ -538,14 +538,14 @@ public:
 
     
     // Source term : Int { coef * exp(coefExp *(  Ic_iso -3 )) * ( J^(-2/3)* (F : \nabla v) - 1/3 * (Ic_iso / J) * (CofF : \nabla v) ) }
-    void  source_P1iso_Exp ( Real             coef,
-                            Real             coefExp,
-                            const boost::multi_array<Real, 3 >& CofFk,
-                            const boost::multi_array<Real, 3 >& Fk,
-                            const std::vector<Real>&   Jk,
-                            const std::vector<Real>&   Ic_isok,
-                            VectorElemental& elvec,
-                            const CurrentFE& fe )
+    void  source_P1iso_Exp (    Real                                coef,
+                                Real                                coefExp,
+                                const boost::multi_array<Real, 3 >& CofFk,
+                                const boost::multi_array<Real, 3 >& Fk,
+                                const std::vector<Real>&            Jk,
+                                const std::vector<Real>&            Ic_isok,
+                                VectorElemental&                    elvec,
+                                const CurrentFE&                    fe )
     {
         
         Real s;
@@ -1002,6 +1002,15 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             //! trace of deviatoric C
             (*M_trCisok) [ ig ] =  pow ( (*M_Jack) [ ig ], -2. / 3.) * (*M_trCk) [ ig ];
         }
+        
+        // I4f
+        
+        // I4s
+        
+        // I1E deviatoric
+        
+        // I8fs
+        
     }
     
 
@@ -1037,6 +1046,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         Real alpha = 3300; //dataMaterial->alpha (marker);
         Real gamma = 9.242; //dataMaterial->gamma (marker);
         
+        std::cout << "iterator: " << it->first << "\t" << it->second << std::endl;
         
         for ( UInt j (0); j < it->second.size(); j++ )
         {
