@@ -1033,9 +1033,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         //Given the marker pointed by the iterator, let's extract the material parameters
         UInt marker = it->first;
         
-        Real bulk = dataMaterial->bulk (marker);
-        Real alpha = dataMaterial->alpha (marker);
-        Real gamma = dataMaterial->gamma (marker);
+        Real bulk = 3500000; //dataMaterial->bulk (marker);
+        Real alpha = 3300; //dataMaterial->alpha (marker);
+        Real gamma = 9.242; //dataMaterial->gamma (marker);
         
         
         for ( UInt j (0); j < it->second.size(); j++ )
@@ -1477,7 +1477,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
 template <typename MeshType>
 void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type&       disp,
-                                                               Real                     /*factor*/,
+                                                               Real                     factor,
                                                                const dataPtr_Type&      dataMaterial,
                                                                const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                                                                const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
@@ -1486,7 +1486,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     * (M_residualVectorPtr) *= 0.0;
     
-    computeStiffness2(disp, dataMaterial, mapsMarkerVolumes, displayer);
+    computeStiffness2(disp, factor, dataMaterial, mapsMarkerVolumes, displayer);
 
     
     MatrixSmall<3,3> I;
