@@ -1034,26 +1034,34 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     
     vector_Type dRep (sol, Repeated);
     
-    mapIterator_Type it;
+//    mapIterator_Type it;
     
-    for ( it = (*mapsMarkerVolumes).begin(); it != (*mapsMarkerVolumes).end(); it++ )
+//    for ( it = (*mapsMarkerVolumes).begin(); it != (*mapsMarkerVolumes).end(); it++ )
+//    {
+//        
+//        //Given the marker pointed by the iterator, let's extract the material parameters
+//        UInt marker = it->first;
+    
+    for (UInt iterElement (0); iterElement < nbElements; ++iterElement)
     {
         
-        //Given the marker pointed by the iterator, let's extract the material parameters
-        UInt marker = it->first;
+//        M_diffCFE->update ( M_fespace->mesh()->element (iterElement), UPDATE_DPHI | UPDATE_WDET );
         
         Real bulk = 3500000; //dataMaterial->bulk (marker);
         Real alpha = 3300; //dataMaterial->alpha (marker);
         Real gamma = 9.242; //dataMaterial->gamma (marker);
         
-        std::cout << "iterator: " << it->first << "\t" << it->second.size() << std::endl;
+//        std::cout << "iterator: " << it->first << "\t" << it->second.size() << std::endl;
+//        for ( UInt j (0); j < it->second.size(); j++ )
+//        {
+//            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( * (it->second[j]) );
         
-        for ( UInt j (0); j < it->second.size(); j++ )
-        {
-            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( * (it->second[j]) );
-            
+            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( M_fespace->mesh()->element (iterElement) );
+
             UInt eleID = this->M_dispFESpace->fe().currentLocalId();
-            
+        
+            std::cout << "elem: " << eleID << "\t" << iterElement << std::endl;
+
             for ( UInt iNode = 0 ; iNode < ( UInt ) this->M_dispFESpace->fe().nbFEDof() ; iNode++ )
             {
                 UInt  iloc = this->M_dispFESpace->fe().patternFirst ( iNode );
@@ -1100,7 +1108,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
                                 this->M_dispFESpace->fe(),
                                 this->M_dispFESpace->dof(), ic, this->M_offset +  ic * totalDof );
             }
-        }
+        
     }
     
     this->M_residualVectorPtr->globalAssemble();
