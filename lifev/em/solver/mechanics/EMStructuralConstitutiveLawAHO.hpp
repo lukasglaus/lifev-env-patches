@@ -1046,7 +1046,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         Real alpha = 3300; //dataMaterial->alpha (marker);
         Real gamma = 9.242; //dataMaterial->gamma (marker);
         
-        std::cout << "iterator: " << it->first << "\t" << it->second << std::endl;
+        std::cout << "iterator: " << it->first << "\t" << it->second.size() << std::endl;
         
         for ( UInt j (0); j < it->second.size(); j++ )
         {
