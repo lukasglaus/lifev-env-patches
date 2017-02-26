@@ -316,11 +316,11 @@ public:
                                             const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                             const displayerPtr_Type& displayer );
     
-    void computeStiffness ( const vector_Type& sol,
-                      Real /*factor*/,
-                      const dataPtr_Type& dataMaterial,
-                      const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                           const displayerPtr_Type& displayer );
+    void computeStiffness2 (    const vector_Type& sol,
+                                Real /*factor*/,
+                                const dataPtr_Type& dataMaterial,
+                                const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
+                                const displayerPtr_Type& displayer );
 
 
     //! Computes the deformation Gradient F, the cofactor of F Cof(F),
@@ -611,7 +611,7 @@ protected:
     //! Vector: stiffness non-linear
     boost::shared_ptr<boost::multi_array<Real, 3> > M_CofFk;
 
-    vectorPtr_Type                         M_stiff;
+    //vectorPtr_Type                         M_stiff;
     
     //! First Piola-Kirchhoff stress tensor
     vectorPtr_Type                                M_FirstPiolaKStress;
@@ -813,7 +813,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     
     
     
-    M_stiff.reset                     ( new vector_Type (*this->M_localMap) );
+    //M_stiff.reset                     ( new vector_Type (*this->M_localMap) );
     
     M_FirstPiolaKStress.reset        ( new vector_Type (*this->M_localMap) );
     M_elvecK.reset            ( new VectorElemental (this->M_dispFESpace->fe().nbFEDof(), nDimensions) );
@@ -1006,13 +1006,13 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     
 
 template <typename MeshType>
-void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type& sol,
+void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Type& sol,
                                                            Real /*factor*/,
                                                            const dataPtr_Type& dataMaterial,
                                                            const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
                                                            const displayerPtr_Type& displayer )
 {
-    this->M_stiff.reset (new vector_Type (*this->M_localMap) );
+    //this->M_stiff.reset (new vector_Type (*this->M_localMap) );
     
     displayer->leaderPrint (" \n*********************************\n  ");
     displayer->leaderPrint (" Non-Linear S-  Computing the Exponential nonlinear stiffness vector ");
@@ -1067,8 +1067,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
             /*!
              Source term Pvol: int { bulk /2* (J1^2 - J1  + log(J1) ) * 1/J1 * (CofF1 : \nabla v) }
              */
-            AssemblyElementalStructure::source_Pvol ( 0.5 * bulk, (*M_CofFk), (*M_Jack),
-                                                     *this->M_elvecK,  this->M_FESpace->fe() );
+            //AssemblyElementalStructure::source_Pvol ( 0.5 * bulk, (*M_CofFk), (*M_Jack), *this->M_elvecK,  this->M_FESpace->fe() );
             
             //! Isochoric part
             /*!
@@ -1086,7 +1085,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                  M_elvecK is assemble into *vec_stiff vector that is recall
                  from updateSystem(matrix_ptrtype& mat_stiff, vector_ptr_type& vec_stiff)
                  */
-                assembleVector ( *this->M_stiff,
+                assembleVector ( *this->M_residualVectorPtr,
                                 *this->M_elvecK,
                                 this->M_FESpace->fe(),
                                 this->M_FESpace->dof(), ic, this->M_offset +  ic * totalDof );
@@ -1094,7 +1093,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         }
     }
     
-    this->M_stiff->globalAssemble();
+    this->M_residualVectorPtr->globalAssemble();
 }
 
     
@@ -1484,7 +1483,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
                                                                const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                                                const displayerPtr_Type& displayer )
 {
+    
     * (M_residualVectorPtr) *= 0.0;
+    
+    computeStiffness2(disp, dataMaterial, mapsMarkerVolumes, displayer);
+
     
     MatrixSmall<3,3> I;
     I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
