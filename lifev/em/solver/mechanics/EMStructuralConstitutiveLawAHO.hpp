@@ -1062,7 +1062,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
 //        {
 //            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( * (it->second[j]) );
         
-            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( M_fespace->mesh()->element (iterElement) );
+            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( this->M_dispFESpace->mesh()->element (iterElement) );
 
             UInt eleID = this->M_dispFESpace->fe().currentLocalId();
         
