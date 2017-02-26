@@ -536,6 +536,43 @@ public:
     //@}
 
 
+    
+    // Source term : Int { coef * exp(coefExp *(  Ic_iso -3 )) * ( J^(-2/3)* (F : \nabla v) - 1/3 * (Ic_iso / J) * (CofF : \nabla v) ) }
+    void  source_P1iso_Exp ( Real             coef,
+                            Real             coefExp,
+                            const boost::multi_array<Real, 3 >& CofFk,
+                            const boost::multi_array<Real, 3 >& Fk,
+                            const std::vector<Real>&   Jk,
+                            const std::vector<Real>&   Ic_isok,
+                            VectorElemental& elvec,
+                            const CurrentFE& fe )
+    {
+        
+        Real s;
+        
+        for ( UInt icoor = 0; icoor < nDimensions; ++icoor )
+        {
+            VectorElemental::vector_view vec =  elvec.block ( icoor );
+            for ( UInt i = 0; i < fe.nbFEDof(); ++i )
+            {
+                s = 0.0;
+                for ( UInt k = 0; k < nDimensions; ++k )
+                {
+                    for ( UInt ig = 0; ig < fe.nbQuadPt(); ++ig )
+                    {
+                        s += exp ( coefExp * ( Ic_isok[ ig ] - 3.0 ) ) *
+                        (pow ( Jk[ ig ], (-2.0 / 3.0) ) * Fk[ icoor ][  k ][ ig ] -
+                         1.0 / 3.0 * ( 1 / Jk[ ig ] ) * Ic_isok[ ig ] *
+                         CofFk[ icoor ][ k ][ ig ] ) * fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
+                        
+                    }
+                }
+                vec ( i ) += s * coef;
+            }
+        }
+    }
+    
+    
 
 protected:
     virtual void setupVectorsParameters ( void ) {}
@@ -572,15 +609,15 @@ protected:
     boost::scoped_ptr<MatrixElemental>                 M_elmatK;
     
     //! Vector: stiffness non-linear
+    boost::shared_ptr<boost::multi_array<Real, 3> > M_CofFk;
+
     vectorPtr_Type                         M_stiff;
     
     //! First Piola-Kirchhoff stress tensor
     vectorPtr_Type                                M_FirstPiolaKStress;
     
     //! Local tensors initialization
-    boost::shared_ptr<boost::multi_array<Real, 3> > M_Fk;
-    boost::shared_ptr<boost::multi_array<Real, 3> > M_CofFk;
-    
+    boost::shared_ptr<boost::multi_array<Real, 3> > M_Fk;    
     boost::shared_ptr<std::vector<Real> > M_Jack;
     boost::shared_ptr<std::vector<Real> > M_trCisok;
     boost::shared_ptr<std::vector<Real> > M_trCk;
@@ -1038,8 +1075,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
              Source term P1iso_Exp: int { alpha * exp(gamma *(  Ic1_iso -3 )) *
              ( J1^(-2/3)* (F1 : \nabla v) - 1/3 * (Ic1_iso / J1) * (CofF1 : \nabla v) ) }
              */
-            AssemblyElementalStructure::source_P1iso_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), (*M_trCisok),
+            source_P1iso_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), (*M_trCisok),
                                                           *this->M_elvecK, this->M_FESpace->fe() );
+            
+            
             
             for ( UInt ic = 0; ic < nDimensions; ++ic )
             {
@@ -1542,7 +1581,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Sum up contributions and integrate
-        auto P = /*Pvol*/ + P1E + P4fE + P4sE + P8fsE;
+        auto P = Pvol + P1E + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
