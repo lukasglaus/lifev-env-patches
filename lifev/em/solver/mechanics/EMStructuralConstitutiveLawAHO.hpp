@@ -1018,10 +1018,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     displayer->leaderPrint (" Non-Linear S-  Computing the Exponential nonlinear stiffness vector ");
     displayer->leaderPrint (" \n*********************************\n  ");
     
-    UInt totalDof   = this->M_FESpace->dof().numTotalDof();
-    UInt dim = this->M_FESpace->dim();
+    UInt totalDof   = this->M_dispFESpace->dof().numTotalDof();
+    UInt dim = this->M_dispFESpace->dim();
     
-    VectorElemental dk_loc ( this->M_FESpace->fe().nbFEDof(), nDimensions );
+    VectorElemental dk_loc ( this->M_dispFESpace->fe().nbFEDof(), nDimensions );
     
     vector_Type dRep (sol, Repeated);
     
@@ -1040,18 +1040,18 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         
         for ( UInt j (0); j < it->second.size(); j++ )
         {
-            this->M_FESpace->fe().updateFirstDerivQuadPt ( * (it->second[j]) );
+            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( * (it->second[j]) );
             
-            UInt eleID = this->M_FESpace->fe().currentLocalId();
+            UInt eleID = this->M_dispFESpace->fe().currentLocalId();
             
-            for ( UInt iNode = 0 ; iNode < ( UInt ) this->M_FESpace->fe().nbFEDof() ; iNode++ )
+            for ( UInt iNode = 0 ; iNode < ( UInt ) this->M_dispFESpace->fe().nbFEDof() ; iNode++ )
             {
-                UInt  iloc = this->M_FESpace->fe().patternFirst ( iNode );
+                UInt  iloc = this->M_dispFESpace->fe().patternFirst ( iNode );
                 
                 for ( UInt iComp = 0; iComp < nDimensions; ++iComp )
                 {
-                    UInt ig = this->M_FESpace->dof().localToGlobalMap ( eleID, iloc ) + iComp * dim + this->M_offset;
-                    dk_loc[ iloc + iComp * this->M_FESpace->fe().nbFEDof() ] = dRep[ig];
+                    UInt ig = this->M_dispFESpace->dof().localToGlobalMap ( eleID, iloc ) + iComp * dim + this->M_offset;
+                    dk_loc[ iloc + iComp * this->M_dispFESpace->fe().nbFEDof() ] = dRep[ig];
                 }
             }
             
@@ -1067,7 +1067,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
             /*!
              Source term Pvol: int { bulk /2* (J1^2 - J1  + log(J1) ) * 1/J1 * (CofF1 : \nabla v) }
              */
-            //AssemblyElementalStructure::source_Pvol ( 0.5 * bulk, (*M_CofFk), (*M_Jack), *this->M_elvecK,  this->M_FESpace->fe() );
+            //AssemblyElementalStructure::source_Pvol ( 0.5 * bulk, (*M_CofFk), (*M_Jack), *this->M_elvecK,  this->M_dispFESpace->fe() );
             
             //! Isochoric part
             /*!
@@ -1075,7 +1075,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
              ( J1^(-2/3)* (F1 : \nabla v) - 1/3 * (Ic1_iso / J1) * (CofF1 : \nabla v) ) }
              */
             source_P1iso_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), (*M_trCisok),
-                                                          *this->M_elvecK, this->M_FESpace->fe() );
+                                                          *this->M_elvecK, this->M_dispFESpace->fe() );
             
             
             
@@ -1087,8 +1087,8 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
                  */
                 assembleVector ( *this->M_residualVectorPtr,
                                 *this->M_elvecK,
-                                this->M_FESpace->fe(),
-                                this->M_FESpace->dof(), ic, this->M_offset +  ic * totalDof );
+                                this->M_dispFESpace->fe(),
+                                this->M_dispFESpace->dof(), ic, this->M_offset +  ic * totalDof );
             }
         }
     }
