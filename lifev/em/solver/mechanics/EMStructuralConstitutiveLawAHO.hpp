@@ -624,8 +624,13 @@ protected:
 
     
     
-    
-    
+    boost::shared_ptr<std::vector<Real> > M_gamman;
+    boost::shared_ptr<std::vector<Real> > M_gammaf;
+    boost::shared_ptr<std::vector<Real> > M_gammas;
+
+    boost::shared_ptr<boost::multi_array<Real, 2> > M_fk;
+    boost::shared_ptr<boost::multi_array<Real, 2> > M_sk;
+
     
     
     
@@ -1055,8 +1060,8 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         
         Real bulk = 3500000; //dataMaterial->bulk (marker);
         Real alpha = 3300; //dataMaterial->alpha (marker);
+
         Real gamma = 9.242; //dataMaterial->gamma (marker);
-        
 //        std::cout << "iterator: " << it->first << "\t" << it->second.size() << std::endl;
 //        for ( UInt j (0); j < it->second.size(); j++ )
 //        {
@@ -1066,7 +1071,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
 
             UInt eleID = this->M_dispFESpace->fe().currentLocalId();
         
-            std::cout << "elem: " << eleID << "\t" << iterElement << std::endl;
+            //std::cout << "elem: " << eleID << "\t" << iterElement << std::endl;
 
             for ( UInt iNode = 0 ; iNode < ( UInt ) this->M_dispFESpace->fe().nbFEDof() ; iNode++ )
             {
@@ -1098,6 +1103,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
              Source term P1iso_Exp: int { alpha * exp(gamma *(  Ic1_iso -3 )) *
              ( J1^(-2/3)* (F1 : \nabla v) - 1/3 * (Ic1_iso / J1) * (CofF1 : \nabla v) ) }
              */
+        
+        
+        
+            // M_fk, M_sk, M_I1Ebar, gamman, gammaf, gammas
+        
             source_P1iso_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), (*M_trCisok),
                                                           *this->M_elvecK, this->M_dispFESpace->fe() );
             
