@@ -328,7 +328,7 @@ public:
     /*!
       \param dk_loc: local displacement vector
     */
-    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc, const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc ); // {}
+    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ); // {}
 
     
     std::vector<VectorEpetra> computeGlobalDeformationGradientVector(const FESpacePtr_Type& dFESpace, const vector_Type& disp);
@@ -631,9 +631,11 @@ protected:
     boost::shared_ptr<boost::multi_array<Real, 2> > M_fk;
     boost::shared_ptr<boost::multi_array<Real, 2> > M_sk;
 
+    boost::shared_ptr<boost::multi_array<Real, 2> > M_f0k;
+    boost::shared_ptr<boost::multi_array<Real, 2> > M_s0k;
     
-    
-    
+    boost::shared_ptr<boost::multi_array<Real, 1> > M_fAk;
+
     
     
     class OrthonormalizeVector
@@ -919,7 +921,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     
     
     template <typename MeshType>
-    void EMStructuralConstitutiveLaw<MeshType>::computeKinematicsVariables ( const VectorElemental& dk_loc, const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc )
+    void EMStructuralConstitutiveLaw<MeshType>::computeKinematicsVariables ( const VectorElemental& dk_loc )
     {
         
         Real s;
