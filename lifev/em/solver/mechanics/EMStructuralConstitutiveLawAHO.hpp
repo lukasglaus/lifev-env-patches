@@ -1025,29 +1025,42 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     void EMStructuralConstitutiveLaw<MeshType>::computeAnisotropyVariables ( const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc )
     {
         
-        Real s;
+        Real sf, ss, sfA, sfLength, ssLength;
         
         //! loop on quadrature points (ig)
-//        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
-//        {
-//            //! loop on space coordinates (icoor)
-//            for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
-//            {
-//                s = 0.0;
-//                for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
-//                {
-//                    //! \grad u^k at a quadrature point
-//                    s += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
-//                }
-//                
-//                
-//                //! gradient of displacement
-//                (*M_fk) [ icoor ][ig ] = s;
-//                
-//            }
-//            //! normalize
-//            
-//        }
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
+        {
+            sfLength = 0.0; ssLength = 0.0
+            //! loop on space coordinates (icoor)
+            for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
+            {
+                sf = 0.0; ss = 0.0; sfA = 0.0;
+                for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
+                {
+                    //! \grad u^k at a quadrature point
+                    sf += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
+                    ss += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * sk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
+                    sfA += this->M_dispFESpace->fe().phi ( i, ig ) * fAk_loc[ i ] * ( icoor == 0 );
+                }
+                
+                (*M_fk) [ icoor ][ ig ] = sf;
+                (*M_sk) [ icoor ][ ig ] = ss;
+                
+                sfLength += std::pow(sf, 2);
+                ssLength += std::pow(sf, 2);
+
+            }
+            
+            (*M_fAk) [ ig ] = sfA;
+            
+            //! normalize fiber and sheet
+            for ( UInt jcoor = 0; icoor < nDimensions; icoor++ )
+            {
+                (*M_fk) [ jcoor ][ ig ] /= std::sqrt(sfLength);
+                (*M_sk) [ jcoor ][ ig ] /= std::sqrt(ssLength);
+            }
+            
+        }
         
         
         // f, s, f0, s0, fA
