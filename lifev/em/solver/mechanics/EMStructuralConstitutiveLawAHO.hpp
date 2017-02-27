@@ -1043,8 +1043,8 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                     sfA += this->M_dispFESpace->fe().phi ( i, ig ) * fAk_loc[ i ] * ( icoor == 0 );
                 }
                 
-                (*M_fk) [ icoor ][ ig ] = sf;
-                (*M_sk) [ icoor ][ ig ] = ss;
+                (*M_f0k) [ icoor ][ ig ] = sf;
+                (*M_s0k) [ icoor ][ ig ] = ss;
                 
                 sfLength += std::pow(sf, 2);
                 ssLength += std::pow(sf, 2);
@@ -1054,12 +1054,20 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             (*M_fAk) [ ig ] = sfA;
             
             //! normalize fiber and sheet
-            for ( UInt jcoor = 0; icoor < nDimensions; icoor++ )
+            for ( UInt jcoor = 0; icoor < nDimensions; jcoor++ )
             {
-                (*M_fk) [ jcoor ][ ig ] /= std::sqrt(sfLength);
-                (*M_sk) [ jcoor ][ ig ] /= std::sqrt(ssLength);
+                (*M_f0k) [ jcoor ][ ig ] /= std::sqrt(sfLength);
+                (*M_s0k) [ jcoor ][ ig ] /= std::sqrt(ssLength);
             }
             
+            for ( UInt mcoor = 0; icoor < nDimensions; mcoor++ )
+            {
+                for ( UInt ncoor = 0; icoor < nDimensions; ncoor++ )
+                {
+                    (*M_fk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_f0k) [ ncoor ][ ig ];
+                    (*M_sk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_s0k) [ ncoor ][ ig ];
+                }
+            }
         }
         
         
