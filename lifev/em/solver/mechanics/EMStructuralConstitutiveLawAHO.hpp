@@ -1041,9 +1041,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     VectorElemental fAk_loc ( this->M_dispFESpace->fe().nbFEDof(), 1 );
 
     vector_Type dRep (sol, Repeated);
-    vector_Type fRep (M_fiberVectorPtr, Repeated);
-    vector_Type sRep (M_sheetVectorPtr, Repeated);
-    vector_Type fARep (M_fiberActivationPtr, Repeated);
+    vector_Type fRep (*M_fiberVectorPtr, Repeated);
+    vector_Type sRep (*M_sheetVectorPtr, Repeated);
+    vector_Type fARep (*M_fiberActivationPtr, Repeated);
     
     const UInt nbElements (this->M_dispFESpace->mesh()->numElements() );
 //    const UInt fieldDim (this->M_dispFESpace->fieldDim() );
