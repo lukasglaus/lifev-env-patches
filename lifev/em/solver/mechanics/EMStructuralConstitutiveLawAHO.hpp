@@ -1030,7 +1030,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         //! loop on quadrature points (ig)
         for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
-            sfLength = 0.0; ssLength = 0.0
+            sfLength = 0.0; ssLength = 0.0;
             //! loop on space coordinates (icoor)
             for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
             {
