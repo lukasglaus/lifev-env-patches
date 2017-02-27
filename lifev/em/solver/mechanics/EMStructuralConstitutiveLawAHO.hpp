@@ -330,6 +330,8 @@ public:
     */
     inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ); // {}
 
+    inline virtual  void computeAnisotropyVariables ( const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc );
+    
     
     std::vector<VectorEpetra> computeGlobalDeformationGradientVector(const FESpacePtr_Type& dFESpace, const vector_Type& disp);
     
@@ -834,11 +836,17 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_trCisok.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
     M_trCk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
     
+    M_gamman.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_gammaf.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_gammas.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
 
+    M_fk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
+    M_sk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
     
-    
-    
-    
+    M_f0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
+    M_s0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
+
+    M_fAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
     
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
@@ -1010,11 +1018,48 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             (*M_trCisok) [ ig ] =  pow ( (*M_Jack) [ ig ], -2. / 3.) * (*M_trCk) [ ig ];
         }
         
+    }
+    
+    
+    template <typename MeshType>
+    void EMStructuralConstitutiveLaw<MeshType>::computeAnisotropyVariables ( const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc )
+    {
+        
+        Real s;
+        
+        //! loop on quadrature points (ig)
+//        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
+//        {
+//            //! loop on space coordinates (icoor)
+//            for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
+//            {
+//                //! loop  on space coordinates (jcoor)
+//                for ( UInt jcoor = 0; jcoor < nDimensions; jcoor++ )
+//                {
+//                    s = 0.0;
+//                    for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
+//                    {
+//                        //! \grad u^k at a quadrature point
+//                        s += this->M_dispFESpace->fe().phiDer ( i, jcoor, ig ) *
+//                        dk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
+//                    }
+//                    //! gradient of displacement
+//                    (*M_Fk) [ icoor ][ jcoor ][ig ] = s;
+//                }
+//            }
+//        }
+        
+        // M_gamman ...
+        
+        // f, s, f0, s0, fA
+        
+        // I1bar = M_trCisok
+        
         // I4f
         
         // I4s
         
-        // I1E deviatoric
+        // I1E deviatoric = f(I1bar, I4f, I4s)
         
         // I8fs
         
@@ -1099,7 +1144,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
             
             this->computeKinematicsVariables ( dk_loc );
 
-            //this->computeAnisotropyVariables ( fk_loc , sk_loc , fAk_loc );
+            this->computeAnisotropyVariables ( fk_loc , sk_loc , fAk_loc );
 
         
             //! Stiffness for non-linear terms of the Neo-Hookean model
