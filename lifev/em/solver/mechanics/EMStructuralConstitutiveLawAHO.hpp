@@ -1062,6 +1062,9 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             
             for ( UInt mcoor = 0; mcoor < nDimensions; mcoor++ )
             {
+                (*M_fk) [ mcoor ][ ig ] = 0;
+                (*M_sk) [ mcoor ][ ig ] = 0;
+                
                 for ( UInt ncoor = 0; ncoor < nDimensions; ncoor++ )
                 {
                     (*M_fk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_f0k) [ ncoor ][ ig ];
