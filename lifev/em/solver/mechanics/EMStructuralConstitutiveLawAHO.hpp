@@ -1036,9 +1036,14 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     UInt dim = this->M_dispFESpace->dim();
     
     VectorElemental dk_loc ( this->M_dispFESpace->fe().nbFEDof(), nDimensions );
-    
+    VectorElemental fk_loc ( this->M_dispFESpace->fe().nbFEDof(), nDimensions );
+    VectorElemental sk_loc ( this->M_dispFESpace->fe().nbFEDof(), nDimensions );
+    VectorElemental fAk_loc ( this->M_dispFESpace->fe().nbFEDof(), 1 );
+
     vector_Type dRep (sol, Repeated);
-    
+    vector_Type fRep (M_fiberVectorPtr, Repeated);
+    vector_Type sRep (M_sheetVectorPtr, Repeated);
+    vector_Type fARep (M_fiberActivationPtr, Repeated);
     
     const UInt nbElements (this->M_dispFESpace->mesh()->numElements() );
 //    const UInt fieldDim (this->M_dispFESpace->fieldDim() );
@@ -1081,7 +1086,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
                 {
                     UInt ig = this->M_dispFESpace->dof().localToGlobalMap ( eleID, iloc ) + iComp * dim + this->M_offset;
                     dk_loc[ iloc + iComp * this->M_dispFESpace->fe().nbFEDof() ] = dRep[ig];
+                    fk_loc[ iloc + iComp * this->M_dispFESpace->fe().nbFEDof() ] = fRep[ig];
+                    sk_loc[ iloc + iComp * this->M_dispFESpace->fe().nbFEDof() ] = sRep[ig];
                 }
+                
+                fAk_loc[iloc] = fARep[this->M_dispFESpace->dof().localToGlobalMap ( eleID, iloc ) + this->M_offset];
             }
             
             this->M_elvecK->zero();
