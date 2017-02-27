@@ -328,7 +328,7 @@ public:
     /*!
       \param dk_loc: local displacement vector
     */
-    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ); // {}
+    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc, const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc ); // {}
 
     
     std::vector<VectorEpetra> computeGlobalDeformationGradientVector(const FESpacePtr_Type& dFESpace, const vector_Type& disp);
@@ -919,7 +919,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     
     
     template <typename MeshType>
-    void EMStructuralConstitutiveLaw<MeshType>::computeKinematicsVariables ( const VectorElemental& dk_loc )
+    void EMStructuralConstitutiveLaw<MeshType>::computeKinematicsVariables ( const VectorElemental& dk_loc, const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc )
     {
         
         Real s;
@@ -1095,7 +1095,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
             
             this->M_elvecK->zero();
             
-            this->computeKinematicsVariables ( dk_loc );
+            this->computeKinematicsVariables ( dk_loc , fk_loc , sk_loc , fAk_loc );
             
             //! Stiffness for non-linear terms of the Neo-Hookean model
             /*!
