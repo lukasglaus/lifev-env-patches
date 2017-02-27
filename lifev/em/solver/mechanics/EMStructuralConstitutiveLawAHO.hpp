@@ -1529,8 +1529,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     * (M_residualVectorPtr) *= 0.0;
     
+    LifeChrono chrono;
+    chrono.start();
     computeStiffness2(disp, factor, dataMaterial, mapsMarkerVolumes, displayer);
-
+    chrono.stop();
+    this->M_displayer->leaderPrint ("computeStiffness2 function computed in ", chrono.globalDiff ( *this->M_displayer->comm() ), " s\n" );
     
     MatrixSmall<3,3> I;
     I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
