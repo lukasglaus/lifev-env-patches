@@ -1028,30 +1028,30 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         Real s;
         
         //! loop on quadrature points (ig)
-//        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
-//        {
-//            //! loop on space coordinates (icoor)
-//            for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
-//            {
-//                //! loop  on space coordinates (jcoor)
-//                for ( UInt jcoor = 0; jcoor < nDimensions; jcoor++ )
-//                {
-//                    s = 0.0;
-//                    for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
-//                    {
-//                        //! \grad u^k at a quadrature point
-//                        s += this->M_dispFESpace->fe().phiDer ( i, jcoor, ig ) *
-//                        dk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
-//                    }
-//                    //! gradient of displacement
-//                    (*M_Fk) [ icoor ][ jcoor ][ig ] = s;
-//                }
-//            }
-//        }
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
+        {
+            //! loop on space coordinates (icoor)
+            for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
+            {
+                s = 0.0;
+                for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
+                {
+                    //! \grad u^k at a quadrature point
+                    s += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
+                }
+                
+                //! normalize
+                
+                //! gradient of displacement
+                (*M_fk) [ icoor ][ig ] = s;
+                
+            }
+        }
         
-        // M_gamman ...
         
         // f, s, f0, s0, fA
+        
+        // M_gamman, M_gammaf, M_gammas
         
         // I1bar = M_trCisok
         

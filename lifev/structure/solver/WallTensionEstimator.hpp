@@ -1238,6 +1238,7 @@ WallTensionEstimator<Mesh >::computeLocalFiberDirection (const VectorElemental& 
                 // f^k at a quadrature poInt
                 //std::cout << k << " " << icoor << " " << i << " " << fe.nbFEDof() << " " << fk_loc.vec() [ i + icoor * fe.nbFEDof() ] << std::endl;
                 s += fe.phi ( i, k ) * fk_loc.vec() [ i + icoor * fe.nbFEDof() ];
+                ////// todo!!! direction in basis function!
                 //std::cout << s << std::endl;
             }
             fiberDirection[k] ( icoor ) = s;
