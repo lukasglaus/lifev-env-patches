@@ -1097,8 +1097,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
             
             this->M_elvecK->zero();
             
-            this->computeKinematicsVariables ( dk_loc , fk_loc , sk_loc , fAk_loc );
-            
+            this->computeKinematicsVariables ( dk_loc );
+
+            //this->computeAnisotropyVariables ( fk_loc , sk_loc , fAk_loc );
+
+        
             //! Stiffness for non-linear terms of the Neo-Hookean model
             /*!
              The results of the integrals are stored at each step into elvecK, until to build K matrix of the bilinear form
