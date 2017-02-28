@@ -610,7 +610,9 @@ public:
                     {
                         s += exp ( coefExp * ( (*M_I1Ebar)[ ig ] - 3.0 ) ) *
                         
-                            ( pow ( Jk[ig], (-2.0 / 3.0) ) * Fk[icoor][k][ig] - 1.0 / 3.0 * ( 1 / Jk[ ig ] ) * (*M_I1Ebar)[ ig ] * CofFk[ icoor ][ k ][ ig ] ) *
+                            ( 1 - (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 ) ) *
+                        
+                            ( pow ( Jk[ig], (-2.0/3.0) ) * Fk[icoor][k][ig] - 1.0/3.0 * ( 1/Jk[ig] ) * (*M_trCisok)[ ig ] * CofFk[icoor][k][ig] ) *
                         
                             fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
                         
@@ -1804,7 +1806,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Sum up contributions and integrate
-        auto P = Pvol + P1E + P4fE + P4sE + P8fsE;
+        auto P = Pvol + /*P1E*/ + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
