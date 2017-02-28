@@ -1058,12 +1058,20 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             {
                 (*M_f0k) [ jcoor ][ ig ] /= std::sqrt(sfLength);
                 (*M_s0k) [ jcoor ][ ig ] /= std::sqrt(ssLength);
+            }
+            
+            for ( UInt mcoor = 0; mcoor < nDimensions; mcoor++ )
+            {
+                (*M_fk) [ mcoor ][ ig ] = 0.0;
+                (*M_sk) [ mcoor ][ ig ] = 0.0;
+                
                 for ( UInt ncoor = 0; ncoor < nDimensions; ncoor++ )
                 {
                     (*M_fk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_f0k) [ ncoor ][ ig ];
                     (*M_sk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_s0k) [ ncoor ][ ig ];
                 }
             }
+            
         }
         
         
