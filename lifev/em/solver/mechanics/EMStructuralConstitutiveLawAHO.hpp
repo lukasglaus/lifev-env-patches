@@ -609,9 +609,10 @@ public:
                     for ( UInt ig = 0; ig < fe.nbQuadPt(); ++ig )
                     {
                         s += exp ( coefExp * ( (*M_I1Ebar)[ ig ] - 3.0 ) ) *
-                        (pow ( Jk[ ig ], (-2.0 / 3.0) ) * Fk[ icoor ][  k ][ ig ] -
-                         1.0 / 3.0 * ( 1 / Jk[ ig ] ) * (*M_I1Ebar)[ ig ] *
-                         CofFk[ icoor ][ k ][ ig ] ) * fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
+                        
+                            ( pow ( Jk[ig], (-2.0 / 3.0) ) * Fk[icoor][k][ig] - 1.0 / 3.0 * ( 1 / Jk[ ig ] ) * (*M_I1Ebar)[ ig ] * CofFk[ icoor ][ k ][ ig ] ) *
+                        
+                            fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
                         
                     }
                 }
