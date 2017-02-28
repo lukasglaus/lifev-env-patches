@@ -1025,6 +1025,10 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     void EMStructuralConstitutiveLaw<MeshType>::computeAnisotropyVariables ( const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc )
     {
         
+        //=========================================//
+        //  f0, s0, f, s, fA
+        //=========================================//
+        
         Real sf, ss, sfA, sfLength, ssLength;
         
         //! loop on quadrature points (ig)
@@ -1038,7 +1042,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                 for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
                 {
                     //! \grad u^k at a quadrature point
-                    sf += this->M_dispFESpace->fe().phiDer ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
+                    sf += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
                     ss += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * sk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
                     sfA += this->M_dispFESpace->fe().phi ( i, ig ) * fAk_loc[ i ] * ( icoor == 0 );
                 }
@@ -1102,7 +1106,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     //this->M_stiff.reset (new vector_Type (*this->M_localMap) );
     
     displayer->leaderPrint (" \n*********************************\n  ");
-    displayer->leaderPrint (" Non-Linear S-  Computing the Exponential nonlinear stiffness vector ");
+    displayer->leaderPrint (" Non-Linear S- computeStiffness2 ");
     displayer->leaderPrint (" \n*********************************\n  ");
     
     UInt totalDof   = this->M_dispFESpace->dof().numTotalDof();
@@ -1145,6 +1149,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
 //        {
 //            this->M_dispFESpace->fe().updateFirstDerivQuadPt ( * (it->second[j]) );
         
+            this->M_dispFESpace->fe().update ( this->M_dispFESpace->mesh()->element (iterElement), UPDATE_DPHI | UPDATE_WDET | UPDATE_PHI_VECT);
             this->M_dispFESpace->fe().updateFirstDerivQuadPt ( this->M_dispFESpace->mesh()->element (iterElement) );
 
             UInt eleID = this->M_dispFESpace->fe().currentLocalId();
