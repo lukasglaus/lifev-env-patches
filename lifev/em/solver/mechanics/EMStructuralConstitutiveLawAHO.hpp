@@ -686,6 +686,8 @@ protected:
     boost::shared_ptr<boost::multi_array<Real, 2> > M_n0k;
     
     boost::shared_ptr<boost::multi_array<Real, 1> > M_fAk;
+    boost::shared_ptr<boost::multi_array<Real, 1> > M_sAk;
+    boost::shared_ptr<boost::multi_array<Real, 1> > M_nAk;
 
     
     
@@ -898,6 +900,8 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_n0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
 
     M_fAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
+    M_sAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
+    M_nAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
     
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
@@ -1077,10 +1081,10 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     {
         
         //=========================================//
-        //  f0, s0, f, s, fA
+        //  f0, s0, n0, f, s, n, fA
         //=========================================//
         
-        Real sf, ss, sfA;
+        Real sf, ss;
         
         //! loop on quadrature points (ig)
         for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
@@ -1088,21 +1092,18 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             //! loop on space coordinates (icoor)
             for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
             {
-                sf = 0.0; ss = 0.0; sfA = 0.0;
+                sf = 0.0; ss = 0.0;
                 for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
                 {
                     //! \grad u^k at a quadrature point
                     sf += this->M_dispFESpace->fe().phi ( i, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
                     ss += this->M_dispFESpace->fe().phi ( i, ig ) * sk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
-                    sfA += this->M_dispFESpace->fe().phi ( i, ig ) * fAk_loc[ i ] * ( icoor == 0 );
                 }
                 
                 (*M_f0k) [ icoor ][ ig ] = sf;
                 (*M_s0k) [ icoor ][ ig ] = ss;
                 
             }
-            
-            (*M_fAk) [ ig ] = sfA;
             
             normalize(M_f0k, ig);
             normalize(M_s0k, ig);
@@ -1126,9 +1127,33 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         }
         
         
-        // f, s, f0, s0, fA
+        //=========================================//
+        //  Orthotropic activation
+        //=========================================//
+
+        Real k = 4.0;
+        Real sfA;
         
-        // M_gamman, M_gammaf, M_gammas
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
+        {
+            sfA = 0.0;
+            for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
+            {
+                sfA += this->M_dispFESpace->fe().phi ( i, ig ) * fAk_loc[ i ];
+            }
+            
+            (*M_fAk) [ ig ] = sfA;
+            (*M_nAk) [ ig ] = k * (*M_fAk) [ ig ];
+            (*M_sAk) [ ig ] = 1 / ( ((*M_fAk) [ ig ] + 1) * ((*M_nAk) [ ig ] + 1) ) - 1;
+        }
+        
+
+//        // Coefficients for FAinv
+//        auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
+//        auto go = gf * ( k + gf * k + value(1.0) );
+//        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
+        
+        
         
         // I1bar = M_trCisok
         
