@@ -1167,7 +1167,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         //=========================================//
      
         for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
-        {
+        {std::cout << ig;
             // I4f
             (*M_I4f)[ig] = (*M_fk)[0][ig] * (*M_fk)[0][ig] + (*M_fk)[1][ig] * (*M_fk)[1][ig] + (*M_fk)[2][ig] * (*M_fk)[2][ig];
             (*M_I4fE)[ig] = (*M_I4f)[ig] / std::pow( (*M_fAk)[ig] + 1 , 2.0 );
