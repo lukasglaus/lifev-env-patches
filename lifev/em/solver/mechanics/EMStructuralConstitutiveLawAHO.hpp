@@ -667,16 +667,11 @@ protected:
     
     //! Local tensors initialization
     boost::shared_ptr<boost::multi_array<Real, 3> > M_Fk;    
-    boost::shared_ptr<std::vector<Real> > M_Jack;
-    boost::shared_ptr<std::vector<Real> > M_trCisok;
-    boost::shared_ptr<std::vector<Real> > M_trCk;
+    boost::shared_ptr<std::vector<Real> > M_Jack; // J
+    boost::shared_ptr<std::vector<Real> > M_trCisok; // I1bar
+    boost::shared_ptr<std::vector<Real> > M_trCk; // I1
 
     
-    
-    boost::shared_ptr<std::vector<Real> > M_gamman;
-    boost::shared_ptr<std::vector<Real> > M_gammaf;
-    boost::shared_ptr<std::vector<Real> > M_gammas;
-
     boost::shared_ptr<boost::multi_array<Real, 2> > M_fk;
     boost::shared_ptr<boost::multi_array<Real, 2> > M_sk;
     boost::shared_ptr<boost::multi_array<Real, 2> > M_nk;
@@ -685,9 +680,18 @@ protected:
     boost::shared_ptr<boost::multi_array<Real, 2> > M_s0k;
     boost::shared_ptr<boost::multi_array<Real, 2> > M_n0k;
     
-    boost::shared_ptr<boost::multi_array<Real, 1> > M_fAk;
-    boost::shared_ptr<boost::multi_array<Real, 1> > M_sAk;
-    boost::shared_ptr<boost::multi_array<Real, 1> > M_nAk;
+    boost::shared_ptr<std::vector<Real> > M_fAk;
+    boost::shared_ptr<std::vector<Real> > M_sAk;
+    boost::shared_ptr<std::vector<Real> > M_nAk;
+
+    boost::shared_ptr<std::vector<Real> > M_I1Ebar;
+    boost::shared_ptr<std::vector<Real> > M_I4f;
+    boost::shared_ptr<std::vector<Real> > M_I4fE;
+    boost::shared_ptr<std::vector<Real> > M_I4s;
+    boost::shared_ptr<std::vector<Real> > M_I4sE;
+    boost::shared_ptr<std::vector<Real> > M_I8fs;
+    boost::shared_ptr<std::vector<Real> > M_I8fsE;
+    
 
     
     
@@ -883,13 +887,17 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_Fk.reset ( new boost::multi_array<Real, 3> (boost::extents[nDimensions][nDimensions][dFESpace->fe().nbQuadPt()]) );
     M_CofFk.reset ( new boost::multi_array<Real, 3> (boost::extents[nDimensions][nDimensions][dFESpace->fe().nbQuadPt()]) );
     
-    M_Jack.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
-    M_trCisok.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
-    M_trCk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
-    
-    M_gamman.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
-    M_gammaf.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
-    M_gammas.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_Jack.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) ); // J
+    M_trCisok.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) ); // I1bar
+    M_trCk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) ); // I1
+
+    M_I1Ebar.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_I4f.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_I4fE.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_I4s.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_I4sE.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_I8fs.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_I8fsE.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
 
     M_fk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
     M_sk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
@@ -899,9 +907,9 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     M_s0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
     M_n0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
 
-    M_fAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
-    M_sAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
-    M_nAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
+    M_fAk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_sAk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
+    M_nAk.reset ( new std::vector<Real> (dFESpace->fe().nbQuadPt(), 0.0) );
     
 
     //    // The 2 is because the law uses three parameters (mu, bulk).
@@ -1154,16 +1162,30 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 //        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
         
         
-        
-        // I1bar = M_trCisok
-        
-        // I4f
-        
-        // I4s
-        
-        // I1E deviatoric = f(I1bar, I4f, I4s)
-        
-        // I8fs
+        //=========================================//
+        //  Invariants
+        //=========================================//
+     
+        for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
+        {
+            // I4f
+            (*M_I4f)[ig] = (*M_fk)[0][ig] * (*M_fk)[0][ig] + (*M_fk)[1][ig] * (*M_fk)[1][ig] + (*M_fk)[2][ig] * (*M_fk)[2][ig];
+            (*M_I4fE)[ig] = (*M_I4f)[ig] / std::pow( (*M_fAk)[ig] + 1 , 2.0 );
+            
+            // I4s
+            (*M_I4s)[ig] = (*M_sk)[0][ig] * (*M_sk)[0][ig] + (*M_sk)[1][ig] * (*M_sk)[1][ig] + (*M_sk)[2][ig] * (*M_sk)[2][ig];
+            (*M_I4sE)[ig] = (*M_I4s)[ig] / std::pow( (*M_sAk)[ig] + 1 , 2.0 );
+            
+            // I8fs
+            (*M_I8fs)[ig] = (*M_fk)[0][ig] * (*M_sk)[0][ig] + (*M_fk)[1][ig] * (*M_sk)[1][ig] + (*M_fk)[2][ig] * (*M_sk)[2][ig];
+            (*M_I8fsE)[ig] = (*M_I4f)[ig] / ( ((*M_fAk)[ig] + 1) * ((*M_sAk)[ig] + 1) );
+            
+            // I1Ebar
+            Real coeffI1bar = 1 - (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 );
+            Real coeffI4f = (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 ) - (*M_fAk)[ig] * ((*M_fAk)[ig] + 2) / std::pow( (*M_fAk)[ig] + 1 , 2.0 );
+            Real coeffI4s = (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 ) - (*M_sAk)[ig] * ((*M_sAk)[ig] + 2) / std::pow( (*M_sAk)[ig] + 1 , 2.0 );
+            (*M_I1Ebar)[ig] = coeffI1bar * (*M_trCisok)[ ig ] + coeffI4f * (*M_I4f)[ig] + coeffI4s * (*M_I4s)[ig];
+        }
         
     }
     
