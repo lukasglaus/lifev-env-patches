@@ -1038,7 +1038,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                 for ( UInt i = 0; i < this->M_dispFESpace->fe().nbFEDof(); i++ )
                 {
                     //! \grad u^k at a quadrature point
-                    sf += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
+                    sf += this->M_dispFESpace->fe().phiDer ( i, icoor, ig ) * fk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
                     ss += this->M_dispFESpace->fe().phi ( i, icoor, ig ) * sk_loc[ i + icoor * this->M_dispFESpace->fe().nbFEDof() ];
                     sfA += this->M_dispFESpace->fe().phi ( i, ig ) * fAk_loc[ i ] * ( icoor == 0 );
                 }
@@ -1058,13 +1058,6 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             {
                 (*M_f0k) [ jcoor ][ ig ] /= std::sqrt(sfLength);
                 (*M_s0k) [ jcoor ][ ig ] /= std::sqrt(ssLength);
-            }
-            
-            for ( UInt mcoor = 0; mcoor < nDimensions; mcoor++ )
-            {
-                (*M_fk) [ mcoor ][ ig ] = 0;
-                (*M_sk) [ mcoor ][ ig ] = 0;
-                
                 for ( UInt ncoor = 0; ncoor < nDimensions; ncoor++ )
                 {
                     (*M_fk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_f0k) [ ncoor ][ ig ];
