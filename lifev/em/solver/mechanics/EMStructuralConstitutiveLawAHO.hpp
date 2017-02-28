@@ -587,12 +587,11 @@ public:
     
     
     // Source term : Int { coef * exp(coefExp *(  Ic_iso -3 )) * ( J^(-2/3)* (F : \nabla v) - 1/3 * (Ic_iso / J) * (CofF : \nabla v) ) }
-    void  source_P1iso_Exp (    Real                                coef,
+    void  source_P1isoE_Exp (   Real                                coef,
                                 Real                                coefExp,
                                 const boost::multi_array<Real, 3 >& CofFk,
                                 const boost::multi_array<Real, 3 >& Fk,
                                 const std::vector<Real>&            Jk,
-                                const std::vector<Real>&            Ic_isok,
                                 VectorElemental&                    elvec,
                                 const CurrentFE&                    fe )
     {
@@ -609,9 +608,9 @@ public:
                 {
                     for ( UInt ig = 0; ig < fe.nbQuadPt(); ++ig )
                     {
-                        s += exp ( coefExp * ( Ic_isok[ ig ] - 3.0 ) ) *
+                        s += exp ( coefExp * ( (*M_I1Ebar)[ ig ] - 3.0 ) ) *
                         (pow ( Jk[ ig ], (-2.0 / 3.0) ) * Fk[ icoor ][  k ][ ig ] -
-                         1.0 / 3.0 * ( 1 / Jk[ ig ] ) * Ic_isok[ ig ] *
+                         1.0 / 3.0 * ( 1 / Jk[ ig ] ) * (*M_I1Ebar)[ ig ] *
                          CofFk[ icoor ][ k ][ ig ] ) * fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
                         
                     }
@@ -1167,7 +1166,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         //=========================================//
      
         for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
-        {std::cout << ig;
+        {
             // I4f
             (*M_I4f)[ig] = (*M_fk)[0][ig] * (*M_fk)[0][ig] + (*M_fk)[1][ig] * (*M_fk)[1][ig] + (*M_fk)[2][ig] * (*M_fk)[2][ig];
             (*M_I4fE)[ig] = (*M_I4f)[ig] / std::pow( (*M_fAk)[ig] + 1 , 2.0 );
@@ -1292,7 +1291,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         
             // M_fk, M_sk, M_I1Ebar, gamman, gammaf, gammas
         
-            source_P1iso_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), (*M_trCisok),
+            source_P1isoE_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), (*M_trCisok),
                                                           *this->M_elvecK, this->M_dispFESpace->fe() );
             
             
