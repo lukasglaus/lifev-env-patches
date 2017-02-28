@@ -537,7 +537,54 @@ public:
 
     //@}
 
+    
+    
+    
+    
 
+    
+    
+
+    void orthonormalize() (const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const boost::shared_ptr<boost::multi_array<Real, 2> > & v1, const Uint & ig) const
+    {
+        normalize(v, ig);
+        
+        Real dotProduct = (*v)[0][ig] * (*v1)[0][ig] + (*v)[1][ig] * (*v1)[1][ig] + (*v)[2][ig] * (*v1)[2][ig];
+        (*v)[0][ig] = (*v)[0][ig] - dotProduct * (*v1)[0][ig];
+        (*v)[1][ig] = (*v)[1][ig] - dotProduct * (*v1)[1][ig];
+        (*v)[2][ig] = (*v)[2][ig] - dotProduct * (*v1)[2][ig];
+        
+        normalize(v, ig);
+    }
+        
+        
+        
+    void normalize(const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const UInt & ig) const
+    {
+        Real norm = std::sqrt ( (*v)[0][ig] * (*v)[0][ig] + (*v)[1][ig] * (*v)[1][ig] + (*v)[2][ig] * (*v)[2][ig]);
+        if ( norm >= 1e-13 )
+        {
+            (*v)[0][ig] = (*v)[0][ig] / norm;
+            (*v)[1][ig] = (*v)[1][ig] / norm;
+            (*v)[2][ig] = (*v)[2][ig] / norm;
+        }
+        else
+        {
+            (*v)[0][ig] = 1.0;
+            (*v)[1][ig] = 0.0;
+            (*v)[2][ig] = 0.0;
+        }
+    }
+        
+    
+    void crossProduct (boost::shared_ptr<boost::multi_array<Real, 2> > & v, const boost::shared_ptr<boost::multi_array<Real, 2> > & v1, const boost::shared_ptr<boost::multi_array<Real, 2> > & v2, const UInt & ig) const
+    {
+        (*v)[0][ig] = (*v1)[1][ig] * (*v2)[2][ig] - (*v1)[2][ig] * (*v2)[1][ig];
+        (*v)[1][ig] = (*v1)[2][ig] * (*v2)[0][ig] - (*v1)[0][ig] * (*v2)[2][ig];
+        (*v)[2][ig] = (*v1)[0][ig] * (*v2)[1][ig] - (*v1)[1][ig] * (*v2)[0][ig];
+    }
+        
+    
     
     // Source term : Int { coef * exp(coefExp *(  Ic_iso -3 )) * ( J^(-2/3)* (F : \nabla v) - 1/3 * (Ic_iso / J) * (CofF : \nabla v) ) }
     void  source_P1iso_Exp (    Real                                coef,
@@ -632,9 +679,11 @@ protected:
 
     boost::shared_ptr<boost::multi_array<Real, 2> > M_fk;
     boost::shared_ptr<boost::multi_array<Real, 2> > M_sk;
+    boost::shared_ptr<boost::multi_array<Real, 2> > M_nk;
 
     boost::shared_ptr<boost::multi_array<Real, 2> > M_f0k;
     boost::shared_ptr<boost::multi_array<Real, 2> > M_s0k;
+    boost::shared_ptr<boost::multi_array<Real, 2> > M_n0k;
     
     boost::shared_ptr<boost::multi_array<Real, 1> > M_fAk;
 
@@ -842,9 +891,11 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 
     M_fk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
     M_sk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
+    M_nk.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
     
     M_f0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
     M_s0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
+    M_n0k.reset ( new boost::multi_array<Real, 2> (boost::extents[nDimensions][dFESpace->fe().nbQuadPt()]) );
 
     M_fAk.reset ( new boost::multi_array<Real, 1> (boost::extents[dFESpace->fe().nbQuadPt()]) );
     
@@ -1029,12 +1080,11 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
         //  f0, s0, f, s, fA
         //=========================================//
         
-        Real sf, ss, sfA, sfLength, ssLength;
+        Real sf, ss, sfA;
         
         //! loop on quadrature points (ig)
         for ( UInt ig = 0; ig < this->M_dispFESpace->fe().nbQuadPt(); ig++ )
         {
-            sfLength = 0.0; ssLength = 0.0;
             //! loop on space coordinates (icoor)
             for ( UInt icoor = 0; icoor < nDimensions; icoor++ )
             {
@@ -1050,29 +1100,26 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                 (*M_f0k) [ icoor ][ ig ] = sf;
                 (*M_s0k) [ icoor ][ ig ] = ss;
                 
-                sfLength += std::pow(sf, 2);
-                ssLength += std::pow(sf, 2);
-
             }
             
             (*M_fAk) [ ig ] = sfA;
             
-            //! normalize fiber and sheet
-            for ( UInt jcoor = 0; jcoor < nDimensions; jcoor++ )
-            {
-                (*M_f0k) [ jcoor ][ ig ] /= std::sqrt(sfLength);
-                (*M_s0k) [ jcoor ][ ig ] /= std::sqrt(ssLength);
-            }
+            normalize(M_f0k, ig);
+            normalize(M_s0k, ig);
+            
+            crossProduct(M_n0k, M_f0k, M_s0k, ig);
             
             for ( UInt mcoor = 0; mcoor < nDimensions; mcoor++ )
             {
                 (*M_fk) [ mcoor ][ ig ] = 0.0;
                 (*M_sk) [ mcoor ][ ig ] = 0.0;
-                
+                (*M_bk) [ mcoor ][ ig ] = 0.0;
+
                 for ( UInt ncoor = 0; ncoor < nDimensions; ncoor++ )
                 {
                     (*M_fk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_f0k) [ ncoor ][ ig ];
                     (*M_sk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_s0k) [ ncoor ][ ig ];
+                    (*M_nk) [ mcoor ][ ig ] += (*M_Fk) [mcoor] [ncoor] [ig] * (*M_n0k) [ ncoor ][ ig ];
                 }
             }
             
