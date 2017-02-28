@@ -545,7 +545,7 @@ public:
     
     
 
-    void orthonormalize() (const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const boost::shared_ptr<boost::multi_array<Real, 2> > & v1, const UInt & ig) const
+    void orthonormalize (const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const boost::shared_ptr<boost::multi_array<Real, 2> > & v1, const UInt & ig) const
     {
         normalize(v, ig);
         
@@ -559,7 +559,7 @@ public:
         
         
         
-    void normalize(const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const UInt & ig) const
+    void normalize (const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const UInt & ig) const
     {
         Real norm = std::sqrt ( (*v)[0][ig] * (*v)[0][ig] + (*v)[1][ig] * (*v)[1][ig] + (*v)[2][ig] * (*v)[2][ig]);
         if ( norm >= 1e-13 )
@@ -1113,7 +1113,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             {
                 (*M_fk) [ mcoor ][ ig ] = 0.0;
                 (*M_sk) [ mcoor ][ ig ] = 0.0;
-                (*M_bk) [ mcoor ][ ig ] = 0.0;
+                (*M_nk) [ mcoor ][ ig ] = 0.0;
 
                 for ( UInt ncoor = 0; ncoor < nDimensions; ncoor++ )
                 {
