@@ -545,7 +545,7 @@ public:
     
     
 
-    void orthonormalize() (const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const boost::shared_ptr<boost::multi_array<Real, 2> > & v1, const Uint & ig) const
+    void orthonormalize() (const boost::shared_ptr<boost::multi_array<Real, 2> > & v, const boost::shared_ptr<boost::multi_array<Real, 2> > & v1, const UInt & ig) const
     {
         normalize(v, ig);
         
