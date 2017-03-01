@@ -661,7 +661,9 @@ public:
                                                                               
                             2 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
                         
-                            (*M_fk)[icoor][ig] * (*M_f0k)[k][ig]
+                            (*M_fk)[icoor][ig] * (*M_f0k)[k][ig] *
+                            
+                            ( (*M_I4fE)[ ig ] > 0. )
                           
                             ) *
                         
@@ -1336,6 +1338,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     displayer->leaderPrint (" \n*********************************\n  ");
     
     displayer->leaderPrint ( this->M_dispFESpace->qr() );
+    displayer->leaderPrint ( this->M_dispFESpace->fe().nbQuadPt() );
+    displayer->leaderPrint ( this->M_dispFESpace->fe().nbFEDof() );
+    displayer->leaderPrint ( this->M_dispFESpace->fe().quadRule() );
 
     
     
