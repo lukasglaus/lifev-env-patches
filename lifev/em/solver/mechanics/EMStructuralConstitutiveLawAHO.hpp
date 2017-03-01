@@ -659,7 +659,7 @@ public:
                     {
                         s += ( (*M_I4fE)[ ig ] - 1.0 ) * exp ( coefExp * ( (*M_I4fE)[ ig ] - 1.0 ) * ( (*M_I4fE)[ ig ] - 1.0 ) ) * (
                                                                               
-                            1 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
+                            2 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
                         
                             (*M_fk)[icoor][ig] * (*M_f0k)[k][ig]
                           
@@ -674,6 +674,84 @@ public:
         }
     }
 
+    
+    void  source_P4sE_Exp (   Real                                coef,
+                           Real                                coefExp,
+                           const boost::multi_array<Real, 3 >& CofFk,
+                           const boost::multi_array<Real, 3 >& Fk,
+                           const std::vector<Real>&            Jk,
+                           VectorElemental&                    elvec,
+                           const CurrentFE&                    fe )
+    {
+        
+        Real s;
+        
+        for ( UInt icoor = 0; icoor < nDimensions; ++icoor )
+        {
+            VectorElemental::vector_view vec =  elvec.block ( icoor );
+            for ( UInt i = 0; i < fe.nbFEDof(); ++i )
+            {
+                s = 0.0;
+                for ( UInt k = 0; k < nDimensions; ++k )
+                {
+                    for ( UInt ig = 0; ig < fe.nbQuadPt(); ++ig )
+                    {
+                        s += ( (*M_I4sE)[ ig ] - 1.0 ) * exp ( coefExp * ( (*M_I4sE)[ ig ] - 1.0 ) * ( (*M_I4sE)[ ig ] - 1.0 ) ) * (
+                                                                                                                                    
+                            2 / std::pow( (*M_sAk)[ig] + 1 , 2.0 ) *
+                            
+                            (*M_sk)[icoor][ig] * (*M_s0k)[k][ig]
+                            
+                            ) *
+                        
+                            fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
+                        
+                    }
+                }
+                vec ( i ) += s * coef;
+            }
+        }
+    }
+    
+    
+    void  source_P8fsE_Exp (   Real                                coef,
+                           Real                                coefExp,
+                           const boost::multi_array<Real, 3 >& CofFk,
+                           const boost::multi_array<Real, 3 >& Fk,
+                           const std::vector<Real>&            Jk,
+                           VectorElemental&                    elvec,
+                           const CurrentFE&                    fe )
+    {
+        
+        Real s;
+        
+        for ( UInt icoor = 0; icoor < nDimensions; ++icoor )
+        {
+            VectorElemental::vector_view vec =  elvec.block ( icoor );
+            for ( UInt i = 0; i < fe.nbFEDof(); ++i )
+            {
+                s = 0.0;
+                for ( UInt k = 0; k < nDimensions; ++k )
+                {
+                    for ( UInt ig = 0; ig < fe.nbQuadPt(); ++ig )
+                    {
+                        s += (*M_I8fsE)[ ig ] * exp ( coefExp * (*M_I8fsE)[ ig ] * (*M_I8fsE)[ ig ] ) * (
+                                                                                                                                    
+                            1 / ( ((*M_fAk)[ig] + 1) * ((*M_sAk)[ig] + 1) ) *
+                            
+                            ( (*M_fk)[icoor][ig] * (*M_f0k)[k][ig] + (*M_sk)[icoor][ig] * (*M_s0k)[k][ig] )
+                            
+                            ) *
+                        
+                            fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
+                        
+                    }
+                }
+                vec ( i ) += s * coef;
+            }
+        }
+    }
+    
     
     
 
@@ -1346,10 +1424,15 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         
             // M_fk, M_sk, M_I1Ebar, gamman, gammaf, gammas
         
-            source_P1isoE_Exp ( alpha, gamma, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+            source_P1isoE_Exp ( 3300 , 9.242 , (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
             
-            
-            
+            source_P4fE_Exp ( 185350, 15.972, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+
+            source_P4sE_Exp ( 25640, 10.446, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+
+            source_P8fsE_Exp ( 4170.0, 11.602, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+
+        
             for ( UInt ic = 0; ic < nDimensions; ++ic )
             {
                 /*!
@@ -1858,7 +1941,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Sum up contributions and integrate
-        auto P = Pvol + /*P1E +*/ P4fE + P4sE + P8fsE;
+        auto P = Pvol /*+ P1E + P4fE + P4sE + P8fsE*/;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
