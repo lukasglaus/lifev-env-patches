@@ -659,7 +659,7 @@ public:
                                                                               
                             2 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
                         
-                            (*M_fk)[icoor][ig] * (*M_f0k)[k][ig] *
+                            (*M_fk)[k][ig] * (*M_f0k)[icoor][ig] *
                             
                             ( (*M_I4fE)[ ig ] > 0. )
                           
