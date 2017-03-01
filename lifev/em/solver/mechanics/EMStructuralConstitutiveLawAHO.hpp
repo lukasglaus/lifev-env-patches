@@ -634,6 +634,48 @@ public:
     }
     
     
+    
+    // Source term : Int { coef * exp(coefExp *(  Ic_iso -3 )) * ( J^(-2/3)* (F : \nabla v) - 1/3 * (Ic_iso / J) * (CofF : \nabla v) ) }
+    void  source_P4fE_Exp (   Real                                coef,
+                             Real                                coefExp,
+                             const boost::multi_array<Real, 3 >& CofFk,
+                             const boost::multi_array<Real, 3 >& Fk,
+                             const std::vector<Real>&            Jk,
+                             VectorElemental&                    elvec,
+                             const CurrentFE&                    fe )
+    {
+        
+        Real s;
+        
+        for ( UInt icoor = 0; icoor < nDimensions; ++icoor )
+        {
+            VectorElemental::vector_view vec =  elvec.block ( icoor );
+            for ( UInt i = 0; i < fe.nbFEDof(); ++i )
+            {
+                s = 0.0;
+                for ( UInt k = 0; k < nDimensions; ++k )
+                {
+                    for ( UInt ig = 0; ig < fe.nbQuadPt(); ++ig )
+                    {
+                        s += ( (*M_I4fE)[ ig ] - 1.0 ) * exp ( coefExp * ( (*M_I4fE)[ ig ] - 1.0 ) * ( (*M_I4fE)[ ig ] - 1.0 ) ) * (
+                                                                              
+                            1 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
+                        
+                            (*M_fk)[icoor][ig] * (*M_f0k)[k][ig]
+                          
+                            ) *
+                        
+                            fe.phiDer ( i, k, ig ) * fe.weightDet ( ig );
+                        
+                    }
+                }
+                vec ( i ) += s * coef;
+            }
+        }
+    }
+
+    
+    
 
 protected:
     virtual void setupVectorsParameters ( void ) {}
