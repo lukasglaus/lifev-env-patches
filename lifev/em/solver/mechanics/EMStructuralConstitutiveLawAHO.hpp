@@ -1428,9 +1428,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
             
             source_P4fE_Exp ( 185350, 15.972, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
 
-            source_P4sE_Exp ( 25640, 10.446, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+            //source_P4sE_Exp ( 25640, 10.446, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
 
-            source_P8fsE_Exp ( 4170.0, 11.602, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+            //source_P8fsE_Exp ( 4170.0, 11.602, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
 
         
             for ( UInt ic = 0; ic < nDimensions; ++ic )
@@ -1941,7 +1941,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Sum up contributions and integrate
-        auto P = Pvol /*+ P1E + P4fE + P4sE + P8fsE*/;
+        auto P = Pvol /*+ P1E + P4fE */+ P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
