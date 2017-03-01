@@ -1335,6 +1335,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
     displayer->leaderPrint (" Non-Linear S- computeStiffness2 ");
     displayer->leaderPrint (" \n*********************************\n  ");
     
+    displayer->leaderPrint ( this->M_dispFESpace->qr() );
+
+    
+    
     UInt totalDof   = this->M_dispFESpace->dof().numTotalDof();
     UInt dim = this->M_dispFESpace->dim();
     
