@@ -659,7 +659,7 @@ public:
                                                                               
                             2 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
                         
-                            (*M_fk)[k][ig] * (*M_f0k)[icoor][ig] *
+                            (*M_fk)[icoor][ig] * (*M_f0k)[k][ig] *
                             
                             ( (*M_I4fE)[ ig ] > 0. )
                           
@@ -1316,7 +1316,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
             Real coeffI1bar = 1 - (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 );
             Real coeffI4f = (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 ) - (*M_fAk)[ig] * ((*M_fAk)[ig] + 2) / std::pow( (*M_fAk)[ig] + 1 , 2.0 );
             Real coeffI4s = (*M_nAk)[ig] * ((*M_nAk)[ig] + 2) / std::pow( (*M_nAk)[ig] + 1 , 2.0 ) - (*M_sAk)[ig] * ((*M_sAk)[ig] + 2) / std::pow( (*M_sAk)[ig] + 1 , 2.0 );
-            (*M_I1Ebar)[ig] = coeffI1bar * (*M_trCisok)[ ig ] + coeffI4f * (*M_I4f)[ig] + coeffI4s * (*M_I4s)[ig];
+            (*M_I1Ebar)[ig] = coeffI1bar * (*M_trCisok)[ig] + coeffI4f * (*M_I4f)[ig] + coeffI4s * (*M_I4s)[ig];
         }
         
     }
@@ -1433,7 +1433,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         
             //source_P1isoE_Exp ( 3300 , 9.242 , (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
             
-            source_P4fE_Exp ( 185350, 15.972, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+            //source_P4fE_Exp ( 185350, 15.972, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
 
             //source_P4sE_Exp ( 25640, 10.446, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
 
@@ -1799,7 +1799,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Sum up contributions and integrate
-        auto P = Pvol + P1E /*+ P4fE */+ P4sE + P8fsE;
+        auto P = Pvol + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
