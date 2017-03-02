@@ -1761,8 +1761,10 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
     I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+
     
-    
+    boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
+
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
