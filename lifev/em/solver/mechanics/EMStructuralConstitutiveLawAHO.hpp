@@ -891,6 +891,31 @@ protected:
     };
     
     
+    
+    class DefGrad
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& du)
+        {
+            MatrixSmall<3,3> I;
+            I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+            I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+            I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+            
+            MatrixSmall<3,3> F;
+            F = I + du;
+            
+            return F;
+        }
+        
+        DefGrad() {}
+        ~DefGrad() {}
+    };
+
+    
+    
     class FAInverse
     {
     public:
@@ -1532,6 +1557,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     //std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
 
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
+    boost::shared_ptr<DefGrad> defGrad (new DefGrad);
     
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
@@ -1554,7 +1580,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 //        auto Fz = value(super::M_dispETFESpace, defF[2]);
 //        auto F = eval(defGReAssembler, Fx, Fy, Fz);
         
-        auto F = value(I) + grad(super::M_dispETFESpace, disp, 0);
+        auto F = eval(defGrad, grad(super::M_dispETFESpace, disp, 0)); //value(I) + grad(super::M_dispETFESpace, disp, 0);
         
         auto dF = grad(phi_j);
         auto FmT = minusT(F);
