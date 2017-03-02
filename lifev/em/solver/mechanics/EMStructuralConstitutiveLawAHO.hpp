@@ -943,8 +943,8 @@ protected:
             return ( 3300 * 9.242 / 2.0 * std::exp( 9.242 * I1barE - 3 ) );
         }
         
-        DefGrad() {}
-        ~DefGrad() {}
+        ddP1E() {}
+        ~ddP1E() {}
     };
 
     
