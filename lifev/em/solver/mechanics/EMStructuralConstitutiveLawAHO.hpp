@@ -963,6 +963,9 @@ protected:
             auto JEm23 = pow ( JE , 2 / -3.0 );
             auto dJEm23 = (-2/3.) * JEm23 * FEmT;
             
+            auto I1E = FE.dot(FE);
+            auto I1barE = JEm23 * I1E;
+
             auto term1 = dJEm23.dot( dphij * FAinv ) * 2 * FE;
             auto term2 = JEm23 * 2 * ( dphij * FAinv );
             auto term3 = FE.dot(FE) * (-2.0/3.0) * ( JEm23 * ( (-1.0) * FEmT * ( dphij*FAinv ).transpose() * FEmT ) + dJEm23.dot( dphij*FAinv ) * FEmT );
