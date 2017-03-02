@@ -923,11 +923,6 @@ protected:
         
         return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij)
         {
-            MatrixSmall<3,3> I;
-            I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
-            I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
-            I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
-            
             auto FE = F * FAinv;
             
             auto JE = FE.determinant();
@@ -953,6 +948,47 @@ protected:
         ~ddP1E() {}
     };
 
+    
+    class dP1E
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij)
+        {
+            MatrixSmall<3,3> I;
+            I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+            I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+            I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+            
+            auto FE = F * FAinv;
+            auto FEmT = FE.minusTransposed();
+
+            auto JE = FE.determinant();
+            auto JEm23 = pow ( JE , 2 / -3.0 );
+            auto dJEm23 = (-2/3.) * JEm23 * FEmT
+            
+            auto term1 = dJEm23.dot( dphij * FAinv ) * 2 * FE;
+            auto term2 = JEm23 * 2 * ( dphij * FAinv );
+            auto term3 = FE.dot(FE) * (-2.0/3.0) * ( JEm23 * ( (-1.0) * FEmT * ( dphij*FAinv ).transpose() * FEmT ) + dJEm23.dot( dphij*FAinv ) * FEmT );
+            auto term4 = (2*FE).dot(dphij*FAinv) * dJEm23;
+            
+
+            MatrixSmall<3,3> dP1E;
+            dP1E = dW1(I1barE) * ( term1 + term2 + term3 + term4 ) * FAinv;
+            
+            return dP1E;
+        }
+        
+        Real dW1 (const Real& I1barE)
+        {
+            return ( 3300 / 2.0 * std::exp( 9.242 * (I1barE - 3 ) ) );
+        }
+        
+        dP1E() {}
+        ~dP1E() {}
+    };
+    
     
     
     class FAInverse
@@ -1597,6 +1633,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
     boost::shared_ptr<DefGrad> defGrad (new DefGrad);
+    boost::shared_ptr<dP1E> dP1E_fct (new dP1E);
     boost::shared_ptr<ddP1E> ddP1E_fct (new ddP1E);
     
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
@@ -1691,7 +1728,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto d2JEm23dFE = value(-2.0/3.0) * ( JEm23 *  dFEmTdFE + dJEm23dFE * FEmT );
         auto d2I1barEdFE = dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23;
         auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
-        auto dP1E = dW1E * d2I1barEdFE * FAinv;
+        //auto dP1E = dW1E * d2I1barEdFE * FAinv;
         
         
         auto dI1barEdFE = dot( dI1barE, dFE );
@@ -1699,6 +1736,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         //auto ddP1E = ddW1E * dI1barEdFE * dI1barE * FAinv;
+
+        auto dP1E = eval(dP1E_fct, F, FAinv, grad(phi_j));
         
         auto ddP1E = eval(ddP1E_fct, F, FAinv, grad(phi_j));
         
@@ -1708,15 +1747,15 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( (
+                   dot ( /*(
                          3300 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
                          ( dot(value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE), grad(phi_j)*FAinv) * 2*FE + pow(det(FE), 2 / (-3.) ) * 2*grad(phi_j)*FAinv + dot(FE, FE) * value(-2.0/3.0) * ( pow(det(FE), 2 / (-3.) ) *  value (-1.0) * minusT(FE) * transpose(grad(phi_j)*FAinv) * minusT(FE) + dot(value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE), grad(phi_j)*FAinv) * minusT(FE) ) + dot(2*FE, grad(phi_j)*FAinv) *  value(-2.0/3.0) * pow(det(FE), 2 / (-3.) ) * minusT(FE) )
-                         /*+
+                         +
                          3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
                          dot(  value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) *  minusT(FE) ), grad(phi_j)*FAinv ) *
-                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )*/
+                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
                          ) *
-                         FAinv + ddP1E
+                         FAinv */ dP1E + ddP1E
                         
                         , grad (phi_i) )
                    ) >> this->M_jacobian;
