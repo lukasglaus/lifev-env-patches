@@ -896,12 +896,15 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const LifeV::VectorSmall<3>& f0, const LifeV::VectorSmall<3>& s0, const LifeV::VectorSmall<3>& s0, const Real& gf, const Real& gs, const Real& gn)
+        return_Type operator() (const LifeV::VectorSmall<3>& f0, const LifeV::VectorSmall<3>& s0, const LifeV::VectorSmall<3>& n0, const Real& gf)
         {
             MatrixSmall<3,3> I;
             I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
             I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
             I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+            
+            auto gn = 4 * gf;
+            auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
             MatrixSmall<3,3> FA;
             FA = I - gf/(gf+1) * outerProduct(f0) - gs/(gs+1) * outerProduct(s0) - gn/(gn+1) * outerProduct(n0);
