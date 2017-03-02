@@ -916,6 +916,39 @@ protected:
 
     
     
+    class ddP1E
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& du)
+        {
+            MatrixSmall<3,3> I;
+            I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+            I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+            I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+            
+            
+            Real I1barE = 5;
+            
+            MatrixSmall<3,3> ddP1E;
+            
+            ddP1E = d2W1(I1barE);
+            
+            return ddP1E;
+        }
+        
+        Real d2W1 (const Real& I1barE)
+        {
+            return ( 3300 * 9.242 / 2.0 * std::exp( 9.242 * I1barE - 3 ) );
+        }
+        
+        DefGrad() {}
+        ~DefGrad() {}
+    };
+
+    
+    
     class FAInverse
     {
     public:
@@ -1558,6 +1591,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
     boost::shared_ptr<DefGrad> defGrad (new DefGrad);
+    boost::shared_ptr<ddP1E> ddP1E_fct (new ddP1E);
     
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
