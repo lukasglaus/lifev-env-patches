@@ -946,7 +946,7 @@ protected:
         
         Real d2W1 (const Real& I1barE)
         {
-            return ( 3300 * 9.242 / 2.0 * std::exp( 9.242 * I1barE - 3 ) );
+            return ( 3300 * 9.242 / 2.0 * std::exp( 9.242 * (I1barE - 3 ) ) );
         }
         
         ddP1E() {}
@@ -1692,6 +1692,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto d2I1barEdFE = dJEm23dFE * dI1E + JEm23 * d2I1EdFE + I1E * d2JEm23dFE + dI1EdFE * dJEm23;
         auto dW1E = 3300 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
         auto dP1E = dW1E * d2I1barEdFE * FAinv;
+        
         
         auto dI1barEdFE = dot( dI1barE, dFE );
         auto ddW1E = 3300 * 9.242 / 2.0 * exp ( 9.242 * ( I1barE - 3 ) );
