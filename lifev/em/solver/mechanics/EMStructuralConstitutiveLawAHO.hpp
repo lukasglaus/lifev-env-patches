@@ -921,19 +921,25 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& du)
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij)
         {
             MatrixSmall<3,3> I;
             I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
             I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
             I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
             
+            auto FE = F * FAinv;
             
-            Real I1barE = 5;
+            auto JE = FE.determinant();
+            auto JEm23 = pow ( JE , 2 / -3.0 );
+            
+            auto I1E = FE.dot(FE);
+            auto I1barE = JEm23 * I1E;
+            auto dI1barE = 2 * JEm23 * ( FE - (1/3.) * I1E * FE.minusTransposed() );
+
             
             MatrixSmall<3,3> ddP1E;
-            
-            ddP1E = d2W1(I1barE);
+            ddP1E = d2W1(I1barE) * dot( dI1barE, dphij * FAinv ) * dI1barE * FAinv;
             
             return ddP1E;
         }
