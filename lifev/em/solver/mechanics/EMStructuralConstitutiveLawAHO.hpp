@@ -939,7 +939,7 @@ protected:
 
             
             MatrixSmall<3,3> ddP1E;
-            ddP1E = d2W1(I1barE) * dot( dI1barE, dphij * FAinv ) * dI1barE * FAinv;
+            ddP1E = d2W1(I1barE) * dI1barE.dot( dphij * FAinv ) * dI1barE * FAinv;
             
             return ddP1E;
         }
