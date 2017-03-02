@@ -657,7 +657,7 @@ public:
                     {
                         s += ( (*M_I4fE)[ ig ] - 1.0 ) * exp ( coefExp * ( (*M_I4fE)[ ig ] - 1.0 ) * ( (*M_I4fE)[ ig ] - 1.0 ) ) * (
                                                                               
-                            2 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) *
+                            ( 2 / std::pow( (*M_fAk)[ig] + 1 , 2.0 ) ) *
                         
                             (*M_fk)[icoor][ig] * (*M_f0k)[k][ig] *
                             
@@ -1431,7 +1431,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness2 ( const vector_Typ
         
             // M_fk, M_sk, M_I1Ebar, gamman, gammaf, gammas
         
-            source_P1isoE_Exp ( 3300 , 9.242 , (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
+            //source_P1isoE_Exp ( 3300 , 9.242 , (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
             
             //source_P4fE_Exp ( 185350, 15.972, (*M_CofFk), (*M_Fk), (*M_Jack), *this->M_elvecK, this->M_dispFESpace->fe() );
 
@@ -1700,7 +1700,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     LifeChrono chrono;
     chrono.start();
-    computeStiffness2(disp, factor, dataMaterial, mapsMarkerVolumes, displayer);
+    //computeStiffness2(disp, factor, dataMaterial, mapsMarkerVolumes, displayer);
     chrono.stop();
     this->M_displayer->leaderPrint ("computeStiffness2 function computed in ", chrono.globalDiff ( *this->M_displayer->comm() ), " s\n" );
     
@@ -1799,7 +1799,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         
         // Sum up contributions and integrate
-        auto P = Pvol + P4fE + P4sE + P8fsE;
+        auto P = Pvol + P1E + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
