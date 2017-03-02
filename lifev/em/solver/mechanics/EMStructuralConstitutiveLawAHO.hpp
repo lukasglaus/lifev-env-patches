@@ -1570,7 +1570,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
         auto go = gf * ( k + gf * k + value(1.0) );
-        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 ) ;
+        auto gmn = value(-1.0) * ( k*gf ) / ( ( k*gf ) + 1.0 );
         
         
         // Active strain
