@@ -1575,7 +1575,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         // Active strain
         auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
         //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FAinv = eval(FAInverse, f0, s0, n0, gf, gs, gn);
+        auto FAinv = eval(FAInverse, f0, s0, n0, gf);
         auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
