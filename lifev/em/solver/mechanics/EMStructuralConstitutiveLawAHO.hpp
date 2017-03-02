@@ -896,9 +896,9 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const LifeV::VectorSmall<3>& f0, const LifeV::VectorSmall<3>& s0, const LifeV::VectorSmall<3>& n0, const Real& gf)
+        return_Type operator() (const LifeV::VectorSmall<3>& f0, const Real& gf)
         {
-            MatrixSmall<3,3> I;
+            MatrixSmall<3,3> I; auto s0 (f0); auto n0(f0);
             I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
             I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
             I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
@@ -1576,7 +1576,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         // Active strain
         //auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
         //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
-        auto FAinv = eval(fAInversefct, f0, s0, n0, gf);
+        auto FAinv = eval(fAInversefct, f0, gf);
         auto FE =  F * FAinv;
         auto dFE = dF * FAinv;
         auto FEmT = minusT(FE);
