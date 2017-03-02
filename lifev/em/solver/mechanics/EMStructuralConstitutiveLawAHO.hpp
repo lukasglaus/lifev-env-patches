@@ -1713,8 +1713,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                          /*+
                          3300 * 9.242 / 2.0 * exp ( 9.242 * ( pow ( det(FE), 2 / -3.0 ) *  dot( FE, FE ) - 3 ) ) *
                          dot(  value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) *  minusT(FE) ), grad(phi_j)*FAinv ) *
-                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )
-                         )*/ *
+                         value(2.0) * pow(det(FE), 2 / (-3.) ) * ( FE + value(1/(-3.)) * dot(FE, FE) * minusT(FE) )*/
+                         ) *
                          FAinv + ddP1E
                         
                         , grad (phi_i) )
