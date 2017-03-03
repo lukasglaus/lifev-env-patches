@@ -646,7 +646,7 @@ const flag_Type EvaluationFunctor3<FunctorType, Argument1EvaluationType, Argumen
      <i> Argument3EvaluationType </i> It has to be an Evaluation class.
      
      */
-    template <typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType>, typename Argument4EvaluationType>
+    template <typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType, typename Argument4EvaluationType>
     class EvaluationFunctor4
     {
     public:
