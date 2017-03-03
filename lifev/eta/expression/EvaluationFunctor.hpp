@@ -807,7 +807,7 @@ const flag_Type EvaluationFunctor3<FunctorType, Argument1EvaluationType, Argumen
         //@{
         
         //! No empty constructor
-        EvaluationFunctor3();
+        EvaluationFunctor4();
         
         //@}
         
