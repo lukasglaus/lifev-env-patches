@@ -1010,7 +1010,7 @@ protected:
             
             
             auto f = F * f0;
-            auto I4fE = f.dot(f) / std::pow(M_gf + 1, 2.0);
+            auto I4fE = f.dot(f);
             
             
 //            auto FE = F * FAinv;
@@ -1035,19 +1035,13 @@ protected:
             return dP4fE;
         }
         
-        return_Type operator() (const Real& gf) {
-            
-            M_gf = gf;
-            std::cout << gf;
-        }
-                                            
+        
         Real dW1 (const Real& I1barE)
         {
             return ( 3300 / 2.0 * std::exp( 9.242 * (I1barE - 3 ) ) );
         }
                                             
-        Real M_gf;
-                                        
+        
         dP4fE() {}
         ~dP4fE() {}
     };
@@ -1810,7 +1804,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
-        //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
+        auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
         
         auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
         auto dI4fEdFE =  dot ( dI4fE, dFE );
@@ -1818,9 +1812,22 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
-        eval(dP4fE_fct, gf);
+
         
-        auto dP4fE = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
+        //auto dP4fE = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
+        
+        
+        this->M_displayer->leaderPrint ("\nIntegrate P4fE in \n");
+        
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( dP4fE + ddP4fE , grad (phi_i) )
+                   ) >> this->M_jacobian;
+        
+        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+        
         
 //        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
 //                   quadRuleTetra4pt,
@@ -1888,7 +1895,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         this->M_displayer->leaderPrint ("\nIntegrate total in \n");
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ + dP4fE /*+ ddP4fE*/ + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ /*+ dP4fE + ddP4fE*/ + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
