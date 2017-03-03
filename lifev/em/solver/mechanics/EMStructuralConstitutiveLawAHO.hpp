@@ -1053,7 +1053,7 @@ protected:
             auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
             
             auto dFE = gradPhiJ * FAinv;
-            auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
+            auto d2I4fEdFE = 2.0 * outerProduct( dFE * f0, f0 );
 
             auto dP4fE = dW4f(I4fE) * d2I4fEdFE * FAinv;
             
@@ -1065,7 +1065,19 @@ protected:
             auto I4m1fE = I4fE - 1.0;
             return ( 185350 * I4m1fE * std::exp (15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
         }
-                                            
+        
+        return_Type outerProduct(const LifeV::VectorSmall<3>& f, const LifeV::VectorSmall<3>& s)
+        {
+            MatrixSmall<3,3> M;
+            for (UInt i (0); i < 3; ++i)
+            {
+                for (UInt j (0); j < 3; ++j)
+                {
+                    M(i,j) = f(i) * s(j);
+                }
+            }
+            return M;
+        }
         
         dP4fE() {}
         ~dP4fE() {}
