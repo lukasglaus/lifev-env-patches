@@ -994,7 +994,7 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij, const LifeV::VectorSmall<3>& i0)
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij)
         {
             
 //            auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
@@ -1008,6 +1008,8 @@ protected:
 //            auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
 //            auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
             
+            
+            //auto I4fE =
             
             
 //            auto FE = F * FAinv;
@@ -1820,7 +1822,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
-        auto ddP4fE_ = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
+        auto ddP4fE_ = eval(dP4fE_fct, F, FAinv, grad(phi_j));
         
 //        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
 //                   quadRuleTetra4pt,
