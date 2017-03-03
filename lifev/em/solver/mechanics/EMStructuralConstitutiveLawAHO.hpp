@@ -1111,6 +1111,67 @@ protected:
     };
     
     
+    class dP8fsE
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& M, const LifeV::VectorSmall<3>& f0, const LifeV::VectorSmall<3>& s0, const Real& gf)
+        {
+            // dP
+            auto F = M[0];
+            auto FAinv = M[1];
+            auto gradPhiJ = M[2];
+            
+            auto gn = 4 * gf;
+            auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
+            
+            auto f = F * f0;
+            auto s = F * s0;
+            auto I8fsE = f.dot(s) / ( (gf + 1) * (gs + 1) );
+            
+            auto dFE = gradPhiJ * FAinv;
+            auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+            
+            auto dP8fsE = dW8fs(I8fsE) * d2I8EdFE * FAinv;
+            
+            // ddP
+            auto FE = F * FAinv;
+            auto dI8E = FE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+            auto dI8EdFE = dI8E.dot ( dFE );
+            auto ddP8fsE = ddW8fs(I8fsE) * dI8EdFE * dI8E * FAinv;
+            
+            return (dP8fsE + ddP8fsE);
+        }
+        
+        Real dW8fs (const Real& I8fsE)
+        {
+            return ( 4170 * I8fsE * std::exp (11.602 * I8fsE * I8fsE ) );
+        }
+        
+        Real ddW8fs (const Real& I8fsE)
+        {
+            return ( 4170 * std::exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 ) );
+        }
+        
+        return_Type outerProduct(const LifeV::VectorSmall<3>& f, const LifeV::VectorSmall<3>& s)
+        {
+            MatrixSmall<3,3> M;
+            for (UInt i (0); i < 3; ++i)
+            {
+                for (UInt j (0); j < 3; ++j)
+                {
+                    M(i,j) = f(i) * s(j);
+                }
+            }
+            return M;
+        }
+        
+        dP8fsE() {}
+        ~dP8fsE() {}
+    };
+    
+    
     class CreateStdVector
     {
     public:
@@ -1803,6 +1864,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     boost::shared_ptr<ddP1E> ddP1E_fct (new ddP1E);
     boost::shared_ptr<dP4fE> dP4fE_fct (new dP4fE);
     boost::shared_ptr<dP4sE> dP4sE_fct (new dP4sE);
+    boost::shared_ptr<dP8fsE> dP8fsE_fct (new dP8fsE);
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
@@ -1970,16 +2032,32 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         
         // P8fsE
-        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
-        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
-        auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto dP8fsE = dW8fsE * d2I8EdFE * FAinv;
-
-        auto dI8E = FE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
-        auto dI8EdFE = dot ( dI8E , dFE );
-        auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
-        auto ddP8fsE = ddW8fsE * dI8EdFE * dI8E * FAinv;
+//        auto I8fsE = dot (f,s) / ( (gf + 1) * (gs + 1) );
+//        auto dW8fsE = 4170 * I8fsE * exp ( 11.602 * I8fsE * I8fsE );
+//        auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+//        auto dP8fsE = dW8fsE * d2I8EdFE * FAinv;
+//
+//        auto dI8E = FE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+//        auto dI8EdFE = dot ( dI8E , dFE );
+//        auto ddW8fsE = 4170.0 * exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 );
+//        auto ddP8fsE = ddW8fsE * dI8EdFE * dI8E * FAinv;
+//        
         
+        
+        // P4sE
+        
+        this->M_displayer->leaderPrint ("\nIntegrate P8fsE in \n");
+        
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( eval(dP8fsE_fct, M, f0, s0, gf) , grad (phi_i) )
+                   ) >> this->M_jacobian;
+        
+        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+        
+
         
 //        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
 //                   quadRuleTetra4pt,
@@ -1996,7 +2074,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         this->M_displayer->leaderPrint ("\nIntegrate total in \n");
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ /*+ dP4fE + ddP4fE + dP4sE + ddP4sE*/ + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ /*+ dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE*/;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
