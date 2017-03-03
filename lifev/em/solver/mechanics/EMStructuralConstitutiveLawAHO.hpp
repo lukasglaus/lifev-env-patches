@@ -317,6 +317,14 @@ public:
                                             const displayerPtr_Type& displayer );
     
 
+
+    //! Computes the deformation Gradient F, the cofactor of F Cof(F),
+    //! the determinant of F J = det(F), the trace of C Tr(C).
+    /*!
+      \param dk_loc: local displacement vector
+    */
+    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ) {}
+    
     
     
     //! Output of the class
