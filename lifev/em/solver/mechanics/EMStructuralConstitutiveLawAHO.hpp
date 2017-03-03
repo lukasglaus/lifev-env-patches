@@ -1050,6 +1050,67 @@ protected:
     };
 
     
+    class dP4sE
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& M, const LifeV::VectorSmall<3>& f0, const Real& gf)
+        {
+            // dP
+            auto F = M[0];
+            auto FAinv = M[1];
+            auto gradPhiJ = M[2];
+            
+            auto f = F * f0;
+            auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
+            
+            auto dFE = gradPhiJ * FAinv;
+            auto d2I4fEdFE = 2.0 * outerProduct( dFE * f0, f0 );
+            
+            auto dP4fE = dW4s(I4fE) * d2I4fEdFE * FAinv;
+            
+            // ddP
+            auto FE = F * FAinv;
+            auto dI4fE = 2.0 * outerProduct( FE * f0, f0 );
+            auto dI4fEdFE =  dI4fE.dot( dFE );
+            
+            auto ddP4fE = ddW4s(I4fE) * dI4fEdFE * dI4fE * FAinv;
+            
+            
+            return (dP4fE + ddP4fE);
+        }
+        
+        Real dW4s (const Real& I4fE)
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 25640 * I4m1fE * std::exp (10.446 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+        
+        Real ddW4s (const Real& I4fE)
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 25640 * std::exp ( 10.446 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 10.446 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+        
+        return_Type outerProduct(const LifeV::VectorSmall<3>& f, const LifeV::VectorSmall<3>& s)
+        {
+            MatrixSmall<3,3> M;
+            for (UInt i (0); i < 3; ++i)
+            {
+                for (UInt j (0); j < 3; ++j)
+                {
+                    M(i,j) = f(i) * s(j);
+                }
+            }
+            return M;
+        }
+        
+        dP4sE() {}
+        ~dP4sE() {}
+    };
+    
+    
     class CreateStdVector
     {
     public:
@@ -1741,6 +1802,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     boost::shared_ptr<dP1E> dP1E_fct (new dP1E);
     boost::shared_ptr<ddP1E> ddP1E_fct (new ddP1E);
     boost::shared_ptr<dP4fE> dP4fE_fct (new dP4fE);
+    boost::shared_ptr<dP4sE> dP4sE_fct (new dP4sE);
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
@@ -1863,20 +1925,34 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
         
         
+        
+        
+        
+        this->M_displayer->leaderPrint ("\nIntegrate P4sE in \n");
+        
+        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+                   quadRuleTetra4pt,
+                   super::M_dispETFESpace,
+                   super::M_dispETFESpace,
+                   dot ( eval(dP4sE_fct, M, s0, gs) , grad (phi_i) )
+                   ) >> this->M_jacobian;
+        
+        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+        
 
         
         
         // P4sE
-        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
-        auto I4m1sE = I4sE - 1.0;
-        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto d2I4sEdFE = value(2.0) * outerProduct( dFE * s0, s0 );
-        auto dP4sE = dW4sE * d2I4sEdFE * FAinv;
-
-        auto dI4sE = value(2.0) * outerProduct( FE*s0, s0 );
-        auto dI4sEdFE =  dot ( dI4sE, dFE );
-        auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
-        auto ddP4sE = ddW4sE * dI4sEdFE * dI4sE * FAinv;
+//        auto I4sE = dot (s,s) / pow (gs + 1, 2.0);
+//        auto I4m1sE = I4sE - 1.0;
+//        auto dW4sE = 25640 * I4m1sE * exp (10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+//        auto d2I4sEdFE = value(2.0) * outerProduct( dFE * s0, s0 );
+//        auto dP4sE = dW4sE * d2I4sEdFE * FAinv;
+//
+//        auto dI4sE = value(2.0) * outerProduct( FE*s0, s0 );
+//        auto dI4sEdFE =  dot ( dI4sE, dFE );
+//        auto ddW4sE = 25640 * exp ( 10.446 * I4m1sE * I4m1sE ) * ( 1.0 + 2.0 * 10.446 * I4m1sE * I4m1sE ) * eval(heaviside, I4m1sE);
+//        auto ddP4sE = ddW4sE * dI4sEdFE * dI4sE * FAinv;
         
 //        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
 //                   quadRuleTetra4pt,
@@ -1920,7 +1996,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         this->M_displayer->leaderPrint ("\nIntegrate total in \n");
         // Sum up contributions and integrate
-        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ /*+ dP4fE + ddP4fE*/ + dP4sE + ddP4sE + dP8fsE + ddP8fsE;
+        auto dP = dPvol + ddPvol /*+ dP1E + ddP1E*/ /*+ dP4fE + ddP4fE + dP4sE + ddP4sE*/ + dP8fsE + ddP8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
