@@ -1850,24 +1850,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         auto M = eval(csv, F, FAinv, grad(phi_j));
 
-    
-//        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
-//        auto I4m1fE = I4fE - 1.0;
-//        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//        auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
-//        //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
-//        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
-//        
-//        
-//        auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
-//        auto dI4fEdFE =  dot ( dI4fE, dFE );
-//        auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//        auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
-
-
-        
-        //auto dP4fE = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
-        
         
         this->M_displayer->leaderPrint ("\nIntegrate P4fE in \n");
         
