@@ -820,15 +820,15 @@ const flag_Type EvaluationFunctor3<FunctorType, Argument1EvaluationType, Argumen
     };
     
     
-    template<typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType>, typename Argument4EvaluationType>
+    template<typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType, typename Argument4EvaluationType>
     const flag_Type EvaluationFunctor4<FunctorType, Argument1EvaluationType, Argument2EvaluationType, Argument3EvaluationType, Argument4EvaluationType>::S_globalUpdateFlag
     = Argument1EvaluationType::S_globalUpdateFlag | Argument2EvaluationType::S_globalUpdateFlag | Argument3EvaluationType::S_globalUpdateFlag | Argument4EvaluationType::S_globalUpdateFlag;
     
-    template<typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType>, typename Argument4EvaluationType>
+    template<typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType, typename Argument4EvaluationType>
     const flag_Type EvaluationFunctor4<FunctorType, Argument1EvaluationType, Argument2EvaluationType, Argument3EvaluationType, Argument4EvaluationType>::S_testUpdateFlag
     = Argument1EvaluationType::S_testUpdateFlag | Argument2EvaluationType::S_testUpdateFlag | Argument3EvaluationType::S_testUpdateFlag  | Argument4EvaluationType::S_testUpdateFlag;
     
-    template<typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType>, typename Argument4EvaluationType>
+    template<typename FunctorType, typename Argument1EvaluationType, typename Argument2EvaluationType, typename Argument3EvaluationType, typename Argument4EvaluationType>
     const flag_Type EvaluationFunctor4<FunctorType, Argument1EvaluationType, Argument2EvaluationType, Argument3EvaluationType, Argument4EvaluationType>::S_solutionUpdateFlag
     = Argument1EvaluationType::S_solutionUpdateFlag | Argument2EvaluationType::S_solutionUpdateFlag | Argument3EvaluationType::S_solutionUpdateFlag  | Argument4EvaluationType::S_solutionUpdateFlag;
 
