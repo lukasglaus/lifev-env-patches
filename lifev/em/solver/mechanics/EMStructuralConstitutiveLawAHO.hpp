@@ -994,57 +994,9 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij, const LifeV::VectorSmall<3>& f0)
-        {
-            
-//            auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
-//            auto I4m1fE = I4fE - 1.0;
-//            auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//            auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
-//            auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
-//            
-//            auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
-//            auto dI4fEdFE =  dot ( dI4fE, dFE );
-//            auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-//            auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
-            
-            
-            auto f = F * f0;
-            auto I4fE = f.dot(f);
-            
-            
-//            auto FE = F * FAinv;
-//            auto FEmT = FE.minusTransposed();
-//            
-//            auto JE = FE.determinant();
-//            auto JEm23 = pow ( JE , 2 / -3.0 );
-//            auto dJEm23 = (-2/3.) * JEm23 * FEmT;
-//            
-//            auto I1E = FE.dot(FE);
-//            auto I1barE = JEm23 * I1E;
-//            
-//            auto term1 = dJEm23.dot( dphij * FAinv ) * 2 * FE;
-//            auto term2 = JEm23 * 2 * ( dphij * FAinv );
-//            auto term3 = FE.dot(FE) * (-2.0/3.0) * ( JEm23 * ( (-1.0) * FEmT * ( dphij*FAinv ).transpose() * FEmT ) + dJEm23.dot( dphij*FAinv ) * FEmT );
-//            auto term4 = (2*FE).dot(dphij*FAinv) * dJEm23;
-            
-            
-            MatrixSmall<3,3> dP4fE;
-            dP4fE = dW4f(1) * FAinv;
-            
-            return dP4fE;
-        }
-        
-        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::VectorSmall<3>& f0, const Real& gf)
-        {
-            auto f = F * f0;
-            auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
-            auto dW4fE = dW4f(I4fE);
-            return ( dW4fE * FAinv );
-        }
-        
         return_Type operator() (const std::vector<MatrixSmall<3,3> >& M, const LifeV::VectorSmall<3>& f0, const Real& gf)
         {
+            // dP
             auto F = M[0];
             auto FAinv = M[1];
             auto gradPhiJ = M[2];
@@ -1057,13 +1009,27 @@ protected:
 
             auto dP4fE = dW4f(I4fE) * d2I4fEdFE * FAinv;
             
-            return dP4fE;
+            // ddP
+            auto FE = F * FAinv;
+            auto dI4fE = 2.0 * outerProduct( FE * f0, f0 );
+            auto dI4fEdFE =  dI4fE.dot( dFE );
+            
+            auto ddP4fE = ddW4f(I4fE) * dI4fEdFE * dI4fE * FAinv;
+
+            
+            return (dP4fE + ddP4fE);
         }
 
         Real dW4f (const Real& I4fE)
         {
             auto I4m1fE = I4fE - 1.0;
             return ( 185350 * I4m1fE * std::exp (15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+        
+        Real ddW4f (const Real& I4fE)
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 185350 * std::exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
         }
         
         return_Type outerProduct(const LifeV::VectorSmall<3>& f, const LifeV::VectorSmall<3>& s)
@@ -1885,18 +1851,18 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto M = eval(csv, F, FAinv, grad(phi_j));
 
     
-        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
-        auto I4m1fE = I4fE - 1.0;
-        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-        auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
-        //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
-        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
-        
-        
-        auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
-        auto dI4fEdFE =  dot ( dI4fE, dFE );
-        auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
-        auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
+//        auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
+//        auto I4m1fE = I4fE - 1.0;
+//        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+//        auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
+//        //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
+//        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
+//        
+//        
+//        auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
+//        auto dI4fEdFE =  dot ( dI4fE, dFE );
+//        auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+//        auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
 
         
@@ -1909,22 +1875,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( dP4fE + ddP4fE , grad (phi_i) )
+                   dot ( eval(dP4fE_fct, M, f0, gf) , grad (phi_i) )
                    ) >> this->M_jacobian;
         
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
         
         
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( ( 185350 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * exp (15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) *  value(2.0) * outerProduct( grad(phi_j)*FAinv * f0, f0 ) +
-//                       185350 * exp ( 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * ( 1.0 + 2.0 * 15.972 * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) * (dot (f,f) / pow (gf + 1, 2.0) - 1.0) ) * eval(heaviside, (dot (f,f) / pow (gf + 1, 2.0) - 1.0)) * dot ( value(2.0) * outerProduct( (F*FAinv)*f0, f0 ), grad(phi_j)*FAinv ) * value(2.0) * outerProduct( (F*FAinv)*f0, f0 )
-//                       ) * FAinv
-//                        
-//                        , grad (phi_i) )
-//                   ) >> this->M_jacobian;
+
         
         
         // P4sE
