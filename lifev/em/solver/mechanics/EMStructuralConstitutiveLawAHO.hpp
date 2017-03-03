@@ -316,22 +316,7 @@ public:
                                             const mapMarkerIndexesPtr_Type mapsMarkerIndexes,
                                             const displayerPtr_Type& displayer );
     
-    void computeStiffness2 (    const vector_Type& sol,
-                                Real /*factor*/,
-                                const dataPtr_Type& dataMaterial,
-                                const mapMarkerVolumesPtr_Type mapsMarkerVolumes,
-                                const displayerPtr_Type& displayer );
 
-
-    //! Computes the deformation Gradient F, the cofactor of F Cof(F),
-    //! the determinant of F J = det(F), the trace of C Tr(C).
-    /*!
-      \param dk_loc: local displacement vector
-    */
-    inline virtual  void computeKinematicsVariables ( const VectorElemental& dk_loc ); // {}
-
-    inline virtual  void computeAnisotropyVariables ( const VectorElemental& fk_loc, const VectorElemental& sk_loc, const VectorElemental& fAk_loc );
-    
     
     
     //! Output of the class
