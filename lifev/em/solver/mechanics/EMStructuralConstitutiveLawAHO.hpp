@@ -1031,7 +1031,7 @@ protected:
             MatrixSmall<3,3> dP4fE;
             dP4fE = dW1(1) * FAinv;
             
-            return dP4fE;
+            return dphij;
         }
         
         Real dW1 (const Real& I1barE)
