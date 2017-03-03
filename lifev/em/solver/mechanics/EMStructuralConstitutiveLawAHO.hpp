@@ -1926,7 +1926,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         
-        
+        // P4sE
         
         this->M_displayer->leaderPrint ("\nIntegrate P4sE in \n");
         
