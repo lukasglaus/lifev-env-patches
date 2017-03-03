@@ -1029,7 +1029,7 @@ protected:
             
             
             MatrixSmall<3,3> dP4fE;
-            dP4fE = grad(phi_j); //dW1(1) * FAinv;
+            dP4fE = dW1(1) * FAinv;
             
             return dP4fE;
         }
@@ -1822,7 +1822,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
-        auto ddP4fE_ = eval(dP4fE_fct, F, FAinv, grad(phi_j));
+        std::vector<MatrixSmall<3,3> > FF = [FAinv, F, grad(phi_j)];
+        
+        auto ddP4fE_ = eval(dP4fE_fct, FF, FAinv, grad(phi_j));
         
 //        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
 //                   quadRuleTetra4pt,
