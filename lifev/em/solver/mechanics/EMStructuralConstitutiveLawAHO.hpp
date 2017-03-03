@@ -1029,9 +1029,9 @@ protected:
             
             
             MatrixSmall<3,3> dP4fE;
-            dP4fE = dW1(1) * FAinv;
+            dP4fE = grad(phi_j); //dW1(1) * FAinv;
             
-            return dphij;
+            return dP4fE;
         }
         
         Real dW1 (const Real& I1barE)
