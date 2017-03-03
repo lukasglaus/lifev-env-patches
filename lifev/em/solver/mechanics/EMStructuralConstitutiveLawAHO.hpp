@@ -1823,7 +1823,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
-        auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
+        //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
         
         auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
         auto dI4fEdFE =  dot ( dI4fE, dFE );
