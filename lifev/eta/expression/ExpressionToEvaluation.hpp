@@ -492,6 +492,28 @@ private:
     ~ExpressionToEvaluation();
 };
 
+    
+    // Specialized for a functor 4 arguments
+    template<typename Functor, typename Expression1, typename Expression2, typename Expression3, typename Expression4, UInt testDim, UInt solutionDim, UInt spaceDim>
+    class ExpressionToEvaluation <
+    ExpressionFunctor4<Functor, Expression1, Expression2, Expression3, Expression4>
+    , testDim
+    , solutionDim
+    , spaceDim >
+    {
+    public:
+        typedef EvaluationFunctor4 <
+        Functor,
+        typename ExpressionToEvaluation<Expression1, testDim, solutionDim, spaceDim>::evaluation_Type,
+        typename ExpressionToEvaluation<Expression2, testDim, solutionDim, spaceDim>::evaluation_Type,
+        typename ExpressionToEvaluation<Expression3, testDim, solutionDim, spaceDim>::evaluation_Type,
+        typename ExpressionToEvaluation<Expression4, testDim, solutionDim, spaceDim>::evaluation_Type
+        > evaluation_Type;
+    private:
+        ExpressionToEvaluation();
+        ~ExpressionToEvaluation();
+    };
+
 
 // Specialized for a sum
 template<typename ExpressionL, typename ExpressionR, UInt testDim, UInt solutionDim, UInt spaceDim>
