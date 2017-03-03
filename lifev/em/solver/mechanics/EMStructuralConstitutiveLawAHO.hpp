@@ -1286,11 +1286,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         this->M_displayer->leaderPrint ("\nIntegrate Pvol in \n");
         
+        auto dPvol = eval(dPvol_fct, F, grad(phi_j));
+        
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( eval(dPvol_fct, F, grad(phi_j)) , grad (phi_i) )
+                   dot ( dPvol , grad (phi_i) )
                    ) >> this->M_jacobian;
         
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
@@ -1299,11 +1301,10 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         // P1E
         
+        this->M_displayer->leaderPrint ("\nIntegrate P1E in \n");
+        
         auto dP1E = eval(dP1E_fct, F, FAinv, grad(phi_j));
         auto ddP1E = eval(ddP1E_fct, F, FAinv, grad(phi_j));
-        
-        
-        this->M_displayer->leaderPrint ("\nIntegrate P1E in \n");
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
@@ -1317,17 +1318,17 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // P4fE
-        
-        auto M = eval(csv, F, FAinv, grad(phi_j));
 
-        
         this->M_displayer->leaderPrint ("\nIntegrate P4fE in \n");
+
+        auto M = eval(csv, F, FAinv, grad(phi_j));
+        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( eval(dP4fE_fct, M, f0, gf) , grad (phi_i) )
+                   dot ( dP4fE , grad (phi_i) )
                    ) >> this->M_jacobian;
         
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
@@ -1338,11 +1339,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         this->M_displayer->leaderPrint ("\nIntegrate P4sE in \n");
         
+        auto dP4sE = eval(dP4sE_fct, M, s0, gs);
+        
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( eval(dP4sE_fct, M, s0, gs) , grad (phi_i) )
+                   dot ( dP4sE , grad (phi_i) )
                    ) >> this->M_jacobian;
         
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
@@ -1353,11 +1356,13 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         this->M_displayer->leaderPrint ("\nIntegrate P8fsE in \n");
         
+        dP8fsE = eval(dP8fsE_fct, M, f0, s0, gf);
+        
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( eval(dP8fsE_fct, M, f0, s0, gf) , grad (phi_i) )
+                   dot ( dP8fsE , grad (phi_i) )
                    ) >> this->M_jacobian;
         
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
