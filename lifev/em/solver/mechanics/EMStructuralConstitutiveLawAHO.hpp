@@ -1047,7 +1047,7 @@ protected:
         Real dW4f (const Real& I4fE)
         {
             auto I4m1fE = I4fE - 1.0;
-            return ( 185350 * I4m1fE * std::exp (15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.);
+            return ( 185350 * I4m1fE * std::exp (15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
         }
                                             
         
