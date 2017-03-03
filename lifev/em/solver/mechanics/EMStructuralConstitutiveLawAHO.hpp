@@ -1043,7 +1043,15 @@ protected:
             return ( dW4fE * FAinv );
         }
         
-        
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& F_vec, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::VectorSmall<3>& f0, const Real& gf)
+        {
+            auto F = F_vec[0];
+            auto f = F * f0;
+            auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
+            auto dW4fE = dW4f(I4fE);
+            return ( dW4fE * FAinv );
+        }
+
         Real dW4f (const Real& I4fE)
         {
             auto I4m1fE = I4fE - 1.0;
@@ -1056,7 +1064,24 @@ protected:
     };
 
     
-    
+    class CreateStdVector
+    {
+    public:
+        typedef std::vector<MatrixSmall<3,3> > return_Type;
+        
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F1, const LifeV::MatrixSmall<3,3>& F2, const LifeV::MatrixSmall<3,3>& F3)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            a.push_back(F3);
+            return a;
+        }
+        
+        CreateStdVector() {}
+        ~CreateStdVector() {}
+    };
+
     
     class FAInverse
     {
@@ -1698,6 +1723,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
     //std::vector<VectorEpetra> defF = computeGlobalDeformationGradientVector(this->M_dispFESpace, disp);
 
+    boost::shared_ptr<CreateStdVector> csv (new CreateStdVector);
+
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
     boost::shared_ptr<DefGrad> defGrad (new DefGrad);
     boost::shared_ptr<dP1E> dP1E_fct (new dP1E);
@@ -1809,12 +1836,16 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         
         // P4fE
+        
+        auto F_vec = eval(csv, F, FAinv, grad(phi_j));
+
+    
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
         //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
-        auto dP4fE = d2I4fEdFE * eval(dP4fE_fct, F, FAinv, f0, gf);
+        auto dP4fE = d2I4fEdFE * eval(dP4fE_fct, F_vec, FAinv, f0, gf);
         
         
         auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
@@ -1822,7 +1853,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddW4fE = 185350 * exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
-        
 
         
         //auto dP4fE = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
