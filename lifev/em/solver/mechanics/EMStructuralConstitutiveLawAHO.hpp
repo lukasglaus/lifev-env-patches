@@ -1356,7 +1356,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         
         this->M_displayer->leaderPrint ("\nIntegrate P8fsE in \n");
         
-        dP8fsE = eval(dP8fsE_fct, M, f0, s0, gf);
+        auto dP8fsE = eval(dP8fsE_fct, M, f0, s0, gf);
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
