@@ -1820,7 +1820,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
-        ddP4fE_ = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
+        auto ddP4fE_ = eval(dP4fE_fct, F, FAinv, grad(phi_j), f0);
         
 //        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
 //                   quadRuleTetra4pt,
