@@ -1030,15 +1030,24 @@ protected:
             
             
             MatrixSmall<3,3> dP4fE;
-            dP4fE = dW1(1) * FAinv;
+            dP4fE = dW4f(1) * FAinv;
             
             return dP4fE;
         }
         
-        
-        Real dW1 (const Real& I1barE)
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::VectorSmall<3>& f0, const Real& gf)
         {
-            return ( 3300 / 2.0 * std::exp( 9.242 * (I1barE - 3 ) ) );
+            auto f = F * f0;
+            auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
+            auto dW4fE = dW4f(I4fE);
+            return ( dW4fE * FAinv );
+        }
+        
+        
+        Real dW4f (const Real& I4fE)
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 185350 * I4m1fE * std::exp (15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.);
         }
                                             
         
@@ -1804,7 +1813,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto I4m1fE = I4fE - 1.0;
         auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto d2I4fEdFE = value(2.0) * outerProduct( dFE * f0, f0 );
-        auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
+        //auto dP4fE = dW4fE * d2I4fEdFE * FAinv;
+        auto dP4fE = d2I4fEdFE * eval(dP4fE_fct, F, FAinv, f0, gf);
+        
         
         auto dI4fE = value(2.0) * outerProduct( FE*f0, f0 );
         auto dI4fEdFE =  dot ( dI4fE, dFE );
