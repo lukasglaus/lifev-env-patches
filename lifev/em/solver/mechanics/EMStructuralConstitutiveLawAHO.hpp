@@ -1069,12 +1069,37 @@ protected:
     public:
         typedef std::vector<MatrixSmall<3,3> > return_Type;
         
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F1)
+        {
+            return_Type a;
+            a.push_back(F1); std::cout << 1;
+            return a;
+        }
+
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F1, const LifeV::MatrixSmall<3,3>& F2)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2); std::cout << 2;
+            return a;
+        }
+        
         return_Type operator() (const LifeV::MatrixSmall<3,3>& F1, const LifeV::MatrixSmall<3,3>& F2, const LifeV::MatrixSmall<3,3>& F3)
         {
             return_Type a;
             a.push_back(F1);
             a.push_back(F2);
+            a.push_back(F3); std::cout << 3;
+            return a;
+        }
+                                
+        return_Type operator() (const LifeV::MatrixSmall<3,3>& F1, const LifeV::MatrixSmall<3,3>& F2, const LifeV::MatrixSmall<3,3>& F3, const LifeV::MatrixSmall<3,3>& F4)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
             a.push_back(F3);
+            a.push_back(F4); std::cout << 4;
             return a;
         }
         
