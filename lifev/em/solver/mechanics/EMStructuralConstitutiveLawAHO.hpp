@@ -994,7 +994,7 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const LifeV::MatrixSmall<3,3>& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij)
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& F, const LifeV::MatrixSmall<3,3>& FAinv, const LifeV::MatrixSmall<3,3>& dphij)
         {
             
 //            auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
@@ -1822,7 +1822,9 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto ddP4fE = ddW4fE * dI4fEdFE * dI4fE * FAinv;
 
         
-        std::vector<MatrixSmall<3,3> > FF = [FAinv, F, grad(phi_j)];
+        std::vector<MatrixSmall<3,3> > FF;
+        FF.push_back(F);
+        FF.push_back(FAinv);
         
         auto ddP4fE_ = eval(dP4fE_fct, FF, FAinv, grad(phi_j));
         
