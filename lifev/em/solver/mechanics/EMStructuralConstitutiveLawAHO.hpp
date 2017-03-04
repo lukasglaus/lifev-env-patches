@@ -967,6 +967,8 @@ protected:
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
+            auto F = deformationGradient(grad_u);
+            
             MatrixSmall<3,3> FAinv;
             FAinv = identity() - gf/(gf+1) * outerProduct(f0,f0) - gs/(gs+1) * outerProduct(s0,s0) - gn/(gn+1) * outerProduct(n0,n0);
             
@@ -976,7 +978,7 @@ protected:
             auto FmT = F.minusTransposed();
             auto dJ = J * FmT;
             
-            auto dJdF = dJ.dot(dphij);
+            auto dJdF = dJ.dot(grad_phij);
             auto dFT = dphij.transpose();
             auto dFmTdF = - 1.0 * FmT * dFT * FmT;
             auto d2JdF = dJdF * FmT + J * dFmTdF;
@@ -1017,7 +1019,7 @@ protected:
             auto f = F * f0;
             auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
             
-            auto dFE = gradPhiJ * FAinv;
+            auto dFE = grad_phij * FAinv;
             auto d2I4fEdFE = 2.0 * outerProduct( dFE * f0, f0 );
             
             auto dP4fE = dW4f(I4fE) * d2I4fEdFE * FAinv;
