@@ -617,6 +617,8 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
     std::string data_file_name = dataFile.get (0, "NO_DATA_FILENAME_FOUND");
 
     dFESpace->setQuadRule(quadRuleTetra4pt);
+    //if (M_commPtr -> MyPID() == 0) std::cout << "\nPolynomial degree: " << dFESpace->polynomialDegree();
+    //if (M_commPtr -> MyPID() == 0) std::cout << "\nDof: " << dFESpace->dof() << std::endl;
     
     setupMechanicalBC (data_file_name, "solid",  dFESpace);
     M_EMStructuralOperatorPtr.reset (new structuralOperator_Type() );

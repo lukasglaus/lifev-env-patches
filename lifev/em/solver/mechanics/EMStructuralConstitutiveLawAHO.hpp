@@ -948,7 +948,234 @@ protected:
     };
     
     
-    class CreateStdVector
+    class HolzapfelOgdenMaterial
+    {
+    public:
+        typedef LifeV::MatrixSmall<3,3> return_Type;
+        
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3,3> >& vectors, const Real& gf)
+        {
+            auto grad_u = matrices[0];
+            auto grad_phij = matrices[1];
+            
+            auto f0 = vectors[0];
+            auto s0 = vectors[1];
+            normalize(f0);
+            orthoNormalize(s0, f0);
+            auto n0 = crossProduct(f0, s0);
+            
+            auto gn = 4 * gf;
+            auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
+            
+            MatrixSmall<3,3> FAinv;
+            FAinv = identity() - gf/(gf+1) * outerProduct(f0,f0) - gs/(gs+1) * outerProduct(s0,s0) - gn/(gn+1) * outerProduct(n0,n0);
+            
+            
+            // Pvol
+            auto J = F.determinant();
+            auto FmT = F.minusTransposed();
+            auto dJ = J * FmT;
+            
+            auto dJdF = dJ.dot(dphij);
+            auto dFT = dphij.transpose();
+            auto dFmTdF = - 1.0 * FmT * dFT * FmT;
+            auto d2JdF = dJdF * FmT + J * dFmTdF;
+            auto dWvol = ( 3500000 * ( J + J * std::log(J) - 1. ) ) / ( 2 * J );
+            auto dPvol = dWvol * d2JdF;
+            
+            auto ddWvol = ( 3500000 * ( J + 1. ) ) / ( 2. * J * J );
+            auto ddPvol = ddWvol * dJdF * dJ;
+            
+            
+            // P1E
+            auto FE = F * FAinv;
+            auto FEmT = FE.minusTransposed();
+            
+            auto JE = FE.determinant();
+            auto JEm23 = pow ( JE , 2 / -3.0 );
+            auto dJEm23 = (-2/3.) * JEm23 * FEmT;
+            
+            auto I1E = FE.dot(FE);
+            auto I1barE = JEm23 * I1E;
+            
+            auto term1 = dJEm23.dot( dphij * FAinv ) * 2 * FE;
+            auto term2 = JEm23 * 2 * ( dphij * FAinv );
+            auto term3 = FE.dot(FE) * (-2.0/3.0) * ( JEm23 * ( (-1.0) * FEmT * ( dphij*FAinv ).transpose() * FEmT ) + dJEm23.dot( dphij*FAinv ) * FEmT );
+            auto term4 = (2*FE).dot(dphij*FAinv) * dJEm23;
+            
+            MatrixSmall<3,3> dP1E;
+            dP1E = dW1(I1barE) * ( term1 + term2 + term3 + term4 ) * FAinv;
+            
+            
+            auto dI1barE = 2 * JEm23 * ( FE - (1/3.) * I1E * FE.minusTransposed() );
+        
+            MatrixSmall<3,3> ddP1E;
+            ddP1E = d2W1(I1barE) * dI1barE.dot( dphij * FAinv ) * dI1barE * FAinv;
+            
+
+            // P4fE
+            auto f = F * f0;
+            auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
+            
+            auto dFE = gradPhiJ * FAinv;
+            auto d2I4fEdFE = 2.0 * outerProduct( dFE * f0, f0 );
+            
+            auto dP4fE = dW4f(I4fE) * d2I4fEdFE * FAinv;
+            
+            auto dI4fE = 2.0 * outerProduct( FE * f0, f0 );
+            auto dI4fEdFE =  dI4fE.dot( dFE );
+            
+            auto ddP4fE = ddW4f(I4fE) * dI4fEdFE * dI4fE * FAinv;
+        
+        
+            // P4sE
+            auto s = F * s0;
+            auto I4sE = s.dot(s) / std::pow (gs + 1, 2.0);
+            
+            auto d2I4sEdFE = 2.0 * outerProduct( dFE * s0, s0 );
+            
+            auto dP4sE = dW4s(I4sE) * d2I4sEdFE * FAinv;
+            
+            auto dI4sE = 2.0 * outerProduct( FE * s0, s0 );
+            auto dI4sEdFE =  dI4sE.dot( dFE );
+            
+            auto ddP4sE = ddW4s(I4sE) * dI4sEdFE * dI4sE * FAinv;
+            
+            
+            
+            // P8fsE
+            auto I8fsE = f.dot(s) / ( (gf + 1) * (gs + 1) );
+            
+            auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+            
+            auto dP8fsE = dW8fs(I8fsE) * d2I8EdFE * FAinv;
+            
+            auto dI8E = FE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
+            auto dI8EdFE = dI8E.dot ( dFE );
+            auto ddP8fsE = ddW8fs(I8fsE) * dI8EdFE * dI8E * FAinv;
+            
+
+            return ( dPvol + ddPvol + dP1E + ddP1E + dP4fE + ddP4fE + dP4sE + ddP4sE + dP8fsE + ddP8fsE );
+            
+        }
+        
+        Real dW1 (const Real& I1barE)
+        {
+            return ( 3300 / 2.0 * std::exp( 9.242 * (I1barE - 3 ) ) );
+        }
+
+        Real d2W1 (const Real& I1barE)
+        {
+            return ( 3300 * 9.242 / 2.0 * std::exp( 9.242 * (I1barE - 3 ) ) );
+        }
+        
+        Real dW4f (const Real& I4fE) const
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 185350 * I4m1fE * std::exp (15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+        
+        Real ddW4f (const Real& I4fE) const
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 185350 * std::exp ( 15.972 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 15.972 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+        
+        Real dW4s (const Real& I4fE) const
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 25640 * I4m1fE * std::exp (10.446 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+        
+        Real ddW4s (const Real& I4fE) const
+        {
+            auto I4m1fE = I4fE - 1.0;
+            return ( 25640 * std::exp ( 10.446 * I4m1fE * I4m1fE ) * ( 1.0 + 2.0 * 10.446 * I4m1fE * I4m1fE ) * (I4m1fE > 0. ? 1. : 0.) );
+        }
+
+        Real dW8fs (const Real& I8fsE) const
+        {
+            return ( 4170 * I8fsE * std::exp (11.602 * I8fsE * I8fsE ) );
+        }
+        
+        Real ddW8fs (const Real& I8fsE) const
+        {
+            return ( 4170 * std::exp ( 11.602 * I8fsE * I8fsE ) * ( 2.0 * 11.602 * I8fsE * I8fsE + 1.0 ) );
+        }
+        
+        MatrixSmall<3,3> deformationGradient (const LifeV::MatrixSmall<3,3>& du) const
+        {
+            MatrixSmall<3,3> I;
+            I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+            I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+            I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+            
+            MatrixSmall<3,3> F;
+            F = I + du;
+            
+            return F;
+        }
+
+        VectorSmall<3> crossProduct (const LifeV::VectorSmall<3>& v1, const LifeV::VectorSmall<3>& v2) const
+        {
+            VectorSmall<3> v;
+            v[0] = v1[1] * v2[2] - v1[2] * v2[1];
+            v[1] = v1[2] * v2[0] - v1[0] * v2[2];
+            v[2] = v1[0] * v2[1] - v1[1] * v2[0];
+            return v;
+        }
+        
+        MatrixSmall<3,3> outerProduct (const LifeV::VectorSmall<3>& f, const LifeV::VectorSmall<3>& s) const
+        {
+            MatrixSmall<3,3> M;
+            for (UInt i (0); i < 3; ++i)
+            {
+                for (UInt j (0); j < 3; ++j)
+                {
+                    M(i,j) = f(i) * s(j);
+                }
+            }
+            return M;
+        }
+        
+        void orthoNormalize (VectorSmall<3>& s, const VectorSmall<3>& f) const
+        {
+            normalize(s);
+            s = s - s.dot(f) * f;
+            normalize(s);
+        }
+        
+        void normalize (VectorSmall<3>& v) const
+        {
+            Real norm = std::sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+            //            if ( norm >= 1e-13 )
+            //            {
+            v[0] = v[0] / norm;
+            v[1] = v[1] / norm;
+            v[2] = v[2] / norm;
+            //            }
+            //            else
+            //            {
+            //                V *= 0.0;
+            //                V[comp] = 1.0;
+            //            }
+        }
+
+        MatrixSmall<3,3> identity () const
+        {
+            MatrixSmall<3,3> I;
+            I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
+            I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
+            I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
+            return I;
+        }
+        
+        HolzapfelOgdenMaterial() {}
+        ~HolzapfelOgdenMaterial() {}
+    };
+    
+    
+    class MatrixStdVector
     {
     public:
         typedef std::vector<MatrixSmall<3,3> > return_Type;
@@ -987,8 +1214,51 @@ protected:
             return a;
         }
         
-        CreateStdVector() {}
-        ~CreateStdVector() {}
+        MatrixStdVector() {}
+        ~MatrixStdVector() {}
+    };
+
+    class VectorStdVector
+    {
+    public:
+        typedef std::vector<VectorSmall<3> > return_Type;
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& F1)
+        {
+            return_Type a;
+            a.push_back(F1);
+            return a;
+        }
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& F1, const LifeV::VectorSmall<3>& F2)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            return a;
+        }
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& F1, const LifeV::VectorSmall<3>& F2, const LifeV::VectorSmall<3>& F3)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            a.push_back(F3);
+            return a;
+        }
+        
+        return_Type operator() (const LifeV::VectorSmall<3>& F1, const LifeV::VectorSmall<3>& F2, const LifeV::VectorSmall<3>& F3, const LifeV::VectorSmall<3>& F4)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            a.push_back(F3);
+            a.push_back(F4);
+            return a;
+        }
+        
+        VectorStdVector() {}
+        ~VectorStdVector() {}
     };
 
     
@@ -1236,7 +1506,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
     
 
-    boost::shared_ptr<CreateStdVector> csv (new CreateStdVector);
+    boost::shared_ptr<MatrixStdVector> msv (new MatrixStdVector);
+    boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
 
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
     boost::shared_ptr<DefGrad> defGrad (new DefGrad);
@@ -1246,6 +1517,8 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
     boost::shared_ptr<dP4fE> dP4fE_fct (new dP4fE);
     boost::shared_ptr<dP4sE> dP4sE_fct (new dP4sE);
     boost::shared_ptr<dP8fsE> dP8fsE_fct (new dP8fsE);
+
+    boost::shared_ptr<HolzapfelOgdenMaterial> hom (new HolzapfelOgdenMaterial);
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
@@ -1259,113 +1532,131 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         using namespace ExpressionAssembly;
         
         
-        auto du =  grad(super::M_dispETFESpace, disp, 0);
-        auto F = eval(defGrad, du);
+        auto grad_u =  grad(super::M_dispETFESpace, disp, 0);
+//        auto F = eval(defGrad, grad_u);
         
         
         // Anisotropy
         auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
         auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-        auto f0 = eval (orthonormalizeVector, f_0);
-        auto s0 = eval (orthonormalizeVector, f0, s_0);
-        auto n0 = eval (crossProduct, f0, s0);
+//        auto f0 = eval (orthonormalizeVector, f_0);
+//        auto s0 = eval (orthonormalizeVector, f0, s_0);
+//        auto n0 = eval (crossProduct, f0, s0);
+//
+//        
+//        // Orthotropic activation
+//        auto k = 4.0;
+//        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+//        auto gn = k * gf;
+//        auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
+//
+//    
+//        auto FAinv = eval(fAInversefct, f0, s0, gf);
 
         
-        // Orthotropic activation
-        auto k = 4.0;
-        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        auto gn = k * gf;
-        auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
+        auto vectors = eval(vsv, f_0, s_0);
+        auto matrices = eval(msv, grad_u, grad(phi_j));
 
-    
-        auto FAinv = eval(fAInversefct, f0, s0, gf);
-
+        auto dP = eval(hom, matrices, vectors, gf);
         
         
-        // Pvol
         
-        this->M_displayer->leaderPrint ("\nIntegrate Pvol in \n");
-        
-        auto dPvol = eval(dPvol_fct, F, grad(phi_j));
+        this->M_displayer->leaderPrint ("\nIntegrate jacobian in \n");
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
                    super::M_dispETFESpace,
                    super::M_dispETFESpace,
-                   dot ( dPvol , grad (phi_i) )
-                   ) >> this->M_jacobian;
-        
-        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-
-        
-        
-        // P1E
-        
-        this->M_displayer->leaderPrint ("\nIntegrate P1E in \n");
-        
-        auto dP1E = eval(dP1E_fct, F, FAinv, grad(phi_j));
-        auto ddP1E = eval(ddP1E_fct, F, FAinv, grad(phi_j));
-        
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ( dP1E + ddP1E , grad (phi_i) )
+                   dot ( dP , grad (phi_i) )
                    ) >> this->M_jacobian;
         
         this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
         
         
         
-        // P4fE
-
-        this->M_displayer->leaderPrint ("\nIntegrate P4fE in \n");
-
-        auto M = eval(csv, F, FAinv, grad(phi_j));
-        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
-        
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ( dP4fE , grad (phi_i) )
-                   ) >> this->M_jacobian;
-        
-        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-        
-        
-        
-        // P4sE
-        
-        this->M_displayer->leaderPrint ("\nIntegrate P4sE in \n");
-        
-        auto dP4sE = eval(dP4sE_fct, M, s0, gs);
-        
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ( dP4sE , grad (phi_i) )
-                   ) >> this->M_jacobian;
-        
-        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-        
-
-        
-        // P4sE
-        
-        this->M_displayer->leaderPrint ("\nIntegrate P8fsE in \n");
-        
-        auto dP8fsE = eval(dP8fsE_fct, M, f0, s0, gf);
-        
-        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-                   quadRuleTetra4pt,
-                   super::M_dispETFESpace,
-                   super::M_dispETFESpace,
-                   dot ( dP8fsE , grad (phi_i) )
-                   ) >> this->M_jacobian;
-        
-        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+//        // Pvol
+//        
+//        this->M_displayer->leaderPrint ("\nIntegrate Pvol in \n");
+//        
+//        auto dPvol = eval(dPvol_fct, F, grad(phi_j));
+//        
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dPvol , grad (phi_i) )
+//                   ) >> this->M_jacobian;
+//        
+//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+//
+//        
+//        
+//        // P1E
+//        
+//        this->M_displayer->leaderPrint ("\nIntegrate P1E in \n");
+//        
+//        auto dP1E = eval(dP1E_fct, F, FAinv, grad(phi_j));
+//        auto ddP1E = eval(ddP1E_fct, F, FAinv, grad(phi_j));
+//        
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP1E + ddP1E , grad (phi_i) )
+//                   ) >> this->M_jacobian;
+//        
+//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+//        
+//        
+//        
+//        // P4fE
+//
+//        this->M_displayer->leaderPrint ("\nIntegrate P4fE in \n");
+//
+//        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
+//        
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP4fE , grad (phi_i) )
+//                   ) >> this->M_jacobian;
+//        
+//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+//        
+//        
+//        
+//        // P4sE
+//        
+//        this->M_displayer->leaderPrint ("\nIntegrate P4sE in \n");
+//        
+//        auto dP4sE = eval(dP4sE_fct, M, s0, gs);
+//        
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP4sE , grad (phi_i) )
+//                   ) >> this->M_jacobian;
+//        
+//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
+//        
+//
+//        
+//        // P4sE
+//        
+//        this->M_displayer->leaderPrint ("\nIntegrate P8fsE in \n");
+//        
+//        auto dP8fsE = eval(dP8fsE_fct, M, f0, s0, gf);
+//        
+//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
+//                   quadRuleTetra4pt,
+//                   super::M_dispETFESpace,
+//                   super::M_dispETFESpace,
+//                   dot ( dP8fsE , grad (phi_i) )
+//                   ) >> this->M_jacobian;
+//        
+//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
         
         
     }
