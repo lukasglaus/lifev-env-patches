@@ -1000,10 +1000,10 @@ protected:
             auto I1E = FE.dot(FE);
             auto I1barE = JEm23 * I1E;
             
-            auto term1 = dJEm23.dot( dphij * FAinv ) * 2 * FE;
-            auto term2 = JEm23 * 2 * ( dphij * FAinv );
-            auto term3 = FE.dot(FE) * (-2.0/3.0) * ( JEm23 * ( (-1.0) * FEmT * ( dphij*FAinv ).transpose() * FEmT ) + dJEm23.dot( dphij*FAinv ) * FEmT );
-            auto term4 = (2*FE).dot(dphij*FAinv) * dJEm23;
+            auto term1 = dJEm23.dot( grad_phij * FAinv ) * 2 * FE;
+            auto term2 = JEm23 * 2 * ( grad_phij * FAinv );
+            auto term3 = FE.dot(FE) * (-2.0/3.0) * ( JEm23 * ( (-1.0) * FEmT * ( grad_phij*FAinv ).transpose() * FEmT ) + dJEm23.dot( grad_phij*FAinv ) * FEmT );
+            auto term4 = (2*FE).dot(grad_phij*FAinv) * dJEm23;
             
             MatrixSmall<3,3> dP1E;
             dP1E = dW1(I1barE) * ( term1 + term2 + term3 + term4 ) * FAinv;
@@ -1012,7 +1012,7 @@ protected:
             auto dI1barE = 2 * JEm23 * ( FE - (1/3.) * I1E * FE.minusTransposed() );
         
             MatrixSmall<3,3> ddP1E;
-            ddP1E = d2W1(I1barE) * dI1barE.dot( dphij * FAinv ) * dI1barE * FAinv;
+            ddP1E = d2W1(I1barE) * dI1barE.dot( grad_phij * FAinv ) * dI1barE * FAinv;
             
 
             // P4fE
