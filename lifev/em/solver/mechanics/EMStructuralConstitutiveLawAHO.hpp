@@ -979,7 +979,7 @@ protected:
             auto dJ = J * FmT;
             
             auto dJdF = dJ.dot(grad_phij);
-            auto dFT = dphij.transpose();
+            auto dFT = grad_phij.transpose();
             auto dFmTdF = - 1.0 * FmT * dFT * FmT;
             auto d2JdF = dJdF * FmT + J * dFmTdF;
             auto dWvol = ( 3500000 * ( J + J * std::log(J) - 1. ) ) / ( 2 * J );
@@ -1548,7 +1548,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 //        
 //        // Orthotropic activation
 //        auto k = 4.0;
-//        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
 //        auto gn = k * gf;
 //        auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
 //
