@@ -953,7 +953,7 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3,3> >& vectors, const Real& gf)
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const Real& gf)
         {
             auto grad_u = matrices[0];
             auto grad_phij = matrices[1];
