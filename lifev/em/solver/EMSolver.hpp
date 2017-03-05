@@ -900,8 +900,8 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, Real time )
 {
-    LifeChrono chrono;
-    chrono.start();
+    //LifeChrono chrono;
+    //chrono.start();
     if (M_commPtr -> MyPID() == 0) std::cout << "\nSolve Electrophysiology:" << "\n";
 
     setAppliedCurrent ( stimulus, time );
@@ -909,13 +909,13 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     //std::cout << "\nEMS - " << v[0] << ", " << v[1] << ", " << v[2];
     M_electroSolverPtr -> solveOneStepGatingVariablesFE();
     
-    if (M_commPtr -> MyPID() == 0) std::cout << "\ndone fe in " << chrono.diff() << "\n";
+    //if (M_commPtr -> MyPID() == 0) std::cout << "\ndone fe in " << chrono.diff() << "\n";
 
 //    M_electroSolverPtr -> solveOneStepGatingVariablesRL();
     M_electroSolverPtr -> solveOneICIStep();
     //M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
     
-    if (M_commPtr -> MyPID() == 0) std::cout << "\ndone ici in " << chrono.diff() << "\n";
+    //if (M_commPtr -> MyPID() == 0) std::cout << "\ndone ici in " << chrono.diff() << "\n";
 
 }
 
