@@ -972,8 +972,10 @@ protected:
             MatrixSmall<3,3> FAinv;
             FAinv = identity() - gf/(gf+1) * outerProduct(f0,f0) - gs/(gs+1) * outerProduct(s0,s0) - gn/(gn+1) * outerProduct(n0,n0);
             
-            
+            // ===============================//
             // Pvol
+            // ===============================//
+
             auto J = F.determinant();
             auto FmT = F.minusTransposed();
             auto dJ = J * FmT;
@@ -989,7 +991,9 @@ protected:
             auto ddPvol = ddWvol * dJdF * dJ;
             
             
+            // ===============================//
             // P1E
+            // ===============================//
             auto FE = F * FAinv;
             auto FEmT = FE.minusTransposed();
             
@@ -1015,7 +1019,9 @@ protected:
             ddP1E = d2W1(I1barE) * dI1barE.dot( grad_phij * FAinv ) * dI1barE * FAinv;
             
 
+            // ===============================//
             // P4fE
+            // ===============================//
             auto f = F * f0;
             auto I4fE = f.dot(f) / std::pow (gf + 1, 2.0);
             
@@ -1030,7 +1036,9 @@ protected:
             auto ddP4fE = ddW4f(I4fE) * dI4fEdFE * dI4fE * FAinv;
         
         
+            // ===============================//
             // P4sE
+            // ===============================//
             auto s = F * s0;
             auto I4sE = s.dot(s) / std::pow (gs + 1, 2.0);
             
@@ -1045,7 +1053,9 @@ protected:
             
             
             
+            // ===============================//
             // P8fsE
+            // ===============================//
             auto I8fsE = f.dot(s) / ( (gf + 1) * (gs + 1) );
             
             auto d2I8EdFE = dFE * ( outerProduct( f0, s0 ) + outerProduct( s0, f0 ) );
