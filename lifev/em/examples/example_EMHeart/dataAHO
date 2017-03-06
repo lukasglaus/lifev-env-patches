@@ -97,7 +97,7 @@ ActiveForceCoefficient = -7.0 #-8.0
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
     listPatchesBC = ''#'Patch1 Patch2'
 
-    numPreloadSteps  = 0
+    numPreloadSteps  = 50
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -246,7 +246,7 @@ ActiveForceCoefficient = -7.0 #-8.0
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 1000.0
+    timestep        = 1.0
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
@@ -264,7 +264,7 @@ ActiveForceCoefficient = -7.0 #-8.0
     mesh_rotation_0     = 0.9
     mesh_rotation_1     = 0.0
     mesh_rotation_2     = -0.5
-    order               = P1
+    order               = P2
     quad_rule           = 4pt
     anisotropic         = true
     fiber_name          = FiberDirection
