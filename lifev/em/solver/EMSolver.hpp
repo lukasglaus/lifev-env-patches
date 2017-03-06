@@ -538,10 +538,10 @@ void
 EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
 {
     M_data.setup (dataFile);
-    std::cout << "\nEMSolver - endtime = " << M_data.activationParameter<Real>("endtime");
     setupElectroSolver ( dataFile );
     if (M_commPtr -> MyPID() == 0)
     {
+        std::cout << "\nEMSolver - endtime = " << M_data.activationParameter<Real>("endtime");
         std::cout << "\nEMS - electro solver setup done! ";
     }
     setupMechanicalSolver ( dataFile );

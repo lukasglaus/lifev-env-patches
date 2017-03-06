@@ -533,7 +533,7 @@ public:
 
 protected:
     virtual void setupVectorsParameters ( void ) {}
-    //ET finite element space for scalar variables
+
     scalarETFESpacePtr_Type                        M_scalarETFESpacePtr;
 
     vectorPtr_Type                                 M_fiberVectorPtr;
@@ -542,14 +542,8 @@ protected:
 
     vectorPtr_Type                                 M_residualVectorPtr;
 
-    //    MatrixSmall<3,3>                               M_identity;
-
-    //    std::vector<materialPtr_Type>                M_materialPtrs;
-    //materialPtr_Type                               M_materialPtr;
-    //    Real                                         M_bulkModulus;
-
-    passiveMaterialPtr_Type                               M_passiveMaterialPtr;
-    activeMaterialPtr_Type                               M_activeStressMaterialPtr;
+    passiveMaterialPtr_Type                        M_passiveMaterialPtr;
+    activeMaterialPtr_Type                         M_activeStressMaterialPtr;
 
     vectorPtr_Type                                 M_fiberActivationPtr;
     vectorPtr_Type                                 M_sheetActivationPtr;
@@ -560,18 +554,18 @@ protected:
     
     
     //! Local stress vector
-    boost::scoped_ptr<VectorElemental>                 M_elvecK;
+    boost::scoped_ptr<VectorElemental>                  M_elvecK;
     
     //! Elementary matrices
-    boost::scoped_ptr<MatrixElemental>                 M_elmatK;
+    boost::scoped_ptr<MatrixElemental>                  M_elmatK;
     
     //! Vector: stiffness non-linear
-    boost::shared_ptr<boost::multi_array<Real, 3> > M_CofFk;
+    boost::shared_ptr<boost::multi_array<Real, 3> >     M_CofFk;
 
-    //vectorPtr_Type                         M_stiff;
+    //vectorPtr_Type                                    M_stiff;
     
     //! First Piola-Kirchhoff stress tensor
-    vectorPtr_Type                                M_FirstPiolaKStress;
+    vectorPtr_Type                                      M_FirstPiolaKStress;
     
     
     
@@ -971,6 +965,7 @@ protected:
             
             MatrixSmall<3,3> FAinv;
             FAinv = identity() - gf/(gf+1) * outerProduct(f0,f0) - gs/(gs+1) * outerProduct(s0,s0) - gn/(gn+1) * outerProduct(n0,n0);
+            
             
             // ===============================//
             // Pvol
@@ -1374,12 +1369,10 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     this->M_displayer                   = displayer;
 
     M_residualVectorPtr.reset ( new vector_Type (*this->M_localMap, Repeated) );
-    //   M_identity = EMUtility::identity();
 
     M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
     M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Repeated) );
-//    M_fiberVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
-//    M_sheetVectorPtr.reset             ( new vector_Type (*this->M_localMap, Unique) );
+
     M_scalarETFESpacePtr.reset         ( new scalarETFESpace_Type ( dETFESpace -> mesh(),
     																&( dETFESpace -> refFE() ),
                                                                     dFESpace->map().commPtr() ) );
@@ -1388,43 +1381,10 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 
     std::string passiveMaterialType ( dataMaterial -> passiveType() );
     std::string activeStressMaterialType (dataMaterial -> activeStressType() );
-    displayer->leaderPrint ("\n===========================");
+    
+    displayer->leaderPrint ("\n================================================");
     displayer->leaderPrint ("\nActive strain Holzapfel-Ogden material created");
-    //std::cout << "\nPassive Type: " << passiveMaterialType;
-    //std::cout << "\nActive Stress Type: " << activeStressMaterialType;
-    displayer->leaderPrint ("\n===========================");
-
-    if (activeStressMaterialType != "NO_DEFAULT_ACTIVESTRESS_TYPE")
-    {
-        M_activeStressMaterialPtr.reset (activeMaterial_Type::EMActiveMaterialFactory::instance().createObject ( activeStressMaterialType ) );
-        if(dFESpace->map().commPtr() ->MyPID() == 0)
-        {
-			std::cout << "\nCreated Active Stress Material!\n";
-			M_activeStressMaterialPtr-> showMe();
-			std::cout << "\nShowed Active Stress Material!\n";
-        }
-
-    }
-    if (passiveMaterialType != "NO_DEFAULT_PASSIVE_TYPE")
-    {
-        //    M_materialPtr.reset(new EMMaterial<MeshType>(materialType));
-        M_passiveMaterialPtr.reset (passiveMaterial_Type::EMPassiveMaterialFactory::instance().createObject ( passiveMaterialType ) );
-        if(dFESpace->map().commPtr() ->MyPID() == 0)
-        {
-			std::cout << "\nCreated Passive Material!\n";
-			M_passiveMaterialPtr -> showMe();
-			std::cout << "\nCreated Passive Material!\n";
-        }
-    }
-    
-    
-
-    //    // The 2 is because the law uses three parameters (mu, bulk).
-    //    // another way would be to set up the number of constitutive parameters of the law
-    //    // in the data file to get the right size. Note the comment below.
-    //    this->M_vectorsParameters.reset ( new vectorsParameters_Type ( 2 ) );
-    //
-    //    this->setupVectorsParameters();
+    displayer->leaderPrint ("\n================================================");
 }
 
 //const std::vector<Vector3D> currentPosition(const VectorEpetra& disp) const
@@ -1512,68 +1472,27 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
     * (this->M_jacobian) *= 0.0;
     
-    MatrixSmall<3,3> I;
-    I(0,0) = 1.; I(0,1) = 0., I(0,2) = 0.;
-    I(1,0) = 0.; I(1,1) = 1., I(1,2) = 0.;
-    I(2,0) = 0.; I(2,1) = 0., I(2,2) = 1.;
-    
 
     boost::shared_ptr<MatrixStdVector> msv (new MatrixStdVector);
     boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
 
-    boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
-    boost::shared_ptr<DefGrad> defGrad (new DefGrad);
-    boost::shared_ptr<dPvol> dPvol_fct (new dPvol);
-    boost::shared_ptr<dP1E> dP1E_fct (new dP1E);
-    boost::shared_ptr<ddP1E> ddP1E_fct (new ddP1E);
-    boost::shared_ptr<dP4fE> dP4fE_fct (new dP4fE);
-    boost::shared_ptr<dP4sE> dP4sE_fct (new dP4sE);
-    boost::shared_ptr<dP8fsE> dP8fsE_fct (new dP8fsE);
-
     boost::shared_ptr<HolzapfelOgdenMaterial> hom (new HolzapfelOgdenMaterial);
-
-    boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
-    boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
-    boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
-
-    
-    LifeChrono chrono;
-    chrono.start();
 
     {
         using namespace ExpressionAssembly;
         
         
         auto grad_u =  grad(super::M_dispETFESpace, disp, 0);
-//        auto F = eval(defGrad, grad_u);
-        
-        
-        // Anisotropy
+
         auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
         auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-//        auto f0 = eval (orthonormalizeVector, f_0);
-//        auto s0 = eval (orthonormalizeVector, f0, s_0);
-//        auto n0 = eval (crossProduct, f0, s0);
-//
-//        
-//        // Orthotropic activation
-//        auto k = 4.0;
-        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-//        auto gn = k * gf;
-//        auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
-//
-//    
-//        auto FAinv = eval(fAInversefct, f0, s0, gf);
 
+        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
         
         auto vectors = eval(vsv, f_0, s_0);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
         auto dP = eval(hom, matrices, vectors, gf);
-        
-        
-        
-        this->M_displayer->leaderPrint ("\nIntegrate jacobian in \n");
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
@@ -1581,95 +1500,6 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
                    super::M_dispETFESpace,
                    dot ( dP , grad (phi_i) )
                    ) >> this->M_jacobian;
-        
-        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-        
-        
-        
-//        // Pvol
-//        
-//        this->M_displayer->leaderPrint ("\nIntegrate Pvol in \n");
-//        
-//        auto dPvol = eval(dPvol_fct, F, grad(phi_j));
-//        
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dPvol , grad (phi_i) )
-//                   ) >> this->M_jacobian;
-//        
-//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-//
-//        
-//        
-//        // P1E
-//        
-//        this->M_displayer->leaderPrint ("\nIntegrate P1E in \n");
-//        
-//        auto dP1E = eval(dP1E_fct, F, FAinv, grad(phi_j));
-//        auto ddP1E = eval(ddP1E_fct, F, FAinv, grad(phi_j));
-//        
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dP1E + ddP1E , grad (phi_i) )
-//                   ) >> this->M_jacobian;
-//        
-//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-//        
-//        
-//        
-//        // P4fE
-//
-//        this->M_displayer->leaderPrint ("\nIntegrate P4fE in \n");
-//
-//        auto dP4fE = eval(dP4fE_fct, M, f0, gf);
-//        
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dP4fE , grad (phi_i) )
-//                   ) >> this->M_jacobian;
-//        
-//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-//        
-//        
-//        
-//        // P4sE
-//        
-//        this->M_displayer->leaderPrint ("\nIntegrate P4sE in \n");
-//        
-//        auto dP4sE = eval(dP4sE_fct, M, s0, gs);
-//        
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dP4sE , grad (phi_i) )
-//                   ) >> this->M_jacobian;
-//        
-//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-//        
-//
-//        
-//        // P4sE
-//        
-//        this->M_displayer->leaderPrint ("\nIntegrate P8fsE in \n");
-//        
-//        auto dP8fsE = eval(dP8fsE_fct, M, f0, s0, gf);
-//        
-//        integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
-//                   quadRuleTetra4pt,
-//                   super::M_dispETFESpace,
-//                   super::M_dispETFESpace,
-//                   dot ( dP8fsE , grad (phi_i) )
-//                   ) >> this->M_jacobian;
-//        
-//        this->M_displayer->leaderPrint ("\ndone in ", chrono.diff(),"\n");
-        
         
     }
     
@@ -1713,16 +1543,6 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto dI1bar = value(2.0) * Jm23 * ( F + value(1/(-3.)) * I1 * FmT );
 
         
-        // Anisotropy
-//        auto f_0 = value (super::M_dispETFESpace, *M_fiberVectorPtr);
-//        auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
-//        auto f0 = eval (orthonormalizeVector, f_0);
-//        auto s0 = eval (orthonormalizeVector, f0, s_0);
-//        auto n0 = eval (crossProduct, f0, s0);
-//        auto f = F * f0;
-//        auto s = F * s0;
-        
-        
         // Orthotropic activation
         auto k = 4.0;
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
@@ -1739,9 +1559,6 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto n0 = eval (crossProduct, f0, s0);
         auto f = F * f0;
         auto s = F * s0;
-
-        //auto FAinv = I + (value(-1.0) * ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr))) + (value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * ( 4.0 + value (M_scalarETFESpacePtr, *M_fiberActivationPtr) * 4.0 + value(1.0) )) * outerProduct(eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))) + (value(-1.0) * ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) / ( ( 4.0*value (M_scalarETFESpacePtr, *M_fiberActivationPtr) ) + 1.0 )) * outerProduct(eval (crossProduct, f0, s0), eval (crossProduct,  eval (orthonormalizeVector, value (super::M_dispETFESpace, *M_fiberVectorPtr)), eval (orthonormalizeVector, f0,  value (super::M_dispETFESpace, *M_sheetVectorPtr))));
-        //auto FAinv = I + gm * outerProduct(f0, f0) + go * outerProduct(s0, s0) + gmn * outerProduct(n0, n0);
         auto FAinv = eval(fAInversefct, f0, s0, gf);
         auto FE =  F * FAinv;
         

@@ -12,7 +12,7 @@ save       = 10
 [electrophysiology]
 
 monodomain_xml_path = ./
-monodomain_xml_file = ParamList.xml
+monodomain_xml_file = ParamListE.xml
 
     [./physics]
     IonicModel = MinimalModel
