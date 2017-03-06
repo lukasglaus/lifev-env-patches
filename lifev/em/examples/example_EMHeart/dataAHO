@@ -246,7 +246,7 @@ ActiveForceCoefficient = -7.0 #-8.0
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 1.0
+    timestep        = 1000.0
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
