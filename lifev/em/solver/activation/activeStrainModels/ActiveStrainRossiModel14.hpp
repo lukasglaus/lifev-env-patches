@@ -82,7 +82,7 @@ public:
 
 private:
 
-    VectorSmall<3> M_PathologyCenter;
+    LifeV::VectorSmall<3> M_PathologyCenter;
     Real PathologyRadius;
     Real PathologyStrength;
     

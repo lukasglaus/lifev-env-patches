@@ -7,7 +7,6 @@
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainRossiModel14.hpp>
 #include <lifev/em/util/EMUtility.hpp>
-#include <lifev/core/array/VectorSmall.hpp>
 
 
 namespace LifeV
@@ -79,7 +78,7 @@ ActiveStrainRossiModel14::solveModel ( Real& timeStep)
         }
         Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
         
-        VectorSmall<3> X;
+        LifeV::VectorSmall<3> X;
         
         for (int ik (0); ik < nLocalDof; ik++)
         {
