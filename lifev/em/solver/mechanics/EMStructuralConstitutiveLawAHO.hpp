@@ -1351,7 +1351,7 @@ protected:
         return_Type operator() (const Real& g, const VectorSmall<3>& X)
         {
             auto gf = g;
-            if ( (X - this->M_Pathology).norm <= this->M_PathologyRadius ) gf *= this->M_PathologyStrength;
+            if ( (X - M_PathologyCenter).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
             return gf;
         }
         
