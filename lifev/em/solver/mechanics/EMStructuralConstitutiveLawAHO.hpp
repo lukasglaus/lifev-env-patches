@@ -1338,18 +1338,20 @@ protected:
     };
     
     
-    class cardiopathy
+    class Cardiopathy
     {
     public:
         typedef Real return_Type;
         
-        return_Type operator() (const Real& I4f)
+        return_Type operator() (const Real& g, const ::VectorSmall<3>& X)
         {
-            return (I4f > 0. ? 1. : 0.);
+            auto gf = g;
+            if ( X[2] < -3 ) gf *= 0.1;
+            return gf;
         }
         
-        cardiopathy() {}
-        ~cardiopathy() {}
+        Cardiopathy() {}
+        ~Cardiopathy() {}
     };
     
 
@@ -1544,6 +1546,8 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
 
+    boost::shared_ptr<Cardiopathy> cardiopathy (new Cardiopathy);
+
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
@@ -1564,6 +1568,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         // Orthotropic activation
         auto k = 4.0;
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        gf = eval(cardopathy, gf, X);
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
