@@ -952,7 +952,7 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const std::vector<Real>& scalars)
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const Real& g)
         {
             auto grad_u = matrices[0];
             auto grad_phij = matrices[1];
@@ -963,12 +963,13 @@ protected:
             orthoNormalize(s0, f0);
             auto n0 = crossProduct(f0, s0);
 
+            auto gf = g;
 //            auto pathologyCenter = vectors[3];
 //            auto pathologyRadius = scalars[1];
 //            auto pathologyStrength = scalars[2];
 
             //auto X = vectors[2];
-            auto gf = scalars[0];
+            //auto gf = scalars[0];
             //auto X_PC = X - pathologyCenter;
             //auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
             //if ( X_PCnorm <= pathologyRadius ) gf *= pathologyStrength;
@@ -1574,11 +1575,11 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
 
-        auto scalars = eval(ssv, gf, M_PathologyRadius, M_PathologyStrength);
+        //auto scalars = eval(ssv, gf, M_PathologyRadius, M_PathologyStrength);
         auto vectors = eval(vsv, f_0, s_0, X, M_PathologyCenter);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
-        auto dP = eval(hom, matrices, vectors, scalars);
+        auto dP = eval(hom, matrices, vectors, gf);
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
