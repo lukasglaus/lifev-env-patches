@@ -78,7 +78,7 @@ ActiveStrainRossiModel14::solveModel ( Real& timeStep)
         }
         Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
         
-        LifeV::VectorSmall<3> X;
+        VectorSmall<3> X;
         
         for (int ik (0); ik < nLocalDof; ik++)
         {

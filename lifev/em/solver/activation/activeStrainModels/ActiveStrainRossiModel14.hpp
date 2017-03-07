@@ -35,6 +35,9 @@ public:
 
     void solveModel ( Real& timeStep);
 
+    void solveModel2 ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr);
+    {
+        
     Real computeActiveStress(Real i4f, Real Calcium);
 
 
@@ -82,7 +85,7 @@ public:
 
 private:
 
-    LifeV::VectorSmall<3> M_PathologyCenter;
+    VectorSmall<3> M_PathologyCenter;
     Real PathologyRadius;
     Real PathologyStrength;
     
