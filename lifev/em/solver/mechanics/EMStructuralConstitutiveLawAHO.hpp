@@ -1601,6 +1601,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
 
+    boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
+    boost::shared_ptr<ScalarStdVector> ssv (new ScalarStdVector);
+
     boost::shared_ptr<Cardiopathy> cardiopathy (new Cardiopathy);
 
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
@@ -1622,8 +1625,13 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         // Orthotropic activation
         auto k = 4.0;
+        
         auto g = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        auto gf = eval(cardiopathy, g, X);
+        auto scalars = eval(ssv, g, M_PathologyRadius, M_PathologyStrength);
+        auto vectors = eval(vsv, X, M_PathologyCenter);
+        
+        auto gf = eval(cardiopathy, vectors, scalars);
+        
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
