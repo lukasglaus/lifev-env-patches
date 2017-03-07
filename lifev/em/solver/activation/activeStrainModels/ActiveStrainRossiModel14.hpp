@@ -37,7 +37,7 @@ public:
     void solveModel ( Real& timeStep);
 
     void solveModel2 ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr);
-    {
+    
         
     Real computeActiveStress(Real i4f, Real Calcium);
 
