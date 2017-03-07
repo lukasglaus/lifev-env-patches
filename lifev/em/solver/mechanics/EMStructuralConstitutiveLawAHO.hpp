@@ -1402,14 +1402,14 @@ protected:
         {
             
             auto gf = scalars[0];
-            auto pathologyRadius = scalars[1];
-            auto pathologyStrength = scalars[2];
-            auto pathologyCenter = vectors[1];
-            auto X = vectors[0];
-            
-            auto X_PC = X - pathologyCenter;
-            auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
-            if ( X_PCnorm <= pathologyRadius ) gf *= pathologyStrength;
+//            auto pathologyRadius = scalars[1];
+//            auto pathologyStrength = scalars[2];
+//            auto pathologyCenter = vectors[1];
+//            auto X = vectors[0];
+//            
+//            auto X_PC = X - pathologyCenter;
+//            auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
+//            if ( X_PCnorm <= pathologyRadius ) gf *= pathologyStrength;
 
             return gf;
         }
