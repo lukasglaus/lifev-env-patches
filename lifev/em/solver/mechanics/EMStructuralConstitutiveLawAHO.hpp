@@ -1613,8 +1613,8 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
 
-    boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
-    boost::shared_ptr<ScalarStdVector> ssv (new ScalarStdVector);
+    //boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
+    //boost::shared_ptr<ScalarStdVector> ssv (new ScalarStdVector);
 
     //boost::shared_ptr<Cardiopathy> cardiopathy (new Cardiopathy);
 
