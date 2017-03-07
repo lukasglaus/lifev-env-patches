@@ -964,15 +964,6 @@ protected:
             auto n0 = crossProduct(f0, s0);
 
             auto gf = g;
-//            auto pathologyCenter = vectors[3];
-//            auto pathologyRadius = scalars[1];
-//            auto pathologyStrength = scalars[2];
-
-            //auto X = vectors[2];
-            //auto gf = scalars[0];
-            //auto X_PC = X - pathologyCenter;
-            //auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
-            //if ( X_PCnorm <= pathologyRadius ) gf *= pathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
@@ -1575,8 +1566,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
 
-        //auto scalars = eval(ssv, gf, M_PathologyRadius, M_PathologyStrength);
-        auto vectors = eval(vsv, f_0, s_0, X);
+        auto vectors = eval(vsv, f_0, s_0);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
         auto dP = eval(hom, matrices, vectors, gf);
@@ -1613,15 +1603,9 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
     
     boost::shared_ptr<FAInverse> fAInversefct (new FAInverse);
 
-    //boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
-    //boost::shared_ptr<ScalarStdVector> ssv (new ScalarStdVector);
-
-    //boost::shared_ptr<Cardiopathy> cardiopathy (new Cardiopathy);
-
     boost::shared_ptr<HeavisideFct> heaviside (new HeavisideFct);
     boost::shared_ptr<CrossProduct> crossProduct (new CrossProduct);
     boost::shared_ptr<OrthonormalizeVector> orthonormalizeVector (new OrthonormalizeVector);
-
     
     {
         using namespace ExpressionAssembly;
@@ -1639,11 +1623,6 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto k = 4.0;
         
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        //auto scalars = eval(ssv, g, M_PathologyRadius, M_PathologyStrength);
-        //auto vectors = eval(vsv, X, M_PathologyCenter);
-        
-        //auto gf = eval(cardiopathy, vectors, scalars);
-        
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
