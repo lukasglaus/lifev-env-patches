@@ -7,6 +7,7 @@
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainRossiModel14.hpp>
 #include <lifev/em/util/EMUtility.hpp>
+#include <lifev/core/mesh/MeshLoadingUtility.hpp>
 
 
 namespace LifeV
@@ -105,8 +106,8 @@ ActiveStrainRossiModel14::solveModel2 ( Real& timeStep, boost::shared_ptr<Region
         dW = 2.0 * i4f * ( 3.0 * g - 6.0 * g2 + 10.0 * g3 - 15.0 * g4  + 21.0 * g5 );
         Real grhs = M_inverseViscosity * ( Pa - dW ) / Ca / Ca;
         grhs *= timeStep;
-        (*M_fiberActivationPtr) [iGID] += grhs;
-        (*M_fiberActivationPtr) [iGID] *= (infarctZone ? M_PathologyStrength : 1.0);
+        (*M_fiberActivationPtr) [iGID] += grhs * (infarctZone ? M_PathologyStrength : 1.0);
+
     }
     
 }
