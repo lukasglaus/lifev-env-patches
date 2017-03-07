@@ -104,7 +104,7 @@ monodomain_xml_file = ParamListE.xml
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
     listPatchesBC = ''#'Patch1 Patch2'
 
-    numPreloadSteps  = 50
+    numPreloadSteps  = 0
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -253,7 +253,7 @@ monodomain_xml_file = ParamListE.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 1.0
+    timestep        = 800
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
@@ -262,8 +262,8 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoa/
-    mesh_file           = heartVVCoa.mesh
+    mesh_dir            = heartVCoa/
+    mesh_file           = heartVCoa.mesh
     mesh_scaling        = 0.1
     mesh_translation_0  = -66
     mesh_translation_1  = -72
