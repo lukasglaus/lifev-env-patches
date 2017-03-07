@@ -82,6 +82,10 @@ public:
 
 private:
 
+    VectorSmall<3> M_PathologyCenter;
+    Real PathologyRadius;
+    Real PathologyStrength;
+    
     Real M_inverseViscosity;
     Real M_activeForceCoefficient;
     Real M_chemicalThreshold;

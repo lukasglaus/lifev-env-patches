@@ -567,11 +567,7 @@ protected:
     //! First Piola-Kirchhoff stress tensor
     vectorPtr_Type                                      M_FirstPiolaKStress;
     
-    
-    VectorSmall<3>                                      M_PathologyCenter;
-    Real                                                M_PathologyRadius;
-    Real                                                M_PathologyStrength;
-    
+
     
     
     class OrthonormalizeVector
@@ -1699,14 +1695,6 @@ void EMStructuralConstitutiveLaw<MeshType>::setParameters(EMData& data, GetPot& 
     {
         M_activeStressMaterialPtr-> setParameters(data);
     }
-
-    
-    M_PathologyCenter[0] = dataFile("activation/pathology/infarctX", 0.0);
-    M_PathologyCenter[1] = dataFile("activation/pathology/infarctY", 0.0);
-    M_PathologyCenter[2] = dataFile("activation/pathology/infarctZ", 0.0);
-
-    M_PathologyRadius = dataFile("activation/pathology/radius", 0.0);
-    M_PathologyStrength = dataFile("activation/pathology/strength", 1.0);
 
     
     if (M_passiveMaterialPtr)
