@@ -969,9 +969,9 @@ protected:
 
             auto X = vectors[2];
             auto gf = scalars[0];
-            auto X_PC = X - pathologyCenter;
-            auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
-            if ( X_PCnorm <= pathologyRadius ) gf *= pathologyStrength;
+            //auto X_PC = X - pathologyCenter;
+            //auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
+            //if ( X_PCnorm <= pathologyRadius ) gf *= pathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
