@@ -969,7 +969,7 @@ protected:
 
             auto X = vectors[2];
             auto gf = scalars[0];
-            if ( (X - pathologyCenter).norm <= pathologyRadius ) gf *= pathologyStrength;
+            if ( (X - pathologyCenter).norm() <= pathologyRadius ) gf *= pathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
@@ -1405,7 +1405,7 @@ protected:
             auto pathologyCenter = vectors[1];
             auto X = vectors[0];
             
-            if ( (X - pathologyCenter).norm <= pathologyRadius ) gf *= pathologyStrength;
+            if ( (X - pathologyCenter).norm() <= pathologyRadius ) gf *= pathologyStrength;
             return gf;
         }
         
