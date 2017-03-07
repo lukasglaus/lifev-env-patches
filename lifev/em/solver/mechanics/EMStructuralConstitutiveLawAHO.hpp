@@ -947,7 +947,7 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const Real& gf)
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const Real& g)
         {
             auto grad_u = matrices[0];
             auto grad_phij = matrices[1];
@@ -959,6 +959,7 @@ protected:
             auto n0 = crossProduct(f0, s0);
             
             auto X = vectors[2];
+            auto gf = g;
             if ( X [2] < -3 ) gf *= 0.1;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
@@ -1334,6 +1335,21 @@ protected:
         
         HeavisideFct() {}
         ~HeavisideFct() {}
+    };
+    
+    
+    class cardiopathy
+    {
+    public:
+        typedef Real return_Type;
+        
+        return_Type operator() (const Real& I4f)
+        {
+            return (I4f > 0. ? 1. : 0.);
+        }
+        
+        cardiopathy() {}
+        ~cardiopathy() {}
     };
     
 
