@@ -923,7 +923,7 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 {
-    M_activationModelPtr -> solveModel2 ( dt, M_fullMeshPtr );
+    M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
 }
 
 

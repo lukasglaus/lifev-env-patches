@@ -70,7 +70,7 @@ ActiveStrainRossiModel14::solveModel ( Real& timeStep)
 }
 
 void
-ActiveStrainRossiModel14::solveModel2 ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
+ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
 {
     if(!M_I4fPtr)
     {
