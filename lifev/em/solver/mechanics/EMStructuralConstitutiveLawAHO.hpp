@@ -958,6 +958,8 @@ protected:
             orthoNormalize(s0, f0);
             auto n0 = crossProduct(f0, s0);
             
+            auto X = vectors[2];
+            if ( X [2] < -3 ) gf *= 0.1;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
@@ -1489,7 +1491,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
         
-        auto vectors = eval(vsv, f_0, s_0);
+        auto vectors = eval(vsv, f_0, s_0, X);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
         auto dP = eval(hom, matrices, vectors, gf);
