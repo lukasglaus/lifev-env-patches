@@ -6,7 +6,8 @@
  */
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainRossiModel14.hpp>
-#include <lifev/em/solver/mechanics/EMStructuralOperator.hpp>
+
+#include <lifev/core/mesh/RegionMesh.hpp>
 
 
 
