@@ -10,6 +10,10 @@
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainActivation.hpp>
 #include <lifev/core/mesh/RegionMesh.hpp>
+#include <lifev/em/util/EMUtility.hpp>
+#include <lifev/core/mesh/MeshLoadingUtility.hpp>
+#include <lifev/em/util/EMUtility.hpp>
+
 
 namespace LifeV
 {
