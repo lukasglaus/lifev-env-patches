@@ -47,6 +47,7 @@ public:
 
     virtual void solveModel(Real& timeStep) = 0;
 
+    virtual void solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr) {}
 
 
     VectorEpetra& fiberActivation()
