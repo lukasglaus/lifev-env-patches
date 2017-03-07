@@ -966,7 +966,7 @@ protected:
             auto pathologyCenter = vectors[3];
             auto pathologyRadius = scalars[1];
             auto pathologyStrength = scalars[2];
-s
+
             auto X = vectors[2];
             auto gf = scalars[0];
             if ( (X - pathologyCenter).norm <= pathologyRadius ) gf *= pathologyStrength;
@@ -1396,10 +1396,16 @@ s
     public:
         typedef Real return_Type;
         
-        return_Type operator() (const Real& g, const VectorSmall<3>& X)
+        return_Type operator() (const std::vector<VectorSmall<3> >& vectors, const std::vector<Real>& scalars)
         {
-            auto gf = g;
-            if ( (X - M_PathologyCenter).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
+            
+            auto gf = scalars[0];
+            auto pathologyRadius = scalars[1];
+            auto pathologyStrength = scalars[2];
+            auto pathologyCenter = vectors[1];
+            auto X = vectors[0];
+            
+            if ( (X - pathologyCenter).norm <= pathologyRadius ) gf *= pathologyStrength;
             return gf;
         }
         
