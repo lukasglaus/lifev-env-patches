@@ -965,7 +965,7 @@ protected:
             
             auto X = vectors[2];
             auto gf = g;
-            if ( (X - M_Pathology).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
+            if ( (X - this->M_Pathology).norm <= this->M_PathologyRadius ) gf *= this->M_PathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
@@ -1351,7 +1351,7 @@ protected:
         return_Type operator() (const Real& g, const VectorSmall<3>& X)
         {
             auto gf = g;
-            if ( (X - M_Pathology).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
+            if ( (X - this->M_Pathology).norm <= this->M_PathologyRadius ) gf *= this->M_PathologyStrength;
             return gf;
         }
         
