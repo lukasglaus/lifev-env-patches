@@ -7,6 +7,7 @@
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainRossiModel14.hpp>
 #include <lifev/em/util/EMUtility.hpp>
+#include <lifev/core/array/MatrixSmall.hpp>
 
 
 namespace LifeV
