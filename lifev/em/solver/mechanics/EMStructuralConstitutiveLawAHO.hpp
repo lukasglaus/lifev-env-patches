@@ -963,11 +963,11 @@ protected:
             orthoNormalize(s0, f0);
             auto n0 = crossProduct(f0, s0);
 
-            auto pathologyCenter = vectors[3];
-            auto pathologyRadius = scalars[1];
-            auto pathologyStrength = scalars[2];
+//            auto pathologyCenter = vectors[3];
+//            auto pathologyRadius = scalars[1];
+//            auto pathologyStrength = scalars[2];
 
-            auto X = vectors[2];
+            //auto X = vectors[2];
             auto gf = scalars[0];
             //auto X_PC = X - pathologyCenter;
             //auto X_PCnorm = std::sqrt( X_PC[0] * X_PC[0] + X_PC[1] * X_PC[1] + X_PC[2] * X_PC[2] );
@@ -1578,7 +1578,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto vectors = eval(vsv, f_0, s_0, X, M_PathologyCenter);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
-        auto dP = eval(hom, matrices, vectors, gf);
+        auto dP = eval(hom, matrices, vectors, scalars);
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
