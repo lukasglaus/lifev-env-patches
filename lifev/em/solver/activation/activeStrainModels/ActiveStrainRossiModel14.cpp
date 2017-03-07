@@ -6,10 +6,8 @@
  */
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainRossiModel14.hpp>
-#include <lifev/em/util/EMUtility.hpp>
-#include <lifev/core/mesh/MeshLoadingUtility.hpp>
-#include <lifev/em/util/EMUtility.hpp>
-#include <lifev/structure/solver/StructuralOperator.hpp>
+#include <lifev/em/solver/mechanics/EMStructuralOperator.hpp>
+
 
 
 namespace LifeV
