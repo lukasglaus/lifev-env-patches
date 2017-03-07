@@ -1567,8 +1567,8 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         // Orthotropic activation
         auto k = 4.0;
-        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        gf = eval(cardiopathy, gf, X);
+        auto g = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        auto gf = eval(cardiopathy, g, X);
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
         auto gm = value(-1.0) * ( gf ) / ( ( gf ) + 1.0 );
