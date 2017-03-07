@@ -965,7 +965,7 @@ protected:
             
             auto X = vectors[2];
             auto gf = g;
-            if ( (X - this->M_PathologyCenter).norm <= this->M_PathologyRadius ) gf *= this->M_PathologyStrength;
+            if ( (X - M_PathologyCenter).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
