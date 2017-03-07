@@ -9,6 +9,7 @@
 #define ACTIVESTRAINROSSIMODEL14_HPP_
 
 #include <lifev/em/solver/activation/activeStrainModels/ActiveStrainActivation.hpp>
+#include <lifev/core/mesh/RegionMesh.hpp>
 
 namespace LifeV
 {
