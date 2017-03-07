@@ -952,7 +952,7 @@ protected:
     public:
         typedef LifeV::MatrixSmall<3,3> return_Type;
         
-        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const Real& g)
+        return_Type operator() (const std::vector<MatrixSmall<3,3> >& matrices, const std::vector<VectorSmall<3> >& vectors, const std::vector<Real>& scalars)
         {
             auto grad_u = matrices[0];
             auto grad_phij = matrices[1];
@@ -962,10 +962,14 @@ protected:
             normalize(f0);
             orthoNormalize(s0, f0);
             auto n0 = crossProduct(f0, s0);
-            
+
+            auto pathologyCenter = vectors[3];
+            auto pathologyRadius = scalars[1];
+            auto pathologyStrength = scalars[2];
+s
             auto X = vectors[2];
-            auto gf = g;
-            if ( (X - M_PathologyCenter).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
+            auto gf = scalars[0];
+            if ( (X - pathologyCenter).norm <= pathologyRadius ) gf *= pathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
@@ -1277,6 +1281,50 @@ protected:
     };
 
     
+    class ScalarStdVector
+    {
+    public:
+        typedef std::vector<Real> return_Type;
+        
+        return_Type operator() (const Real& F1)
+        {
+            return_Type a;
+            a.push_back(F1);
+            return a;
+        }
+        
+        return_Type operator() (const Real& F1, const Real& F2)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            return a;
+        }
+        
+        return_Type operator() (const Real& F1, const Real& F2, const Real& F3)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            a.push_back(F3);
+            return a;
+        }
+        
+        return_Type operator() (const Real& F1, const Real& F2, const Real& F3, const Real& F4)
+        {
+            return_Type a;
+            a.push_back(F1);
+            a.push_back(F2);
+            a.push_back(F3);
+            a.push_back(F4);
+            return a;
+        }
+        
+        ScalarStdVector() {}
+        ~ScalarStdVector() {}
+    };
+    
+    
     class FAInverse
     {
     public:
@@ -1500,6 +1548,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
 
     boost::shared_ptr<MatrixStdVector> msv (new MatrixStdVector);
     boost::shared_ptr<VectorStdVector> vsv (new VectorStdVector);
+    boost::shared_ptr<ScalarStdVector> ssv (new ScalarStdVector);
 
     boost::shared_ptr<HolzapfelOgdenMaterial> hom (new HolzapfelOgdenMaterial);
 
@@ -1513,11 +1562,12 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto s_0 = value (super::M_dispETFESpace, *M_sheetVectorPtr);
 
         auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        
-        auto vectors = eval(vsv, f_0, s_0, X);
+
+        auto scalars = eval(ssv, gf, M_PathologyRadius, M_PathologyStrength);
+        auto vectors = eval(vsv, f_0, s_0, X, M_PathologyCenter);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
-        auto dP = eval(hom, matrices, vectors, gf);
+        auto dP = eval(hom, matrices, vectors, scalars);
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
