@@ -16,6 +16,7 @@
 
 #include <lifev/em/solver/EMData.hpp>
 
+#include <lifev/core/mesh/RegionMesh.hpp>
 
 
 namespace LifeV
