@@ -628,7 +628,7 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
                                        M_bcInterfacePtr->handler(),
                                        M_commPtr);
     M_EMStructuralOperatorPtr->setDataFromGetPot (dataFile);
-    M_EMStructuralOperatorPtr->EMMaterial()->setParameters(M_data);
+    M_EMStructuralOperatorPtr->EMMaterial()->setParameters(M_data, dataFile);
 
     M_wteTotal.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, M_EMStructuralOperatorPtr->EMMaterial());
 //    M_wtePassive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "passive");

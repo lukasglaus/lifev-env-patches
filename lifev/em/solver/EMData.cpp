@@ -143,7 +143,7 @@ EMData::setupActivationParameters(GetPot& dataFile, const std::string& section)
 
     double timestep = dataFile ( ( section + "/time_discretization/timestep" ).data(), 0.1 );
     M_activationParametersList.set ("timestep", timestep);
-
+    
 }
 
 

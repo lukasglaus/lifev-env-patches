@@ -517,7 +517,7 @@ public:
 
 
 
-    void setParameters(EMData& data);
+    void setParameters(EMData& data, GetPot& dataFile);
 
 
     void showMaterialParameters()
@@ -566,6 +566,11 @@ protected:
     
     //! First Piola-Kirchhoff stress tensor
     vectorPtr_Type                                      M_FirstPiolaKStress;
+    
+    
+    VectorSmall<3>                                      M_PathologyCenter;
+    Real                                                M_PathologyRadius;
+    Real                                                M_PathologyStrength;
     
     
     
@@ -960,7 +965,7 @@ protected:
             
             auto X = vectors[2];
             auto gf = g;
-            if ( X [2] < -3 ) gf *= 0.1;
+            if ( (X - M_Pathology).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
             auto gn = 4 * gf;
             auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
             
@@ -1346,7 +1351,7 @@ protected:
         return_Type operator() (const Real& g, const VectorSmall<3>& X)
         {
             auto gf = g;
-            if ( X[2] < -3 ) gf *= 0.1;
+            if ( (X - M_Pathology).norm <= M_PathologyRadius ) gf *= M_PathologyStrength;
             return gf;
         }
         
@@ -1639,13 +1644,22 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
 }
 
 template <typename MeshType>
-void EMStructuralConstitutiveLaw<MeshType>::setParameters(EMData& data)
+void EMStructuralConstitutiveLaw<MeshType>::setParameters(EMData& data, GetPot& dataFile)
 {
     if (M_activeStressMaterialPtr)
     {
         M_activeStressMaterialPtr-> setParameters(data);
     }
 
+    
+    M_PathologyCenter[0] = dataFile("activation/pathology/infarctX", 0.0);
+    M_PathologyCenter[1] = dataFile("activation/pathology/infarctY", 0.0);
+    M_PathologyCenter[2] = dataFile("activation/pathology/infarctZ", 0.0);
+
+    M_PathologyRadius = dataFile("activation/pathology/radius", 0.0);
+    M_PathologyStrength = dataFile("activation/pathology/strength", 1.0);
+
+    
     if (M_passiveMaterialPtr)
     {
         M_passiveMaterialPtr-> setParameters(data);
