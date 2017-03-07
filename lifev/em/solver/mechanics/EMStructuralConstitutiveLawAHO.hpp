@@ -1578,7 +1578,7 @@ void EMStructuralConstitutiveLaw<MeshType>::updateJacobianMatrix ( const vector_
         auto vectors = eval(vsv, f_0, s_0, X, M_PathologyCenter);
         auto matrices = eval(msv, grad_u, grad(phi_j));
 
-        auto dP = eval(hom, matrices, vectors, scalars);
+        auto dP = eval(hom, matrices, vectors, gf);
         
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
@@ -1637,11 +1637,11 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         // Orthotropic activation
         auto k = 4.0;
         
-        auto g = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
-        auto scalars = eval(ssv, g, M_PathologyRadius, M_PathologyStrength);
-        auto vectors = eval(vsv, X, M_PathologyCenter);
+        auto gf = value (M_scalarETFESpacePtr, *M_fiberActivationPtr);
+        //auto scalars = eval(ssv, g, M_PathologyRadius, M_PathologyStrength);
+        //auto vectors = eval(vsv, X, M_PathologyCenter);
         
-        auto gf = eval(cardiopathy, vectors, scalars);
+        //auto gf = eval(cardiopathy, vectors, scalars);
         
         auto gn = k * gf;
         auto gs = 1 / ( (gf + 1) * (gn + 1) ) - 1;
