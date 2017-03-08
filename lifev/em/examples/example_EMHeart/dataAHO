@@ -22,7 +22,7 @@ monodomain_xml_file = ParamListE.xml
     
     [../time_discretization]
     endtime         = 100000
-    timestep        = 0.05
+    timestep        = 0.1
     
     [../discretization]
     LumpedMass = false // use when too coarse mesh
@@ -50,7 +50,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../time_discretization]
     endtime         = 100000
-    timestep        = 0.05
+    timestep        = 0.1
 
     [../pathology]
     strength    = 0.1
@@ -104,7 +104,7 @@ monodomain_xml_file = ParamListE.xml
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
     listPatchesBC = ''#'Patch1 Patch2'
 
-    numPreloadSteps  = 50
+    numPreloadSteps  = 40
 
         [./BaseSemilunar]
         type       = Essential #Robin
