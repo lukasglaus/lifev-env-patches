@@ -96,6 +96,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         Real Ca = (*this->M_electroSolution.at(M_calciumIndex) )[iGID];
         
         Pa = computeActiveStress(i4f, Ca);
+        Pa *= (infarctZone ? M_PathologyStrength : 1.0);
         
         Real g = (*M_fiberActivationPtr) [iGID];
         Real g2 = g * g;
@@ -106,7 +107,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         dW = 2.0 * i4f * ( 3.0 * g - 6.0 * g2 + 10.0 * g3 - 15.0 * g4  + 21.0 * g5 );
         Real grhs = M_inverseViscosity * ( Pa - dW ) / Ca / Ca;
         grhs *= timeStep;
-        (*M_fiberActivationPtr) [iGID] += grhs * (infarctZone ? M_PathologyStrength : 1.0);
+        (*M_fiberActivationPtr) [iGID] += grhs;
 
     }
     

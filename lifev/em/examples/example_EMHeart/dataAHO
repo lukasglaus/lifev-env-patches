@@ -57,7 +57,7 @@ monodomain_xml_file = ParamListE.xml
     infarctX    = 1.0
     infarctY    = -7.0
     infarctZ    = -3.7
-    radius      = 1.5
+    radius      = 2.0
 
     [../]
 
