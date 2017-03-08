@@ -41,7 +41,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel = ActiveStrainRossi14 #ActiveStressRossi14
     CalciumIndex = 3 # potential for activstress, 2 from minimal for active strain.
-    ActiveForceCoefficient = -7 # -500 #-700.0 #-7.0 #-8.0
+    ActiveForceCoefficient = -6.5 # -500 #-700.0 #-7.0 #-8.0
     InverseViscosity = 0.0002 #0.000002
     Tmax = 10000
     ActiveStress_Beta = 2.279
