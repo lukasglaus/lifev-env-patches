@@ -53,7 +53,7 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
 
     [../pathology]
-    strength    = 1.0
+    strength    = 0.1
     infarctX    = 1.0
     infarctY    = -7.0
     infarctZ    = -3.7
@@ -262,8 +262,8 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoa/
-    mesh_file           = heartVVCoa.mesh
+    mesh_dir            = heartVCoa/
+    mesh_file           = heartVCoa.mesh
     mesh_scaling        = 0.1
     mesh_translation_0  = -66
     mesh_translation_1  = -72
