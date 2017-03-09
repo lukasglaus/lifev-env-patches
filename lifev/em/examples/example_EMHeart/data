@@ -12,7 +12,7 @@ save       = 10
 [electrophysiology]
 
 monodomain_xml_path = ./
-monodomain_xml_file = ParamList.xml
+monodomain_xml_file = ParamListE.xml
 
     [./physics]
     IonicModel = MinimalModel
@@ -22,7 +22,7 @@ monodomain_xml_file = ParamList.xml
     
     [../time_discretization]
     endtime         = 100000
-    timestep        = 0.05
+    timestep        = 0.1
     
     [../discretization]
     LumpedMass = false // use when too coarse mesh
@@ -39,18 +39,22 @@ monodomain_xml_file = ParamList.xml
 [activation]
 
     [./physics]
-    ActivationModel = ActiveStressRossi14
-    CalciumIndex = 0 # potential for activstress, 2 from minimal for active strain.
-    ActiveForceCoefficient = -5.3
-    InverseViscosity = 0.0003
-    Tmax = 3.8
-    ActiveStress_Beta = 2.279
-    EMActiveStrainOrthotropicParameter = 4 # -666.0 for deactivated
-    EMActiveStrainType = TransverselyIsotropic
+    ActivationModel = ActiveStrainRossi14
+    CalciumIndex = 3 # potential for activstress, 2 from minimal for active strain.
+    ActiveForceCoefficient = -7.0 # -500 #-700.0 #-7.0 #-8.0
+    InverseViscosity = 0.0002 #0.000002
+    ChemicalThreshold = 0.21
 
     [../time_discretization]
     endtime         = 100000
-    timestep        = 0.05
+    timestep        = 0.1
+
+    [../pathology]
+    strength    = 0.1
+    infarctX    = 1.0
+    infarctY    = -7.0
+    infarctZ    = -3.7
+    radius      = 2.5
 
     [../]
 
@@ -68,40 +72,16 @@ monodomain_xml_file = ParamList.xml
     gammaf		= 0.0
     solidType 	= EMMaterial 
     lawType     = nonlinear
-    EMPassiveMaterialType = PHO
-    EMActiveStressMaterialType = AHO #SimpleActiveStress #AHO #SFAS
-
-    # Simple Fiber Active Stress
-    Tmax = 1300000 #30000 #500000 # 500000 value is thought for Holzapfel
-    Cs = -0.5
-    Cn = 0.3
-
-    # NeoHokean & Mooney-Rivlin
-    mu = 10000 #4960
-    C2 = 5000
-
-    # Holzapfel O.
-    a           = 3330
-    af          = 185350
-    as          = 25640
-    afs         = 4170
-    b           = 9.242
-    bf          = 15.972
-    bs          = 10.446
-    bfs         = 11.602
-
-    # Volumetric
-    BulkModulus = 3500000
 
     [../boundary_conditions]
-    list =  'BaseSemilunar BaseAV Epicardium' #' AorticRing MitralRing TricuspidRing'
-    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop AorticRingP MitralRingP TricuspidRingP'
+    list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
     listPatchesBC = ''#'Patch1 Patch2'
 
-    numPreloadSteps  = 30
+    numPreloadSteps  = 40
 
         [./BaseSemilunar]
-        type       = Robin
+        type       = Essential #Robin
         flag       = 462
         mode       = Component
         component  = '0 1 2'
@@ -116,7 +96,7 @@ monodomain_xml_file = ParamList.xml
             [../]
 
         [../BaseAV]
-        type       = Robin
+        type       = Essential #Robin
         flag       = 463
         mode       = Component
         component  = '0 1 2'
@@ -223,6 +203,7 @@ monodomain_xml_file = ParamList.xml
             flag    = 459
             index   = 1
 
+
         [../Patch1]
             flag       = 70
 
@@ -303,7 +284,7 @@ monodomain_xml_file = ParamList.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 1
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -314,7 +295,7 @@ monodomain_xml_file = ParamList.xml
             solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
 
             [../partitioner]
-            overlap 		= 3
+            overlap 		= 4
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
