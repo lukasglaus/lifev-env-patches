@@ -45,8 +45,8 @@ monodomain_xml_file = ParamListE.xml
     InverseViscosity = 0.0002 #0.000002
     Tmax = 10000
     ActiveStress_Beta = 2.279
-#EMActiveStrainOrthotropicParameter = 4 # -666.0 for deactivated
-#   EMActiveStrainType = Orthotropic
+    EMActiveStrainOrthotropicParameter = 4 # -666.0 for deactivated
+    EMActiveStrainType = Orthotropic
 
     [../time_discretization]
     endtime         = 100000
