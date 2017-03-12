@@ -1,0 +1,232 @@
+###################################################################################################
+#
+#                       This file is part of the LifeV Library
+#                Copyright (C) 2004, 2005, 2007 EPFL, Politecnico di Milano, INRIA
+#                Copyright (C) 2010 EPFL, Politecnico di Milano, Emory University
+#
+#      Author(s): Simone Rossi <simone.rossi@epfl.ch>
+#           Date: 4-2014
+#  License Terms: GNU LGPL
+#
+###################################################################################################
+### TESTSUITE: STRUCTURE MECHANICS ################################################################
+###################################################################################################
+#-------------------------------------------------
+#      Data file for Fiber construction
+#-------------------------------------------------
+
+
+[problem]
+centerline_x           = 0
+centerline_y           = 1
+centerline_z           = 0
+epi_angle              =-60.0
+endo_angle             = 60.0
+output_fiber_filename  = FiberDirection
+hdf5_fiber_name        = fibers
+output_sheets_filename = SheetsDirection
+hdf5_sheets_name       = sheets
+
+
+    [./boundary_conditions]
+    list = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop BaseSemilunar BaseAV Epicardium PatchA PatchB'
+   
+        [./EndocardiumLV]
+        type       = Essential
+        flag       = 454
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../EndocardiumRV]
+        type       = Essential
+        flag       = 455
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../Septum]
+        type       = Essential
+        flag       = 456
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
+        [../SeptumEdgeBottom]
+        type       = Natural
+        flag       = 457
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../SeptumEdgeTop]
+        type       = Natural
+        flag       = 458
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../AorticRing]
+        type       = Essential
+        flag       = 461
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../MitralRing]
+        type       = Essential
+        flag       = 460
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../TricuspidRing]
+        type       = Essential
+        flag       = 459
+        mode       = Full
+        component  = 1
+        function  = '0.0'
+
+        [../BaseSemilunar]
+        type       = Essential
+        flag       = 462
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
+        [../BaseAV]
+        type       = Essential
+        flag       = 463
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
+        [../Epicardium]
+        type       = Essential
+        flag       = 464
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+
+        [../PatchA]
+        type       = Essential
+        flag       = 470
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+        [../PatchB]
+        type       = Essential
+        flag       = 471
+        mode       = Full
+        component  = 1
+        function  = '1.0'
+        [../]
+
+    [../space_discretization]
+    mesh_dir  	= ./
+    mesh_file 	= heartVCoaPatch.mesh
+    elem_type   = P2
+
+    [../mesh_transformation]
+    #mesh_scaling        = 0.1
+    #mesh_translation_0  = -66
+    #mesh_translation_1  = -72
+    #mesh_translation_2  = -94.5
+    #mesh_rotation_0     = 0.9
+    #mesh_rotation_1     = 0.0
+    #mesh_rotation_2     = -0.5
+
+    [../solver]
+    solver_name     = AztecOO #Belos
+    solver          = gmres
+    scaling         = none
+    output          = all 			# none
+    conv            = rhs
+    max_iter        = 500
+    reuse           = true
+    max_iter_reuse  = 250
+    kspace          = 100
+    tol             = 1.e-10    		# AztecOO tolerance
+    orthog          = 0
+    aux_vec         = 0
+
+    [../prec]
+    prectype        = ML #Ifpack	 		# Ifpack or ML
+    displayList     = true
+    xmlName         = ParamList.xml #xmlParameters.xml
+
+        [./ML] 
+
+    	default_parameter_list = NSSA  # Domain-decomposition
+	    prec_type =  MGV               # Multigrid, single V-cycle
+	    max_levels = 10
+    	inc_or_dec = increasing
+
+    		[./energy_minimization]
+		    enable = true
+		    type   = 3
+
+    		[../repartition]
+	    	enable              = 1
+            max_min_ratio       = 1.3
+            min_per_proc        = 500
+            partitioner         = ParMETIS #Zoltan: to be implemented
+
+            [../aggregation]
+            threshold            = 0.01
+            nodes_per_aggregate = 32
+
+            [../coarse]
+            max_size            = 10
+            type                = 'self' 
+
+            [../smoother]
+            type        = 'symmetric Gauss-Seidel'           # Gauss-Seidel smoother
+            sweeps      = 1
+            pre_or_post = both
+            
+            [../] 
+
+        [../] # ML
+
+
+    [../ifpack]
+    overlap  	= 1
+
+        [./relaxation]
+        type                   = Jacobi
+        sweeps                 = 2
+        damping_factor         = 1.
+        min_diagonal_value     = 0
+        zero_starting_solution = true
+
+        [../partitioner]
+        type                   = metis
+        overlap                = 1
+        local_parts            = 1
+        root_node              = 0
+        use_symmetric_graph    = true
+
+        [../amesos]
+        solvertype             = Amesos_Superludist # Amesos_KLU or Amesos_Umfpack
+
+        [../fact]
+        level-of-fill          = 5
+        ilut_level-of-fill     = 5
+        absolute_threshold     = 0
+        relative_threshold     = 1
+        relax_value            = 0
+        drop_tolerance         = 1.e-10
+
+        [../schwarz]
+        combine_mode           = 0             # 0=Add, 1=Zero, 2=Insert, 3=Average, 4=AbsMax
+        compute_condest        = false
+        reordering_type        = none          #none, metis, rcm
+        filter_singletons      = true
+
+        [../]
+
+    [../]
+
+#[../]
+

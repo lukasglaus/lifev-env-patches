@@ -31,3 +31,15 @@ CREATE_SYMLINK
 SOURCE_FILES heartVVVCoa
 SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMHeart
 )
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(heartVCoaPatch
+CREATE_SYMLINK
+SOURCE_FILES heartVCoaPatch
+SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMHeart
+)
+
+TRIBITS_COPY_FILES_TO_BINARY_DIR(heartVVCoaPatch
+CREATE_SYMLINK
+SOURCE_FILES heartVVCoaPatch
+SOURCE_DIR ${CMAKE_SOURCE_DIR}/lifev/em/examples/example_EMHeart
+)
