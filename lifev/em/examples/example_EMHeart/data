@@ -22,7 +22,7 @@ monodomain_xml_file = ParamListE.xml
     
     [../time_discretization]
     endtime         = 100000
-    timestep        = 0.1
+    timestep        = 0.05
     
     [../discretization]
     LumpedMass = false // use when too coarse mesh
@@ -47,7 +47,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../time_discretization]
     endtime         = 100000
-    timestep        = 0.1
+    timestep        = 0.05
 
     [../pathology]
     strength    = 0.1
@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
     listPatchesBC = 'Patch1 Patch2'
 
-    numPreloadSteps  = 40
+    numPreloadSteps  = 50
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -205,15 +205,15 @@ monodomain_xml_file = ParamListE.xml
 
 
         [../Patch1]
-            flag       = 670
+            flag       = 470
 
         [../Patch2]
-            flag       = 671
+            flag       = 471
 
         [../]
 
     [../patches]
-    Tmax            = 100
+    Tmax            = 500
 
     [../coupling]
     pPerturbationFe         = 1e-3
@@ -236,7 +236,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoa/
+    mesh_dir            = heartVVCoaPatch/
     mesh_file           = heartVVCoaPatch.mesh
 #mesh_scaling        = 0.1
 #mesh_translation_0  = -66
