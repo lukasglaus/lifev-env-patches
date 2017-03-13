@@ -637,10 +637,12 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
 
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(i);
+
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            solver.saveSolution (i-1);
+            //solver.saveSolution (i-1);
         }
 
         if ( 0 == comm->MyPID() )
