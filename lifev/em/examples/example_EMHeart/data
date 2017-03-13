@@ -51,10 +51,10 @@ monodomain_xml_file = ParamListE.xml
 
     [../pathology]
     strength    = 0.1
-    infarctX    = 1.0
-    infarctY    = -7.0
-    infarctZ    = -3.7
-    radius      = 2.5
+    infarctX    = 2.0
+    infarctY    = -8.0
+    infarctZ    = -3.0
+    radius      = 3.0
 
     [../]
 
