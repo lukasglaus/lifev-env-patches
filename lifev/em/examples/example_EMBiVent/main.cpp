@@ -95,10 +95,10 @@ externalPower ( const VectorEpetra& dispCurrent,
     return traction.dot(velocity);
 }
 
-Real patchForce (const Real& t, const Real& Tmax)
+Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
-    bool time ( fmod(t, 800.) < 300 && fmod(t, 800.) > 0);
-    Real force = std::pow( std::sin(fmod(t, 800.)*3.14159265359/300) , 2 ) * Tmax;
+    bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t, 800.) > 0);
+    Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
     return ( time ? force : 0 );
 }
 
@@ -394,12 +394,15 @@ int main (int argc, char** argv)
     };
 
     Real Tmax = dataFile ( "solid/patches/Tmax", 0. );
+    Real tmax = dataFile ( "solid/patches/tmax", 0. );
+    Real tduration = dataFile ( "solid/patches/tduration", 0. );
+
     auto modifyFeBCPatches = [&] (const Real& time)
     {
         for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
         {
             if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax) << std::endl;
-            *pVecPatchesPtrs[i] = - patchForce(time, Tmax) * 1333.224;
+            *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
             pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
         }

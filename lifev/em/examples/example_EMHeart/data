@@ -214,6 +214,9 @@ monodomain_xml_file = ParamListE.xml
 
     [../patches]
     Tmax            = 50
+    tmax            = 250
+    tduration       = 300
+
 
     [../coupling]
     pPerturbationFe         = 1e-3
