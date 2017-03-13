@@ -640,7 +640,7 @@ int main (int argc, char** argv)
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            //solver.saveSolution (i-1);
+            solver.saveSolution (i-1);
         }
 
         if ( 0 == comm->MyPID() )
