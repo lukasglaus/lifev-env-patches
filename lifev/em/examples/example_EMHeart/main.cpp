@@ -392,7 +392,7 @@ int main (int argc, char** argv)
         std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
         ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
         
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Full, bcFunction, 3);
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
     }
 
     
@@ -602,6 +602,8 @@ int main (int argc, char** argv)
     
     if ( ! restart )
     {
+        solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
+        
         const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
         
         auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
@@ -636,8 +638,6 @@ int main (int argc, char** argv)
             
             // Update pressure b.c.
             modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
-
-            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(i);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
