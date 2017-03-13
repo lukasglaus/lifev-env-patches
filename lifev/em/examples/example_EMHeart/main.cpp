@@ -97,9 +97,15 @@ externalPower ( const VectorEpetra& dispCurrent,
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
-    bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t, 800.) > 0);
+    bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
     Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
     return ( time ? force : 0 );
+}
+
+Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
+{
+    Real disp = std::pow( std::sin(fmod(t, 800.) * 3.14159265359/300) , 2 )*10;
+    return disp;
 }
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
@@ -349,6 +355,7 @@ int main (int argc, char** argv)
 
     std::vector<ID> flagsBC;
     std::vector<ID> flagsBCPatches;
+
     std::vector<UInt> ventIdx;
 
     // Endocardia
@@ -364,8 +371,8 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
     }
     
-    // Patches
-    UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchesBC" ) );
+    // Force vector patches
+    UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
     for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
     {
         std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listPatchesBC" ), " ", i );
@@ -376,6 +383,17 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flagsBCPatches[i], Natural, Full, *pBCVecPatchesPtrs[i], 3);
     }
 
+    // Displacement function patches
+    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
+    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
+    {
+        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
+        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
+        
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, patchFunction);
+    }
+
+    
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     // Functions to modify b.c.
