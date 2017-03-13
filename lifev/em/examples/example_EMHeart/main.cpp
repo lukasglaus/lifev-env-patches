@@ -104,7 +104,7 @@ Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& 
 
 Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
-    Real disp = std::pow( std::sin(fmod(t, 800.) * 3.14159265359/300) , 2 )*10;
+    Real disp = std::pow( std::sin(fmod(t, 800.) * 3.14159265359/300) , 2 )*15;
     return disp;
 }
 
