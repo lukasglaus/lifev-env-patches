@@ -50,7 +50,7 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
 
     [../pathology]
-    strength    = 0.1
+    strength    = 0.01
     infarctX    = 2.0
     infarctY    = -8.0
     infarctZ    = -3.0
