@@ -76,7 +76,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
-    listPatchesBC = 'Patch1 Patch2'
+    listPatchesBC = ''#''Patch1 Patch2'
 
     numPreloadSteps  = 50
 
@@ -213,7 +213,7 @@ monodomain_xml_file = ParamListE.xml
         [../]
 
     [../patches]
-    Tmax            = 500
+    Tmax            = 50
 
     [../coupling]
     pPerturbationFe         = 1e-3
@@ -236,15 +236,15 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoaPatch/
-    mesh_file           = heartVVCoaPatch.mesh
-#mesh_scaling        = 0.1
-#mesh_translation_0  = -66
-#mesh_translation_1  = -72
-#mesh_translation_2  = -94.5
-#mesh_rotation_0     = 0.9
-#mesh_rotation_1     = 0.0
-#mesh_rotation_2     = -0.5
+    mesh_dir            = heartVCoa/
+    mesh_file           = heartVCoa.mesh
+    mesh_scaling        = 0.1
+    mesh_translation_0  = -66
+    mesh_translation_1  = -72
+    mesh_translation_2  = -94.5
+    mesh_rotation_0     = 0.9
+    mesh_rotation_1     = 0.0
+    mesh_rotation_2     = -0.5
     order               = P2
     quad_rule           = 4pt
     anisotropic         = true
