@@ -392,7 +392,7 @@ int main (int argc, char** argv)
         std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
         ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
         
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Full, bcFunction, 3);
     }
 
     
