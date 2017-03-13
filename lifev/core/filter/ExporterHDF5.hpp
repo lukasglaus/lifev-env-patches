@@ -1111,7 +1111,7 @@ void ExporterHDF5<MeshType>::writeGeometry()
     {
         case TETRA:
         {
-            const ReferenceFE& refFEP1 = feTetraP2;
+            const ReferenceFE& refFEP1 = feTetraP1;
             DOF tmpDof ( *this->M_mesh, refFEP1 );
             std::vector<Int> myGlobalElements ( tmpDof.globalElements ( *this->M_mesh ) );
             // Create the map
