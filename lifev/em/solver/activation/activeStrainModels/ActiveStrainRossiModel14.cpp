@@ -27,7 +27,7 @@ ActiveStrainRossiModel14::ActiveStrainRossiModel14 (  Real inverseViscosity,
 
 
 Real
-ActiveStrainRossiModel14::computeActiveStress( Real i4f, Real Calcium)
+ActiveStrainRossiModel14::computeActiveStress( Real i4f, Real Calcium )
 {
     Real dCa = Calcium - M_chemicalThreshold;
     Real fl = EMUtility::FLRelationship( i4f );
@@ -37,7 +37,7 @@ ActiveStrainRossiModel14::computeActiveStress( Real i4f, Real Calcium)
 }
 
 void
-ActiveStrainRossiModel14::solveModel ( Real& timeStep)
+ActiveStrainRossiModel14::solveModel ( Real& timeStep )
 {
 	if(!M_I4fPtr)
 	{
