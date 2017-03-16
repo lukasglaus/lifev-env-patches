@@ -54,7 +54,7 @@ monodomain_xml_file = ParamListE.xml
     infarctX    = 2.0
     infarctY    = -8.0
     infarctZ    = -3.0
-    radius      = 3.0
+    radius      = 0.0
 
     [../]
 
@@ -214,7 +214,7 @@ monodomain_xml_file = ParamListE.xml
         [../]
 
     [../patches]
-    Tmax            = 50
+    Tmax            = 20
     tmax            = 250
     tduration       = 300
 
@@ -231,7 +231,7 @@ monodomain_xml_file = ParamListE.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 1.0
+    timestep        = 2.5
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
@@ -240,8 +240,8 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoaPatch/
-    mesh_file           = heartVVCoaPatch.mesh
+    mesh_dir            = heartVCoaPatch/
+    mesh_file           = heartVCoaPatch.mesh
 #    mesh_scaling        = 0.1
 #    mesh_translation_0  = -66
 #    mesh_translation_1  = -72
