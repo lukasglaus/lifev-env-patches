@@ -79,7 +79,7 @@ monodomain_xml_file = ParamListE.xml
     listForcePatchesBC = 'Patch1 Patch2'
     #listDispPatchesBC = 'Patch1 Patch2'
 
-    numPreloadSteps  = 50
+    numPreloadSteps  = 0
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -231,7 +231,7 @@ monodomain_xml_file = ParamListE.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 2.5
+    timestep        = 700
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75

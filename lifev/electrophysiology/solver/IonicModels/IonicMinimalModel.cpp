@@ -50,33 +50,33 @@ namespace LifeV
 IonicMinimalModel::IonicMinimalModel()  :
     super       ( 4, 2     ),
     M_uo        ( 0.    ),
-    M_uu        ( 1.58  ),
+    M_uu        ( 1.61  ),
     M_tetav     ( 0.3   ),
-    M_tetaw     ( 0.015 ),
-    M_tetavm    ( 0.015 ),
-    M_tetao     ( 0.006 ),
-    M_tauv1     ( 60.0  ),
-    M_tauv2     ( 1150.0),
+    M_tetaw     ( 0.13 ),
+    M_tetavm    ( 0.1 ),
+    M_tetao     ( 0.005 ),
+    M_tauv1     ( 80.0  ),
+    M_tauv2     ( 1.4506),
     M_tauvp     ( 1.4506),
     M_tauw1     ( 70.0  ),
-    M_tauw2     ( 20.0  ),
-    M_kw        ( 65.0  ),
-    M_uw        ( 0.03  ),
+    M_tauw2     ( 8.0  ),
+    M_kw        ( 200.0  ),
+    M_uw        ( 0.016  ),
     M_tauwp     ( 280.0 ),
-    M_taufi     ( 0.11  ),
-    M_tauo1     ( 6.0   ),
-    M_tauo2     ( 6.0   ),
-    M_tauso1    ( 43.0  ),
-    M_tauso2    ( 0.2   ),
-    M_kso       ( 2.0   ),
-    M_uso       ( 0.65  ),
+    M_taufi     ( 0.078  ),
+    M_tauo1     ( 410.0   ),
+    M_tauo2     ( 7.0   ),
+    M_tauso1    ( 91.0  ),
+    M_tauso2    ( 0.8   ),
+    M_kso       ( 2.1   ),
+    M_uso       ( 0.6  ),
     M_taus1     ( 2.7342),
-    M_taus2     ( 3.0   ),
+    M_taus2     ( 4.0   ),
     M_ks        ( 2.0994),
     M_us        ( 0.9087),
-    M_tausi     ( 2.8723),
-    M_tauwinf   ( 0.07  ),
-    M_winfstar  ( 0.94  )
+    M_tausi     ( 3.3849),
+    M_tauwinf   ( 0.01  ),
+    M_winfstar  ( 0.5  )
 {
     M_restingConditions.at (0) = 0.0;
     M_restingConditions.at (1) = 1.0;
@@ -85,6 +85,44 @@ IonicMinimalModel::IonicMinimalModel()  :
 
 }
 
+//    IonicMinimalModel::IonicMinimalModel()  :
+//    super       ( 4, 2     ),
+//    M_uo        ( 0.    ),
+//    M_uu        ( 1.58  ),
+//    M_tetav     ( 0.3   ),
+//    M_tetaw     ( 0.015 ),
+//    M_tetavm    ( 0.015 ),
+//    M_tetao     ( 0.006 ),
+//    M_tauv1     ( 60.0  ),
+//    M_tauv2     ( 1150.0),
+//    M_tauvp     ( 1.4506),
+//    M_tauw1     ( 70.0  ),
+//    M_tauw2     ( 20.0  ),
+//    M_kw        ( 65.0  ),
+//    M_uw        ( 0.03  ),
+//    M_tauwp     ( 280.0 ),
+//    M_taufi     ( 0.11  ),
+//    M_tauo1     ( 6.0   ),
+//    M_tauo2     ( 6.0   ),
+//    M_tauso1    ( 43.0  ),
+//    M_tauso2    ( 0.2   ),
+//    M_kso       ( 2.0   ),
+//    M_uso       ( 0.65  ),
+//    M_taus1     ( 2.7342),
+//    M_taus2     ( 3.0   ),
+//    M_ks        ( 2.0994),
+//    M_us        ( 0.9087),
+//    M_tausi     ( 2.8723),
+//    M_tauwinf   ( 0.07  ),
+//    M_winfstar  ( 0.94  )
+//    {
+//        M_restingConditions.at (0) = 0.0;
+//        M_restingConditions.at (1) = 1.0;
+//        M_restingConditions.at (2) = 1.0;
+//        M_restingConditions.at (3) = 0.021553043080281;
+//        
+//    }
+    
 IonicMinimalModel::IonicMinimalModel ( Teuchos::ParameterList& parameterList     )   :
     super       ( 4 )
 {
