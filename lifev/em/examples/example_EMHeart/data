@@ -40,9 +40,9 @@ monodomain_xml_file = ParamListE.xml
 
     [./physics]
     ActivationModel = ActiveStrainRossi14
-    CalciumIndex = 3 # potential for activstress, 2 from minimal for active strain.
-    ActiveForceCoefficient = -7.0 # -500 #-700.0 #-7.0 #-8.0
-    InverseViscosity = 0.0002 #0.000002
+    CalciumIndex = 3
+    ActiveForceCoefficient = -7.0
+    InverseViscosity = 0.0002
     ChemicalThreshold = 0.21
 
     [../time_discretization]
@@ -79,7 +79,7 @@ monodomain_xml_file = ParamListE.xml
     listForcePatchesBC = 'Patch1 Patch2'
     #listDispPatchesBC = 'Patch1 Patch2'
 
-    numPreloadSteps  = 0
+    numPreloadSteps  = 50
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -231,7 +231,7 @@ monodomain_xml_file = ParamListE.xml
     [../time_discretization]
     initialtime 	= 0.
     endtime         = 100000.
-    timestep        = 700
+    timestep        = 1.0
     dt_loadstep     = 0.5
     theta       	= 0.35
     zeta        	= 0.75
