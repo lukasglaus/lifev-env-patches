@@ -704,9 +704,18 @@ int main (int argc, char** argv)
         // Solve electrophysiology and activation
         //============================================//
 
-        solver.solveElectrophysiology (stim, t);
-        solver.solveActivation (dt_activation);
-        
+        if ( k % mechanicsLoadstepIter == 0 )
+        {
+            // 4th order Adam-Bashforth pressure extrapol.
+            
+            // Load step mechanics
+
+        }
+        else
+        {
+            solver.solveElectrophysiology (stim, t);
+            solver.solveActivation (dt_activation);
+        }
         
         //============================================//
         // 4th order Adam-Bashforth pressure extrapol.
@@ -856,16 +865,6 @@ int main (int argc, char** argv)
                     
                     disp = dispCurrent;
                 }
-
-//                //============================================//
-//                // Broyden update
-//                //============================================//
-//                if ( t > 1.1 )
-//                {
-//                    VectorSmall<2> dJdp = ( (VFeNew - VFe ) - JFe * dp ) / ( dp.dot( dp ) );
-//                    MatrixSmall<2,2> dJ = dJdp.outerProduct( dp );
-//                    JFe += dJ;
-//                }
                 
                 //============================================//
                 // Update pressure b.c.
