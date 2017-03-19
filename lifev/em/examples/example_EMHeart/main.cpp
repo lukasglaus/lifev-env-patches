@@ -704,14 +704,14 @@ int main (int argc, char** argv)
         // Solve electrophysiology and activation
         //============================================//
 
-        if ( k % mechanicsLoadstepIter == 0 )
-        {
-            // 4th order Adam-Bashforth pressure extrapol.
-            
-            // Load step mechanics
-
-        }
-        else
+//        if ( k % mechanicsLoadstepIter == 0 )
+//        {
+//            // 4th order Adam-Bashforth pressure extrapol.
+//            
+//            // Load step mechanics
+//
+//        }
+//        else
         {
             solver.solveElectrophysiology (stim, t);
             solver.solveActivation (dt_activation);
