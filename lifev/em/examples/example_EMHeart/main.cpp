@@ -170,7 +170,7 @@ int main (int argc, char** argv)
     //============================================//
     // Heart solver
     //============================================//
-    HeartSolver heartSolver (solver, circulationSolver);
+    HeartSolver<EMSolver> heartSolver (solver, circulationSolver);
     
     
     //============================================//
