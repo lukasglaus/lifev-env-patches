@@ -714,7 +714,7 @@ int main (int argc, char** argv)
 
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
         
-        if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < - 0.5 )
+        if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < - 0.05 )
         {
             if ( 0 == comm->MyPID() )
             {
@@ -778,6 +778,7 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n***************************************************************";
+                std::cout << "\nMinimal activation value = " << minActivationValue;
                 std::cout << "\nLV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
                 std::cout << "\nRV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
                 std::cout << "\n***************************************************************\n\n";
