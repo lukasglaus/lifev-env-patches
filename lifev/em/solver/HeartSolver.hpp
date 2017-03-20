@@ -23,8 +23,8 @@ class HeartSolver {
    
 public:
     
-    
-    HeartSolver(EMSolver& emSolver,  Circulation& circulationSolver):
+    template<class meshType>
+    HeartSolver(EMSolver<meshType,EMMonodomainSolver<meshType> >& emSolver,  Circulation& circulationSolver):
         M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver)
     {};
