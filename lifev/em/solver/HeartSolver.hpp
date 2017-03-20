@@ -19,12 +19,12 @@
 namespace LifeV
 {
 
+template <class EmSolver>
 class HeartSolver {
    
 public:
     
-    template <class meshType>
-    HeartSolver(EMSolver<meshType,EMMonodomainSolver<meshType> >& emSolver,  Circulation& circulationSolver):
+        HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver):
         M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver)
     {};
@@ -45,7 +45,7 @@ public:
 protected:
     
     
-    template <class meshType> EMSolver<meshType,EMMonodomainSolver<meshType> > M_emSolver;
+    Emsolver M_emSolver;
     Circulation M_circulationSolver;
     
     
