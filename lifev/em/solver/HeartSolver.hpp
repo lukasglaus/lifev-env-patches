@@ -45,7 +45,7 @@ public:
 protected:
     
     
-    EMSolver M_emSolver;
+    template <class meshType> EMSolver<meshType,EMMonodomainSolver<meshType> > M_emSolver;
     Circulation M_circulationSolver;
     
     
