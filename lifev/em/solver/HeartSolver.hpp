@@ -24,28 +24,27 @@ class HeartSolver {
 public:
     
     HeartSolver(EMSolver& emSolver,  CirculationSolver& circulationSolver):
-        M_feSolver          (feSolver),
+        M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver)
     {};
     
     virtual ~HeartSolver() {};
     
-    // get data void setup(FESolver& feSolver)
+
     
-    void extrapolatePressure(const double& dt)
-    {
-        
-    }
     
-    template<class FESolver, class CirculationSolver>
-    void computeJacobian(FESolver& feSolver,  CirculationSolver& circulationSolver)
-    {}
     
-    void solveCirculation()
-    {}
+    
     
     
 private:
+    
+    
+    EMSolver M_emSolver;
+    CirculationSolver M_circulationSolver;
+    
+    
+    
     
     VectorSmall<2> M_pressure;
     VectorSmall<2> M_volume;
