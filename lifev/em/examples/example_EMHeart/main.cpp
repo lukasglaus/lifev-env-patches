@@ -467,7 +467,7 @@ int main (int argc, char** argv)
     //HeartSolver<EMSolver<mesh_Type, monodomain_Type>, Circulation> heartSolver (solver, circulationSolver);
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
-    Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1e-2 );
+    Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     Real dt_save = dataFile ( "exporter/save", 10. );
     Real endtime = solver.data().electroParameter<Real>("endtime");
@@ -704,37 +704,29 @@ int main (int argc, char** argv)
         // Solve electrophysiology and activation
         //============================================//
 
-//        if ( k % mechanicsLoadstepIter == 0 )
-//        {
-//            // 4th order Adam-Bashforth pressure extrapol.
-//            
-//            // Load step mechanics
-//
-//        }
-//        else
-        {
-            solver.solveElectrophysiology (stim, t);
-            solver.solveActivation (dt_activation);
-        }
+        solver.solveElectrophysiology (stim, t);
+        solver.solveActivation (dt_activation);
+
         
         //============================================//
-        // 4th order Adam-Bashforth pressure extrapol.
+        // Load steps mechanics (activation & b.c.)
         //============================================//
 
-            // todo!
+        auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
         
-        
-        //============================================//
-        // Load step mechanics
-        //============================================//
-        
-//        if ( k % mechanicsLoadstepIter == 0 )
-//        {
-//            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-//            modifyFeBC(bcValues);
-//            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-//            solver.solveMechanics();
-//        }
+        if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < - 0.5 )
+        {
+            // Linear b.c. extrapolation
+            auto bcValuesLoadstep ( bcValues );
+            bcValuesLoadstep[0] = bcValues[0] + ( bcValues[0] - bcValuesPre[0] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
+            bcValuesLoadstep[1] = bcValues[1] + ( bcValues[1] - bcValuesPre[1] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
+            
+            // Load step mechanics
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+            modifyFeBC(bcValuesLoadstep);
+            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            solver.solveMechanics();
+        }
         
         
         //============================================//
