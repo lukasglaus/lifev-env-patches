@@ -43,7 +43,7 @@ protected:
     
     
     EMSolver<meshType,EMMonodomainSolver<meshType> > M_emSolver;
-    CirculationSolver M_circulationSolver;
+    Circulation M_circulationSolver;
     
     
     VectorSmall<2> M_pressure;
