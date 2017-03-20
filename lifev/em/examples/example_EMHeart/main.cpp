@@ -716,10 +716,26 @@ int main (int argc, char** argv)
         
         if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < - 0.5 )
         {
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nLoad step at time = " << t;
+                std::cout << "\nMinimal activation value = " << minActivationValue;
+                std::cout << "\n*****************************************************************\n";
+            }
+            
             // Linear b.c. extrapolation
             auto bcValuesLoadstep ( bcValues );
             bcValuesLoadstep[0] = bcValues[0] + ( bcValues[0] - bcValuesPre[0] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
             bcValuesLoadstep[1] = bcValues[1] + ( bcValues[1] - bcValuesPre[1] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
+            
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n***************************************************************";
+                std::cout << "\nLV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
+                std::cout << "\nRV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
+                std::cout << "\n***************************************************************\n\n";
+            }
             
             // Load step mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
