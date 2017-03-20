@@ -25,13 +25,18 @@ class HeartSolver {
 public:
     
     
-    HeartSolver(EMSolver<meshType,EMMonodomainSolver<meshType> > & emSolver,  Circulation & circulationSolver):
-        M_emSolver          (emSolver),
-        M_circulationSolver (circulationSolver)
-    {};
+    HeartSolver(){};
+
+
     
     virtual ~HeartSolver() {};
     
+    
+    void setup(EMSolver<meshType,EMMonodomainSolver<meshType> >& emSolver,  Circulation& circulationSolver)
+    {
+        M_emSolver = emSolver;
+        M_circulationSolver = circulationSolver;
+    };
     
     
     
