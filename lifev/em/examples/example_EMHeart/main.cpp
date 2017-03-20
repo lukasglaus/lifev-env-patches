@@ -464,7 +464,7 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
-    //HeartSolver<EMSolver<mesh_Type, monodomain_Type>, Circulation> heartSolver (solver, circulationSolver);
+    HeartSolver<EMSolver<mesh_Type, monodomain_Type>, Circulation> heartSolver (solver, circulationSolver);
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
