@@ -127,9 +127,8 @@ int main (int argc, char** argv)
     
 
     //============================================//
-    // Communicator, displayer and command line
+    // Communicator and displayer
     //============================================//
-    
 #ifdef HAVE_MPI
     MPI_Init ( &argc, &argv );
 #endif
@@ -139,8 +138,15 @@ int main (int argc, char** argv)
     Displayer displayer ( comm );
     displayer.leaderPrint ("\nUsing MPI\n");
 
-    GetPot command_line (argc, argv);
     
+    //============================================//
+    // Read data file and create output folder
+    //============================================//
+    GetPot command_line (argc, argv);
+    const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
+    GetPot dataFile (data_file_name);
+    std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
+
     
     //============================================//
     // Electromechanic solver
@@ -169,15 +175,6 @@ int main (int argc, char** argv)
     
     HeartSolver<mesh_Type>> heartSolver (solver, circulationSolver);
     
-    
-    //============================================//
-    // Read data file and create output folder
-    //============================================//
-
-    const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
-    GetPot dataFile (data_file_name);
-    std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
-
     
     //============================================//
     // Setup material data

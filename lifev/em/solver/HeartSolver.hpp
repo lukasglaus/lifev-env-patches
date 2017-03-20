@@ -32,6 +32,10 @@ public:
     
     virtual ~HeartSolver() {};
     
+    
+    
+    
+    void preloadHeart(const VectorSmall<2>& endocardiaBC);
 
     
     
