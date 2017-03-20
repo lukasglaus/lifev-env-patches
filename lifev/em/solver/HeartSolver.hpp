@@ -45,7 +45,7 @@ public:
 protected:
     
     
-    Emsolver M_emSolver;
+    EmSolver M_emSolver;
     Circulation M_circulationSolver;
     
     
