@@ -170,8 +170,7 @@ int main (int argc, char** argv)
     //============================================//
     // Heart solver
     //============================================//
-    HeartSolver<mesh_Type> heartSolver;
-    heartSolver.setup(solver, circulationSolver);
+    HeartSolver heartSolver (solver, circulationSolver);
     
     
     //============================================//

@@ -19,24 +19,18 @@
 namespace LifeV
 {
 
-template<class meshType>
 class HeartSolver {
    
 public:
     
     
-    HeartSolver(){};
-
-
+    HeartSolver(EMSolver& emSolver,  Circulation& circulationSolver):
+        M_emSolver          (emSolver),
+        M_circulationSolver (circulationSolver)
+    {};
     
     virtual ~HeartSolver() {};
     
-    
-    void setup(EMSolver<meshType,EMMonodomainSolver<meshType> >& emSolver,  Circulation& circulationSolver)
-    {
-        M_emSolver = emSolver;
-        M_circulationSolver = circulationSolver;
-    };
     
     
     
