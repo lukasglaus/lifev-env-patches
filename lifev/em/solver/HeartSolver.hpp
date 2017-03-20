@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <lifev/em/solver/EMSolver.hpp>
+#include <lifev/em/solver/circulation/Circulation.hpp>
 
 
 
@@ -24,7 +25,7 @@ class HeartSolver {
 public:
     
     
-    HeartSolver(EMSolver<meshType,EMMonodomainSolver<meshType> > & emSolver,  CirculationSolver & circulationSolver):
+    HeartSolver(EMSolver<meshType,EMMonodomainSolver<meshType> > & emSolver,  Circulation & circulationSolver):
         M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver)
     {};
@@ -43,8 +44,6 @@ protected:
     
     EMSolver<meshType,EMMonodomainSolver<meshType> > M_emSolver;
     CirculationSolver M_circulationSolver;
-    
-    
     
     
     VectorSmall<2> M_pressure;
