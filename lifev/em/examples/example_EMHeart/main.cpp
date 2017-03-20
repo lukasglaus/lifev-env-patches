@@ -151,14 +151,12 @@ int main (int argc, char** argv)
     //============================================//
     // Electromechanic solver
     //============================================//
-
     EMSolver<mesh_Type, monodomain_Type> solver(comm);
     
     
     //============================================//
     // Body circulation
     //============================================//
-    
     const std::string circulationInputFile = command_line.follow ("circulation", 2, "-cif", "--cifile");
     const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.dat").c_str(), 2, "-cof", "--cofile");
     
@@ -172,14 +170,12 @@ int main (int argc, char** argv)
     //============================================//
     // Heart solver
     //============================================//
-    
-    HeartSolver<mesh_Type>> heartSolver (solver, circulationSolver);
+    HeartSolver<mesh_Type> heartSolver (solver, circulationSolver);
     
     
     //============================================//
     // Setup material data
     //============================================//
-    
     EMData emdata;
     emdata.setup (dataFile);
     
@@ -187,7 +183,6 @@ int main (int argc, char** argv)
     //============================================//
     // Load mesh
     //============================================//
-    
     displayer.leaderPrint ("\nLoading mesh ... ");
 
     std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
@@ -201,7 +196,6 @@ int main (int argc, char** argv)
     //============================================//
     // Resize mesh
     //============================================//
-    
     displayer.leaderPrint ("\nResizing mesh ... ");
 
     std::vector<Real> scale (3, dataFile("solid/space_discretization/mesh_scaling", 1.0));
@@ -220,7 +214,6 @@ int main (int argc, char** argv)
     //============================================//
     // Setup solver (including fe-spaces & b.c.)
     //============================================//
-    
     displayer.leaderPrint ("\nSetting up EM solver ... ");
     
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
@@ -232,7 +225,6 @@ int main (int argc, char** argv)
     //============================================//
     // Setup anisotropy vectors
     //============================================//
-    
     displayer.leaderPrint ("\nSetting up anisotropy vectors ... ");
 
     bool anisotropy = dataFile ( "solid/space_discretization/anisotropic", false );
@@ -262,7 +254,6 @@ int main (int argc, char** argv)
     //============================================//
     // Initialize electrophysiology
     //============================================//
-    
     displayer.leaderPrint ("\nInitialize electrophysiology ... ");
 
     solver.initialize();
@@ -273,7 +264,6 @@ int main (int argc, char** argv)
     //============================================//
     // Building Matrices
     //============================================//
-
     displayer.leaderPrint ("\nBuilding matrices ... ");
 
     solver.oneWayCoupling();
@@ -286,7 +276,6 @@ int main (int argc, char** argv)
     //============================================//
     // Setup exporters for EMSolver
     //============================================//
-    
     displayer.leaderPrint ("\nSetting up exporters ... ");
 
     solver.setupExporters (problemFolder);
@@ -297,14 +286,12 @@ int main (int argc, char** argv)
     //============================================//
     // Electric stimulus function
     //============================================//
-    
     function_Type stim = &Iapp;
     
     
     //============================================//
     // Kept-normal boundary conditions
     //============================================//
-
     // Get b.c. flags
     // ID LvFlag =  dataFile ( "solid/boundary_conditions/LvFlag", 0);
     
@@ -318,7 +305,6 @@ int main (int argc, char** argv)
     //============================================//
     // B.C. endocardia and patches
     //============================================//
-
     std::vector<vectorPtr_Type> pVecPtrs;
     std::vector<bcVectorPtr_Type> pBCVecPtrs;
     std::vector<vectorPtr_Type> pVecPatchesPtrs;
@@ -403,7 +389,6 @@ int main (int argc, char** argv)
     //============================================//
     // Volume integrators
     //============================================//
-    
     auto& disp = solver.structuralOperatorPtr() -> displacement();
     auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
@@ -435,7 +420,6 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
-    
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
     Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
