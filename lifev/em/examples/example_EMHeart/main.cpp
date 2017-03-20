@@ -127,7 +127,7 @@ int main (int argc, char** argv)
     
 
     //============================================//
-    // Declare communicator and solver
+    // Communicator and displayer
     //============================================//
     
 #ifdef HAVE_MPI
@@ -139,8 +139,34 @@ int main (int argc, char** argv)
     Displayer displayer ( comm );
     displayer.leaderPrint ("\nUsing MPI\n");
 
-    EMSolver<mesh_Type, monodomain_Type> solver(comm);
+    
+    //============================================//
+    // Electromechanic solver
+    //============================================//
 
+    EMSolver<mesh_Type, monodomain_Type> solver(comm);
+    
+    
+    //============================================//
+    // Body circulation
+    //============================================//
+    
+    const std::string circulationInputFile = command_line.follow ("circulation", 2, "-cif", "--cifile");
+    const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.dat").c_str(), 2, "-cof", "--cofile");
+    
+    Circulation circulationSolver( circulationInputFile );
+    
+    // Flow rate between two vertices
+    auto Q = [&circulationSolver] (const std::string& N1, const std::string& N2) { return circulationSolver.solution ( std::vector<std::string> {N1, N2} ); };
+    auto p = [&circulationSolver] (const std::string& N1) { return circulationSolver.solution ( N1 ); };
+    
+    
+    //============================================//
+    // Heart solver
+    //============================================//
+    
+    HeartSolver<mesh_Type>> heartSolver (solver, circulationSolver);
+    
     
     //============================================//
     // Read data file and create output folder
@@ -278,20 +304,6 @@ int main (int argc, char** argv)
     
     
     //============================================//
-    // Body circulation
-    //============================================//
-    
-    const std::string circulationInputFile = command_line.follow ("circulation", 2, "-cif", "--cifile");
-    const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.dat").c_str(), 2, "-cof", "--cofile");
-    
-    Circulation circulationSolver( circulationInputFile );
-    
-    // Flow rate between two vertices
-    auto Q = [&circulationSolver] (const std::string& N1, const std::string& N2) { return circulationSolver.solution ( std::vector<std::string> {N1, N2} ); };
-    auto p = [&circulationSolver] (const std::string& N1) { return circulationSolver.solution ( N1 ); };
-    
-    
-    //============================================//
     // Kept-normal boundary conditions
     //============================================//
 
@@ -425,7 +437,6 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
-    HeartSolver<EMSolver<mesh_Type, monodomain_Type>, Circulation> heartSolver (solver, circulationSolver);
     
     Real dt_activation = solver.data().electroParameter<Real>("timestep");
     Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );

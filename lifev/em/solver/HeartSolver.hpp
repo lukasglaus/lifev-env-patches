@@ -51,6 +51,37 @@ protected:
 
     
     
+    
+    
+    
+    
+    Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration) const
+    {
+        bool time ( fmod(t-tmax+0.5*tduration, 700.) < tduration && fmod(t-tmax+0.5*tduration, 700.) > 0);
+        Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 700.)*3.14159265359/tduration) , 2 ) * Tmax;
+        return ( time ? force : 0 );
+    }
+    
+    Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/) const
+    {
+        Real disp = std::pow( std::sin(fmod(t, 700.) * 3.14159265359/300) , 2 )*15;
+        return disp;
+    }
+    
+    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/) const
+    {
+        bool coords ( Y < -7. );
+        //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
+        bool time ( fmod(t, 700.) < 4 && fmod(t, 700.) > 2);
+        return ( coords && time ? 30 : 0 );
+    }
+    
+    Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/) const
+    {
+        bool time ( fmod(t, 700.) < 4 && fmod(t, 700.) > 2);
+        return 1.4 * time; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
+    }
+    
     Real
     externalPower ( const VectorEpetra& dispCurrent,
                     const VectorEpetra& dispPrevious,
