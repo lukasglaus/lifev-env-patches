@@ -11,6 +11,9 @@
 
 
 #include <stdio.h>
+#include <lifev/em/solver/EMSolver.hpp>
+
+
 
 namespace LifeV
 {
@@ -20,7 +23,7 @@ class HeartSolver {
    
 public:
     
-    HeartSolver(FESolver& feSolver,  CirculationSolver& circulationSolver):
+    HeartSolver(EMSolver& emSolver,  CirculationSolver& circulationSolver):
         M_feSolver          (feSolver),
         M_circulationSolver (circulationSolver)
     {};
