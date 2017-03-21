@@ -229,13 +229,14 @@ monodomain_xml_file = ParamListE.xml
     couplingJFeSubIter      = 1
 
     [../time_discretization]
-    initialtime 	= 0.
-    endtime         = 100000.
-    timestep        = 1.0
-    dt_loadstep     = 0.2
-    theta       	= 0.35
-    zeta        	= 0.75
-    BDF_order   	= 2
+    initialtime                 = 0.
+    endtime                     = 100000.
+    timestep                    = 1.0
+    dt_loadstep                 = 0.25
+    activation_limit_loadstep   = -0.05
+    theta                       = 0.35
+    zeta                        = 0.75
+    BDF_order                   = 2
 
 
     [../space_discretization]

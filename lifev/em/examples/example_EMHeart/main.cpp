@@ -420,23 +420,24 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
-    Real dt_activation = solver.data().electroParameter<Real>("timestep");
-    Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
-    Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
-    Real dt_save = dataFile ( "exporter/save", 10. );
-    Real endtime = solver.data().electroParameter<Real>("endtime");
-    UInt mechanicsLoadstepIter = static_cast<UInt>( dt_loadstep / dt_activation );
-    UInt mechanicsCouplingIter = static_cast<UInt>( dt_mechanics / dt_activation );
-    UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
+    const Real dt_activation = solver.data().electroParameter<Real>("timestep");
+    const Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
+    const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
+    const Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
+    const Real dt_save = dataFile ( "exporter/save", 10. );
+    const Real endtime = solver.data().electroParameter<Real>("endtime");
+    const UInt mechanicsLoadstepIter = static_cast<UInt>( dt_loadstep / dt_activation );
+    const UInt mechanicsCouplingIter = static_cast<UInt>( dt_mechanics / dt_activation );
+    const UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
     
-    Real pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
-    Real pPerturbationCirc = dataFile ( "solid/coupling/pPerturbationCirc", 1e-3 );
-    Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
-    UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
-    UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
-    UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
+    const Real pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
+    const Real pPerturbationCirc = dataFile ( "solid/coupling/pPerturbationCirc", 1e-3 );
+    const Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
+    const UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
+    const UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
+    const UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
     
-    Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
+    const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
 
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
@@ -668,7 +669,7 @@ int main (int argc, char** argv)
 
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
         
-        if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < - 0.05 )
+        if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
         {
             if ( 0 == comm->MyPID() )
             {
