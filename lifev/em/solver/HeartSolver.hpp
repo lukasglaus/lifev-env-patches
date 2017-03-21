@@ -36,7 +36,7 @@ public:
 
     
     
-    UserQueues(const UserQueues&) = delete;
+    //UserQueues(const UserQueues&) = delete;
     
     
     
