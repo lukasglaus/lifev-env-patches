@@ -36,6 +36,7 @@ public:
     
     const Real& dt_activation() const { return M_dt_activation; }
     const Real& dt_loadstep () const { return M_dt_loadstep; }
+    const Real& activationLimit_loadstep () const { return M_activationLimit_loadstep; }
     
     
 protected:
@@ -49,7 +50,7 @@ protected:
         M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
         M_dt_mechanics = M_datafile ("solid/time_discretization/timestep", 1.0 );
         M_dt_save = M_datafile ( "exporter/save", 10. );
-        M_endtime =cM_datafile ("solid/time_discretization/endtime", 100000);
+        M_endtime = M_datafile ("solid/time_discretization/endtime", 100000);
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
         M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
