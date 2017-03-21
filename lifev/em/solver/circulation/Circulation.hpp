@@ -39,7 +39,9 @@ public:
     typedef Eigen::VectorXd VectorEigen;
     
     Circulation(){}
-    
+
+    Circulation(const Circulation&) = delete;
+
     virtual ~Circulation(){}
     
     Circulation(const std::string& filename) :
