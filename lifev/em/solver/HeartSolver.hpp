@@ -35,6 +35,7 @@ public:
     virtual ~HeartData() {};
     
     const Real& dt_activation() const { return M_dt_activation; }
+    const Real& dt_loadstep () const { return M_dt_loadstep; }
     
     
 protected:
