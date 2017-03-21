@@ -172,7 +172,7 @@ int main (int argc, char** argv)
     //============================================//
     HeartSolver<EMSolver<mesh_Type, monodomain_Type> > heartSolver (solver, circulationSolver);
     
-    heartSolver.setupHeartData(dataFile);
+    heartSolver.setupData(dataFile);
     
     //============================================//
     // Setup material data

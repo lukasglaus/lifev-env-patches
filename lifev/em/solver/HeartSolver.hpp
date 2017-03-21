@@ -119,7 +119,7 @@ public:
     
     void preloadHeart(const VectorSmall<2>& endocardiaBC);
 
-    void setupHeartData(const GetPot& datafile)
+    void setupData(GetPot& datafile)
     {
         M_heartData = HeartData(datafile);
     }
