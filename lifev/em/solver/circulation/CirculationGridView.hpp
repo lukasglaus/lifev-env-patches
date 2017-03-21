@@ -18,19 +18,19 @@ public:
     
     GridView() {}
 
-    GridView(const GridView& gv) = delete; //:
+    //GridView(const GridView& gv) = delete; //:
 //        M_vertices (gv.M_vertices),
 //        M_elements (gv.M_elements)
 //    {}
     
     virtual ~GridView() {}
 
-    std::vector<std::unique_ptr<Vertex> >& vertices()
+    std::vector<std::shared_ptr<Vertex> >& vertices()
     {
         return M_vertices;
     }
     
-    std::vector<std::unique_ptr<Element> >& elements()
+    std::vector<std::shared_ptr<Element> >& elements()
     {
         return M_elements;
     }
@@ -38,8 +38,8 @@ public:
     
 private:
     
-    std::vector<std::unique_ptr<Vertex> > M_vertices;
-    std::vector<std::unique_ptr<Element> > M_elements;
+    std::vector<std::shared_ptr<Vertex> > M_vertices;
+    std::vector<std::shared_ptr<Element> > M_elements;
     
 };
 

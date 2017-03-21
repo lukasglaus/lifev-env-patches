@@ -40,7 +40,7 @@ public:
     
     Circulation(){}
 
-    Circulation(const Circulation&) = delete;
+    //Circulation(const Circulation&) = delete;
 
     virtual ~Circulation(){}
     
