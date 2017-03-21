@@ -26,7 +26,7 @@ public:
     
     HeartData() {}
     
-    HeartData(const GetPot& datafile) :
+    HeartData(GetPot& datafile) :
         M_datafile (datafile)
     {
         setupData();
