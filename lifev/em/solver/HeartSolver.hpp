@@ -95,7 +95,7 @@ protected:
     UInt M_couplingJFeSubStart;
     UInt M_couplingJFeIter;
     
-    const GetPot M_datafile;
+    GetPot M_datafile;
     
 };
     
