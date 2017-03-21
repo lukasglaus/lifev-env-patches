@@ -32,7 +32,7 @@ public:
         setupData();
     }
     
-    HeartData& operator= (const HeartData& heartData) :
+    HeartData& operator= (const HeartData& heartData)
     {
         M_datafile = heartData.datafile();
     }
