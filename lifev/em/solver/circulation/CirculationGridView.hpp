@@ -17,6 +17,11 @@ class GridView {
 public:
     
     GridView() {}
+
+    GridView(const GridView& gv)
+        M_vertices (gv.M_vertices),
+        M_elements (gv.M_elements)
+    {}
     
     virtual ~GridView() {}
 
