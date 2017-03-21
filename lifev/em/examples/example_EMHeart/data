@@ -269,7 +269,7 @@ monodomain_xml_file = ParamListE.xml
     [../newton]
     maxiter 	= 50
     reltol  	= 1.e-7
-    abstol  	= 0.8e-6
+    abstol  	= 0.9e-6
     NonLinearLineSearch = 0
 
     [../solver]

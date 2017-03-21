@@ -247,7 +247,15 @@ public:
             if ( vertex1Idx < dofh.size() ) u[1] = M_u(vertex1Idx);
             if ( vertex2Idx < dofh.size() ) u[2] = M_u(vertex2Idx);
             
-            element -> initRestart ( u , M_time );
+            std::vector<double> uPrev0 {M_uPrev0(elementIdx) , 0.0, 0.0 };
+            if ( vertex1Idx < dofh.size() ) uPrev0[1] = M_uPrev0(vertex1Idx);
+            if ( vertex2Idx < dofh.size() ) uPrev0[2] = M_uPrev0(vertex2Idx);
+            
+            std::vector<double> uPrev1 {M_uPrev1(elementIdx) , 0.0, 0.0 };
+            if ( vertex1Idx < dofh.size() ) uPrev1[1] = M_uPrev1(vertex1Idx);
+            if ( vertex2Idx < dofh.size() ) uPrev1[2] = M_uPrev1(vertex2Idx);
+            
+            element -> initRestart ( u , uPrev0, uPrev1, M_time );
         }
     }
     
