@@ -34,7 +34,7 @@ public:
     
     virtual ~HeartData() {};
     
-    const Real& dt_activation() { return M_dt_activation; }
+    const Real& dt_activation() const { return M_dt_activation; }
     
     
 protected:
@@ -43,22 +43,22 @@ protected:
     
     void setupData()
     {
-        M_dt_activation = M_dataFile ("activation/time_discretization/timestep");
-        M_dt_loadstep =  M_dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
-        M_activationLimit_loadstep =  M_dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
-        M_dt_mechanics = M_dataFile ("solid/time_discretization/timestep");
-        M_dt_save = M_dataFile ( "exporter/save", 10. );
-        M_endtime = M_dataFile ("solid/time_discretization/endtime");
+        M_dt_activation = M_datafile ("activation/time_discretization/timestep");
+        M_dt_loadstep =  M_datafile ( "solid/time_discretization/dt_loadstep", 1.0 );
+        M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
+        M_dt_mechanics = M_datafile ("solid/time_discretization/timestep");
+        M_dt_save = M_datafile ( "exporter/save", 10. );
+        M_endtime =cM_datafile ("solid/time_discretization/endtime");
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
         M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
 
-        M_pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
-        M_pPerturbationCirc = dataFile ( "solid/coupling/pPerturbationCirc", 1e-3 );
-        M_couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
-        M_couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
-        M_couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
-        M_couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
+        M_pPerturbationFe = M_datafile ( "solid/coupling/pPerturbationFe", 1e-2 );
+        M_pPerturbationCirc = M_datafile ( "solid/coupling/pPerturbationCirc", 1e-3 );
+        M_couplingError = M_datafile ( "solid/coupling/couplingError", 1e-6 );
+        M_couplingJFeSubIter = M_datafile ( "solid/coupling/couplingJFeSubIter", 1 );
+        M_couplingJFeSubStart = M_datafile ( "solid/coupling/couplingJFeSubStart", 1 );
+        M_couplingJFeIter = M_datafile ( "solid/coupling/couplingJFeIter", 1 );
         
     //        const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
     //
