@@ -24,8 +24,9 @@ class HeartData
 {
 public:
     
-    HeartData(const GetPot& datafile)
-    {}
+    HeartData() {}
+    
+    HeartData(const GetPot& datafile) {}
     
     virtual ~HeartData() {};
     
