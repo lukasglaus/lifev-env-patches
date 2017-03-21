@@ -24,10 +24,21 @@ class HeartSolver {
    
 public:
     
-        HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver):
+    HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver):
         M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver)
     {};
+    
+    HeartSolver(const HeartSolver& heartSolver):
+        M_emSolver          (heartSolver.M_emSolver),
+        M_circulationSolver (heartSolver.M_circulationSolver)
+    {};
+
+    
+    
+    UserQueues(const UserQueues&) = delete;
+    
+    
     
     virtual ~HeartSolver() {};
     
