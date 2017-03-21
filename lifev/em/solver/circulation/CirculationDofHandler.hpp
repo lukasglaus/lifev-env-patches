@@ -24,7 +24,7 @@ public:
     
     virtual ~DofHandler() {}
     
-    const unsigned int operator()(const std::unique_ptr<Element>& element) const
+    const unsigned int operator()(const std::shared_ptr<Element>& element) const
     {
         for ( unsigned int i (0) ; i < sizeElements() ; ++i )
         {
@@ -44,7 +44,7 @@ public:
     }
     
     
-    const unsigned int operator()(const std::unique_ptr<Vertex>& vertex) const
+    const unsigned int operator()(const std::shared_ptr<Vertex>& vertex) const
     {
         for ( unsigned int i (0) ; i < sizeVertices() ; ++i )
         {
@@ -84,8 +84,8 @@ public:
     
 private:
     
-    std::vector<std::unique_ptr<Vertex> >& M_vertices;
-    std::vector<std::unique_ptr<Element> >& M_elements;
+    std::vector<std::shared_ptr<Vertex> >& M_vertices;
+    std::vector<std::shared_ptr<Element> >& M_elements;
     
 };
 
