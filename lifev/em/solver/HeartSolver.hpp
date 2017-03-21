@@ -77,6 +77,18 @@ protected:
         
     }
     
+    Real M_dt_activation;
+    Real M_dt_loadstep;
+    Real M_activationLimit_loadstep;
+    Real M_dt_mechanics;
+    Real M_dt_save;
+    Real M_endtime;
+    UInt M_mechanicsLoadstepIter;
+    UInt M_mechanicsCouplingIter;
+    UInt M_maxiter;
+    
+    
+    
     const GetPot M_datafile;
     
 };
