@@ -41,17 +41,16 @@ protected:
     
     void setupData()
     {
-    
-    //        const Real dt_activation = solver.data().electroParameter<Real>("timestep");
-    //        const Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
-    //        const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
-    //        const Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
-    //        const Real dt_save = dataFile ( "exporter/save", 10. );
-    //        const Real endtime = solver.data().electroParameter<Real>("endtime");
-    //        const UInt mechanicsLoadstepIter = static_cast<UInt>( dt_loadstep / dt_activation );
-    //        const UInt mechanicsCouplingIter = static_cast<UInt>( dt_mechanics / dt_activation );
-    //        const UInt maxiter = static_cast<UInt>( endtime / dt_activation ) ;
-    //
+        M_dt_activation = M_dataFile ("timestep");
+        M_dt_loadstep =  M_dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
+        M_activationLimit_loadstep =  M_dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
+        M_dt_mechanics = M_dataFile ("timestep");
+        M_dt_save = M_dataFile ( "exporter/save", 10. );
+        M_endtime = M_dataFile ("endtime");
+        M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
+        M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
+        M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
+
     //        const Real pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
     //        const Real pPerturbationCirc = dataFile ( "solid/coupling/pPerturbationCirc", 1e-3 );
     //        const Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
