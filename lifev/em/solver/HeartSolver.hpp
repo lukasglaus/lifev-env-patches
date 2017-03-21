@@ -32,12 +32,20 @@ public:
         setupData();
     }
     
+    HeartData& operator= (const HeartData& heartData) :
+    {
+        M_datafile = heartData.datafile();
+    }
+
+    
     virtual ~HeartData() {};
     
-    const Real& dt_activation() const { return M_dt_activation; }
+    const Real& dt_activation () const { return M_dt_activation; }
     const Real& dt_loadstep () const { return M_dt_loadstep; }
     const Real& activationLimit_loadstep () const { return M_activationLimit_loadstep; }
     
+    
+    const GetPot& datafile () { return M_datafile; }
     
 protected:
     
@@ -109,8 +117,7 @@ public:
     
     HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver) :
         M_emSolver          (emSolver),
-        M_circulationSolver (circulationSolver),
-        M_heartData         ()
+        M_circulationSolver (circulationSolver)
     {}
     
     virtual ~HeartSolver() {}
