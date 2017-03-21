@@ -26,12 +26,22 @@ public:
     
     HeartData() {}
     
-    HeartData(const GetPot& datafile) {}
+    HeartData(const GetPot& datafile) :
+        M_datafile (datafile)
+    {
+        setupData();
+    }
     
     virtual ~HeartData() {};
     
     
 protected:
+    
+    
+    
+    void setupData()
+    {
+    
     //        const Real dt_activation = solver.data().electroParameter<Real>("timestep");
     //        const Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
     //        const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
@@ -64,6 +74,11 @@ protected:
     //        UInt iter (0);
     //        Real t (0);
     
+        
+    }
+    
+    const GetPot M_datafile;
+    
 };
     
     
@@ -81,10 +96,10 @@ public:
     
     void preloadHeart(const VectorSmall<2>& endocardiaBC);
 
-//    void setupHeartData(const GetPot& datafile)
-//    {
-//        M_heartData = HeartData(datafile);
-//    }
+    void setupHeartData(const GetPot& datafile)
+    {
+        M_heartData = HeartData(datafile);
+    }
     
     
     
