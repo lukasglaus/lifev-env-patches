@@ -44,12 +44,12 @@ protected:
     
     void setupData()
     {
-        M_dt_activation = M_datafile ("activation/time_discretization/timestep");
+        M_dt_activation = M_datafile ("activation/time_discretization/timestep", 0.05 );
         M_dt_loadstep =  M_datafile ( "solid/time_discretization/dt_loadstep", 1.0 );
         M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
-        M_dt_mechanics = M_datafile ("solid/time_discretization/timestep");
+        M_dt_mechanics = M_datafile ("solid/time_discretization/timestep", 1.0 );
         M_dt_save = M_datafile ( "exporter/save", 10. );
-        M_endtime =cM_datafile ("solid/time_discretization/endtime");
+        M_endtime =cM_datafile ("solid/time_discretization/endtime", 100000);
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
         M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
