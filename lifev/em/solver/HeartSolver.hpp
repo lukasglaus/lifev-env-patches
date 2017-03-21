@@ -26,7 +26,7 @@ public:
     
     HeartData() {}
     
-    HeartData(GetPot& datafile) :
+    HeartData(const GetPot& datafile) :
         M_datafile (datafile)
     {
         setupData();
@@ -95,7 +95,7 @@ protected:
     UInt M_couplingJFeSubStart;
     UInt M_couplingJFeIter;
     
-    GetPot M_datafile;
+    const GetPot M_datafile;
     
 };
     
@@ -119,7 +119,7 @@ public:
     
     void preloadHeart(const VectorSmall<2>& endocardiaBC);
 
-    void setupData(GetPot& datafile)
+    void setupData(const GetPot& datafile)
     {
         M_heartData = HeartData(datafile);
     }
