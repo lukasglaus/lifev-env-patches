@@ -109,7 +109,8 @@ public:
     
     HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver) :
         M_emSolver          (emSolver),
-        M_circulationSolver (circulationSolver)
+        M_circulationSolver (circulationSolver),
+        M_heartData         ()
     {}
     
     virtual ~HeartSolver() {}
