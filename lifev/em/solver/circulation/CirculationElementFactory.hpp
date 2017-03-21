@@ -367,8 +367,9 @@ public:
     {
         M_time = time;
         M_D = M_param[0] * u[0] * u[1] / ( u[1] - u[2] );
-        M_Dprev0 = M_param[0] * uPrev0[0] / ( uPrev0[1] - uPrev0[2] );
-        M_Dprev1 = M_param[0] * uPrev1[0] / ( uPrev1[1] - uPrev1[2] );
+        M_Dprev0 = M_param[0] * uPrev0[0] * uPrev0[1] / ( uPrev0[1] - uPrev0[2] );
+        M_Dprev1 = M_param[0] * uPrev1[0] * uPrev0[1] / ( uPrev1[1] - uPrev1[2] );
+
     }
 
 };
