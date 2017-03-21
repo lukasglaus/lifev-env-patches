@@ -96,7 +96,7 @@ protected:
     EmSolver M_emSolver;
     Circulation M_circulationSolver;
     
-    //HeartData M_heartData;
+    HeartData M_heartData;
     
     
     VectorSmall<2> M_pressure;

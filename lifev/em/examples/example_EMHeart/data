@@ -41,7 +41,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel = ActiveStrainRossi14
     CalciumIndex = 3
-    ActiveForceCoefficient = -5.5
+    ActiveForceCoefficient = -5.2
     InverseViscosity = 0.0002
     ChemicalThreshold = 0.21
 
@@ -232,8 +232,8 @@ monodomain_xml_file = ParamListE.xml
     initialtime                 = 0.
     endtime                     = 100000.
     timestep                    = 1.0
-    dt_loadstep                 = 0.25
-    activation_limit_loadstep   = -0.05
+    dt_loadstep                 = 0.5
+    activation_limit_loadstep   = -0.1
     theta                       = 0.35
     zeta                        = 0.75
     BDF_order                   = 2
