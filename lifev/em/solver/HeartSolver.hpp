@@ -215,7 +215,7 @@ public:
     }
     
     
-    void restart(const GetPot& command_line)
+    void restart(std::string& restartInput, const GetPot& command_line)
     {
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
