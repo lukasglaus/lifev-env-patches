@@ -66,7 +66,7 @@ protected:
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
         M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
-        M_preloadSteps = M_dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
+        M_preloadSteps = M_datafile ( "solid/boundary_conditions/numPreloadSteps", 0);
 
         M_pPerturbationFe = M_datafile ( "solid/coupling/pPerturbationFe", 1e-2 );
         M_pPerturbationCirc = M_datafile ( "solid/coupling/pPerturbationCirc", 1e-3 );

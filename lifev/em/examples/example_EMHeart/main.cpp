@@ -650,7 +650,7 @@ int main (int argc, char** argv)
         //============================================//
 
         solver.solveElectrophysiology (stim, t);
-        solver.solveActivation (heartSolver.data().dt_activation);
+        solver.solveActivation (heartSolver.data().dt_activation());
 
         
         //============================================//
