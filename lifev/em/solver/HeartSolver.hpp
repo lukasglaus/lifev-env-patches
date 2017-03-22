@@ -136,7 +136,7 @@ public:
     
     virtual ~HeartSolver() {}
     
-    const HeartData& data()
+    const HeartData& data() const
     {
         return M_heartData;
     }
@@ -148,8 +148,58 @@ public:
         M_heartData.setup(datafile);
     }
     
-    
-    
+    templace <class lambda>
+    void restart(const lambda& modifyFeBC) const
+    {
+        emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
+        
+        auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+        {
+            for (auto& i : p) {i *= double(step) / double(steps);}
+            return p;
+        };
+        
+        LifeChrono chronoSave;
+        chronoSave.start();
+        
+        emSolver.saveSolution (-1.0);
+        
+        if ( 0 == emSolver.comm()->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nData stored in " << chronoSave.diff() << " s";
+            std::cout << "\n*****************************************************************\n";
+        }
+        
+        LifeChrono chronoPreload;
+        chronoPreload.start();
+        
+        for (int i (1); i <= data().preloadSteps(); i++)
+        {
+            if ( 0 == emSolver.comm()->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nPreload step: " << i << " / " << data().preloadSteps();
+                std::cout << "\n*****************************************************************\n";
+            }
+            
+            // Update pressure b.c.
+            modifyFeBC(preloadPressure(bcValues, i, heartSolver.data().preloadSteps() ));
+            
+            // Solve mechanics
+            emSolver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            emSolver.solveMechanics();
+            //solver.saveSolution (i-1);
+        }
+        
+        if ( 0 == emSolver.comm()->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nPreload done in: " << chronoPreload.diff();
+            std::cout << "\n*****************************************************************\n";
+        }
+
+    }
     
     
     
