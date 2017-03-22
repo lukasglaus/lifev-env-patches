@@ -12,7 +12,9 @@
 #include <stdio.h>
 
 
-
+namespace LifeV
+{
+    
 class HeartData
 {
 public:
@@ -117,7 +119,8 @@ protected:
     GetPot M_datafile;
     
 };
-
+    
+}
 
 #endif /* HeartData_hpp */
 
