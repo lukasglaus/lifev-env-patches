@@ -151,7 +151,7 @@ public:
     template <class lambda>
     void restart(const lambda& modifyFeBC) const
     {
-        emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
+        M_emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
         auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
         {
@@ -162,9 +162,9 @@ public:
         LifeChrono chronoSave;
         chronoSave.start();
         
-        emSolver.saveSolution (-1.0);
+        M_emSolver.saveSolution (-1.0);
         
-        if ( 0 == emSolver.comm()->MyPID() )
+        if ( 0 == M_emSolver.comm()->MyPID() )
         {
             std::cout << "\n*****************************************************************";
             std::cout << "\nData stored in " << chronoSave.diff() << " s";
@@ -176,7 +176,7 @@ public:
         
         for (int i (1); i <= data().preloadSteps(); i++)
         {
-            if ( 0 == emSolver.comm()->MyPID() )
+            if ( 0 == M_emSolver.comm()->MyPID() )
             {
                 std::cout << "\n*****************************************************************";
                 std::cout << "\nPreload step: " << i << " / " << data().preloadSteps();
@@ -187,12 +187,12 @@ public:
             modifyFeBC(preloadPressure(bcValues, i, heartSolver.data().preloadSteps() ));
             
             // Solve mechanics
-            emSolver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            emSolver.solveMechanics();
+            M_emSolver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            M_emSolver.solveMechanics();
             //solver.saveSolution (i-1);
         }
         
-        if ( 0 == emSolver.comm()->MyPID() )
+        if ( 0 == M_emSolver.comm()->MyPID() )
         {
             std::cout << "\n*****************************************************************";
             std::cout << "\nPreload done in: " << chronoPreload.diff();
