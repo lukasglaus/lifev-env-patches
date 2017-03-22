@@ -694,28 +694,28 @@ int main (int argc, char** argv)
                     dispCurrent = disp;
                     
                     // Left ventricle
-                    modifyFeBC(perturbedPressureComp(bcValues, heartSolver.data().pPerturbationFe(), 0));
+                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
                     VFePert[0] = LV.volume(disp, dETFESpace, - 1);
                     VFePert[1] = RV.volume(disp, dETFESpace, 1);
 
-                    JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / heartSolver.data().pPerturbationFe();
-                    JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / heartSolver.data().pPerturbationFe();
+                    JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                    JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                     
                     disp = dispCurrent;
                     
                     // Right ventricle
-                    modifyFeBC(perturbedPressureComp(bcValues, heartSolver.data().pPerturbationFe(), 1));
+                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
                     VFePert[0] = LV.volume(disp, dETFESpace, - 1);
                     VFePert[1] = RV.volume(disp, dETFESpace, 1);
                     
-                    JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / heartSolver.data().pPerturbationFe();
-                    JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / heartSolver.data().pPerturbationFe();
+                    JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                    JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
                     
                     disp = dispCurrent;
                 }
@@ -794,7 +794,7 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        bool save ( std::abs(std::remainder(t, heartSolver.data().dt_save() )) < 0.01 );
+        bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
         if ( save ) solver.saveSolution(t, restart);
 
     }
