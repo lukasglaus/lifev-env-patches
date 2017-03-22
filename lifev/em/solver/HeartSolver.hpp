@@ -45,6 +45,13 @@ public:
     const UInt& maxiter () const { return M_maxiter; }
     const UInt& preloadSteps () const { return M_preloadSteps; }
 
+    const UInt& pPerturbationFe () const { return M_pPerturbationFe; }
+    const UInt& pPerturbationCirc () const { return M_pPerturbationCirc; }
+    const UInt& couplingError () const { return M_couplingError; }
+    const UInt& couplingJFeSubIter () const { return M_couplingJFeSubIter; }
+    const UInt& couplingJFeSubStart () const { return M_couplingJFeSubStart; }
+    const UInt& couplingJFeIter () const { return M_couplingJFeIter; }
+
     const GetPot& datafile () { return M_datafile; }
     
 protected:

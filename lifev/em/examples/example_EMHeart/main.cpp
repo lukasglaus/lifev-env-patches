@@ -422,12 +422,6 @@ int main (int argc, char** argv)
     // Set variables and functions
     //============================================//
     
-    const Real pPerturbationFe = dataFile ( "solid/coupling/pPerturbationFe", 1e-2 );
-    const Real pPerturbationCirc = dataFile ( "solid/coupling/pPerturbationCirc", 1e-3 );
-    const Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
-    const UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
-    const UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
-    const UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
     
     const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
 
@@ -436,7 +430,7 @@ int main (int argc, char** argv)
     std::vector<double> bcValuesPre ( bcValues );
 
     VectorSmall<4> ABdplv, ABdprv, ABcoef;
-    ABcoef (0) = 55/24; ABcoef (1) = -59/24; ABcoef (2) = 37/24; ABcoef (3) = -3/8;
+    ABcoef (0) = 55/24; ABcoef (1) = -59/24; ABcoef (2) = 37/24; ABcoef (3) = -3/8s
 
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
@@ -757,7 +751,7 @@ int main (int argc, char** argv)
             //============================================//
             // Newton iterations
             //============================================//
-            while ( R.norm() > couplingError )
+            while ( R.norm() > heartSolver.data().couplingError() )
             {
                 ++iter;
                 
@@ -766,25 +760,29 @@ int main (int argc, char** argv)
                 //============================================//
                 
                 // Left ventricle
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 0), iter);
+                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, heartSolver.data().pPerturbationCirc(), 0), iter);
                 VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
-                JCirc(0,0) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
-                JCirc(1,0) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
+                JCirc(0,0) = ( VCircPert[0] - VCircNew[0] ) / heartSolver.data().pPerturbationCirc();
+                JCirc(1,0) = ( VCircPert[1] - VCircNew[1] ) / heartSolver.data().pPerturbationCirc();
                 
                 // Right ventricle
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 1), iter);
+                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, heartSolver.data().pPerturbationCirc(), 1), iter);
                 VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
                 
-                JCirc(0,1) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
-                JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
+                JCirc(0,1) = ( VCircPert[0] - VCircNew[0] ) / heartSolver.data().pPerturbationCirc();
+                JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / heartSolver.data().pPerturbationCirc();
                 
                 //============================================//
                 // Jacobian fe
                 //============================================//
 
+                const UInt couplingJFeSubIter = heartSolver.data().couplingJFeSubIter();
+                const UInt couplingJFeSubStart = heartSolver.data().couplingJFeSubStart();
+                const UInt couplingJFeIter = heartSolver.data().couplingJFeIter();
+                
                 const bool jFeIter ( ! ( k % (couplingJFeIter * heartSolver.data().mechanicsCouplingIter() ) ) );
                 const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
                 const bool jFeEmpty ( JFe.norm() == 0 );
@@ -795,28 +793,28 @@ int main (int argc, char** argv)
                     dispCurrent = disp;
                     
                     // Left ventricle
-                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
+                    modifyFeBC(perturbedPressureComp(bcValues, heartSolver.data().pPerturbationFe(), 0));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
                     VFePert[0] = LV.volume(disp, dETFESpace, - 1);
                     VFePert[1] = RV.volume(disp, dETFESpace, 1);
 
-                    JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                    JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
+                    JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / heartSolver.data().pPerturbationFe();
+                    JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / heartSolver.data().pPerturbationFe();
                     
                     disp = dispCurrent;
                     
                     // Right ventricle
-                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
+                    modifyFeBC(perturbedPressureComp(bcValues, heartSolver.data().pPerturbationFe(), 1));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
                     VFePert[0] = LV.volume(disp, dETFESpace, - 1);
                     VFePert[1] = RV.volume(disp, dETFESpace, 1);
                     
-                    JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                    JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
+                    JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / heartSolver.data().pPerturbationFe();
+                    JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / heartSolver.data().pPerturbationFe();
                     
                     disp = dispCurrent;
                 }
