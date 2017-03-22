@@ -81,7 +81,7 @@ protected:
         M_couplingJFeSubStart = M_datafile ( "solid/coupling/couplingJFeSubStart", 1 );
         M_couplingJFeIter = M_datafile ( "solid/coupling/couplingJFeIter", 1 );
         
-        M_elementOrder = M_dataFile ( "solid/space_discretization/order", "P2");
+        M_elementOrder = M_datafile ( "solid/space_discretization/order", "P2");
         
 
         //        const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
