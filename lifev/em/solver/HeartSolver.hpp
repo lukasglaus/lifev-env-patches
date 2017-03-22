@@ -48,7 +48,7 @@ protected:
         M_datafile = datafile;
     }
     
-    void readFile(const GetPot& datafile)
+    void readFile()
     {
         M_dt_activation = M_datafile ("activation/time_discretization/timestep", 0.05 );
         M_dt_loadstep =  M_datafile ( "solid/time_discretization/dt_loadstep", 1.0 );
