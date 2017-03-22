@@ -44,6 +44,7 @@ public:
     const UInt& mechanicsCouplingIter () const { return M_mechanicsCouplingIter; }
     const UInt& maxiter () const { return M_maxiter; }
     const UInt& preloadSteps () const { return M_preloadSteps; }
+    const bool& safePreload () const { return M_safePreload; }
 
     const UInt& pPerturbationFe () const { return M_pPerturbationFe; }
     const UInt& pPerturbationCirc () const { return M_pPerturbationCirc; }
@@ -69,12 +70,12 @@ protected:
         M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
         M_dt_mechanics = M_datafile ("solid/time_discretization/timestep", 1.0 );
         M_dt_save = M_datafile ( "exporter/save", 10. );
-        M_safePreload = M_datafile ( "exporter/savePreload", false );
         M_endtime = M_datafile ("solid/time_discretization/endtime", 100000);
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
         M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
         M_preloadSteps = M_datafile ( "solid/boundary_conditions/numPreloadSteps", 0);
+        M_safePreload = M_datafile ( "exporter/savePreload", false );
 
         M_pPerturbationFe = M_datafile ( "solid/coupling/pPerturbationFe", 1e-2 );
         M_pPerturbationCirc = M_datafile ( "solid/coupling/pPerturbationCirc", 1e-3 );
@@ -106,13 +107,13 @@ protected:
     Real M_activationLimit_loadstep;
     Real M_dt_mechanics;
     Real M_dt_save;
-    bool M_safePreload;
     Real M_endtime;
     UInt M_mechanicsLoadstepIter;
     UInt M_mechanicsCouplingIter;
     UInt M_maxiter;
     UInt M_preloadSteps;
-    
+    bool M_safePreload;
+
     Real M_pPerturbationFe;
     Real M_pPerturbationCirc;
     Real M_couplingError;
@@ -137,13 +138,23 @@ public:
     {}
     
     virtual ~HeartSolver() {}
+
+    EmSolver& emSolver()
+    {
+        return M_emSolver;
+    }
+    
+    Circulation& circulation()
+    {
+        return M_heartData;
+    }
     
     const HeartData& data() const
     {
         return M_heartData;
     }
     
-    void setupData(const GetPot& datafile)
+    void setup(const GetPot& datafile)
     {
         M_heartData.setup(datafile);
     }
@@ -191,7 +202,7 @@ public:
             M_emSolver.solveMechanics();
             
             // Safe preload steps
-            if ( M_safePreload ) solver.saveSolution (i-1);
+            if ( data().safePreload() ) M_emSolver.saveSolution (i-1);
         }
         
         if ( 0 == M_emSolver.comm()->MyPID() )
