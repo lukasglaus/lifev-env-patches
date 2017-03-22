@@ -147,7 +147,7 @@ public:
     }
     
     template <class lambda>
-    void preload(const lambda& modifyFeBC, const std::vector<Real>& bcValues) const
+    void preload(const lambda& modifyFeBC, const std::vector<Real>& bcValues)
     {
         M_emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
