@@ -39,7 +39,7 @@ public:
     const Real& activationLimit_loadstep () const { return M_activationLimit_loadstep; }
     const Real& dt_mechanics () const { return M_dt_mechanics; }
     const Real& dt_save () const { return M_dt_save; }
-    const Real& dt_endtime () const { return M_dt_endtime; }
+    const Real& endtime () const { return M_endtime; }
     const Real& mechanicsLoadstepIter () const { return M_mechanicsLoadstepIter; }
     const Real& mechanicsCouplingIter () const { return M_mechanicsCouplingIter; }
     const Real& maxiter () const { return M_maxiter; }
