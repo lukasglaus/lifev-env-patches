@@ -420,7 +420,7 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
-    const Real& dt_activation = heartSolver.data().dt_activation();
+    const Real dt_activation = solver.data().electroParameter<Real>("timestep");
     const Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
     const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
     const Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
