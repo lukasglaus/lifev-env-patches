@@ -430,7 +430,7 @@ int main (int argc, char** argv)
     std::vector<double> bcValuesPre ( bcValues );
 
     VectorSmall<4> ABdplv, ABdprv, ABcoef;
-    ABcoef (0) = 55/24; ABcoef (1) = -59/24; ABcoef (2) = 37/24; ABcoef (3) = -3/8s
+    ABcoef (0) = 55/24; ABcoef (1) = -59/24; ABcoef (2) = 37/24; ABcoef (3) = -3/8;
 
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
