@@ -217,15 +217,15 @@ public:
     
     void restart(std::string& restartInput, const GetPot& command_line)
     {
-        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
+        const std::string restartDir = ""; //command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
         Real dtExport = 10.;
         
         // Get most recent restart index
-        if ( restartInput == "." )
-        {
-            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", int($1*1000/" + std::to_string(dtExport) + ") + 1}'").c_str() );
-        }
+        //if ( restartInput == "." )
+        //{
+        //    restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", int($1*1000/" + std::to_string(dtExport) + ") + 1}'").c_str() );
+        //}
         
         // Set time variable
         const unsigned int restartInputStr = std::stoi(restartInput);
