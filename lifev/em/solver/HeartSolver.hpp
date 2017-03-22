@@ -32,12 +32,6 @@ public:
         setupData();
     }
     
-    HeartData& operator= (const HeartData& heartData)
-    {
-        M_datafile = heartData.datafile();
-    }
-
-    
     virtual ~HeartData() {};
     
     const Real& dt_activation () const { return M_dt_activation; }
