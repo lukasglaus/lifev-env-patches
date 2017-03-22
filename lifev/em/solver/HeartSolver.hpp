@@ -69,6 +69,7 @@ protected:
         M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
         M_dt_mechanics = M_datafile ("solid/time_discretization/timestep", 1.0 );
         M_dt_save = M_datafile ( "exporter/save", 10. );
+        M_safePreload = M_datafile ( "exporter/savePreload", false );
         M_endtime = M_datafile ("solid/time_discretization/endtime", 100000);
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
@@ -105,6 +106,7 @@ protected:
     Real M_activationLimit_loadstep;
     Real M_dt_mechanics;
     Real M_dt_save;
+    bool M_safePreload;
     Real M_endtime;
     UInt M_mechanicsLoadstepIter;
     UInt M_mechanicsCouplingIter;
@@ -187,7 +189,9 @@ public:
             // Solve mechanics
             M_emSolver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             M_emSolver.solveMechanics();
-            //solver.saveSolution (i-1);
+            
+            // Safe preload steps
+            if ( M_safePreload ) solver.saveSolution (i-1);
         }
         
         if ( 0 == M_emSolver.comm()->MyPID() )
