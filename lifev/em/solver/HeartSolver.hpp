@@ -141,15 +141,13 @@ public:
         return M_heartData;
     }
     
-    void preloadHeart(const VectorSmall<2>& endocardiaBC);
-
     void setupData(const GetPot& datafile)
     {
         M_heartData.setup(datafile);
     }
     
     template <class lambda>
-    void restart(const lambda& modifyFeBC, const std::vector<Real>& bcValues) const
+    void preload(const lambda& modifyFeBC, const std::vector<Real>& bcValues) const
     {
         M_emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
@@ -184,7 +182,7 @@ public:
             }
             
             // Update pressure b.c.
-            modifyFeBC(preloadPressure(bcValues, i, heartSolver.data().preloadSteps() ));
+            modifyFeBC(preloadPressure(bcValues, i, data().preloadSteps() ));
             
             // Solve mechanics
             M_emSolver.bcInterfacePtr() -> updatePhysicalSolverVariables();
