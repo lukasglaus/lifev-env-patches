@@ -40,10 +40,10 @@ public:
     const Real& dt_mechanics () const { return M_dt_mechanics; }
     const Real& dt_save () const { return M_dt_save; }
     const Real& endtime () const { return M_endtime; }
-    const Real& mechanicsLoadstepIter () const { return M_mechanicsLoadstepIter; }
-    const Real& mechanicsCouplingIter () const { return M_mechanicsCouplingIter; }
-    const Real& maxiter () const { return M_maxiter; }
-    const Real& preloadSteps () const { return M_preloadSteps; }
+    const UInt& mechanicsLoadstepIter () const { return M_mechanicsLoadstepIter; }
+    const UInt& mechanicsCouplingIter () const { return M_mechanicsCouplingIter; }
+    const UInt& maxiter () const { return M_maxiter; }
+    const UInt& preloadSteps () const { return M_preloadSteps; }
 
     const GetPot& datafile () { return M_datafile; }
     
