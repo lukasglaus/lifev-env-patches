@@ -545,7 +545,7 @@ int main (int argc, char** argv)
     
     if ( ! restart )
     {
-        //heartSolver.preload(modifyFeBC, bcValues);
+        heartSolver.preload(modifyFeBC, bcValues);
 
         solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
