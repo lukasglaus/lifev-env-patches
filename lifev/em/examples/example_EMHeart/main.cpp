@@ -545,7 +545,7 @@ int main (int argc, char** argv)
     
     if ( ! restart )
     {
-        heartSolver.preload(modifyFeBC);
+        heartSolver.preload(modifyFeBC, bcValues);
     }
     
     

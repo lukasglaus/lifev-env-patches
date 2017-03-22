@@ -149,7 +149,7 @@ public:
     }
     
     template <class lambda>
-    void restart(const lambda& modifyFeBC) const
+    void restart(const lambda& modifyFeBC, const std::vector<Real>& bcValues) const
     {
         M_emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
