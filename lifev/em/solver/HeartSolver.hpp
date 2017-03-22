@@ -26,12 +26,6 @@ public:
     
     HeartData() {}
     
-    HeartData(const GetPot& datafile) :
-        M_datafile (datafile)
-    {
-        setupData();
-    }
-    
     virtual ~HeartData() {};
     
     const Real& dt_activation () const { return M_dt_activation; }
@@ -45,8 +39,10 @@ protected:
     
     
     
-    void setupData()
+    void setupData(GetPot& datafile)
     {
+        M_datafile = datafile;
+        
         M_dt_activation = M_datafile ("activation/time_discretization/timestep", 0.05 );
         M_dt_loadstep =  M_datafile ( "solid/time_discretization/dt_loadstep", 1.0 );
         M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
@@ -99,7 +95,7 @@ protected:
     UInt M_couplingJFeSubStart;
     UInt M_couplingJFeIter;
     
-    const GetPot M_datafile;
+    GetPot M_datafile;
     
 };
     
@@ -111,7 +107,8 @@ public:
     
     HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver) :
         M_emSolver          (emSolver),
-        M_circulationSolver (circulationSolver)
+        M_circulationSolver (circulationSolver),
+        M_heartData         (HeartData())
     {}
     
     virtual ~HeartSolver() {}
@@ -125,7 +122,7 @@ public:
 
     void setupData(const GetPot& datafile)
     {
-        M_heartData = HeartData(datafile);
+        M_heartData.setupData(datafile);
     }
     
     
