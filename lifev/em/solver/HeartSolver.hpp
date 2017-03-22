@@ -28,21 +28,28 @@ public:
     
     virtual ~HeartData() {};
     
+    void setup(const GetPot& datafile)
+    {
+        setGetPotFile(datafile);
+        readFile();
+    }
+    
     const Real& dt_activation () const { return M_dt_activation; }
     const Real& dt_loadstep () const { return M_dt_loadstep; }
     const Real& activationLimit_loadstep () const { return M_activationLimit_loadstep; }
-    
     
     const GetPot& datafile () { return M_datafile; }
     
 protected:
     
     
-    
-    void setupData(const GetPot& datafile)
+    void setGetPotFile(const GetPot& datafile)
     {
         M_datafile = datafile;
-        
+    }
+    
+    void readFile(const GetPot& datafile)
+    {
         M_dt_activation = M_datafile ("activation/time_discretization/timestep", 0.05 );
         M_dt_loadstep =  M_datafile ( "solid/time_discretization/dt_loadstep", 1.0 );
         M_activationLimit_loadstep =  M_datafile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
@@ -122,7 +129,7 @@ public:
 
     void setupData(const GetPot& datafile)
     {
-        M_heartData.setupData(datafile);
+        M_heartData.setup(datafile);
     }
     
     
