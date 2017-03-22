@@ -468,7 +468,7 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
-        heartSolver.restart(restartInput, command_line);
+        heartSolver.restart(restartInput, command_line, t);
         
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
