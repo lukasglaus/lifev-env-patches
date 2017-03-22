@@ -716,7 +716,7 @@ int main (int argc, char** argv)
                     
                     JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
                     JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-                    
+                    std::cout << std::endl << pPerturbationFe << "\n" << heartSolver.data().pPerturbationFe() << std::endl;
                     disp = dispCurrent;
                 }
                 
@@ -794,7 +794,7 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
+        bool save ( std::abs(std::remainder(t, heartSolver.data().dt_save() )) < 0.01 );
         if ( save ) solver.saveSolution(t, restart);
 
     }
