@@ -121,7 +121,7 @@ protected:
     UInt M_couplingJFeSubStart;
     UInt M_couplingJFeIter;
     
-    M_elementOrder
+    std::string M_elementOrder;
     
     GetPot M_datafile;
     
