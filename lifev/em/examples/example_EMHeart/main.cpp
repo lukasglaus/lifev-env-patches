@@ -87,7 +87,7 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
 int main (int argc, char** argv)
 {
 
-//    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    feenableexcept(FE_INVALID | FE_OVERFLOW);
     
     
     //============================================//
