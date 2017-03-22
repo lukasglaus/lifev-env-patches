@@ -37,7 +37,14 @@ public:
     const Real& dt_activation () const { return M_dt_activation; }
     const Real& dt_loadstep () const { return M_dt_loadstep; }
     const Real& activationLimit_loadstep () const { return M_activationLimit_loadstep; }
-    
+    const Real& dt_mechanics () const { return M_dt_mechanics; }
+    const Real& dt_save () const { return M_dt_save; }
+    const Real& dt_endtime () const { return M_dt_endtime; }
+    const Real& mechanicsLoadstepIter () const { return M_mechanicsLoadstepIter; }
+    const Real& mechanicsCouplingIter () const { return M_mechanicsCouplingIter; }
+    const Real& maxiter () const { return M_maxiter; }
+    const Real& preloadSteps () const { return M_preloadSteps; }
+
     const GetPot& datafile () { return M_datafile; }
     
 protected:
@@ -59,6 +66,7 @@ protected:
         M_mechanicsLoadstepIter = static_cast<UInt>( M_dt_loadstep / M_dt_activation );
         M_mechanicsCouplingIter = static_cast<UInt>( M_dt_mechanics / M_dt_activation );
         M_maxiter = static_cast<UInt>( M_endtime / M_dt_activation ) ;
+        M_preloadSteps = M_dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
 
         M_pPerturbationFe = M_datafile ( "solid/coupling/pPerturbationFe", 1e-2 );
         M_pPerturbationCirc = M_datafile ( "solid/coupling/pPerturbationCirc", 1e-3 );
@@ -94,6 +102,7 @@ protected:
     UInt M_mechanicsLoadstepIter;
     UInt M_mechanicsCouplingIter;
     UInt M_maxiter;
+    UInt M_preloadSteps;
     
     Real M_pPerturbationFe;
     Real M_pPerturbationCirc;
