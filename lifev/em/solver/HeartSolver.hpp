@@ -215,6 +215,64 @@ public:
     }
     
     
+    void restart(const GetPot& command_line)
+    {
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
+        
+        Real dtExport = 10.;
+        
+        // Get most recent restart index
+        if ( restartInput == "." )
+        {
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", int($1*1000/" + std::to_string(dtExport) + ") + 1}'").c_str() );
+        }
+        
+        // Set time variable
+        const unsigned int restartInputStr = std::stoi(restartInput);
+        const unsigned int nIter = (restartInputStr - 1) * dtExport / data().dt_mechanics();
+        t = nIter * data().dt_mechanics();
+        
+        if ( 0 == M_emSolver.comm()->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        
+        // Set time exporter time index
+        M_emSolver.setTimeIndex(restartInputStr + 1);
+        //solver.importHdf5();
+        if ( 0 == M_emSolver.comm()->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        // Load restart solutions from output files
+        std::string polynomialDegree = data().datafile() ( "solid/space_discretization/order", "P1");
+        if ( 0 == M_emSolver.comm()->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        ElectrophysiologyUtility::importVectorField ( M_emSolver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        if ( 0 == M_emSolver.comm()->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        for ( unsigned int i = 0; i < M_emSolver.electroSolverPtr()->globalSolution().size() ; ++i )
+        {
+            ElectrophysiologyUtility::importScalarField (M_emSolver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        }
+        if ( 0 == M_emSolver.comm()->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        ElectrophysiologyUtility::importScalarField (M_emSolver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        if ( 0 == M_emSolver.comm()->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
+    }
+    
+    
     
 protected:
     
@@ -230,6 +288,17 @@ protected:
 
     
 
+    
+    std::string pipeToString ( const char* command )
+    {
+        FILE* file = popen( command, "r" ) ;
+        std::ostringstream stm ;
+        char line[6] ;
+        fgets( line, 6, file );
+        stm << line;
+        pclose(file) ;
+        return stm.str() ;
+    };
     
     Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
