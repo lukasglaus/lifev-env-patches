@@ -48,6 +48,8 @@ public:
     const UInt& couplingJFeSubStart () const { return M_couplingJFeSubStart; }
     const UInt& couplingJFeIter () const { return M_couplingJFeIter; }
     
+    const std::string& elementOrder () const { return M_elementOrder; }
+    
     const GetPot& datafile () { return M_datafile; }
     
 protected:
@@ -79,6 +81,9 @@ protected:
         M_couplingJFeSubStart = M_datafile ( "solid/coupling/couplingJFeSubStart", 1 );
         M_couplingJFeIter = M_datafile ( "solid/coupling/couplingJFeIter", 1 );
         
+        M_elementOrder = M_dataFile ( "solid/space_discretization/order", "P2");
+        
+
         //        const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
         //
         //        std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
@@ -115,6 +120,8 @@ protected:
     UInt M_couplingJFeSubIter;
     UInt M_couplingJFeSubStart;
     UInt M_couplingJFeIter;
+    
+    M_elementOrder
     
     GetPot M_datafile;
     

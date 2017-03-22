@@ -126,18 +126,17 @@ public:
         //solver.importHdf5();
 
         // Load restart solutions from output files
-        std::string polynomialDegree = data().datafile() ( "solid/space_discretization/order", "P1");
+        std::string polynomialDegree = data().elementOrder();
 
         ElectrophysiologyUtility::importVectorField ( M_emSolver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-       
+        ElectrophysiologyUtility::importScalarField (M_emSolver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        
         for ( unsigned int i = 0; i < M_emSolver.electroSolverPtr()->globalSolution().size() ; ++i )
         {
             ElectrophysiologyUtility::importScalarField (M_emSolver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
         }
 
-        ElectrophysiologyUtility::importScalarField (M_emSolver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", M_emSolver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        
         if ( 0 == M_emSolver.comm()->MyPID() )
         {
             std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
