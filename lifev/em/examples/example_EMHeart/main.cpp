@@ -87,7 +87,7 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
 int main (int argc, char** argv)
 {
 
-    feenableexcept(FE_INVALID | FE_OVERFLOW);
+    //feenableexcept(FE_INVALID | FE_OVERFLOW);
     
     
     //============================================//
@@ -535,7 +535,7 @@ int main (int argc, char** argv)
         //============================================//
 
         solver.solveElectrophysiology (stim, t);
-        solver.solveActivation (heartSolver.data().dt_activation());
+        solver.solveActivation (0.05);
 
         
         //============================================//
