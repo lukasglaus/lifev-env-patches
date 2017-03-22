@@ -148,7 +148,7 @@ public:
         M_heartData.setup(datafile);
     }
     
-    templace <class lambda>
+    template <class lambda>
     void restart(const lambda& modifyFeBC) const
     {
         emSolver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
