@@ -219,8 +219,8 @@ public:
 protected:
     
     
-    EmSolver M_emSolver;
-    Circulation M_circulationSolver;
+    EmSolver& M_emSolver;
+    Circulation& M_circulationSolver;
     
     HeartData M_heartData;
     
