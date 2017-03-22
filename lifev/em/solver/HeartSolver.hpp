@@ -39,7 +39,7 @@ protected:
     
     
     
-    void setupData(GetPot& datafile)
+    void setupData(const GetPot& datafile)
     {
         M_datafile = datafile;
         
