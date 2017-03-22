@@ -172,7 +172,7 @@ int main (int argc, char** argv)
     //============================================//
     HeartSolver<EMSolver<mesh_Type, monodomain_Type> > heartSolver (solver, circulationSolver);
     
-    heartSolver.setup(dataFile);
+    //heartSolver.setup(dataFile);
     
     //============================================//
     // Setup material data
@@ -498,7 +498,56 @@ int main (int argc, char** argv)
     
     if ( ! restart )
     {
-        heartSolver.preload(modifyFeBC, bcValues);
+        solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
+        
+        const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
+        
+        auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+        {
+            for (auto& i : p) {i *= double(step) / double(steps);}
+            return p;
+        };
+        
+        LifeChrono chronoSave;
+        chronoSave.start();
+
+        solver.saveSolution (-1.0);
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nData stored in " << chronoSave.diff() << " s";
+            std::cout << "\n*****************************************************************\n";
+        }
+        
+        LifeChrono chronoPreload;
+        chronoPreload.start();
+        
+        for (int i (1); i <= preloadSteps; i++)
+        {
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+                std::cout << "\n*****************************************************************\n";
+            }
+            
+            // Update pressure b.c.
+            modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
+
+            // Solve mechanics
+            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            solver.solveMechanics();
+            //solver.saveSolution (i-1);
+        }
+
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nPreload done in: " << chronoPreload.diff();
+            std::cout << "\n*****************************************************************\n";
+        }
+
     }
     
     
