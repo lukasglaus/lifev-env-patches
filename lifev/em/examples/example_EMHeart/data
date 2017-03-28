@@ -232,7 +232,7 @@ monodomain_xml_file = ParamListE.xml
     endtime                     = 100000.
     timestep                    = 1.0
     dt_loadstep                 = 0.5
-    activation_limit_loadstep   = -0.1
+    activation_limit_loadstep   = -0.12
     theta                       = 0.35
     zeta                        = 0.75
     BDF_order                   = 2
@@ -266,7 +266,7 @@ monodomain_xml_file = ParamListE.xml
     [../newton]
     maxiter 	= 50
     reltol  	= 1.e-7
-    abstol  	= 0.8e-6
+    abstol  	= 2e-6
     NonLinearLineSearch = 0
 
     [../solver]
