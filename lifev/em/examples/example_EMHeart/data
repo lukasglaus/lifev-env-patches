@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     listForcePatchesBC = 'Patch1 Patch2'
     #listDispPatchesBC = 'Patch1 Patch2'
 
-    numPreloadSteps  = 0
+    numPreloadSteps  = 50
 
         [./BaseSemilunar]
         type       = Essential #Robin
