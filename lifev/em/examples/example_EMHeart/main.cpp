@@ -172,7 +172,6 @@ int main (int argc, char** argv)
     //============================================//
     HeartSolver<EMSolver<mesh_Type, monodomain_Type> > heartSolver (solver, circulationSolver);
     
-    heartSolver.setup(dataFile);
     
     //============================================//
     // Setup material data
@@ -420,7 +419,7 @@ int main (int argc, char** argv)
     //============================================//
     // Set variables and functions
     //============================================//
-    const Real& dt_activation = heartSolver.data().dt_activation();
+    const Real dt_activation = solver.data().electroParameter<Real>("timestep");
     const Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
     const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
     const Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
@@ -471,6 +470,16 @@ int main (int argc, char** argv)
         std::cout << "\n==============================================================="; }
     };
     
+    auto pipeToString = [] ( const char* command )
+    {
+        FILE* file = popen( command, "r" ) ;
+        std::ostringstream stm ;
+        char line[6] ;
+        fgets( line, 6, file );
+        stm << line;
+        pclose(file) ;
+        return stm.str() ;
+    };
     
     
     //============================================//
@@ -482,13 +491,64 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
-        heartSolver.restart(restartInput, command_line, t);
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
+        Real dtExport = 10.;
+        
+        // Get most recent restart index
+        if ( restartInput == "." )
+        {
+            restartInput = pipeToString( ("tail -n 1 " + restartDir + "solution.dat | awk -F '[. ]' '{print $1 \".\" $2}' | awk '{printf \"%05g\", int($1*1000/" + std::to_string(dtExport) + ") + 1}'").c_str() );
+        }
+        
+        // Set time variable
+        const unsigned int restartInputStr = std::stoi(restartInput);
+        const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
+        t = nIter * dt_mechanics;
+
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        
+        // Set time exporter time index
+        solver.setTimeIndex(restartInputStr + 1);
+        //solver.importHdf5();
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        // Load restart solutions from output files
+        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P1");
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
+        {
+            ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        }
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nLoad from restart: " << restartInput << ",  nIterCirculation = " << nIter << ",  time = " << t << std::endl;
+        }
+        circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
+
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
         modifyFeBC(bcValues);
-
     }
 
     
@@ -498,7 +558,56 @@ int main (int argc, char** argv)
     
     if ( ! restart )
     {
-        heartSolver.preload(modifyFeBC, bcValues);
+        solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
+        
+        const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
+        
+        auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+        {
+            for (auto& i : p) {i *= double(step) / double(steps);}
+            return p;
+        };
+        
+        LifeChrono chronoSave;
+        chronoSave.start();
+
+        solver.saveSolution (-1.0);
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nData stored in " << chronoSave.diff() << " s";
+            std::cout << "\n*****************************************************************\n";
+        }
+        
+        LifeChrono chronoPreload;
+        chronoPreload.start();
+        
+        for (int i (1); i <= preloadSteps; i++)
+        {
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+                std::cout << "\n*****************************************************************\n";
+            }
+            
+            // Update pressure b.c.
+            modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
+
+            // Solve mechanics
+            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+            solver.solveMechanics();
+            //solver.saveSolution (i-1);
+        }
+
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nPreload done in: " << chronoPreload.diff();
+            std::cout << "\n*****************************************************************\n";
+        }
+
     }
     
     
@@ -559,7 +668,7 @@ int main (int argc, char** argv)
 
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
         
-        if ( k % mechanicsLoadstepIter == 0 && mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
+        if ( k % mechanicsLoadstepIter == 0 && k % mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
         {
             if ( 0 == comm->MyPID() )
             {
@@ -716,7 +825,7 @@ int main (int argc, char** argv)
                     
                     JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
                     JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-                    std::cout << std::endl << pPerturbationFe << "\n" << heartSolver.data().pPerturbationFe() << std::endl;
+                    
                     disp = dispCurrent;
                 }
                 
@@ -794,7 +903,7 @@ int main (int argc, char** argv)
         //============================================//
         // Export FE-solution
         //============================================//
-        bool save ( std::abs(std::remainder(t, heartSolver.data().dt_save() )) < 0.01 );
+        bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
         if ( save ) solver.saveSolution(t, restart);
 
     }

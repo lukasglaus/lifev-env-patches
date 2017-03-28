@@ -218,7 +218,7 @@ monodomain_xml_file = ParamListE.xml
     tduration       = 300
 
 
-    [../coupling] #
+    [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
     dpMax                   = 0.3
@@ -250,6 +250,8 @@ monodomain_xml_file = ParamListE.xml
 #    mesh_rotation_1     = 0.0
 #    mesh_rotation_2     = -0.5
     order               = P2
+    quad_rule           = 4pt
+    anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
     #fiber_dir           = biVentCoarse/
