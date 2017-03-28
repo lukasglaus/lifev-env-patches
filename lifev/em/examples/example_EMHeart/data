@@ -218,7 +218,7 @@ monodomain_xml_file = ParamListE.xml
     tduration       = 300
 
 
-    [../coupling]
+    [../coupling] #
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
     dpMax                   = 0.3
