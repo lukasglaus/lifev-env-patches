@@ -476,9 +476,9 @@ int main (int argc, char** argv)
     // Load restart file
     //============================================//
     
-//    std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
-//    const bool restart ( restartInput != "noRestart" );
-//
+    std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
+    const bool restart ( restartInput != "noRestart" );
+
 //    if ( restart )
 //    {
 //        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
@@ -599,12 +599,12 @@ int main (int argc, char** argv)
         p[comp] += dp;
         return p;
     };
-//
-//    if ( ! restart )
-//    {
+
+    if ( ! restart )
+    {
         solver.saveSolution (t);
         circulationSolver.exportSolution( circulationOutputFile );
-//    }
+    }
     
     for (int k (1); k <= maxiter; k++)
     {
@@ -867,7 +867,7 @@ int main (int argc, char** argv)
         // Export FE-solution
         //============================================//
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
-        if ( save ) solver.saveSolution(t, restart);
+        if ( save ) solver.saveSolution(t);
 
     }
 
