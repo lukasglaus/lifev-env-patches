@@ -503,11 +503,16 @@ int main (int argc, char** argv)
         // Set time exporter time index
         solver.setTimeIndex(restartInputStr + 1);
 
-        // Rename files
-        system("mkdir testK");
-        system( ("mkdir " + restartDir + "/test").c_str() );
-        system( ("cp " + restartDir + "/MechanicalSolution.xmf " + restartDir + "/test/MechanicalSolution.xmf").c_str() );
-
+        // Copy files into a restar0 directory
+        std::vector<std::string> fileNames {"MechanicalSolution", "ElectroSolution", "ActivationSolution", "VonMisesStress"};
+        system( ("mkdir " + restartDir + "/restart0").c_str() );
+        system( ("cp " + restartDir + "/solution.dat " + restartDir + "/restart0/solution.dat").c_str() );
+        for(auto& fn : fileNames)
+        {
+            system( ("cp " + restartDir + "/" + fn + ".xmf " + restartDir + "/restart0/" + fn + ".xmf").c_str() );
+            system( ("cp " + restartDir + "/" + fn + ".h5 " + restartDir + "/restart0/" + fn + ".h5").c_str() );
+        }
+        
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
 
