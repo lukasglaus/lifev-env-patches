@@ -470,18 +470,7 @@ int main (int argc, char** argv)
         //std::cout << "\nJR    = " << JR;
         std::cout << "\n==============================================================="; }
     };
-    
-//    auto pipeToString = [] ( const char* command )
-//    {
-//        FILE* file = popen( command, "r" ) ;
-//        std::ostringstream stm ;
-//        char line[6] ;
-//        fgets( line, 6, file );
-//        stm << line;
-//        pclose(file) ;
-//        return stm.str() ;
-//    };
-    
+        
     
     //============================================//
     // Load restart file
@@ -492,7 +481,8 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
-        const std::string restartDir = problemFolder.c_str();
+        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
+        
         Real dtExport = 10.;
         
         // Set time variable
@@ -503,7 +493,9 @@ int main (int argc, char** argv)
         // Set time exporter time index
         solver.setTimeIndex(restartInputStr + 1);
 
-        // Load restart files
+        // Load restart solutions from output files
+        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
+
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
         for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
@@ -515,7 +507,7 @@ int main (int argc, char** argv)
         //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
-
+        
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
