@@ -519,8 +519,8 @@ int main (int argc, char** argv)
     // Preload
     //============================================//
     
-    if ( ! restart )
-    {
+//    if ( ! restart )
+//    {
         solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
         const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
@@ -571,7 +571,7 @@ int main (int argc, char** argv)
             std::cout << "\n*****************************************************************\n";
         }
 
-    }
+//    }
     
     
     //============================================//
