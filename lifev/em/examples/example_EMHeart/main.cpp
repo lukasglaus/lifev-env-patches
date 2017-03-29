@@ -503,19 +503,7 @@ int main (int argc, char** argv)
         // Set time exporter time index
         solver.setTimeIndex(restartInputStr + 1);
 
-        // Copy files into a restar0 directory
-        std::vector<std::string> fileNames {"MechanicalSolution", "ElectroSolution", "ActivationSolution", "VonMisesStress"};
-        system( ("mkdir " + restartDir + "/restart0").c_str() );
-        system( ("cp " + restartDir + "/solution.dat " + restartDir + "/restart0/solution.dat").c_str() );
-        for(auto& fn : fileNames)
-        {
-            system( ("cp " + restartDir + "/" + fn + ".xmf " + restartDir + "/restart0/" + fn + ".xmf").c_str() );
-            system( ("cp " + restartDir + "/" + fn + ".h5 " + restartDir + "/restart0/" + fn + ".h5").c_str() );
-        }
-        
-        // Load restart solutions from output files
-        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
-
+        // Load restart files
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
         for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
@@ -526,13 +514,8 @@ int main (int argc, char** argv)
         ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
         //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
 
-        
-        
-        
-        
         circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
 
-        
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
