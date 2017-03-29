@@ -1,14 +1,14 @@
 # Vertex
 
 // Systemic Circulation
-lv      0.01 // 3.8 // 5
+lv      3.8 // 5
 sa      82.46
 sp      82.13
 sv      3.91
 ra      2.58
 
 // Pulmonary Circulation
-rv      0.001 // 2.5 // 5
+rv      2.5 // 5
 pa      11.48
 pp      11.28
 pv      4.57 // 4.9 //4.57

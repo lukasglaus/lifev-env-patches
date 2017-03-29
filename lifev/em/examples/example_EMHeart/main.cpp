@@ -87,7 +87,7 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
 int main (int argc, char** argv)
 {
 
-    //feenableexcept(FE_INVALID | FE_OVERFLOW);
+//    feenableexcept(FE_INVALID | FE_OVERFLOW);
     
     
     //============================================//
@@ -216,6 +216,7 @@ int main (int argc, char** argv)
     //============================================//
     displayer.leaderPrint ("\nSetting up EM solver ... ");
     
+    EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
     solver.setup (dataFile);
     
     displayer.leaderPrint ("\ndone!");
