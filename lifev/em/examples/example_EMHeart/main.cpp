@@ -599,12 +599,12 @@ int main (int argc, char** argv)
         p[comp] += dp;
         return p;
     };
-
-    if ( ! restart )
-    {
+//
+//    if ( ! restart )
+//    {
         solver.saveSolution (t);
         circulationSolver.exportSolution( circulationOutputFile );
-    }
+//    }
     
     for (int k (1); k <= maxiter; k++)
     {
