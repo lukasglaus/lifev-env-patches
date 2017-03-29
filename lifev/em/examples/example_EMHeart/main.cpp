@@ -504,8 +504,9 @@ int main (int argc, char** argv)
         solver.setTimeIndex(restartInputStr + 1);
 
         // Rename files
-        system("mkdir restartDir/test");
-        system("cp restartDir/MechanicalSolution.xmf restartDir/test/MechanicalSolution.xmf");
+        system("mkdir testK");
+        system("mkdir " + restartDir + "/test");
+        system("cp " + restartDir + "/MechanicalSolution.xmf " + restartDir + "/test/MechanicalSolution.xmf");
 
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
