@@ -266,7 +266,7 @@ int main (int argc, char** argv)
     //============================================//
     displayer.leaderPrint ("\nBuilding matrices ... ");
 
-    solver.oneWayCoupling();
+    solver.twoWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
@@ -470,49 +470,49 @@ int main (int argc, char** argv)
         //std::cout << "\nJR    = " << JR;
         std::cout << "\n==============================================================="; }
     };
-        
+    
     
     //============================================//
     // Load restart file
     //============================================//
     
-    std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
-    const bool restart ( restartInput != "noRestart" );
-
-    if ( restart )
-    {
-        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
-        
-        Real dtExport = 10.;
-        
-        // Set time variable
-        const unsigned int restartInputStr = std::stoi(restartInput);
-        const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
-        t = nIter * dt_mechanics;
-
-        // Set time exporter time index
-        solver.setTimeIndex(restartInputStr + 1);
-
-        // Load restart solutions from output files
-        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
-
-        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
-        for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
-        {
-            ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        }
-
-        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-        //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
-        circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
-        
-        // Set boundary mechanics conditions
-        bcValues = { p ( "lv" ) , p ( "rv" ) };
-        bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
-        modifyFeBC(bcValues);
-    }
+//    std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
+//    const bool restart ( restartInput != "noRestart" );
+//
+//    if ( restart )
+//    {
+//        const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
+//        
+//        Real dtExport = 10.;
+//        
+//        // Set time variable
+//        const unsigned int restartInputStr = std::stoi(restartInput);
+//        const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
+//        t = nIter * dt_mechanics;
+//
+//        // Set time exporter time index
+//        solver.setTimeIndex(restartInputStr + 1);
+//
+//        // Load restart solutions from output files
+//        std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
+//
+//        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "MechanicalSolution" , "displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+//
+//        for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
+//        {
+//            ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "ElectroSolution" , ("Variable" + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+//        }
+//
+//        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "ActivationSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+//        //ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+//
+//        circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
+//        
+//        // Set boundary mechanics conditions
+//        bcValues = { p ( "lv" ) , p ( "rv" ) };
+//        bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
+//        modifyFeBC(bcValues);
+//    }
 
     
     //============================================//
