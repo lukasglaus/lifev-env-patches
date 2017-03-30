@@ -25,7 +25,7 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
     
     [../discretization]
-    LumpedMass = false // use when too coarse mesh
+    LumpedMass = true
 
     [../flags]
     lvendo = 65 #50
