@@ -266,7 +266,7 @@ int main (int argc, char** argv)
     //============================================//
     displayer.leaderPrint ("\nBuilding matrices ... ");
 
-    solver.twoWayCoupling();
+    solver.oneWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
