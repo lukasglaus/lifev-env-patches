@@ -229,7 +229,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../time_discretization]
     initialtime                 = 0.
-    endtime                     = 100000.
+    endtime                     = 1000.
     timestep                    = 10000.0
     dt_loadstep                 = 0.5
     activation_limit_loadstep   = -0.57
