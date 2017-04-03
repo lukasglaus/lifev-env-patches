@@ -286,14 +286,6 @@ int main (int argc, char** argv)
     //============================================//
     // Electric stimulus function
     //============================================//
-    Real IappL = [] (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-    {
-        bool coords ( Y < -7. );
-        //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
-        bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
-        return ( coords && time ? 30 : 0 );
-    };
-    
     function_Type stim = &Iapp;
     
     
