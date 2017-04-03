@@ -16,9 +16,9 @@ monodomain_xml_file = ParamListE.xml
 
     [./physics]
     IonicModel = MinimalModel
-    fiberDiffusion = 10 #1.33 #10.0
-    sheetDiffusion = 3 #0.176 #3.0
-    normalDiffusion = 3 #0.176 #3.0
+    fiberDiffusion = 20 #1.33 #10.0
+    sheetDiffusion = 6 #0.176 #3.0
+    normalDiffusion = 6 #0.176 #3.0
     
     [../time_discretization]
     endtime         = 100000
