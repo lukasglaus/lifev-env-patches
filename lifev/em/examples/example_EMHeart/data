@@ -227,12 +227,12 @@ monodomain_xml_file = ParamListE.xml
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 1
 
-    [../time_discretization]
+[../time_discretization] #
     initialtime                 = 0.
     endtime                     = 100000.
     timestep                    = 1.0
     dt_loadstep                 = 0.5
-    activation_limit_loadstep   = -0.2
+    activation_limit_loadstep   = -0.07
     theta                       = 0.35
     zeta                        = 0.75
     BDF_order                   = 2
@@ -268,7 +268,7 @@ monodomain_xml_file = ParamListE.xml
     [../newton]
     maxiter 	= 50
     reltol  	= 1.e-7
-    abstol  	= 2e-6
+    abstol  	= 3e-6
     NonLinearLineSearch = 0
 
     [../solver]
