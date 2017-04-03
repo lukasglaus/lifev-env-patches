@@ -314,7 +314,7 @@ int main (int argc, char** argv)
     //============================================//
     // Electric stimulus function
     //============================================//
-    auto stim = Stimulus(2., 4., -7, 30);
+    auto stima = Stimulus(2., 4., -7, 30);
     auto stimf = Stimulus::Iapp;
     
     function_Type stim = &stimf;
