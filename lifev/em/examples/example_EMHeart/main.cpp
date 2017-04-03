@@ -87,12 +87,13 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
 class Stimulus
 {
 public:
-    Stimulus(Real ta, Real tb, Real y, Real f) :
-        M_ta    (ta),
-        M_tb    (tb),
-        M_y     (y),
-        M_f     (f)
-    {}
+    Stimulus(Real ta, Real tb, Real y, Real f)
+    {
+        M_ta = ta;
+        M_tb = tb;
+        M_y = y;
+        M_f = f;
+    }
     
     Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
@@ -103,10 +104,10 @@ public:
     }
     
 private:
-    Real M_ta;
-    Real M_tb;
-    Real M_y;
-    Real M_f;
+    static Real M_ta;
+    static Real M_tb;
+    static Real M_y;
+    static Real M_f;
     
 };
 
@@ -314,7 +315,7 @@ int main (int argc, char** argv)
     // Electric stimulus function
     //============================================//
     auto stim = Stimulus(2., 4., -7, 30);
-    auto stimf = stim.Iapp;
+    auto stimf = Stimulus::Iapp;
     
     function_Type stim = &stimf;
     
