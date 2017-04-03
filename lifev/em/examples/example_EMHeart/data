@@ -25,7 +25,7 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
     
     [../discretization]
-    LumpedMass = true
+    LumpedMass = false
 
     [../flags]
     lvendo = 65 #50
@@ -227,7 +227,7 @@ monodomain_xml_file = ParamListE.xml
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 1
 
-[../time_discretization] #
+    [../time_discretization]
     initialtime                 = 0.
     endtime                     = 100000.
     timestep                    = 10000.0
