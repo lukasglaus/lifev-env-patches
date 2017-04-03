@@ -295,7 +295,7 @@ int main (int argc, char** argv)
         }
     } appliedCurrent;
     
-    function_Type stim = &appliedCurrent(); //&Iapp;
+    function_Type stim = &appliedCurrent.Iapp; //&Iapp;
     
     
     //============================================//
