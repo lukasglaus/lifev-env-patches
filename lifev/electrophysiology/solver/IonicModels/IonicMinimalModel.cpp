@@ -156,8 +156,8 @@ IonicMinimalModel::IonicMinimalModel ( Teuchos::ParameterList& parameterList    
     M_winfstar  =  parameterList.get ("winfstar", 0.5     );
 
     M_restingConditions.at (0) = 0.0;
-    M_restingConditions.at (1) = 1.0;
-    M_restingConditions.at (2) = 1.0;
+    M_restingConditions.at (1) = 0.986002;//1.0;
+    M_restingConditions.at (2) = 0.7318; //1.0;
     M_restingConditions.at (3) = 0.021553043080281;
 }
 
