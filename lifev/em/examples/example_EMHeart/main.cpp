@@ -294,7 +294,7 @@ int main (int argc, char** argv)
         return ( coords && time ? 30 : 0 );
     };
     
-    function_Type stim = &IappL;
+    function_Type stim = &Iapp;
     
     
     //============================================//
