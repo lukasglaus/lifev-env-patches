@@ -61,7 +61,7 @@ monodomain_xml_file = ParamListE.xml
 [solid]
 
     [./physics]
-    density   	= 1000
+    density   	= 0
     material_flag   = 1000 #101 #1000
     young     	= 29760 #9920
     poisson   	= 0.5
