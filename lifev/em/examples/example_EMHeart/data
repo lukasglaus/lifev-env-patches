@@ -40,7 +40,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel = ActiveStrainRossi14
     CalciumIndex = 3
-    ActiveForceCoefficient = -5.5
+    ActiveForceCoefficient = -6.0
     InverseViscosity = 0.0002
     ChemicalThreshold = 0.21
 
@@ -232,7 +232,7 @@ monodomain_xml_file = ParamListE.xml
     endtime                     = 10000.
     timestep                    = 1.0
     dt_loadstep                 = 0.5
-    activation_limit_loadstep   = -0.08
+    activation_limit_loadstep   = -0.07
     theta                       = 0.35
     zeta                        = 0.75
     BDF_order                   = 2
@@ -242,7 +242,7 @@ monodomain_xml_file = ParamListE.xml
     mesh_type           = .mesh
     mesh_dir            = heartVVCoaPatch/
     mesh_file           = heartVVCoaPatch.mesh
-    mesh_scaling        = 1.18
+    mesh_scaling        = 1.15
 #    mesh_translation_0  = -66
 #    mesh_translation_1  = -72
 #    mesh_translation_2  = -94.5
@@ -268,7 +268,7 @@ monodomain_xml_file = ParamListE.xml
     [../newton]
     maxiter 	= 50
     reltol  	= 1.e-7
-    abstol  	= 3e-6
+    abstol  	= 5e-6
     NonLinearLineSearch = 0
 
     [../solver]
