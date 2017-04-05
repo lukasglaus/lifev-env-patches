@@ -631,7 +631,8 @@ int main (int argc, char** argv)
         solver.saveSolution (t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
-    
+    std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
+
     for (int k (1); k <= maxiter; k++)
     {
         if ( 0 == comm->MyPID() )
@@ -649,7 +650,7 @@ int main (int argc, char** argv)
 
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\nI4f = " << solver.activationModelPtr()->I4fPtr()->maxValue() << std::endl;
+            std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
         }
 
         
