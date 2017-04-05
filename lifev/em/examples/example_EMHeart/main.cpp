@@ -649,7 +649,7 @@ int main (int argc, char** argv)
 
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
+            std::cout << "\nI4f = " << solver.activationModelPtr()->I4fPtr()->maxValue() << std::endl;
         }
 
         
