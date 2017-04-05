@@ -398,8 +398,7 @@ public:
 
     void solveActivation (Real dt);
     
-    template <class FeSpacePtr>
-    computeI4f (VectorEpetra& i4f, const VectorEpetra& f0_, const VectorEpetra& disp, const FeSpacePtr& feSpacePtr);
+    void computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type& feSpacePtr);
 
     vectorPtr_Type getElectroFibers()
     {
@@ -925,9 +924,8 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 }
 
 template<typename Mesh , typename ElectroSolver>
-template <class FeSpacePtr>
 void
-EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, const VectorEpetra& f0_, const VectorEpetra& disp, const FeSpacePtr& feSpacePtr)
+EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type& feSpacePtr);
 {
     VectorEpetra dUdx (disp);
     VectorEpetra dUdy (disp);
