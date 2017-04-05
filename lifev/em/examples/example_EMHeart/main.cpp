@@ -54,7 +54,106 @@ using namespace LifeV;
 //============================================//
 
 
+//setupLumpedMassMatrixWithMehcanicalFeedback ()
+//{
+//    
+//    *this->M_massMatrixPtr *= 0.0;
+//    
+//    vectorPtr_Type dUdx (new vector_Type (M_displacementPtr->map() ) );
+//    vectorPtr_Type dUdy (new vector_Type (M_displacementPtr->map() ) );
+//    vectorPtr_Type dUdz (new vector_Type (M_displacementPtr->map() ) );
+//    
+//    *dUdx = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 0);
+//    *dUdy = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 1);
+//    *dUdz = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 2);
+//    
+//    vectorPtr_Type J (new vector_Type (this->M_potentialPtr->map() ) );
+//    int n = J->epetraVector().MyLength();
+//    int i (0);
+//    int j (0);
+//    int k (0);
+//    for (int p (0); p < n; p++)
+//    {
+//        i = dUdx->blockMap().GID (p);
+//        j = dUdx->blockMap().GID (p + n);
+//        k = dUdx->blockMap().GID (p + 2 * n);
+//        
+//        Real F11 = 1.0 + (*dUdx) [i];
+//        Real F12 =       (*dUdy) [i];
+//        Real F13 =       (*dUdz) [i];
+//        Real F21 =       (*dUdx) [j];
+//        Real F22 = 1.0 + (*dUdy) [j];
+//        Real F23 =       (*dUdz) [j];
+//        Real F31 =       (*dUdx) [k];
+//        Real F32 =       (*dUdy) [k];
+//        Real F33 = 1.0 + (*dUdz) [k];
+//        
+//        (*J) [i] = F11 * ( F22 * F33 - F32 * F23 )
+//        - F12 * ( F21 * F33 - F31 * F23 )
+//        + F13 * ( F21 * F32 - F31 * F22 );
+//    }
+//    
+//    if (this->M_verbose && this->M_localMeshPtr->comm()->MyPID() == 0)
+//    {
+//        std::cout << "\nEM Monodomain Solver: Setting up lumped mass matrix coupling with mechanics";
+//    }
+//    
+//    {
+//        using namespace ExpressionAssembly;
+//        
+//        integrate ( elements (this->M_localMeshPtr),
+//                   quadRuleTetra4ptNodal,
+//                   this->M_ETFESpacePtr,
+//                   this->M_ETFESpacePtr,
+//                   value (this->M_ETFESpacePtr, *J) * phi_i * phi_j
+//                   ) >> this->M_massMatrixPtr;
+//        
+//    }
+//    
+//    this->M_massMatrixPtr->globalAssemble();
+//    
+//}
 
+//void computeI4 ( VectorEpetra& i4, VectorEpetra& sx, VectorEpetra& sy, VectorEpetra& sz, VectorEpetra& f )
+//{
+//    i4 *= 0.0;
+//    Int nLocalDof = i4.epetraVector().MyLength();
+//    //Int nComponentLocalDof = nLocalDof / 3;
+//    for (int k (0); k < nLocalDof; k++)
+//    {
+//        UInt iGID = sx.blockMap().GID (k);
+//        UInt jGID = sx.blockMap().GID (k + nLocalDof);
+//        UInt kGID = sx.blockMap().GID (k + 2 * nLocalDof);
+//        
+//        Real fx, fy, fz;
+//        Real F11 = sx[iGID] + 1.0;
+//        Real F12 = sy[iGID];
+//        Real F13 = sz[iGID];
+//        Real F21 = sx[jGID];
+//        Real F22 = sy[jGID] + 1.0;
+//        Real F23 = sz[jGID];
+//        Real F31 = sx[kGID];
+//        Real F32 = sy[kGID];
+//        Real F33 = sz[kGID] + 1.0;
+//        fx = F11 * f[iGID];
+//        fx += ( F12 * f[jGID] );
+//        fx += ( F13 * f[kGID] );
+//        fy = F21 * f[iGID];
+//        fy += ( F22 * f[jGID] );
+//        fy += ( F23 * f[kGID] );
+//        fz = F31 * f[iGID];
+//        fz += ( F32 * f[jGID] );
+//        fz += ( F33 * f[kGID] );
+//        
+//        Real J = F11 * (F22 * F33 - F32 * F23) - F22 * (F21 * F33 - F31 * F23) + F33 * (F21 * F32 - F31 * F22);
+//        
+//        i4[iGID] = fx * fx + fy * fy + fz * fz;
+//        i4[iGID] *= std::pow (J, -2.0 / 3.0);
+//        
+//    }
+//    
+//    
+//}
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
