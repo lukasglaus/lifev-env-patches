@@ -920,7 +920,7 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
     const VectorEpetra& disp ( *M_EMStructuralOperatorPtr->displacementPtr() );
     const VectorEpetra& fibers ( *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr() );
     
-    M_activationModelPtr -> solveModelPathology ( dt, fibers, disp, dispFESpace, M_fullMeshPtr );
+    M_activationModelPtr -> solveModelPathology ( dt, *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), dispFESpace, M_fullMeshPtr );
 }
 
 
