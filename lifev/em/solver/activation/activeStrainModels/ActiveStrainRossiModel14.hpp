@@ -40,7 +40,7 @@ public:
 
     void solveModel ( Real& timeStep );
 
-    void solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr );
+    void solveModelPathology ( Real& timeStep, const VectorEpetra& f0_, const VectorEpetra& disp, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra> >& feSpacePtr, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr );
     
         
     Real computeActiveStress(Real i4f, Real Calcium);
