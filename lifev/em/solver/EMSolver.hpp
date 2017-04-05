@@ -918,7 +918,10 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 {
-    computeI4f (M_activationModelPtr->I4f(), *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), M_EMStructuralOperatorPtr->dispFESpacePtr());
+    
+    VectorEpetra a;
+    VectorEpetra b;
+    computeI4f (a, a, b, M_EMStructuralOperatorPtr->dispFESpacePtr());
     
     M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
 }
