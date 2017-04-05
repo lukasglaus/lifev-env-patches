@@ -69,8 +69,9 @@ ActiveStrainRossiModel14::solveModel ( Real& timeStep )
 
 }
 
+template <class feSpacePtrType>
 void
-ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, const VectorEpetra& f0_, const VectorEpetra& disp, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra> >& feSpacePtr, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
+ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, const VectorEpetra& f0_, const VectorEpetra& disp, const feSpacePtrType& feSpacePtr, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
 {
     if(!M_I4fPtr)
     {
