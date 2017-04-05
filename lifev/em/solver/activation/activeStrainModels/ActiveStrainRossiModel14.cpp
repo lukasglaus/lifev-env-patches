@@ -123,9 +123,9 @@ ActiveStrainRossiModel14::computeI4f (VectorEpetra& i4f, const VectorEpetra& f0_
     VectorEpetra dUdy (disp);
     VectorEpetra dUdz (disp);
     
-    *dUdx = GradientRecovery::ZZGradient (feSpacePtr, disp, 0);
-    *dUdy = GradientRecovery::ZZGradient (feSpacePtr, disp, 1);
-    *dUdz = GradientRecovery::ZZGradient (feSpacePtr, disp, 2);
+    dUdx = GradientRecovery::ZZGradient (feSpacePtr, disp, 0);
+    dUdy = GradientRecovery::ZZGradient (feSpacePtr, disp, 1);
+    dUdz = GradientRecovery::ZZGradient (feSpacePtr, disp, 2);
     
     int n = i4f.epetraVector().MyLength();
     int i (0); int j (0); int k (0);
