@@ -931,14 +931,17 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type feSpacePtr)
 {
+    std::cout << "\na\n";
     VectorEpetra dUdx (disp);
     VectorEpetra dUdy (disp);
     VectorEpetra dUdz (disp);
-    
+    std::cout << "\nb\n";
+
     dUdx = GradientRecovery::ZZGradient (feSpacePtr, disp, 0);
     dUdy = GradientRecovery::ZZGradient (feSpacePtr, disp, 1);
     dUdz = GradientRecovery::ZZGradient (feSpacePtr, disp, 2);
-    
+    std::cout << "\nc\n";
+
     int n = i4f.epetraVector().MyLength();
     int i (0); int j (0); int k (0);
     MatrixSmall<3,3> F; VectorSmall<3> f0;
@@ -966,6 +969,8 @@ EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_,
         auto f = F * f0;
         i4f[i] = f.dot(f);
     }
+    std::cout << "\nd\n";
+
 }
 
     
