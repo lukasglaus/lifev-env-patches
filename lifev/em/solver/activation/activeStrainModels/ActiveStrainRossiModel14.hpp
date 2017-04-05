@@ -40,8 +40,8 @@ public:
 
     void solveModel ( Real& timeStep );
 
-    template <class feSpacePtrType>
-    void solveModelPathology ( Real& timeStep, const VectorEpetra& f0_, const VectorEpetra& disp, const feSpacePtrType& feSpacePtr, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr );
+
+    void solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr );
     
         
     Real computeActiveStress(Real i4f, Real Calcium);
