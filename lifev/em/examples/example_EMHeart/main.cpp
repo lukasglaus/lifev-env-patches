@@ -648,10 +648,10 @@ int main (int argc, char** argv)
         // Solve electrophysiology and activation
         //============================================//
 
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
-        }
+//        if ( 0 == comm->MyPID() )
+//        {
+//            std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
+//        }
 
         
         solver.solveElectrophysiology (stim, t);
