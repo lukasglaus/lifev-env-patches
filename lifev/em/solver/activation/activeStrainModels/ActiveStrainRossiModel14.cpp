@@ -116,7 +116,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, const VectorEpet
     
 }
 
-
+void
 ActiveStrainRossiModel14::computeI4f (VectorEpetra& i4f, const VectorEpetra& f0_, const VectorEpetra& disp, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra> >& feSpacePtr)
 {
     VectorEpetra dUdx (disp);
