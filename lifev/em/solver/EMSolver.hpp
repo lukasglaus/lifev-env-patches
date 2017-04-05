@@ -398,7 +398,7 @@ public:
 
     void solveActivation (Real dt);
     
-    void computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type& feSpacePtr);
+    void computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type feSpacePtr);
 
     vectorPtr_Type getElectroFibers()
     {
@@ -921,14 +921,14 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
     
     VectorEpetra a;
     VectorEpetra b;
-    computeI4f (a, a, b, *M_EMStructuralOperatorPtr->dispFESpacePtr());
+    computeI4f (a, a, b, M_EMStructuralOperatorPtr->dispFESpacePtr());
     
     M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
 }
 
 template<typename Mesh , typename ElectroSolver>
 void
-EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type& feSpacePtr)
+EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type feSpacePtr)
 {
     VectorEpetra dUdx (disp);
     VectorEpetra dUdy (disp);
