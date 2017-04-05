@@ -915,8 +915,10 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
 template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
-{    
-    M_activationModelPtr -> solveModelPathology ( dt, *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), M_EMStructuralOperatorPtr->dispFESpacePtr(), M_fullMeshPtr );
+{
+    //    M_activationModelPtr -> solveModelPathology ( dt, *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), M_EMStructuralOperatorPtr->dispFESpacePtr(), M_fullMeshPtr );
+
+    M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
 }
 
 

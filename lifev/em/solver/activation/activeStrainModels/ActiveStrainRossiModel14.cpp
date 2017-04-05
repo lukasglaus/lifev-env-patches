@@ -71,16 +71,14 @@ ActiveStrainRossiModel14::solveModel ( Real& timeStep )
 
 template <class feSpacePtrType>
 void
-ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, const VectorEpetra& f0_, const VectorEpetra& disp, const feSpacePtrType& feSpacePtr, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
+ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
 {
     if(!M_I4fPtr)
     {
         ASSERT(false, " Cannot solve Active Strain Rossi model without I4f. ")
         exit(-1);
     }
-    
-    computeI4f(I4f(), f0_, disp, feSpacePtr);
-    
+        
     Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
     
     VectorSmall<3> X;
