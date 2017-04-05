@@ -925,7 +925,7 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 
 template<typename Mesh , typename ElectroSolver>
 void
-EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type& feSpacePtr);
+EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_, VectorEpetra& disp, solidFESpacePtr_Type& feSpacePtr)
 {
     VectorEpetra dUdx (disp);
     VectorEpetra dUdy (disp);
