@@ -959,6 +959,8 @@ EMSolver<Mesh, ElectroSolver>::computeI4f (VectorEpetra& i4f, VectorEpetra& f0_,
         f0(1) = f0_[j];
         f0(2) = f0_[k];
         
+        f0.normalize();
+        
         auto f = F * f0;
         i4f[i] = f.dot(f);
     }
