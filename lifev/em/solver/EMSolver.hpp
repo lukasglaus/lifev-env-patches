@@ -916,7 +916,7 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 {
-    const solidFESpacePtr_Type& dispFESpace = M_EMStructuralOperatorPtr->dispFESpacePtr();
+    const solidFESpacePtr_Type dispFESpace = M_EMStructuralOperatorPtr->dispFESpacePtr();
     const VectorEpetra& disp ( *M_EMStructuralOperatorPtr->displacementPtr() );
     const VectorEpetra& fibers ( *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr() );
     
