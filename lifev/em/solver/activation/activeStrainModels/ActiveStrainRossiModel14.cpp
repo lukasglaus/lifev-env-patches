@@ -114,46 +114,6 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     
 }
 
-void
-ActiveStrainRossiModel14::computeI4f (VectorEpetra& i4f, const VectorEpetra& f0_, const VectorEpetra& disp, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra> >& feSpacePtr)
-{
-    VectorEpetra dUdx (disp);
-    VectorEpetra dUdy (disp);
-    VectorEpetra dUdz (disp);
-    
-    dUdx = GradientRecovery::ZZGradient (feSpacePtr, disp, 0);
-    dUdy = GradientRecovery::ZZGradient (feSpacePtr, disp, 1);
-    dUdz = GradientRecovery::ZZGradient (feSpacePtr, disp, 2);
-    
-    int n = i4f.epetraVector().MyLength();
-    int i (0); int j (0); int k (0);
-    MatrixSmall<3,3> F; VectorSmall<3> f0;
-    
-    for (int p (0); p < n; p++)
-    {
-        i = dUdx.blockMap().GID (p);
-        j = dUdx.blockMap().GID (p + n);
-        k = dUdx.blockMap().GID (p + 2 * n);
-        
-        F(0,0) = 1.0 + dUdx[i];
-        F(0,1) =       dUdy[i];
-        F(0,2) =       dUdz[i];
-        F(1,0) =       dUdx[j];
-        F(1,1) = 1.0 + dUdy[j];
-        F(1,2) =       dUdz[j];
-        F(2,0) =       dUdx[k];
-        F(2,1) =       dUdy[k];
-        F(2,2) = 1.0 + dUdz[k];
-        
-        f0(0) = f0_[i];
-        f0(1) = f0_[j];
-        f0(2) = f0_[k];
-        
-        auto f = F * f0;
-        i4f[i] = f.dot(f);
-    }
-}
-
 
 
 void

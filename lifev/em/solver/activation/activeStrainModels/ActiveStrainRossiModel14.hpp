@@ -74,7 +74,7 @@ public:
     	super::setup(data, map);
     }
 
-    void computeI4f(VectorEpetra& i4f, const VectorEpetra& f0_, const VectorEpetra& disp, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra> >& feSpacePtr);
+    void computeI4f();
 
     void showMe()
     {
