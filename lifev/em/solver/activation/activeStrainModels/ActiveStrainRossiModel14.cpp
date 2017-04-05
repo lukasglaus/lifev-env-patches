@@ -133,9 +133,9 @@ ActiveStrainRossiModel14::computeI4f (VectorEpetra& i4f, const VectorEpetra& f0_
     
     for (int p (0); p < n; p++)
     {
-        i = dUdx->blockMap().GID (p);
-        j = dUdx->blockMap().GID (p + n);
-        k = dUdx->blockMap().GID (p + 2 * n);
+        i = dUdx.blockMap().GID (p);
+        j = dUdx.blockMap().GID (p + n);
+        k = dUdx.blockMap().GID (p + 2 * n);
         
         F(0,0) = 1.0 + dUdx[i];
         F(0,1) =       dUdy[i];
