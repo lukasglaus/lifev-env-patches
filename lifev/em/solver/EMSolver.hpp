@@ -921,7 +921,7 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
     
     VectorEpetra a;
     VectorEpetra b;
-    computeI4f (a, a, b, M_EMStructuralOperatorPtr->dispFESpacePtr());
+    computeI4f (a, a, b, *M_EMStructuralOperatorPtr->dispFESpacePtr());
     
     M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
 }
