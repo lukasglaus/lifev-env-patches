@@ -631,7 +631,6 @@ int main (int argc, char** argv)
         solver.saveSolution (t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
-    std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
 
     for (int k (1); k <= maxiter; k++)
     {
@@ -648,10 +647,12 @@ int main (int argc, char** argv)
         // Solve electrophysiology and activation
         //============================================//
 
-//        if ( 0 == comm->MyPID() )
-//        {
-//            std::cout << "\nI4f = " << solver.activationModelPtr()->I4f().maxValue() << std::endl;
-//        }
+        auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nI4f = " << maxI4fValue << std::endl;
+        }
 
         
         solver.solveElectrophysiology (stim, t);
