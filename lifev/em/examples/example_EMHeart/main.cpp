@@ -54,18 +54,15 @@ using namespace LifeV;
 //============================================//
 
 
-//setupLumpedMassMatrixWithMehcanicalFeedback ()
+//computeI4f (VectorEpetra& i4f, const VectorEpetra& f0, const VectorEpetra& disp, const boost::shared_ptr<FESpace<mesh_Type, MapEpetra> >& feSpacePtr)
 //{
+//    VectorEpetra dUdx (disp);
+//    VectorEpetra dUdy (disp);
+//    VectorEpetra dUdz (disp);
 //    
-//    *this->M_massMatrixPtr *= 0.0;
-//    
-//    vectorPtr_Type dUdx (new vector_Type (M_displacementPtr->map() ) );
-//    vectorPtr_Type dUdy (new vector_Type (M_displacementPtr->map() ) );
-//    vectorPtr_Type dUdz (new vector_Type (M_displacementPtr->map() ) );
-//    
-//    *dUdx = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 0);
-//    *dUdy = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 1);
-//    *dUdz = GradientRecovery::ZZGradient (M_displacementETFESpacePtr, *M_displacementPtr, 2);
+//    *dUdx = GradientRecovery::ZZGradient (feSpacePtr, disp, 0);
+//    *dUdy = GradientRecovery::ZZGradient (feSpacePtr, disp, 1);
+//    *dUdz = GradientRecovery::ZZGradient (feSpacePtr, disp, 2);
 //    
 //    vectorPtr_Type J (new vector_Type (this->M_potentialPtr->map() ) );
 //    int n = J->epetraVector().MyLength();
@@ -88,30 +85,10 @@ using namespace LifeV;
 //        Real F32 =       (*dUdy) [k];
 //        Real F33 = 1.0 + (*dUdz) [k];
 //        
-//        (*J) [i] = F11 * ( F22 * F33 - F32 * F23 )
-//        - F12 * ( F21 * F33 - F31 * F23 )
-//        + F13 * ( F21 * F32 - F31 * F22 );
-//    }
-//    
-//    if (this->M_verbose && this->M_localMeshPtr->comm()->MyPID() == 0)
-//    {
-//        std::cout << "\nEM Monodomain Solver: Setting up lumped mass matrix coupling with mechanics";
-//    }
-//    
-//    {
-//        using namespace ExpressionAssembly;
-//        
-//        integrate ( elements (this->M_localMeshPtr),
-//                   quadRuleTetra4ptNodal,
-//                   this->M_ETFESpacePtr,
-//                   this->M_ETFESpacePtr,
-//                   value (this->M_ETFESpacePtr, *J) * phi_i * phi_j
-//                   ) >> this->M_massMatrixPtr;
+//
 //        
 //    }
-//    
-//    this->M_massMatrixPtr->globalAssemble();
-//    
+//
 //}
 
 //void computeI4 ( VectorEpetra& i4, VectorEpetra& sx, VectorEpetra& sy, VectorEpetra& sz, VectorEpetra& f )
