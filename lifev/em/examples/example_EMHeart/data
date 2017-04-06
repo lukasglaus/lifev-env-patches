@@ -40,7 +40,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel = ActiveStrainRossi14
     CalciumIndex = 3
-    ActiveForceCoefficient = -6.0
+    ActiveForceCoefficient = -6.5
     InverseViscosity = 0.0002
     ChemicalThreshold = 0.21
 
