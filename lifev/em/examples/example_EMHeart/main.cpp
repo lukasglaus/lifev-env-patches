@@ -591,10 +591,13 @@ int main (int argc, char** argv)
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
+        auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
         
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\nI4f = " << maxI4fValue << std::endl;
+            std::cout << "\nI4fmax = " << maxI4fValue;
+            std::cout << "\nI4fmin = " << minI4fValue << std::endl;
+            
         }
 
         if ( 0 == comm->MyPID() )
@@ -655,10 +658,13 @@ int main (int argc, char** argv)
         //============================================//
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
+        auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
         
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\nI4f = " << maxI4fValue << std::endl;
+            std::cout << "\nI4fmax = " << maxI4fValue;
+            std::cout << "\nI4fmin = " << minI4fValue << std::endl;
+
         }
 
         
