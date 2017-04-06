@@ -590,6 +590,13 @@ int main (int argc, char** argv)
             //solver.saveSolution (i-1);
         }
 
+        auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\nI4f = " << maxI4fValue << std::endl;
+        }
+
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*****************************************************************";
