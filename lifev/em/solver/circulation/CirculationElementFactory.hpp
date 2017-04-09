@@ -355,7 +355,8 @@ public:
                 return - M_D;
                 break;
             case p2:
-                return   M_D;
+                // return   M_D;
+                return   M_D * (1 - M_param[0]*u[0]);
                 break;
             default:
                 return 0.0;
