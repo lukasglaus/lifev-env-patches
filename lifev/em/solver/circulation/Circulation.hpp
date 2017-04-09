@@ -119,8 +119,8 @@ public:
         if ( rank == 0 )
         {
             VectorStdDouble pMax (bcValues);
-            pMax[0] = bcValues[0]/(1-3.75e-4*solution(std::vector<std::string>{"lv", "sa"}))
-            pMax[1] = bcValues[1]/(1-1.4e-3*solution(std::vector<std::string>{"rv", "pa"}))
+            pMax[0] = bcValues[0]/(1-3.75e-4*solution(std::vector<std::string>{"lv", "sa"}));
+            pMax[1] = bcValues[1]/(1-1.4e-3*solution(std::vector<std::string>{"rv", "pa"}));
             
             unsigned int subiter (0);
             VectorEigen uPrevIter ( M_u );
@@ -135,8 +135,8 @@ public:
             {
                 ++subiter;
                 uPrevIter = M_u;
-                pMax[0] = bcValues[0]/(1-3.75e-4*solution(std::vector<std::string>{"lv", "sa"}))
-                pMax[1] = bcValues[1]/(1-1.4e-3*solution(std::vector<std::string>{"rv", "pa"}))
+                pMax[0] = bcValues[0]/(1-3.75e-4*solution(std::vector<std::string>{"lv", "sa"}));
+                pMax[1] = bcValues[1]/(1-1.4e-3*solution(std::vector<std::string>{"rv", "pa"}));
                 solve(dt, bcNames, pMax, 1, plotError, plotSystem);
                 residuum = ( M_u - uPrevIter );
                 
