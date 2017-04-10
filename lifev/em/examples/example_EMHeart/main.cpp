@@ -765,8 +765,8 @@ int main (int argc, char** argv)
             
             auto bcValuesCirc (bcValues);
             
-            bcValuesCirc[0] = bcValues[0]/(1-3.75e-4*Q("lv", "sa"));
-            bcValuesCirc[1] = bcValues[1]/(1-1.4e-3*Q("rv", "pa"));
+//            bcValuesCirc[0] = bcValues[0]/(1-3.75e-4*Q("lv", "sa"));
+//            bcValuesCirc[1] = bcValues[1]/(1-1.4e-3*Q("rv", "pa"));
             
             circulationSolver.iterate(dt_circulation, bcNames, bcValuesCirc, iter);
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
