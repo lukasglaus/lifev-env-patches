@@ -768,7 +768,7 @@ int main (int argc, char** argv)
 //            bcValuesCirc[0] = bcValues[0]/(1-3.75e-4*Q("lv", "sa"));
 //            bcValuesCirc[1] = bcValues[1]/(1-1.4e-3*Q("rv", "pa"));
             
-            circulationSolver.iterate(dt_circulation, bcNames, bcValuesCirc, iter);
+            circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
@@ -790,7 +790,7 @@ int main (int argc, char** argv)
                 //============================================//
                 
                 // Left ventricle
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValuesCirc, pPerturbationCirc, 0), iter);
+                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 0), iter);
                 VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
@@ -798,7 +798,7 @@ int main (int argc, char** argv)
                 JCirc(1,0) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
                 
                 // Right ventricle
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValuesCirc, pPerturbationCirc, 1), iter);
+                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 1), iter);
                 VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
                 
@@ -859,15 +859,15 @@ int main (int argc, char** argv)
                     bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
                 }
                 
-                bcValuesCirc[0] = bcValues[0]/(1-3.75e-4*Q("lv", "sa"));
-                bcValuesCirc[1] = bcValues[1]/(1-1.4e-3*Q("rv", "pa"));
+//                bcValuesCirc[0] = bcValues[0]/(1-3.75e-4*Q("lv", "sa"));
+//                bcValuesCirc[1] = bcValues[1]/(1-1.4e-3*Q("rv", "pa"));
 
                 printCoupling("Pressure Update");
 
                 //============================================//
                 // Solve circulation
                 //============================================//
-                circulationSolver.iterate(dt_circulation, bcNames, bcValuesCirc, iter);
+                circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
                 VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
