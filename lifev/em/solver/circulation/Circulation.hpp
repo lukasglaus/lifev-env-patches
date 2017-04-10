@@ -131,7 +131,6 @@ public:
             {
                 ++subiter;
                 uPrevIter = M_u;
-                pMax[1] = bcValues[1]/(1-1.4e-3*solution(std::vector<std::string>{"rv", "pa"}));
                 solve(dt, bcNames, bcValues, 1, plotError, plotSystem);
                 residuum = ( M_u - uPrevIter );
                 
