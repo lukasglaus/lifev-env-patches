@@ -754,12 +754,14 @@ int main (int argc, char** argv)
             //============================================//
             
             auto bcValuesFe (bcValues);
-            
-            bcValuesFe[0] = bcValues[0]*(1-3.75e-4*Q("lv", "sa"));
-            bcValuesFe[1] = bcValues[1]*(1-1.4e-3*Q("rv", "pa"));
+            Real g1 = (1-3.75e-4*Q("lv", "sa"));
+            Real g2 = (1-1.4e-3*Q("rv", "pa"));
+
+            bcValuesFe[0] = bcValues[0] * g1;
+            bcValuesFe[1] = bcValues[1] * g2;
 
             
-            modifyFeBC(bcValues);
+            modifyFeBC(bcValuesFe);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
@@ -823,11 +825,11 @@ int main (int argc, char** argv)
                     // Left ventricle
                     
                     bcValuesFe = perturbedPressureComp(bcValues, pPerturbationFe, 0);
-                    bcValuesFe[0] = bcValuesFe[0]*(1-3.75e-4*Q("lv", "sa"));
-                    bcValuesFe[1] = bcValuesFe[1]*(1-1.4e-3*Q("rv", "pa"));
-                    //modifyFeBC(bcValues);
+                    bcValuesFe[0] = bcValuesFe[0]*g1;
+                    bcValuesFe[1] = bcValuesFe[1]*g2;
+                    modifyFeBC(bcValuesFe);
                     
-                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
+                    //modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
@@ -842,11 +844,11 @@ int main (int argc, char** argv)
                     // Right ventricle
                     
                     bcValuesFe = perturbedPressureComp(bcValues, pPerturbationFe, 1);
-                    bcValuesFe[0] = bcValuesFe[0]*(1-3.75e-4*Q("lv", "sa"));
-                    bcValuesFe[1] = bcValuesFe[1]*(1-1.4e-3*Q("rv", "pa"));
-                    //modifyFeBC(bcValues);
+                    bcValuesFe[0] = bcValuesFe[0]*g1;
+                    bcValuesFe[1] = bcValuesFe[1]*g2;
+                    modifyFeBC(bcValuesFe);
                     
-                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
+                    //modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
@@ -873,7 +875,6 @@ int main (int argc, char** argv)
                     bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
                 }
                 
-
                 printCoupling("Pressure Update");
 
                 //============================================//
@@ -886,9 +887,9 @@ int main (int argc, char** argv)
                 //============================================//
                 // Solve mechanics
                 //============================================//
-                bcValuesFe[0] = bcValues[0]*(1-3.75e-4*Q("lv", "sa"));
-                bcValuesFe[1] = bcValues[1]*(1-1.4e-3*Q("rv", "pa"));
-                modifyFeBC(bcValues);
+                bcValuesFe[0] = bcValues[0]*g1;
+                bcValuesFe[1] = bcValues[1]*g2;
+                modifyFeBC(bcValuesFe);
 
                 //modifyFeBC(bcValues);
                 solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
