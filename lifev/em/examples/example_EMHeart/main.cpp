@@ -771,8 +771,7 @@ int main (int argc, char** argv)
             //============================================//
             // Solve circlation
             //============================================//
-            
-            circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
+                        circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
@@ -809,6 +808,7 @@ int main (int argc, char** argv)
                 JCirc(0,1) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
                 JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
                 
+
                 //============================================//
                 // Jacobian fe
                 //============================================//
