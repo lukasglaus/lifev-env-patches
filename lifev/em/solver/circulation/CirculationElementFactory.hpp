@@ -349,7 +349,8 @@ public:
 
         switch (idx) {
             case Q:
-                return ( M_param[0] * u[1] );
+                //return ( M_param[0] * u[1] );
+                return ( M_param[0] * u[1] - M_param[0] * M_D * u[2] );
                 break;
             case p1:
                 return - M_D;

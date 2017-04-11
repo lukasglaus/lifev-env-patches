@@ -759,7 +759,7 @@ int main (int argc, char** argv)
             bcValuesFe[1] = bcValues[1]*(1-1.4e-3*Q("rv", "pa"));
 
             
-            modifyFeBC(bcValuesFe);
+            modifyFeBC(bcValues);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
@@ -825,7 +825,7 @@ int main (int argc, char** argv)
                     bcValuesFe = perturbedPressureComp(bcValues, pPerturbationFe, 0);
                     bcValuesFe[0] = bcValuesFe[0]*(1-3.75e-4*Q("lv", "sa"));
                     bcValuesFe[1] = bcValuesFe[1]*(1-1.4e-3*Q("rv", "pa"));
-                    modifyFeBC(bcValuesFe);
+                    modifyFeBC(bcValues);
                     
                     //modifyFeBC(perturbedPressureComp(bcValuesFe, pPerturbationFe, 0));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
@@ -844,7 +844,7 @@ int main (int argc, char** argv)
                     bcValuesFe = perturbedPressureComp(bcValues, pPerturbationFe, 1);
                     bcValuesFe[0] = bcValuesFe[0]*(1-3.75e-4*Q("lv", "sa"));
                     bcValuesFe[1] = bcValuesFe[1]*(1-1.4e-3*Q("rv", "pa"));
-                    modifyFeBC(bcValuesFe);
+                    modifyFeBC(bcValues);
                     
                     //modifyFeBC(perturbedPressureComp(bcValuesFe, pPerturbationFe, 1));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
@@ -888,7 +888,7 @@ int main (int argc, char** argv)
                 //============================================//
                 bcValuesFe[0] = bcValues[0]*(1-3.75e-4*Q("lv", "sa"));
                 bcValuesFe[1] = bcValues[1]*(1-1.4e-3*Q("rv", "pa"));
-                modifyFeBC(bcValuesFe);
+                modifyFeBC(bcValues);
 
                 //modifyFeBC(bcValues);
                 solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
