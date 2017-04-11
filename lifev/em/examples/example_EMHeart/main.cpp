@@ -771,7 +771,8 @@ int main (int argc, char** argv)
             //============================================//
             // Solve circlation
             //============================================//
-                        circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
+            
+            circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
@@ -898,6 +899,8 @@ int main (int argc, char** argv)
                 VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
                 VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
+                g1 = (1-3.75e-4*Q("lv", "sa"));
+                g2 = (1-1.4e-3*Q("rv", "pa"));
                 //============================================//
                 // Residual update
                 //============================================//
