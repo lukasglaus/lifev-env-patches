@@ -888,6 +888,9 @@ int main (int argc, char** argv)
                 //============================================//
                 // Solve mechanics
                 //============================================//
+                g1 = (1-3.75e-4*Q("lv", "sa"));
+                g2 = (1-1.4e-3*Q("rv", "pa"));
+
                 bcValuesFe[0] = bcValues[0]*g1;
                 bcValuesFe[1] = bcValues[1]*g2;
                 modifyFeBC(bcValuesFe);
@@ -899,8 +902,6 @@ int main (int argc, char** argv)
                 VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
                 VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
-                g1 = (1-3.75e-4*Q("lv", "sa"));
-                g2 = (1-1.4e-3*Q("rv", "pa"));
                 //============================================//
                 // Residual update
                 //============================================//
