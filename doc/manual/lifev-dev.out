@@ -1,0 +1,52 @@
+\BOOKMARK [0][-]{chapter.1}{Program Development Conventions}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Documentation Rules}{chapter.1}% 2
+\BOOKMARK [2][-]{subsection.1.1.1}{Methods and function documentation}{section.1.1}% 3
+\BOOKMARK [2][-]{subsection.1.1.2}{Class documentation}{section.1.1}% 4
+\BOOKMARK [2][-]{subsection.1.1.3}{File documentation}{section.1.1}% 5
+\BOOKMARK [1][-]{section.1.2}{General Nomenclature and Programming Convention}{chapter.1}% 6
+\BOOKMARK [2][-]{subsection.1.2.1}{Coding Standards}{section.1.2}% 7
+\BOOKMARK [1][-]{section.1.3}{Static and dynamic polymorphism}{chapter.1}% 8
+\BOOKMARK [1][-]{section.1.4}{Standard Template Library}{chapter.1}% 9
+\BOOKMARK [2][-]{subsection.1.4.1}{Containers}{section.1.4}% 10
+\BOOKMARK [2][-]{subsection.1.4.2}{Strings}{section.1.4}% 11
+\BOOKMARK [2][-]{subsection.1.4.3}{valarray}{section.1.4}% 12
+\BOOKMARK [1][-]{section.1.5}{Namespaces}{chapter.1}% 13
+\BOOKMARK [1][-]{section.1.6}{Debugging and assertions}{chapter.1}% 14
+\BOOKMARK [1][-]{section.1.7}{Debugging}{chapter.1}% 15
+\BOOKMARK [2][-]{subsection.1.7.1}{Assertions}{section.1.7}% 16
+\BOOKMARK [2][-]{subsection.1.7.2}{Compiler Switches and define's}{section.1.7}% 17
+\BOOKMARK [1][-]{section.1.8}{Type nemas, typedefs and template arguments}{chapter.1}% 18
+\BOOKMARK [0][-]{chapter.2}{General Program Overview}{}% 19
+\BOOKMARK [1][-]{section.2.1}{General Typedefs}{chapter.2}% 20
+\BOOKMARK [1][-]{section.2.2}{Nomenclature}{chapter.2}% 21
+\BOOKMARK [2][-]{subsection.2.2.1}{Nomenclature List}{section.2.2}% 22
+\BOOKMARK [1][-]{section.2.3}{Paradigms}{chapter.2}% 23
+\BOOKMARK [1][-]{section.2.4}{Scope of the software}{chapter.2}% 24
+\BOOKMARK [1][-]{section.2.5}{A top-bottom overview}{chapter.2}% 25
+\BOOKMARK [2][-]{subsection.2.5.1}{Domain, Regions and Meshes}{section.2.5}% 26
+\BOOKMARK [2][-]{subsection.2.5.2}{Finite Elements}{section.2.5}% 27
+\BOOKMARK [2][-]{subsection.2.5.3}{Field}{section.2.5}% 28
+\BOOKMARK [1][-]{section.2.6}{Main libraries}{chapter.2}% 29
+\BOOKMARK [1][-]{section.2.7}{Library header files}{chapter.2}% 30
+\BOOKMARK [2][-]{subsection.2.7.1}{The main header file}{section.2.7}% 31
+\BOOKMARK [2][-]{subsection.2.7.2}{Basis Geometric Shapes}{section.2.7}% 32
+\BOOKMARK [2][-]{subsection.2.7.3}{Mesh Classes}{section.2.7}% 33
+\BOOKMARK [2][-]{subsection.2.7.4}{Bare Items}{section.2.7}% 34
+\BOOKMARK [2][-]{subsection.2.7.5}{BC Condition Classes}{section.2.7}% 35
+\BOOKMARK [2][-]{subsection.2.7.6}{Markers}{section.2.7}% 36
+\BOOKMARK [2][-]{subsection.2.7.7}{The pattern classes}{section.2.7}% 37
+\BOOKMARK [2][-]{subsection.2.7.8}{The Basis Function class}{section.2.7}% 38
+\BOOKMARK [2][-]{subsection.2.7.9}{The geomap classes}{section.2.7}% 39
+\BOOKMARK [2][-]{subsection.2.7.10}{Quadrature Rules}{section.2.7}% 40
+\BOOKMARK [2][-]{subsection.2.7.11}{Finite Element Classes}{section.2.7}% 41
+\BOOKMARK [2][-]{subsection.2.7.12}{The specialised versions for exact integration}{section.2.7}% 42
+\BOOKMARK [2][-]{subsection.2.7.13}{The Mixed finite element classes}{section.2.7}% 43
+\BOOKMARK [2][-]{subsection.2.7.14}{The Degrees of Freedom}{section.2.7}% 44
+\BOOKMARK [2][-]{subsection.2.7.15}{The Fields}{section.2.7}% 45
+\BOOKMARK [2][-]{subsection.2.7.16}{The assembly process}{section.2.7}% 46
+\BOOKMARK [0][-]{chapter.3}{HOWTO}{}% 47
+\BOOKMARK [1][-]{section.3.1}{Geometrical mappings}{chapter.3}% 48
+\BOOKMARK [1][-]{section.3.2}{HOWTO add new basis functions}{chapter.3}% 49
+\BOOKMARK [1][-]{section.3.3}{HOWTO add a new quadrature rule}{chapter.3}% 50
+\BOOKMARK [1][-]{section.3.4}{HOWTO add a new element operator}{chapter.3}% 51
+\BOOKMARK [1][-]{section.3.5}{HOWTO build a new finite element}{chapter.3}% 52
