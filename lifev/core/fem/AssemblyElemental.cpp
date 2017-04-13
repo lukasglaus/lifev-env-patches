@@ -1863,7 +1863,7 @@ void stiff ( Real coef, MatrixElemental& elmat, const CurrentFE& fe,
         iloc = fe.patternFirst ( i );
         s = 0;
         for ( ig = 0; ig < fe.nbQuadPt(); ig++ )
-        {
+        { 
             for ( icoor = 0; icoor < fe.nbLocalCoor(); icoor++ )
                 s += fe.phiDer ( iloc, icoor, ig ) * fe.phiDer ( iloc, icoor, ig )
                      * fe.weightDet ( ig );
