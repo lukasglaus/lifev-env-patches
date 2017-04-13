@@ -1,0 +1,69 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Program Development Conventions}{6}{chapter.1}
+\contentsline {section}{\numberline {1.1}Documentation Rules}{6}{section.1.1}
+\contentsline {subsection}{\numberline {1.1.1}Methods and function documentation}{6}{subsection.1.1.1}
+\contentsline {subsection}{\numberline {1.1.2}Class documentation}{8}{subsection.1.1.2}
+\contentsline {subsection}{\numberline {1.1.3}File documentation}{8}{subsection.1.1.3}
+\contentsline {section}{\numberline {1.2}General Nomenclature and Programming Convention}{9}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}Coding Standards}{9}{subsection.1.2.1}
+\contentsline {section}{\numberline {1.3}Static and dynamic polymorphism}{10}{section.1.3}
+\contentsline {section}{\numberline {1.4}Standard Template Library}{10}{section.1.4}
+\contentsline {subsection}{\numberline {1.4.1}Containers}{10}{subsection.1.4.1}
+\contentsline {subsection}{\numberline {1.4.2}Strings}{10}{subsection.1.4.2}
+\contentsline {subsection}{\numberline {1.4.3}valarray}{10}{subsection.1.4.3}
+\contentsline {section}{\numberline {1.5}Namespaces}{10}{section.1.5}
+\contentsline {section}{\numberline {1.6}Debugging and assertions}{10}{section.1.6}
+\contentsline {section}{\numberline {1.7}Debugging}{10}{section.1.7}
+\contentsline {subsection}{\numberline {1.7.1}Assertions}{11}{subsection.1.7.1}
+\contentsline {subsection}{\numberline {1.7.2}Compiler Switches and define's}{11}{subsection.1.7.2}
+\contentsline {section}{\numberline {1.8}Type nemas, typedefs and template arguments}{12}{section.1.8}
+\contentsline {chapter}{\numberline {2}General Program Overview}{15}{chapter.2}
+\contentsline {section}{\numberline {2.1}General Typedefs}{15}{section.2.1}
+\contentsline {section}{\numberline {2.2}Nomenclature}{15}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Nomenclature List}{15}{subsection.2.2.1}
+\contentsline {section}{\numberline {2.3}Paradigms}{17}{section.2.3}
+\contentsline {section}{\numberline {2.4}Scope of the software}{18}{section.2.4}
+\contentsline {section}{\numberline {2.5}A top-bottom overview}{18}{section.2.5}
+\contentsline {subsection}{\numberline {2.5.1}Domain, Regions and Meshes}{18}{subsection.2.5.1}
+\contentsline {subsubsection}{Generalities}{18}{section*.4}
+\contentsline {subsubsection}{Mesh}{19}{section*.5}
+\contentsline {subsubsection}{RegionMesh}{19}{section*.6}
+\contentsline {subsection}{\numberline {2.5.2}Finite Elements}{19}{subsection.2.5.2}
+\contentsline {subsection}{\numberline {2.5.3}Field}{19}{subsection.2.5.3}
+\contentsline {section}{\numberline {2.6}Main libraries}{19}{section.2.6}
+\contentsline {section}{\numberline {2.7}Library header files}{19}{section.2.7}
+\contentsline {subsection}{\numberline {2.7.1}The main header file}{19}{subsection.2.7.1}
+\contentsline {subsection}{\numberline {2.7.2}Basis Geometric Shapes}{20}{subsection.2.7.2}
+\contentsline {subsection}{\numberline {2.7.3}Mesh Classes}{22}{subsection.2.7.3}
+\contentsline {subsubsection}{Geometric Elements}{22}{section*.7}
+\contentsline {subsubsection}{RegionMesh}{25}{section*.8}
+\contentsline {paragraph}{Note By Luca}{25}{section*.9}
+\contentsline {subsection}{\numberline {2.7.4}Bare Items}{28}{subsection.2.7.4}
+\contentsline {subsection}{\numberline {2.7.5}BC Condition Classes}{29}{subsection.2.7.5}
+\contentsline {paragraph}{type}{29}{section*.10}
+\contentsline {paragraph}{name}{29}{section*.11}
+\contentsline {subsubsection}{BC\_Base and BC\_Base\_WL}{29}{section*.12}
+\contentsline {subsubsection}{BC\_Handler}{30}{section*.13}
+\contentsline {subsubsection}{Helper functions}{31}{section*.14}
+\contentsline {subsection}{\numberline {2.7.6}Markers}{32}{subsection.2.7.6}
+\contentsline {subsubsection}{\texttt {markers\_base.h}}{33}{section*.15}
+\contentsline {subsubsection}{\texttt {markers.h}}{35}{section*.16}
+\contentsline {subsubsection}{An example}{36}{section*.17}
+\contentsline {subsection}{\numberline {2.7.7}The pattern classes}{36}{subsection.2.7.7}
+\contentsline {subsubsection}{Some important convention}{37}{section*.18}
+\contentsline {subsubsection}{Main Pattern Classes}{37}{section*.19}
+\contentsline {subsection}{\numberline {2.7.8}The Basis Function class}{40}{subsection.2.7.8}
+\contentsline {subsection}{\numberline {2.7.9}The geomap classes}{42}{subsection.2.7.9}
+\contentsline {subsection}{\numberline {2.7.10}Quadrature Rules}{44}{subsection.2.7.10}
+\contentsline {subsection}{\numberline {2.7.11}Finite Element Classes}{45}{subsection.2.7.11}
+\contentsline {subsection}{\numberline {2.7.12}The specialised versions for exact integration}{48}{subsection.2.7.12}
+\contentsline {subsection}{\numberline {2.7.13}The Mixed finite element classes}{48}{subsection.2.7.13}
+\contentsline {subsection}{\numberline {2.7.14}The Degrees of Freedom}{48}{subsection.2.7.14}
+\contentsline {subsection}{\numberline {2.7.15}The Fields}{48}{subsection.2.7.15}
+\contentsline {subsection}{\numberline {2.7.16}The assembly process}{48}{subsection.2.7.16}
+\contentsline {chapter}{\numberline {3}HOWTO}{49}{chapter.3}
+\contentsline {section}{\numberline {3.1}Geometrical mappings}{49}{section.3.1}
+\contentsline {section}{\numberline {3.2}HOWTO add new basis functions}{49}{section.3.2}
+\contentsline {section}{\numberline {3.3}HOWTO add a new quadrature rule}{49}{section.3.3}
+\contentsline {section}{\numberline {3.4}HOWTO add a new element operator}{49}{section.3.4}
+\contentsline {section}{\numberline {3.5}HOWTO build a new finite element}{50}{section.3.5}

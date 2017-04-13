@@ -1,0 +1,8 @@
+\select@language {english}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Numbering of vertices, edges and faces for the Basis Reference Shapes}}{21}{figure.2.1}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Sketch of two \texttt {BC\_Handler} objects.}}{33}{figure.2.2}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Schematic view of a $2\times 2$ Mixed pattern}}{40}{figure.2.3}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Finite element node numbering, both for linear and quadratic elements. Clearly, the lienar elements use only a subset of teh nodes here indicated. We use the general rule which imposes that the numbering follows the order: Vertices, Edges, Faces, Volumes (refer to figure \ref {fig:basrefsha})}}{41}{figure.2.4}
+\addvspace {10\p@ }
