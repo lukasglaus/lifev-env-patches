@@ -40,7 +40,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel = ActiveStrainRossi14
     CalciumIndex = 3
-    ActiveForceCoefficient = -7.5
+    ActiveForceCoefficient = -7.0
     InverseViscosity = 0.0002
     ChemicalThreshold = 0.21
 
@@ -222,7 +222,7 @@ monodomain_xml_file = ParamListE.xml
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
     dpMax                   = 0.3
-    couplingError           = 1e-5
+    couplingError           = 1e-6
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 1
@@ -268,7 +268,7 @@ monodomain_xml_file = ParamListE.xml
     [../newton]
     maxiter 	= 50
     reltol  	= 1.e-7
-    abstol  	= 1e-5
+    abstol  	= 5e-6
     NonLinearLineSearch = 0
 
     [../solver]
