@@ -762,7 +762,6 @@ int main (int argc, char** argv)
             //============================================//
             // Solve circlation
             //============================================//
-            
             circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );

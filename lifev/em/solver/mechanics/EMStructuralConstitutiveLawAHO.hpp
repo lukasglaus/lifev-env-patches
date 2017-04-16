@@ -1675,7 +1675,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         auto P8fsE = dW8fsE * dI8fsE * dI8fs;
         
         
-        // Sum up contributions and integrate
+        // Sum up contributions and integrate /
         auto P = Pvol + P1E + P4fE + P4sE + P8fsE;
         integrate ( elements ( super::M_dispETFESpace->mesh() ) ,
                    quadRuleTetra4pt,
