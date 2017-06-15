@@ -18,7 +18,7 @@ ADD_SUBDIRECTORIES(
 #  linearizedGHOrotation
 #  linearizedGHOventricle
 #  prestress
-   example_EMMaterial
+#   example_EMMaterial
 #   example_HeartOharaRudy
 #   example_passiveEMMaterial
 #   example_EMCoupling
@@ -27,5 +27,5 @@ ADD_SUBDIRECTORIES(
 #   example_EMBiVentMixed
 #   example_EMSiVent
    example_EMHeart
-   linear_solver_preconditioner
+#   linear_solver_preconditioner
 )

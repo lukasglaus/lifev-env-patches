@@ -46,7 +46,7 @@ computePMRCResidualTerms ( const vector_Type& disp,
     auto F = _F (dispETFESpace, disp, 0);
     
     //
-    if(disp.comm().MyPID() == 0) ::cout << "EMETA - Computing Volumetric residual terms ... \n";
+    if(disp.comm().MyPID() == 0) std::cout << "EMETA - Computing Volumetric residual terms ... \n";
     
     auto Pvol = eval (Wvol, F ) * _dJ (F);
     integrate ( elements ( dispETFESpace->mesh() ) ,
