@@ -79,7 +79,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     }
         
     Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
-    
+    std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
     VectorSmall<3> X;
     
     for (int ik (0); ik < nLocalDof; ik++)
@@ -95,7 +95,6 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         Real Pa, dW;
         Real i4f = (*M_I4fPtr)[iGID];
         Real Ca = (*this->M_electroSolution.at(M_calciumIndex) )[iGID];
-        std::cout << "\n" << ik << "/" << nLocalDof;
 
         Pa = computeActiveStress(i4f, Ca);
         Pa *= (infarctZone ? M_PathologyStrength : 1.0);
@@ -112,9 +111,6 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         (*M_fiberActivationPtr) [iGID] += grhs;
 
     }
-    
-    std::cout << "\n*****************************************************************";
-
     
 }
 
