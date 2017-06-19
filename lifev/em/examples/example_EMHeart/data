@@ -288,7 +288,7 @@ monodomain_xml_file = ParamListE.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 3
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1
