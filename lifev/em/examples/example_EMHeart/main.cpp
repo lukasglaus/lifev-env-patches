@@ -671,14 +671,6 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
-        
-        //============================================//
-        // Load steps mechanics (activation & b.c.)
-        //============================================//
-
-        auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
-        
-        
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*****************************************************************";
@@ -686,9 +678,13 @@ int main (int argc, char** argv)
             std::cout << "\nYey!";
             std::cout << "\n*****************************************************************\n";
         }
+        
+        //============================================//
+        // Load steps mechanics (activation & b.c.)
+        //============================================//
 
-        
-        
+        auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
+
         if ( k % mechanicsLoadstepIter == 0 && k % mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
         {
             if ( 0 == comm->MyPID() )
