@@ -98,7 +98,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         
         Pa = computeActiveStress(i4f, Ca);
         
-        std::cout << Pa << " " << M_PathologyStrength << std::endl;
+        std::cout << Pa << " " << M_PathologyStrength << " " << i4f << " " << Ca << " " << infarctZone << std::endl;
         
         Pa *= (infarctZone ? M_PathologyStrength : 1.0);
         
