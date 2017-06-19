@@ -79,7 +79,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     }
         
     Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
-    std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
+
     VectorSmall<3> X;
     
     for (int ik (0); ik < nLocalDof; ik++)
@@ -111,6 +111,12 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         (*M_fiberActivationPtr) [iGID] += grhs;
 
     }
+    
+    std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
     
 }
 

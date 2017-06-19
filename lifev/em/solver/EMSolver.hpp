@@ -923,6 +923,8 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
     M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
     
     
+    MPI_Barrier(MPI_COMM_WORLD);
+    
     
         std::cout << "\n*****************************************************************";
         std::cout << "\nAct done";
