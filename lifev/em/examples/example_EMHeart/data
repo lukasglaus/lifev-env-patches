@@ -16,9 +16,9 @@ monodomain_xml_file = ParamListE.xml
 
     [./physics]
     IonicModel = MinimalModel
-    fiberDiffusion = 20 #1.33 #10.0
-    sheetDiffusion = 6 #0.176 #3.0
-    normalDiffusion = 6 #0.176 #3.0
+    fiberDiffusion = 10 #1.33 #10.0
+    sheetDiffusion = 3 #0.176 #3.0
+    normalDiffusion = 3 #0.176 #3.0
     
     [../time_discretization]
     endtime         = 100000
@@ -49,11 +49,11 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
 
     [../pathology]
-    strength    = 0.01
+    strength    = 0.4
     infarctX    = 2.0
     infarctY    = -8.0
     infarctZ    = -3.0
-    radius      = 0.0
+    radius      = 3.5
 
     [../]
 
@@ -240,8 +240,8 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVVCoaPatch/
-    mesh_file           = heartVVCoaPatch.mesh
+    mesh_dir            = heartVCoaPatch/
+    mesh_file           = heartVCoaPatch.mesh
     mesh_scaling        = 1.15
 #    mesh_translation_0  = -66
 #    mesh_translation_1  = -72
