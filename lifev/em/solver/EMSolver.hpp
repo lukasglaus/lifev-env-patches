@@ -924,13 +924,10 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
     
     
     
-    if ( 0 == M_commPtr->MyPID() )
-    {
         std::cout << "\n*****************************************************************";
         std::cout << "\nAct done";
         std::cout << "\nYey!";
         std::cout << "\n*****************************************************************\n";
-    }
     
 }
 

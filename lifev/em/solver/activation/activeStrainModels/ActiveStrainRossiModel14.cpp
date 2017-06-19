@@ -112,6 +112,9 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
 
     }
     
+    std::cout << "\n*****************************************************************";
+
+    
 }
 
 
