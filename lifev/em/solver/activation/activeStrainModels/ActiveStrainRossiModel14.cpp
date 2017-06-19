@@ -97,6 +97,9 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         Real Ca = (*this->M_electroSolution.at(M_calciumIndex) )[iGID];
         
         Pa = computeActiveStress(i4f, Ca);
+        
+        std::cout << Pa << " " << M_PathologyStrength << std::endl;
+        
         Pa *= (infarctZone ? M_PathologyStrength : 1.0);
         
         Real g = (*M_fiberActivationPtr) [iGID];
