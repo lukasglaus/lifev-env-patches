@@ -920,7 +920,7 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 {
     computeI4f (M_activationModelPtr->I4f(), *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), M_EMStructuralOperatorPtr->dispFESpacePtr());
 
-    M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr );
+    M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr, M_EMStructuralOperatorPtr -> dispFESpacePtr() );
     
     
     MPI_Barrier(MPI_COMM_WORLD);

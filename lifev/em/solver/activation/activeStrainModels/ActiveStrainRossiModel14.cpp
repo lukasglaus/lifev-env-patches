@@ -70,7 +70,7 @@ ActiveStrainRossiModel14::solveModel ( Real& timeStep )
 }
 
 void
-ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr )
+ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace)
 {
     if(!M_I4fPtr)
     {
@@ -80,6 +80,8 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         
     Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
 
+    auto positionVector = undeformedPositionVector(dFeSpace);
+    
     VectorSmall<3> X;
     
     for (int ik (0); ik < nLocalDof; ik++)
@@ -120,7 +122,37 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     
 }
 
+    typedef FESpace< RegionMesh<LinearTetra>, MapEpetra >      solidFESpace_Type;
+    
+    typedef boost::shared_ptr<solidFESpace_Type>                solidFESpacePtr_Type;
 
+    
+const VectorEpetra
+ActiveStrainRossiModel14::undeformedPositionVector (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace) const
+{
+    // New P1 Space
+    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( M_localMeshPtr, "P1", 3, M_fullMesh.comm() );
+    
+    // Create P1 VectorEpetra
+    VectorEpetra p1PositionVector (p1FESpace.map());
+    
+    // Fill P1 vector with mesh values
+    Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+    for (int j (0); j < p1nCompLocalDof; j++)
+    {
+        UInt iGID = p1PositionVector.blockMap().GID (j);
+        
+        p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
+        p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
+        p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
+    }
+    
+    // Interpolate position vector from P1-space to current space
+    VectorEpetra positionVector ( dFeSpace->map() );
+    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+    
+    return positionVector;
+}
 
 void
 ActiveStrainRossiModel14::setParameters(EMData& data)
