@@ -141,6 +141,8 @@ ActiveStrainRossiModel14::undeformedPositionVector (const boost::shared_ptr<FESp
     for (int j (0); j < p1nCompLocalDof; j++)
     {
         UInt iGID = p1PositionVector.blockMap().GID (j);
+        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
         
         p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
         p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
