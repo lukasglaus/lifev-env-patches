@@ -87,8 +87,10 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     for (int ik (0); ik < nLocalDof; ik++)
     {
         UInt iGID = positionVector.blockMap().GID (ik);
-        UInt jGID = positionVector.blockMap().GID (ik + p1nCompLocalDof);
-        UInt kGID = positionVector.blockMap().GID (ik + 2 * p1nCompLocalDof);
+        UInt jGID = positionVector.blockMap().GID (ik + nLocalDof);
+        UInt kGID = positionVector.blockMap().GID (ik + 2 * nLocalDof);
+        
+        std::cout << iGID << "/" << M_I4fPtr->blockMap().GID(ik) << std::endl;
         
         X[0] = positionVector[iGID];
         X[1] = positionVector[iGID];
@@ -123,10 +125,6 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
     
 }
-
-    typedef FESpace< RegionMesh<LinearTetra>, MapEpetra >      solidFESpace_Type;
-    
-    typedef boost::shared_ptr<solidFESpace_Type>                solidFESpacePtr_Type;
 
     
 const VectorEpetra
