@@ -90,8 +90,6 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         UInt jGID = positionVector.blockMap().GID (ik + nLocalDof);
         UInt kGID = positionVector.blockMap().GID (ik + 2 * nLocalDof);
         
-        std::cout << iGID << "/" << M_I4fPtr->blockMap().GID(ik) << std::endl;
-        
         X[0] = positionVector[iGID];
         X[1] = positionVector[jGID];
         X[2] = positionVector[kGID];
