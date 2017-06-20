@@ -86,11 +86,13 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     
     for (int ik (0); ik < nLocalDof; ik++)
     {
-        int iGID = M_I4fPtr->blockMap().GID (ik);
+        UInt iGID = positionVector.blockMap().GID (ik);
+        UInt jGID = positionVector.blockMap().GID (ik + p1nCompLocalDof);
+        UInt kGID = positionVector.blockMap().GID (ik + 2 * p1nCompLocalDof);
         
         X[0] = positionVector[iGID];
-        X[1] = fullMeshPtr -> point(iGID).y();
-        X[2] = fullMeshPtr -> point(iGID).z();
+        X[1] = positionVector[iGID];
+        X[2] = positionVector[iGID];
         
         bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
         
@@ -131,7 +133,7 @@ const VectorEpetra
 ActiveStrainRossiModel14::undeformedPositionVector (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace) const
 {
     // New P1 Space
-    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().comm() );
+    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
     
     // Create P1 VectorEpetra
     VectorEpetra p1PositionVector (p1FESpace.map());
