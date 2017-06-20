@@ -88,7 +88,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
     {
         int iGID = M_I4fPtr->blockMap().GID (ik);
         
-        X[0] = fullMeshPtr -> point(iGID).x();
+        X[0] = positionVector[iGID];
         X[1] = fullMeshPtr -> point(iGID).y();
         X[2] = fullMeshPtr -> point(iGID).z();
         
@@ -131,7 +131,7 @@ const VectorEpetra
 ActiveStrainRossiModel14::undeformedPositionVector (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace) const
 {
     // New P1 Space
-    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( M_localMeshPtr, "P1", 3, M_fullMesh.comm() );
+    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().comm() );
     
     // Create P1 VectorEpetra
     VectorEpetra p1PositionVector (p1FESpace.map());
