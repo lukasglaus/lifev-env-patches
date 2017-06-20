@@ -671,14 +671,7 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\n*****************************************************************";
-            std::cout << "\nMinValue at time" << t;
-            std::cout << "\nYey!";
-            std::cout << "\n*****************************************************************\n";
-        }
-        
+
         //============================================//
         // Load steps mechanics (activation & b.c.)
         //============================================//
