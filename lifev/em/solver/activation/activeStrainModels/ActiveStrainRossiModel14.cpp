@@ -80,7 +80,7 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         
     Int nLocalDof = M_I4fPtr->epetraVector().MyLength();
 
-    auto positionVector = undeformedPositionVector(dFeSpace);
+    auto positionVector = undeformedPositionVector(fullMeshPtr, dFeSpace);
     
     VectorSmall<3> X;
     
@@ -93,8 +93,8 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         std::cout << iGID << "/" << M_I4fPtr->blockMap().GID(ik) << std::endl;
         
         X[0] = positionVector[iGID];
-        X[1] = positionVector[iGID];
-        X[2] = positionVector[iGID];
+        X[1] = positionVector[jGID];
+        X[2] = positionVector[kGID];
         
         bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
         
@@ -117,18 +117,11 @@ ActiveStrainRossiModel14::solveModelPathology ( Real& timeStep, boost::shared_pt
         (*M_fiberActivationPtr) [iGID] += grhs;
 
     }
-    
-    std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    std::cout << nLocalDof << ", " << M_fiberActivationPtr->epetraVector().MyLength() << std::endl;
-    
 }
 
     
 const VectorEpetra
-ActiveStrainRossiModel14::undeformedPositionVector (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace) const
+ActiveStrainRossiModel14::undeformedPositionVector (boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace) const
 {
     // New P1 Space
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
