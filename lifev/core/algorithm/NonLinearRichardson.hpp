@@ -178,7 +178,7 @@ Int NonLinearRichardson ( VectorEpetra& sol,
             {
                 std::cout << std::endl;
                 std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
-                std::cout << " Non-Linear Richardson: desired tolerance level not accomplished, go to next timestep" << std::endl
+                std::cout << " Non-Linear Richardson: desired tolerance level not accomplished, go to next timestep" << std::endl;
                 std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
                 std::cout << std::endl;
             }
