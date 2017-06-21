@@ -170,6 +170,20 @@ Int NonLinearRichardson ( VectorEpetra& sol,
             std::cout << std::endl;
         }
 
+        if ( iter > (maxit-2) )
+        {
+            break;
+            
+            if ( verboseLevel > 0 )
+            {
+                std::cout << std::endl;
+                std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
+                std::cout << " Non-Linear Richardson: desired tolerance level not accomplished, go to next timestep" << std::endl
+                std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << std::endl;
+                std::cout << std::endl;
+            }
+        }
+        
         iter++;
 
         ratio      = normRes / normResOld;
@@ -197,7 +211,7 @@ Int NonLinearRichardson ( VectorEpetra& sol,
         switch ( NonLinearLineSearch )
         {
             case 0: // no NonLinearLineSearch
-                //if ( normRes > 50 ) lambda = 0.7;
+                if ( iter > 20 ) lambda = 0.6;
                 //if ( normRes > 100 ) lambda = 0.4;
                 //if ( normRes > 500 ) lambda = 0.3;
                 //if ( normRes > 1500 ) lambda = 0.2;
