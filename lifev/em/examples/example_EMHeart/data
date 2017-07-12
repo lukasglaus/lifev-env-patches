@@ -16,8 +16,8 @@ monodomain_xml_file = ParamListE.xml
 
     [./physics]
     IonicModel = MinimalModel
-    fiberDiffusion = 10 #1.33 #10.0
-    sheetDiffusion = 3 #0.176 #3.0
+    fiberDiffusion  = 10 #1.33 #10.0
+    sheetDiffusion  = 3 #0.176 #3.0
     normalDiffusion = 3 #0.176 #3.0
     
     [../time_discretization]
@@ -38,11 +38,11 @@ monodomain_xml_file = ParamListE.xml
 [activation]
 
     [./physics]
-    ActivationModel = ActiveStrainRossi14
-    CalciumIndex = 3
-    ActiveForceCoefficient = -7.0
-    InverseViscosity = 0.0002
-    ChemicalThreshold = 0.21
+    ActivationModel         = ActiveStrainRossi14
+    CalciumIndex            = 3
+    ActiveForceCoefficient  = -7.0
+    InverseViscosity        = 0.0002
+    ChemicalThreshold       = 0.21
 
     [../time_discretization]
     endtime         = 100000
@@ -61,16 +61,16 @@ monodomain_xml_file = ParamListE.xml
 [solid]
 
     [./physics]
-    density   	= 0
-    material_flag   = 1000 #101 #1000
-    young     	= 29760 #9920
-    poisson   	= 0.5
-    bulk		= 100000 #1.3333e+8
-    alpha 		= 2.684564e+6
-    gamma		= 1.0
-    gammaf		= 0.0
-    solidType 	= EMMaterial 
-    lawType     = nonlinear
+    density         = 0
+    material_flag   = 1000 #101
+    young           = 29760 #9920
+    poisson         = 0.5
+    bulk            = 100000 #1.3333e+8
+    alpha           = 2.684564e+6
+    gamma           = 1.0
+    gammaf          = 0.0
+    solidType       = EMMaterial
+    lawType         = nonlinear
 
     [../boundary_conditions]
     list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
@@ -266,9 +266,9 @@ monodomain_xml_file = ParamListE.xml
 
 
     [../newton] #
-    maxiter 	= 50
-    reltol  	= 1.e-7
-    abstol  	= 5e-5 #5e-6
+    maxiter             = 50
+    reltol              = 1.e-7
+    abstol              = 5e-5 #5e-6
     NonLinearLineSearch = 0
 
     [../solver]
@@ -296,10 +296,10 @@ monodomain_xml_file = ParamListE.xml
             relax_value             = 0
 
             [../amesos]
-            solvertype 		=  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
+            solvertype  =  Amesos_Umfpack #Amesos_Superludist 	# Amesos_KLU
 
             [../partitioner]
-            overlap 		= 4
+            overlap 	= 4
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
@@ -314,6 +314,6 @@ monodomain_xml_file = ParamListE.xml
 
 	# -*- getpot -*- (GetPot mode activation for emacs)
 #----------------------------------------------------------------
-#      Data file for heart test
+#      Data file for heart model
 #----------------------------------------------------------------
 
