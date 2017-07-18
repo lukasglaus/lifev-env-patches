@@ -736,8 +736,8 @@ int main (int argc, char** argv)
 
             bcValuesPre = bcValues;
             
-            bcValues[0] += ABcoef.dot( ABdplv );
-            bcValues[1] += ABcoef.dot( ABdprv );
+            bcValues[0] += std::min( std::max( ABcoef.dot( ABdplv ) , - dpMax ) , dpMax );
+            bcValues[1] += std::min( std::max( ABcoef.dot( ABdprv ) , - dpMax ) , dpMax );
             
             if ( 0 == comm->MyPID() )
             {
