@@ -451,8 +451,24 @@ int main (int argc, char** argv)
                 X[2] = undefPosVec[kGID];
                 
                 Vector3D center1, center2;
+                Real radius1 = 2;
+                Real radius2 = 2;
+                center1[0] = -0.7;
+                center1[1] = -4.7;
+                center1[2] = -6;
+                center2[0] = 3.8;
+                center2[1] = 1.9;
+                center2[2] = -6;
                 
-                //bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
+                bool patch1Area = (X - center1).norm() < radius1;
+                bool patch2Area = (X - center2).norm() < radius2;
+
+                if ( (! patch1Area) && (! patch2Area) )
+                {
+                    (*pVecPatchesPtrs[i]) [iGID] = 0;
+                    (*pVecPatchesPtrs[i]) [jGID] = 0;
+                    (*pVecPatchesPtrs[i]) [kGID] = 0;
+                }
             }
             
             
