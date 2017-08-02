@@ -53,6 +53,34 @@ using namespace LifeV;
 // Functions
 //============================================//
 
+const VectorEpetra
+undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace)
+{
+    // New P1 Space
+    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
+    
+    // Create P1 VectorEpetra
+    VectorEpetra p1PositionVector (p1FESpace.map());
+    
+    // Fill P1 vector with mesh values
+    Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+    for (int j (0); j < p1nCompLocalDof; j++)
+    {
+        UInt iGID = p1PositionVector.blockMap().GID (j);
+        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+        
+        p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
+        p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
+        p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
+    }
+    
+    // Interpolate position vector from P1-space to current space
+    VectorEpetra positionVector ( dFeSpace->map() );
+    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+    
+    return positionVector;
+}
 
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
@@ -367,16 +395,16 @@ int main (int argc, char** argv)
     }
 
     // Displacement function patches (not working properly yet)
-    BCFunctionBase bcFunction;
-    bcFunction.setFunction(patchFunction);
-    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
-    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
-    {
-        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
-        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
-        
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
-    }
+//    BCFunctionBase bcFunction;
+//    bcFunction.setFunction(patchFunction);
+//    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
+//    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
+//    {
+//        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
+//        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
+//        
+//        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
+//    }
 
     
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
@@ -404,6 +432,21 @@ int main (int argc, char** argv)
         {
             if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
             *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
+            
+            // Set pVecPatchesPtrs to zero outside of patch area
+            Int nCompDof = pVecPatchesPtrs[i]->epetraVector().MyLength() / 3;
+            for (int j (0); j < nCompDof; j++)
+            {
+                UInt iGID = pVecPatchesPtrs.blockMap().GID (j);
+                UInt jGID = pVecPatchesPtrs.blockMap().GID (j + nCompDof);
+                UInt kGID = pVecPatchesPtrs.blockMap().GID (j + 2 * nCompDof);
+                
+                p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
+                p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
+                p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
+            }
+            
+            
             pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
         }
