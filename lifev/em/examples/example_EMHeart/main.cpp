@@ -435,7 +435,25 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
             *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
             
-//            // Set pVecPatchesPtrs to zero outside of patch area
+            // Set pVecPatchesPtrs to zero outside of patch area
+            
+            VectorSmall<3> X;
+            Int nLocalDof = undefPosVec.epetraVector().MyLength() / 3;
+
+            for (int ik (0); ik < nLocalDof; ik++)
+            {
+                UInt iGID = positionVector.blockMap().GID (ik);
+                UInt jGID = positionVector.blockMap().GID (ik + nLocalDof);
+                UInt kGID = positionVector.blockMap().GID (ik + 2 * nLocalDof);
+                
+                X[0] = positionVector[iGID];
+                X[1] = positionVector[jGID];
+                X[2] = positionVector[kGID];
+                
+                bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
+            }
+            
+            
 //            Int nCompDof = pVecPatchesPtrs[i]->epetraVector().MyLength() / 3;
 //            for (int j (0); j < nCompDof; j++)
 //            {
