@@ -450,21 +450,12 @@ int main (int argc, char** argv)
                 X[1] = undefPosVec[jGID];
                 X[2] = undefPosVec[kGID];
                 
+                Vector3D center1, center2;
+                
                 //bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
             }
             
             
-//            Int nCompDof = pVecPatchesPtrs[i]->epetraVector().MyLength() / 3;
-//            for (int j (0); j < nCompDof; j++)
-//            {
-//                UInt iGID = pVecPatchesPtrs.blockMap().GID (j);
-//                UInt jGID = pVecPatchesPtrs.blockMap().GID (j + nCompDof);
-//                UInt kGID = pVecPatchesPtrs.blockMap().GID (j + 2 * nCompDof);
-//                
-//                p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
-//                p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
-//                p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
-//            }
             
             
             pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
