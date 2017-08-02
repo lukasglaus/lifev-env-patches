@@ -471,9 +471,6 @@ int main (int argc, char** argv)
                 }
             }
             
-            
-            
-            
             pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
         }
