@@ -442,15 +442,15 @@ int main (int argc, char** argv)
 
             for (int ik (0); ik < nLocalDof; ik++)
             {
-                UInt iGID = positionVector.blockMap().GID (ik);
-                UInt jGID = positionVector.blockMap().GID (ik + nLocalDof);
-                UInt kGID = positionVector.blockMap().GID (ik + 2 * nLocalDof);
+                UInt iGID = undefPosVec.blockMap().GID (ik);
+                UInt jGID = undefPosVec.blockMap().GID (ik + nLocalDof);
+                UInt kGID = undefPosVec.blockMap().GID (ik + 2 * nLocalDof);
                 
-                X[0] = positionVector[iGID];
-                X[1] = positionVector[jGID];
-                X[2] = positionVector[kGID];
+                X[0] = undefPosVec[iGID];
+                X[1] = undefPosVec[jGID];
+                X[2] = undefPosVec[kGID];
                 
-                bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
+                //bool infarctZone = (X - M_PathologyCenter).norm() < M_PathologyRadius;
             }
             
             
