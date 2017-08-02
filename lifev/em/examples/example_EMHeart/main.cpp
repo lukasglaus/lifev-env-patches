@@ -395,16 +395,16 @@ int main (int argc, char** argv)
     }
 
     // Displacement function patches (not working properly yet)
-//    BCFunctionBase bcFunction;
-//    bcFunction.setFunction(patchFunction);
-//    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
-//    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
-//    {
-//        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
-//        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
-//        
-//        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
-//    }
+    BCFunctionBase bcFunction;
+    bcFunction.setFunction(patchFunction);
+    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
+    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
+    {
+        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
+        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
+        
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
+    }
 
     
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
@@ -433,18 +433,18 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
             *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
             
-            // Set pVecPatchesPtrs to zero outside of patch area
-            Int nCompDof = pVecPatchesPtrs[i]->epetraVector().MyLength() / 3;
-            for (int j (0); j < nCompDof; j++)
-            {
-                UInt iGID = pVecPatchesPtrs.blockMap().GID (j);
-                UInt jGID = pVecPatchesPtrs.blockMap().GID (j + nCompDof);
-                UInt kGID = pVecPatchesPtrs.blockMap().GID (j + 2 * nCompDof);
-                
-                p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
-                p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
-                p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
-            }
+//            // Set pVecPatchesPtrs to zero outside of patch area
+//            Int nCompDof = pVecPatchesPtrs[i]->epetraVector().MyLength() / 3;
+//            for (int j (0); j < nCompDof; j++)
+//            {
+//                UInt iGID = pVecPatchesPtrs.blockMap().GID (j);
+//                UInt jGID = pVecPatchesPtrs.blockMap().GID (j + nCompDof);
+//                UInt kGID = pVecPatchesPtrs.blockMap().GID (j + 2 * nCompDof);
+//                
+//                p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
+//                p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
+//                p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
+//            }
             
             
             pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
