@@ -428,6 +428,8 @@ int main (int argc, char** argv)
 
     auto modifyFeBCPatches = [&] (const Real& time)
     {
+        auto undefPosVec = undeformedPositionVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
+        
         for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
         {
             if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
