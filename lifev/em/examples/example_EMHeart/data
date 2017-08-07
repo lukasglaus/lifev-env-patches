@@ -49,11 +49,11 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
 
     [../pathology]
-    strength    = 0.4
+    strength    = 0.2
     infarctX    = 2.0
     infarctY    = -8.0
     infarctZ    = -3.0
-    radius      = 0 #3.5
+    radius      = 3.5
 
     [../]
 
@@ -205,10 +205,10 @@ monodomain_xml_file = ParamListE.xml
 
 
         [../Patch1]
-            flag       = 470
+            flag       = 464
 
         [../Patch2]
-            flag       = 471
+            flag       = 464
 
         [../]
 
