@@ -422,17 +422,21 @@ int main (int argc, char** argv)
             auto point = face.point(k); //.x();
             auto coord = point.coordinates();
             
-            
-            std::cout << coord << std::endl;
-            
-            
-
-            auto iGID = j;
-            
             bool pointInPatch = (coord - center1).norm() < radius1;
             
-//            bool patch2Area = (X - center2).norm() < radius2;
+            if (pointInPatch)
+            {
+                std::cout << coord << std::endl;
+                std::cout << face.flag();
+
+                face.setFlag(100);
+                std::cout << " " << face.flag() << std::endl;
+
+            }
             
+
+            
+//            auto iGID = j;
 //            auto X = solver.fullMeshPtr()->point (iGID).x();
 //            auto Y = solver.fullMeshPtr()->point (iGID).y();
 //            auto Z = solver.fullMeshPtr()->point (iGID).z();
