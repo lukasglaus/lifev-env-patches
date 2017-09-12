@@ -383,6 +383,24 @@ int main (int argc, char** argv)
     }
     
     // Force vector patches
+    
+    auto nGlobalPoints = fullMeshPtr->numGlobalPoints();
+    auto nPoints = fullMeshPtr->numPoints();
+    auto nGlobalFaces = fullMeshPtr->numGlobalFaces();
+    auto nFaces = fullMeshPtr->numFaces();
+    
+    for (int j (0); j < nGlobalFaces; j++)
+    {
+//        UInt iGID = p1PositionVector.blockMap().GID (j);
+//        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+//        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+//        
+//        p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
+//        p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
+//        p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
+    }
+
+    
     UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
     for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
     {
