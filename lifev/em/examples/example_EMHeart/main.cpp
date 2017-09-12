@@ -376,7 +376,7 @@ int main (int argc, char** argv)
     }
     
     Vector3D center1, center2;
-    Real radius1 = 1;
+    Real radius1 = 10;
     Real radius2 = 2;
     center1[0] = -0.7;
     center1[1] = -4.7;
