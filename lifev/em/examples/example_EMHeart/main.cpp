@@ -399,24 +399,29 @@ int main (int argc, char** argv)
         std::cout << "\n*****************************************************************\n";
     }
     
-    for (int j (0); j < nGlobalFaces; j++)
+    for (int j(0); j < nGlobalFaces; j++)
     {
 //        UInt iGID = p1PositionVector.blockMap().GID (j);
 //        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
 //        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
         
         auto face = solver.fullMeshPtr()->face (j); //.x();
-        auto face_point0 = solver.fullMeshPtr()->face (j).point(0); //.x();
-        auto face_point1 = solver.fullMeshPtr()->face (j).point(1); //.x();
-        auto face_point2 = solver.fullMeshPtr()->face (j).point(2); //.x();
-        auto face_point3 = solver.fullMeshPtr()->face (j).point(3); //.x();
-
-        auto iGID = j;
         
-        auto X = solver.fullMeshPtr()->point (iGID).x();
-        auto Y = solver.fullMeshPtr()->point (iGID).y();
-        auto Z = solver.fullMeshPtr()->point (iGID).z();
+        face.showMe();
         
+//        for (int k(0); k < 3; ++k)
+//        {
+//            auto face_point0 = solver.fullMeshPtr()->face (j).point(0); //.x();
+//            auto face_point1 = solver.fullMeshPtr()->face (j).point(1); //.x();
+//            auto face_point2 = solver.fullMeshPtr()->face (j).point(2); //.x();
+//            auto face_point3 = solver.fullMeshPtr()->face (j).point(3); //.x();
+//
+//            auto iGID = j;
+//            
+//            auto X = solver.fullMeshPtr()->point (iGID).x();
+//            auto Y = solver.fullMeshPtr()->point (iGID).y();
+//            auto Z = solver.fullMeshPtr()->point (iGID).z();
+//        }
         
     }
 
