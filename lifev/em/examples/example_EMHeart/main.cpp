@@ -405,7 +405,7 @@ int main (int argc, char** argv)
 //        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
 //        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
         
-        auto face = solver.fullMeshPtr()->face (j).x();
+        auto face = solver.fullMeshPtr()->face (j); //.x();
 
         
         auto X = solver.fullMeshPtr()->point (iGID).x();
