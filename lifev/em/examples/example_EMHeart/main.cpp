@@ -410,6 +410,10 @@ int main (int argc, char** argv)
         for (int k(0); k < 3; ++k)
         {
             auto face_point = solver.fullMeshPtr()->face (j).point(j); //.x();
+            
+            std::cout << " " << face_point.flag();
+            
+            
 
             auto iGID = j;
             
