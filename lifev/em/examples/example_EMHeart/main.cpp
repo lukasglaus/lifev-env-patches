@@ -357,32 +357,8 @@ int main (int argc, char** argv)
 
     
     //============================================//
-    // B.C. endocardia and patches
+    // Create force patches as flags in mesh
     //============================================//
-    std::vector<vectorPtr_Type> pVecPtrs;
-    std::vector<bcVectorPtr_Type> pBCVecPtrs;
-    std::vector<vectorPtr_Type> pVecPatchesPtrs;
-    std::vector<bcVectorPtr_Type> pBCVecPatchesPtrs;
-
-    std::vector<ID> flagsBC;
-    std::vector<ID> flagsBCPatches;
-
-    std::vector<UInt> ventIdx;
-
-    // Endocardia
-    UInt nVarBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listVariableBC" ) );
-    for ( UInt i (0) ; i < nVarBC ; ++i )
-    {
-        std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
-        flagsBC.push_back( dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 ) );
-        ventIdx.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 ) );
-        
-        pVecPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
-    }
-    
-    // Force vector patches
     
     auto nGlobalPoints = solver.fullMeshPtr()->numGlobalPoints();
     auto nPoints = solver.fullMeshPtr()->numPoints();
@@ -391,7 +367,7 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() )
     {
-        std::cout << "\n*****************************************************************";
+        std::cout << "\n*****************************************************************\n";
         std::cout << nGlobalPoints << "\n";
         std::cout << nGlobalFaces << "\n";
         std::cout << nPoints << "\n";
@@ -400,7 +376,7 @@ int main (int argc, char** argv)
     }
     
     Vector3D center1, center2;
-    Real radius1 = 0.5;
+    Real radius1 = 1;
     Real radius2 = 2;
     center1[0] = -0.7;
     center1[1] = -4.7;
@@ -426,11 +402,11 @@ int main (int argc, char** argv)
                 {
                     std::cout << coord << std::endl;
                     std::cout << face.flag();
-
+                    
                     face.replaceFlag(flag);
                     
                     std::cout << " " << face.flag() << std::endl;
-
+                    
                 }
             }
         }
@@ -438,6 +414,35 @@ int main (int argc, char** argv)
     
     int patchFlag (100);
     createPatch(center1, radius1, patchFlag);
+    
+    
+    //============================================//
+    // B.C. endocardia and patches
+    //============================================//
+    std::vector<vectorPtr_Type> pVecPtrs;
+    std::vector<bcVectorPtr_Type> pBCVecPtrs;
+    std::vector<vectorPtr_Type> pVecPatchesPtrs;
+    std::vector<bcVectorPtr_Type> pBCVecPatchesPtrs;
+
+    std::vector<ID> flagsBC;
+    std::vector<ID> flagsBCPatches;
+
+    std::vector<UInt> ventIdx;
+
+    // Endocardia
+    UInt nVarBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listVariableBC" ) );
+    for ( UInt i (0) ; i < nVarBC ; ++i )
+    {
+        std::string varBCSection = dataFile ( ( "solid/boundary_conditions/listVariableBC" ), " ", i );
+        flagsBC.push_back( dataFile ( ("solid/boundary_conditions/" + varBCSection + "/flag").c_str(), 0 ) );
+        ventIdx.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCSection + "/index").c_str(), 0 ) );
+        
+        pVecPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
+        pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
+    }
+    
+
     
     UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
     for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
