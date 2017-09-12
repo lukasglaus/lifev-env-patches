@@ -399,17 +399,27 @@ int main (int argc, char** argv)
         std::cout << "\n*****************************************************************\n";
     }
     
+    Vector3D center1, center2;
+    Real radius1 = 2;
+    Real radius2 = 2;
+    center1[0] = -0.7;
+    center1[1] = -4.7;
+    center1[2] = -6;
+    center2[0] = 3.8;
+    center2[1] = 1.9;
+    center2[2] = -6;
+    
     for (int j(0); j < nGlobalFaces; j++)
     {
 //        UInt iGID = p1PositionVector.blockMap().GID (j);
 //        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
 //        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
         
-        auto face = solver.fullMeshPtr()->face (j); //.x();
+        auto face = solver.fullMeshPtr()->face(j); //.x();
         
         for (int k(0); k < 3; ++k)
         {
-            auto point = face(j).point(k); //.x();
+            auto point = face.point(k); //.x();
             auto coord = point.coordinates();
             
             
@@ -418,6 +428,10 @@ int main (int argc, char** argv)
             
 
             auto iGID = j;
+            
+            bool pointInPatch = (coord - center1).norm() < radius1;
+            
+//            bool patch2Area = (X - center2).norm() < radius2;
             
 //            auto X = solver.fullMeshPtr()->point (iGID).x();
 //            auto Y = solver.fullMeshPtr()->point (iGID).y();
