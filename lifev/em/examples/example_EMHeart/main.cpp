@@ -409,41 +409,34 @@ int main (int argc, char** argv)
     center2[1] = 1.9;
     center2[2] = -6;
     
-    for (int j(0); j < nGlobalFaces; j++)
+    auto createPatch = [&] (Vector3D& center, Real& radius, int& flag)
     {
-//        UInt iGID = p1PositionVector.blockMap().GID (j);
-//        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
-//        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
-        
-        auto face = solver.fullMeshPtr()->face(j); //.x();
-        
-        for (int k(0); k < 3; ++k)
+        for (int j(0); j < nGlobalFaces; j++)
         {
-            auto point = face.point(k); //.x();
-            auto coord = point.coordinates();
+            auto face = solver.fullMeshPtr()->face(j);
             
-            bool pointInPatch = (coord - center1).norm() < radius1;
-            
-            if (pointInPatch)
+            for (int k(0); k < 3; ++k)
             {
-                std::cout << coord << std::endl;
-                std::cout << face.flag();
+                auto point = face.point(k);
+                auto coord = point.coordinates();
+                
+                bool pointInPatch = (coord - center).norm() < radius;
+                
+                if (pointInPatch)
+                {
+                    std::cout << coord << std::endl;
+                    std::cout << face.flag();
 
-                face.setFlag(100);
-                std::cout << " " << face.flag() << std::endl;
+                    face.setFlag(flag);
+                    
+                    std::cout << " " << face.flag() << std::endl;
 
+                }
             }
-            
-
-            
-//            auto iGID = j;
-//            auto X = solver.fullMeshPtr()->point (iGID).x();
-//            auto Y = solver.fullMeshPtr()->point (iGID).y();
-//            auto Z = solver.fullMeshPtr()->point (iGID).z();
         }
-        
     }
-
+    
+    createPatch(center1, radius1, 100);
     
     UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
     for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
