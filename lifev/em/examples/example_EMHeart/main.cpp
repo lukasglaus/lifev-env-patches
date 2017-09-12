@@ -389,7 +389,7 @@ int main (int argc, char** argv)
     {
         for (int j(0); j < nGlobalFaces; j++)
         {
-            auto face = solver.fullMeshPtr()->face(j);
+            auto face = solver.fullMeshPtr()->boundaryFace(j);
             
             for (int k(0); k < 3; ++k)
             {
