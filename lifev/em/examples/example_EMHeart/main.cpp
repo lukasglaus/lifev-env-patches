@@ -409,7 +409,7 @@ int main (int argc, char** argv)
     center2[1] = 1.9;
     center2[2] = -6;
     
-    auto createPatch = [&] (Vector3D& center, Real& radius, int& flag)
+    auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& flag)
     {
         for (int j(0); j < nGlobalFaces; j++)
         {
@@ -436,7 +436,8 @@ int main (int argc, char** argv)
         }
     };
     
-    createPatch(center1, radius1, 100);
+    int patchFlag (100);
+    createPatch(center1, radius1, patchFlag);
     
     UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
     for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
