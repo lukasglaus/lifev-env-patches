@@ -401,7 +401,7 @@ int main (int argc, char** argv)
                 if (pointInPatch)
                 {
                     std::cout << coord << std::endl;
-                    std::cout << face.flag() << " " point.flag();
+                    std::cout << face.flag() << " " << point.flag();
                     
                     face.replaceFlag(flag);
                     
