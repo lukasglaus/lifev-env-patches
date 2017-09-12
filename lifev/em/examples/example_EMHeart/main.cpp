@@ -406,6 +406,7 @@ int main (int argc, char** argv)
 //        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
         
         auto face = solver.fullMeshPtr()->face (j); //.x();
+        auto points = face.points();
         
         face.showMe();
         
