@@ -400,7 +400,7 @@ int main (int argc, char** argv)
     }
     
     Vector3D center1, center2;
-    Real radius1 = 2;
+    Real radius1 = 0.5;
     Real radius2 = 2;
     center1[0] = -0.7;
     center1[1] = -4.7;
@@ -427,7 +427,7 @@ int main (int argc, char** argv)
                     std::cout << coord << std::endl;
                     std::cout << face.flag();
 
-                    face.setFlag(flag);
+                    face.replaceFlag(flag);
                     
                     std::cout << " " << face.flag() << std::endl;
 
