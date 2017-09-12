@@ -409,7 +409,7 @@ int main (int argc, char** argv)
         
         for (int k(0); k < 3; ++k)
         {
-            auto point = solver.fullMeshPtr()->face (j).point(j); //.x();
+            auto point = face(j).point(k); //.x();
             auto coord = point.coordinates();
             
             
