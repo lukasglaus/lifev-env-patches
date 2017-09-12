@@ -384,10 +384,10 @@ int main (int argc, char** argv)
     
     // Force vector patches
     
-    auto nGlobalPoints = solver.fullMeshPtr->numGlobalPoints();
-    auto nPoints = solver.fullMeshPtr->numPoints();
-    auto nGlobalFaces = solver.fullMeshPtr->numGlobalFaces();
-    auto nFaces = solver.fullMeshPtr->numFaces();
+    auto nGlobalPoints = solver.fullMeshPtr()->numGlobalPoints();
+    auto nPoints = solver.fullMeshPtr()->numPoints();
+    auto nGlobalFaces = solver.fullMeshPtr()->numGlobalFaces();
+    auto nFaces = solver.fullMeshPtr()->numFaces();
     
     if ( 0 == comm->MyPID() )
     {
