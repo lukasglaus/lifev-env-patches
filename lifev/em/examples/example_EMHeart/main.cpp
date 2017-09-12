@@ -363,14 +363,15 @@ int main (int argc, char** argv)
     auto nGlobalPoints = solver.fullMeshPtr()->numGlobalPoints();
     auto nPoints = solver.fullMeshPtr()->numPoints();
     auto nGlobalFaces = solver.fullMeshPtr()->numGlobalFaces();
-    
+    auto nBoundaryFaces = solver.fullMeshPtr()->numBFaces();
+
     if ( 0 == comm->MyPID() )
     {
         std::cout << "\n*****************************************************************\n";
         std::cout << nGlobalPoints << "\n";
         std::cout << nGlobalFaces << "\n";
         std::cout << nPoints << "\n";
-        std::cout << nFaces << "\n";
+        std::cout << nBoundaryFaces << "\n";
         std::cout << "\n*****************************************************************\n";
     }
     
@@ -386,9 +387,7 @@ int main (int argc, char** argv)
     
     auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& flag)
     {
-        auto nBoundaryFaces = solver.fullMeshPtr()->numBFaces();
-        
-        for (int j(0); j < nBoundaryFaces; j++)
+        for (int j(0); j < solver.fullMeshPtr()->numBFaces(); j++)
         {
             auto face = solver.fullMeshPtr()->boundaryFace(j);
             
