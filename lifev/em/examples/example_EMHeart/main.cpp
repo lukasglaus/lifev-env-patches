@@ -400,12 +400,12 @@ int main (int argc, char** argv)
                 
                 if (pointInPatch)
                 {
-                    std::cout << coord << std::endl;
-                    std::cout << face.flag() << " " << face.id() << " " << face.localId() << " " << point.flag() << " " << point.id() << " " << point.localId();
+                    //std::cout << coord << std::endl;
+                    //std::cout << face.flag() << " " << face.id() << " " << face.localId() << " " << point.flag() << " " << point.id() << " " << point.localId();
                     
                     //face.replaceFlag(flag);
                     
-                    std::cout << " " << face.flag() << std::endl;
+                    std::cout << " " << face.flag(); // << std::endl;
                     
                 }
             }
