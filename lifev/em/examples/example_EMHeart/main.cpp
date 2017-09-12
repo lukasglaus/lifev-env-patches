@@ -408,7 +408,7 @@ int main (int argc, char** argv)
         auto face = solver.fullMeshPtr()->face (j); //.x();
         auto points = face.points();
         
-        face.showMe();
+
         
 //        for (int k(0); k < 3; ++k)
 //        {
