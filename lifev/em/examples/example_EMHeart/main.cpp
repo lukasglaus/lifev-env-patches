@@ -407,6 +407,7 @@ int main (int argc, char** argv)
         
         auto face = solver.fullMeshPtr()->face (j); //.x();
 
+        auto iGID = j;
         
         auto X = solver.fullMeshPtr()->point (iGID).x();
         auto Y = solver.fullMeshPtr()->point (iGID).y();
