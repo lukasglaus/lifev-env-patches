@@ -394,18 +394,22 @@ int main (int argc, char** argv)
             
             if (faceFlag == currentFlag)
             {
+                int numPointsInsidePatch (0);
+                
                 for (int k(0); k < 3; ++k)
                 {
                     auto coord = face.point(k).coordinates();
                     bool pointInPatch = (coord - center).norm() < radius;
                     
-                    if (pointInPatch)
-                    {
-                        face.setMarkerID(newFlag);
-                        std::cout << " " << face.markerID();
-                        
-                    }
+                    if (pointInPatch) ++numPointsInsidePatch;
                 }
+                
+                if (numPointsInsidePatch > 2)
+                {
+                    face.setMarkerID(newFlag);
+                    std::cout << " " << face.markerID();
+                }
+                
             }
         }
     };
@@ -419,6 +423,33 @@ int main (int argc, char** argv)
     createPatch(center2, radius2, currentFlag, patchFlag2);
     
     
+    
+    
+//    UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
+//    for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
+//    {
+//        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listPatchesBC" ), " ", i );
+//        flagsBCPatches.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 ) );
+//        
+//        pVecPatchesPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
+//        pBCVecPatchesPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+//        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flagsBCPatches[i], Natural, Full, *pBCVecPatchesPtrs[i], 3);
+//    }
+//    
+//    // Displacement function patches (not working properly yet)
+//    BCFunctionBase bcFunction;
+//    bcFunction.setFunction(patchFunction);
+//    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
+//    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
+//    {
+//        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
+//        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
+//        
+//        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
+//    }
+//
+//    solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
+
     
     
     
@@ -493,55 +524,55 @@ int main (int argc, char** argv)
     Real tmax = dataFile ( "solid/patches/tmax", 0. );
     Real tduration = dataFile ( "solid/patches/tduration", 0. );
 
-    auto modifyFeBCPatches = [&] (const Real& time)
-    {
-        auto undefPosVec = undeformedPositionVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-        
-        for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
-        {
-            if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
-            *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
-            
-            // Set pVecPatchesPtrs to zero outside of patch area
-            
-            VectorSmall<3> X;
-            Int nLocalDof = undefPosVec.epetraVector().MyLength() / 3;
-
-            for (int ik (0); ik < nLocalDof; ik++)
-            {
-                UInt iGID = undefPosVec.blockMap().GID (ik);
-                UInt jGID = undefPosVec.blockMap().GID (ik + nLocalDof);
-                UInt kGID = undefPosVec.blockMap().GID (ik + 2 * nLocalDof);
-                
-                X[0] = undefPosVec[iGID];
-                X[1] = undefPosVec[jGID];
-                X[2] = undefPosVec[kGID];
-                
-                Vector3D center1, center2;
-                Real radius1 = 2;
-                Real radius2 = 2;
-                center1[0] = -0.7;
-                center1[1] = -4.7;
-                center1[2] = -6;
-                center2[0] = 3.8;
-                center2[1] = 1.9;
-                center2[2] = -6;
-                
-                bool patch1Area = (X - center1).norm() < radius1;
-                bool patch2Area = (X - center2).norm() < radius2;
-
-                if ( (! patch1Area) && (! patch2Area) )
-                {
-                    (*pVecPatchesPtrs[i]) [iGID] = 0;
-                    (*pVecPatchesPtrs[i]) [jGID] = 0;
-                    (*pVecPatchesPtrs[i]) [kGID] = 0;
-                }
-            }
-            
-            pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
-        }
-    };
+//    auto modifyFeBCPatches = [&] (const Real& time)
+//    {
+//        auto undefPosVec = undeformedPositionVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
+//        
+//        for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
+//        {
+//            if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
+//            *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
+//            
+//            // Set pVecPatchesPtrs to zero outside of patch area
+//            
+//            VectorSmall<3> X;
+//            Int nLocalDof = undefPosVec.epetraVector().MyLength() / 3;
+//
+//            for (int ik (0); ik < nLocalDof; ik++)
+//            {
+//                UInt iGID = undefPosVec.blockMap().GID (ik);
+//                UInt jGID = undefPosVec.blockMap().GID (ik + nLocalDof);
+//                UInt kGID = undefPosVec.blockMap().GID (ik + 2 * nLocalDof);
+//                
+//                X[0] = undefPosVec[iGID];
+//                X[1] = undefPosVec[jGID];
+//                X[2] = undefPosVec[kGID];
+//                
+//                Vector3D center1, center2;
+//                Real radius1 = 2;
+//                Real radius2 = 2;
+//                center1[0] = -0.7;
+//                center1[1] = -4.7;
+//                center1[2] = -6;
+//                center2[0] = 3.8;
+//                center2[1] = 1.9;
+//                center2[2] = -6;
+//                
+//                bool patch1Area = (X - center1).norm() < radius1;
+//                bool patch2Area = (X - center2).norm() < radius2;
+//
+//                if ( (! patch1Area) && (! patch2Area) )
+//                {
+//                    (*pVecPatchesPtrs[i]) [iGID] = 0;
+//                    (*pVecPatchesPtrs[i]) [jGID] = 0;
+//                    (*pVecPatchesPtrs[i]) [kGID] = 0;
+//                }
+//            }
+//            
+//            pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
+//        }
+//    };
 
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
@@ -853,7 +884,7 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            modifyFeBCPatches(t);
+            // modifyFeBCPatches(t);
             
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
