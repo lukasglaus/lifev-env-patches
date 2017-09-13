@@ -405,7 +405,9 @@ int main (int argc, char** argv)
     int epicardiumFlag(464);
     
     createPatch(solver.fullMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(solver.localMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
     createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
+    createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     
     
     //============================================//
@@ -672,7 +674,7 @@ int main (int argc, char** argv)
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            //solver.saveSolution (i-1);
+            solver.saveSolution (i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
