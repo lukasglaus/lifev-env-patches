@@ -385,7 +385,7 @@ int main (int argc, char** argv)
     center2[1] = 1.9;
     center2[2] = -6;
     
-    auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& currentFlag const int& newFlag)
+    auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (int j(0); j < solver.fullMeshPtr()->numBoundaryFacets(); j++)
         {
