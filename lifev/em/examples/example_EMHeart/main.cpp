@@ -389,7 +389,6 @@ int main (int argc, char** argv)
         }
     };
     
-        solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     solver.fullMeshPtr()->showMe();
         
@@ -411,6 +410,8 @@ int main (int argc, char** argv)
     createPatch(solver.localMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
     createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
+    
+    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     
     //============================================//
