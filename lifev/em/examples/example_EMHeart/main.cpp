@@ -405,7 +405,7 @@ int main (int argc, char** argv)
                     
                     //face.replaceFlag(flag);
                     
-                    std::cout << " " << face.flag(); // << std::endl;
+                    std::cout << " " << face.markerID(); // << std::endl;
                     
                 }
             }
