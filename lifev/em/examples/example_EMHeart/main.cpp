@@ -406,10 +406,10 @@ int main (int argc, char** argv)
     int patchFlag2 (101);
     int epicardiumFlag(464);
     
-    createPatch(solver.fullMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver.localMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
-    createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
+    createPatch(*(solver.fullMeshPtr()), center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(*(solver.localMeshPtr()), center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(*(solver.fullMeshPtr()), center2, radius2, epicardiumFlag, patchFlag2);
+    createPatch(*(solver.localMeshPtr()), center2, radius2, epicardiumFlag, patchFlag2);
     
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
