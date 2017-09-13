@@ -417,10 +417,10 @@ int main (int argc, char** argv)
     
     int patchFlag1 (100);
     int patchFlag2 (101);
-    int currentFlag(464);
+    int epicardiumFlag(464);
     
-    createPatch(center1, radius1, currentFlag, patchFlag1);
-    createPatch(center2, radius2, currentFlag, patchFlag2);
+    createPatch(center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(center2, radius2, epicardiumFlag, patchFlag2);
     
     
     
@@ -431,7 +431,7 @@ int main (int argc, char** argv)
     for (int i(0); i < 2; ++i)
     {
         patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        *patchBCVecPtrs[i] *= 0.0;
+        *patchBCVecPtrs[i] = 0.0;
         patchBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
