@@ -360,7 +360,7 @@ int main (int argc, char** argv)
     // Create force patches as flags in mesh
     //============================================//
     
-    auto createPatch = [&] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    auto createPatch = [&] (boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
