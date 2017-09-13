@@ -263,61 +263,6 @@ int main (int argc, char** argv)
     transformerLocal.transformMesh (scale, rotate, translate);
     
     displayer.leaderPrint ("\ndone!");
-
-    
-    //============================================//
-    // Create force patches as flags in mesh
-    //============================================//
-    
-    auto createPatch = [&] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
-    {
-        for (int j(0); j < mesh->numBFaces(); j++)
-        {
-            auto face = mesh->boundaryFace(j);
-            auto faceFlag = face.markerID();
-            
-            if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
-            {
-                int numPointsInsidePatch (0);
-                
-                for (int k(0); k < 3; ++k)
-                {
-                    auto coord = face.point(k).coordinates();
-                    bool pointInPatch = (coord - center).norm() < radius;
-                    
-                    if (pointInPatch) ++numPointsInsidePatch;
-                }
-                
-                if (numPointsInsidePatch > 2)
-                {
-                    face.setMarkerID(newFlag);
-                    std::cout << " " << face.markerID();
-                }
-                
-            }
-        }
-    };
-    
-    solver.fullMeshPtr()->showMe();
-    
-    Vector3D center1, center2;
-    Real radius1 = 2;
-    Real radius2 = 2;
-    center1[0] = -0.7;
-    center1[1] = -6;
-    center1[2] = -4.7;
-    center2[0] = 4.5;
-    center2[1] = -6;
-    center2[2] = 1.0;
-    
-    int patchFlag1 (100);
-    int patchFlag2 (101);
-    int epicardiumFlag(464);
-    
-    createPatch(solver.fullMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver.localMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
-    createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     
     
     //============================================//
@@ -409,6 +354,61 @@ int main (int argc, char** argv)
     
     //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
     // Todo: Normal boundary condition!!
+
+    
+    //============================================//
+    // Create force patches as flags in mesh
+    //============================================//
+    
+    auto createPatch = [&] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    {
+        for (int j(0); j < mesh->numBFaces(); j++)
+        {
+            auto face = mesh->boundaryFace(j);
+            auto faceFlag = face.markerID();
+            
+            if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
+            {
+                int numPointsInsidePatch (0);
+                
+                for (int k(0); k < 3; ++k)
+                {
+                    auto coord = face.point(k).coordinates();
+                    bool pointInPatch = (coord - center).norm() < radius;
+                    
+                    if (pointInPatch) ++numPointsInsidePatch;
+                }
+                
+                if (numPointsInsidePatch > 2)
+                {
+                    face.setMarkerID(newFlag);
+                    std::cout << " " << face.markerID();
+                }
+                
+            }
+        }
+    };
+    
+    solver.fullMeshPtr()->showMe();
+        
+    Vector3D center1, center2;
+    Real radius1 = 2;
+    Real radius2 = 2;
+    center1[0] = -0.7;
+    center1[1] = -6;
+    center1[2] = -4.7;
+    center2[0] = 4.5;
+    center2[1] = -6;
+    center2[2] = 1.0;
+    
+    int patchFlag1 (100);
+    int patchFlag2 (101);
+    int epicardiumFlag(464);
+    
+    createPatch(solver.fullMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(solver.localMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
+    createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     
     
     //============================================//
