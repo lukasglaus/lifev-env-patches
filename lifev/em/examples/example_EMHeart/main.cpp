@@ -367,7 +367,7 @@ int main (int argc, char** argv)
             auto face = solver.fullMeshPtr()->boundaryFacet(j);
             auto faceFlag = face.markerID();
             
-            if (faceFlag == currentFlag)
+            if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
             {
                 int numPointsInsidePatch (0);
                 
