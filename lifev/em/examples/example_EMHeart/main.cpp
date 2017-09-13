@@ -426,12 +426,12 @@ int main (int argc, char** argv)
     solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag1, Essential, Full, *patchBCVecPtr[1], 3);
 
 
-//    auto modifyPatch = [&] (const Vector3D& patchDisp, const int& patchNr)
+//    auto modifyPatch = [&] (const Vector3D& patchDisp, const int& patchNr, const int& flag)
 //    {
 //        // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
-//        *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
-//        pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//        solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
+//        *patchVecPtr[patchNr] = - bcValues[ ventIdx[i] ] * 1333.224;
+//        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
 //    };
     
     

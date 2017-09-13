@@ -75,7 +75,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
-    listForcePatchesBC = 'Patch1 Patch2'
+    #listForcePatchesBC = 'Patch1 Patch2'
     #listDispPatchesBC = 'Patch1 Patch2'
 
     numPreloadSteps  = 50
