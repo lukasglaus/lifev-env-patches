@@ -389,6 +389,8 @@ int main (int argc, char** argv)
         }
     };
     
+        solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+    
     solver.fullMeshPtr()->showMe();
         
     Vector3D center1, center2;
