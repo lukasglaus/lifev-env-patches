@@ -379,11 +379,11 @@ int main (int argc, char** argv)
     Real radius1 = 2;
     Real radius2 = 2;
     center1[0] = -0.7;
-    center1[2] = -4.7;
     center1[1] = -6;
-    center2[0] = 3.8;
-    center2[2] = 1.9;
+    center1[2] = -4.7;
+    center2[0] = 4.5;
     center2[1] = -6;
+    center2[2] = 1.0;
     
     auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
