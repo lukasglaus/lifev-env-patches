@@ -431,7 +431,7 @@ int main (int argc, char** argv)
     for (int i(0); i < 2; ++i)
     {
         patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        *patchBCVecPtrs[i] = 0.0;
+        *patchVecPtrs[i] = 0.0;
         patchBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
