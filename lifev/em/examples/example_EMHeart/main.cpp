@@ -423,7 +423,7 @@ int main (int argc, char** argv)
     }
     
     solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag1, Essential, Full, *patchBCVecPtr[1], 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
 
 
     auto modifyPatch = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
