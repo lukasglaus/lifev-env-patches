@@ -362,9 +362,9 @@ int main (int argc, char** argv)
     
     auto createPatch = [&] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        for (int j(0); j < mesh->numBoundaryFacets(); j++)
+        for (int j(0); j < mesh->numBFaces(); j++)
         {
-            auto face = mesh->boundaryFacet(j);
+            auto face = mesh->boundaryFace(j);
             auto faceFlag = face.markerID();
             
             if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
@@ -670,6 +670,9 @@ int main (int argc, char** argv)
             
             // Update pressure b.c.
             modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
+            
+//            modifyPatch(i*1e-4, 0, 100);
+//            modifyPatch(i*1e-4, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
