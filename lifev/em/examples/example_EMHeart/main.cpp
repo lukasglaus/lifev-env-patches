@@ -401,12 +401,8 @@ int main (int argc, char** argv)
                     
                     if (pointInPatch)
                     {
-                        //std::cout << coord << std::endl;
-                        //std::cout << face.flag() << " " << face.id() << " " << face.localId() << " " << point.flag() << " " << point.id() << " " << point.localId();
-                        
                         face.setMarkerID(newFlag);
-
-                        std::cout << " " << face.markerID(); // << std::endl;
+                        std::cout << " " << face.markerID();
                         
                     }
                 }
@@ -414,9 +410,11 @@ int main (int argc, char** argv)
         }
     };
     
-    int patchFlag (100);
+    int patchFlag1 (100);
+    int patchFlag2 (101);
     int currentFlag(464);
-    createPatch(center1, radius1, currentFlag, patchFlag);
+    createPatch(center1, radius1, currentFlag, patchFlag1);
+    createPatch(center2, radius2, currentFlag, patchFlag2);
     
     
     
