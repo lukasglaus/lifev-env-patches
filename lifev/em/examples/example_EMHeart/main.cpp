@@ -389,16 +389,6 @@ int main (int argc, char** argv)
         }
     };
     
-//    auto modifyPatch = [&] (const Vector3D& patchDisp, const int& flag)
-//    {
-//        for ( UInt i (0) ; i < nVarBC ; ++i )
-//        {
-//            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
-//            pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
-//        }
-//    };
-    
     
     Vector3D center1, center2;
     Real radius1 = 2;
@@ -435,6 +425,14 @@ int main (int argc, char** argv)
     solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
     solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag1, Essential, Full, *patchBCVecPtr[1], 3);
 
+
+//    auto modifyPatch = [&] (const Vector3D& patchDisp, const int& patchNr)
+//    {
+//        // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
+//        *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
+//        pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//        solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
+//    };
     
     
     //============================================//
