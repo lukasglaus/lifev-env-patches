@@ -389,6 +389,9 @@ int main (int argc, char** argv)
         }
     };
     
+    solver.fullMeshPtr()->showMe()
+    
+    solver.fullMeshPtr()->updateElementFaces();
     
     Vector3D center1, center2;
     Real radius1 = 2;
