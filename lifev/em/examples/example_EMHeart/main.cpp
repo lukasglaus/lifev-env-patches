@@ -385,35 +385,38 @@ int main (int argc, char** argv)
     center2[1] = 1.9;
     center2[2] = -6;
     
-    auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& flag)
+    auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& currentFlag const int& newFlag)
     {
         for (int j(0); j < solver.fullMeshPtr()->numBoundaryFacets(); j++)
         {
             auto face = solver.fullMeshPtr()->boundaryFacet(j);
+            auto faceFlag = face.markerID();
             
-            for (int k(0); k < 3; ++k)
+            if (faceFlag == currentFlag)
             {
-                auto point = face.point(k);
-                auto coord = point.coordinates();
-                
-                bool pointInPatch = (coord - center).norm() < radius;
-                
-                if (pointInPatch)
+                for (int k(0); k < 3; ++k)
                 {
-                    //std::cout << coord << std::endl;
-                    //std::cout << face.flag() << " " << face.id() << " " << face.localId() << " " << point.flag() << " " << point.id() << " " << point.localId();
+                    auto coord = face.point(k).coordinates();
+                    bool pointInPatch = (coord - center).norm() < radius;
                     
-                    //face.replaceFlag(flag);
-                    
-                    std::cout << " " << face.markerID(); // << std::endl;
-                    
+                    if (pointInPatch)
+                    {
+                        //std::cout << coord << std::endl;
+                        //std::cout << face.flag() << " " << face.id() << " " << face.localId() << " " << point.flag() << " " << point.id() << " " << point.localId();
+                        
+                        face.replaceFlag(newFlag);
+                        
+                        std::cout << " " << face.markerID(); // << std::endl;
+                        
+                    }
                 }
             }
         }
     };
     
     int patchFlag (100);
-    createPatch(center1, radius1, patchFlag);
+    int currentFlag(464);
+    createPatch(center1, radius1, currentFlag, patchFlag);
     
     
     
