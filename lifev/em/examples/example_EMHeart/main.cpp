@@ -404,8 +404,8 @@ int main (int argc, char** argv)
                         //std::cout << coord << std::endl;
                         //std::cout << face.flag() << " " << face.id() << " " << face.localId() << " " << point.flag() << " " << point.id() << " " << point.localId();
                         
-                        face.replaceFlag(newFlag);
-                        
+                        face.setMarkerID(newFlag);
+
                         std::cout << " " << face.markerID(); // << std::endl;
                         
                     }
