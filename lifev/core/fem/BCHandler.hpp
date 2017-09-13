@@ -631,7 +631,7 @@ BCHandler::bcUpdate ( Mesh& mesh, CurrentFEManifold& boundaryFE, const DOF& dof 
         //looking for elementMarker in boundary conditions' flags, and updating the boundary conditions data accordingly
 
         if (elementMarker == 100) std::cout << std::endl << "- ";
-        else std::cout << ":";
+        else std::cout << elementMarker << " ";
         
         marker_found = false;
         bcBaseIterator = M_bcList.begin();
