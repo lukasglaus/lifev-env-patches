@@ -360,7 +360,7 @@ int main (int argc, char** argv)
     // Create force patches as flags in mesh
     //============================================//
     
-    auto createPatch = [&] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    auto createPatch = [] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
@@ -411,9 +411,7 @@ int main (int argc, char** argv)
     createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     
-    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.localMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
-    
-    
+
     //============================================//
     // Create force patches b.c.
     //============================================//
