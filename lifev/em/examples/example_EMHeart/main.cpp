@@ -389,13 +389,11 @@ int main (int argc, char** argv)
         }
     };
     
-//    auto modifyPatch = [&] (const std::vector<Real>& bcValues)
+//    auto modifyPatch = [&] (const Vector3D& patchDisp, const int& flag)
 //    {
 //        for ( UInt i (0) ; i < nVarBC ; ++i )
 //        {
 //            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
-//            // Check coordinates of pVecPtrs and assign only values to certain cells
-//            // Implement vector for both natural and essential b.c.
 //            pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
 //            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
 //        }
@@ -431,7 +429,7 @@ int main (int argc, char** argv)
     {
         patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
         *patchVecPtr[i] = 0.0;
-        patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
     solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
