@@ -362,9 +362,9 @@ int main (int argc, char** argv)
     
     auto createPatch = [&] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        for (int j(0); j < mesh->numBFaces(); j++)
+        for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
-            auto face = mesh->boundaryFace(j);
+            auto face = mesh->boundaryFacet(j);
             auto faceFlag = face.markerID();
             
             if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
