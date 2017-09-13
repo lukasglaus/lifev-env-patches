@@ -360,31 +360,6 @@ int main (int argc, char** argv)
     // Create force patches as flags in mesh
     //============================================//
     
-    auto nGlobalPoints = solver.fullMeshPtr()->numGlobalPoints();
-    auto nPoints = solver.fullMeshPtr()->numPoints();
-    auto nGlobalFaces = solver.fullMeshPtr()->numBoundaryFacets();
-    auto nBoundaryFaces = solver.fullMeshPtr()->numBFaces();
-
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************\n";
-        std::cout << nGlobalPoints << "\n";
-        std::cout << nGlobalFaces << "\n";
-        std::cout << nPoints << "\n";
-        std::cout << nBoundaryFaces << "\n";
-        std::cout << "\n*****************************************************************\n";
-    }
-    
-    Vector3D center1, center2;
-    Real radius1 = 2;
-    Real radius2 = 2;
-    center1[0] = -0.7;
-    center1[1] = -6;
-    center1[2] = -4.7;
-    center2[0] = 4.5;
-    center2[1] = -6;
-    center2[2] = 1.0;
-    
     auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (int j(0); j < solver.fullMeshPtr()->numBoundaryFacets(); j++)
@@ -414,6 +389,15 @@ int main (int argc, char** argv)
         }
     };
     
+    Vector3D center1, center2;
+    Real radius1 = 2;
+    Real radius2 = 2;
+    center1[0] = -0.7;
+    center1[1] = -6;
+    center1[2] = -4.7;
+    center2[0] = 4.5;
+    center2[1] = -6;
+    center2[2] = 1.0;
     
     int patchFlag1 (100);
     int patchFlag2 (101);
@@ -423,20 +407,22 @@ int main (int argc, char** argv)
     createPatch(center2, radius2, epicardiumFlag, patchFlag2);
     
     
+    //============================================//
+    // Create force patches b.c.
+    //============================================//
     
-
     std::vector<vectorPtr_Type> patchVecPtr;
-    std::vector<bcVectorPtr_Type> patchBCVecPtrs;
+    std::vector<bcVectorPtr_Type> patchBCVecPtr;
     
     for (int i(0); i < 2; ++i)
     {
         patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        *patchVecPtrs[i] = 0.0;
-        patchBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        *patchVecPtr[i] = 0.0;
+        patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtrs[0], 3);
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag1, Essential, Full, *patchBCVecPtrs[1], 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag1, Essential, Full, *patchBCVecPtr[1], 3);
 
     
     
