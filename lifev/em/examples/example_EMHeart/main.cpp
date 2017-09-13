@@ -389,7 +389,7 @@ int main (int argc, char** argv)
         }
     };
     
-    solver.fullMeshPtr()->showMe()
+    solver.fullMeshPtr()->showMe();
     
     solver.fullMeshPtr()->updateElementFaces();
     
