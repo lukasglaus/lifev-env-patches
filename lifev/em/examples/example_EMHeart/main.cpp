@@ -424,33 +424,20 @@ int main (int argc, char** argv)
     
     
     
-    
-//    UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
-//    for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
-//    {
-//        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listPatchesBC" ), " ", i );
-//        flagsBCPatches.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 ) );
-//        
-//        pVecPatchesPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-//        pBCVecPatchesPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-//        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flagsBCPatches[i], Natural, Full, *pBCVecPatchesPtrs[i], 3);
-//    }
-//    
-//    // Displacement function patches (not working properly yet)
-//    BCFunctionBase bcFunction;
-//    bcFunction.setFunction(patchFunction);
-//    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
-//    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
-//    {
-//        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
-//        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
-//        
-//        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
-//    }
-//
-//    solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
 
+    std::vector<vectorPtr_Type> patchVecPtr;
+    std::vector<bcVectorPtr_Type> patchBCVecPtrs;
     
+    for (int i(0); i < 2; ++i)
+    {
+        patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
+        *patchBCVecPtrs[i] *= 0.0;
+        patchBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+    }
+    
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtrs[0], 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag1, Essential, Full, *patchBCVecPtrs[1], 3);
+
     
     
     //============================================//
