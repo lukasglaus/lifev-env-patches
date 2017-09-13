@@ -360,11 +360,11 @@ int main (int argc, char** argv)
     // Create force patches as flags in mesh
     //============================================//
     
-    auto createPatch = [&] (const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    auto createPatch = [&] (boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        for (int j(0); j < solver.fullMeshPtr()->numBoundaryFacets(); j++)
+        for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
-            auto face = solver.fullMeshPtr()->boundaryFacet(j);
+            auto face = mesh->boundaryFacet(j);
             auto faceFlag = face.markerID();
             
             if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
@@ -404,8 +404,8 @@ int main (int argc, char** argv)
     int patchFlag2 (101);
     int epicardiumFlag(464);
     
-    createPatch(center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(center2, radius2, epicardiumFlag, patchFlag2);
+    createPatch(solver.fullMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
     
     
     //============================================//
@@ -436,8 +436,9 @@ int main (int argc, char** argv)
     
     
     //============================================//
-    // B.C. endocardia and patches
+    // Pressure b.c. on endocardia
     //============================================//
+    
     std::vector<vectorPtr_Type> pVecPtrs;
     std::vector<bcVectorPtr_Type> pBCVecPtrs;
     std::vector<vectorPtr_Type> pVecPatchesPtrs;
@@ -461,8 +462,7 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
     }
     
-
-    
+    // Patches natural b.c.
     UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
     for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
     {
@@ -472,18 +472,6 @@ int main (int argc, char** argv)
         pVecPatchesPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
         pBCVecPatchesPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flagsBCPatches[i], Natural, Full, *pBCVecPatchesPtrs[i], 3);
-    }
-
-    // Displacement function patches (not working properly yet)
-    BCFunctionBase bcFunction;
-    bcFunction.setFunction(patchFunction);
-    UInt nVarDispPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listDispPatchesBC" ) );
-    for ( UInt i (0) ; i < nVarDispPatchesBC ; ++i )
-    {
-        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listDispPatchesBC" ), " ", i );
-        ID flag = dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 );
-        
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flag, Essential, Normal, bcFunction);
     }
 
     
@@ -501,60 +489,6 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
         }
     };
-
-    Real Tmax = dataFile ( "solid/patches/Tmax", 0. );
-    Real tmax = dataFile ( "solid/patches/tmax", 0. );
-    Real tduration = dataFile ( "solid/patches/tduration", 0. );
-
-//    auto modifyFeBCPatches = [&] (const Real& time)
-//    {
-//        auto undefPosVec = undeformedPositionVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-//        
-//        for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
-//        {
-//            if ( 0 == comm->MyPID() ) std::cout << "\nPatch force: " << patchForce(time, Tmax, tmax, tduration) << std::endl;
-//            *pVecPatchesPtrs[i] = - patchForce(time, Tmax, tmax, tduration) * 1333.224;
-//            
-//            // Set pVecPatchesPtrs to zero outside of patch area
-//            
-//            VectorSmall<3> X;
-//            Int nLocalDof = undefPosVec.epetraVector().MyLength() / 3;
-//
-//            for (int ik (0); ik < nLocalDof; ik++)
-//            {
-//                UInt iGID = undefPosVec.blockMap().GID (ik);
-//                UInt jGID = undefPosVec.blockMap().GID (ik + nLocalDof);
-//                UInt kGID = undefPosVec.blockMap().GID (ik + 2 * nLocalDof);
-//                
-//                X[0] = undefPosVec[iGID];
-//                X[1] = undefPosVec[jGID];
-//                X[2] = undefPosVec[kGID];
-//                
-//                Vector3D center1, center2;
-//                Real radius1 = 2;
-//                Real radius2 = 2;
-//                center1[0] = -0.7;
-//                center1[1] = -4.7;
-//                center1[2] = -6;
-//                center2[0] = 3.8;
-//                center2[1] = 1.9;
-//                center2[2] = -6;
-//                
-//                bool patch1Area = (X - center1).norm() < radius1;
-//                bool patch2Area = (X - center2).norm() < radius2;
-//
-//                if ( (! patch1Area) && (! patch2Area) )
-//                {
-//                    (*pVecPatchesPtrs[i]) [iGID] = 0;
-//                    (*pVecPatchesPtrs[i]) [jGID] = 0;
-//                    (*pVecPatchesPtrs[i]) [kGID] = 0;
-//                }
-//            }
-//            
-//            pBCVecPatchesPtrs[i].reset ( ( new bcVector_Type (*pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//            solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBCPatches[i], *pBCVecPatchesPtrs[i]);
-//        }
-//    };
 
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
@@ -612,6 +546,10 @@ int main (int argc, char** argv)
     
     const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
 
+    Real Tmax = dataFile ( "solid/patches/Tmax", 0. );
+    Real tmax = dataFile ( "solid/patches/tmax", 0. );
+    Real tduration = dataFile ( "solid/patches/tduration", 0. );
+    
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     std::vector<double> bcValuesPre ( bcValues );
