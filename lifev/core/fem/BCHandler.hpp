@@ -630,15 +630,10 @@ BCHandler::bcUpdate ( Mesh& mesh, CurrentFEManifold& boundaryFE, const DOF& dof 
 
         //looking for elementMarker in boundary conditions' flags, and updating the boundary conditions data accordingly
 
-        if (elementMarker == 100) std::cout << std::endl << "- ";
-        else std::cout << elementMarker << " ";
-        
         marker_found = false;
         bcBaseIterator = M_bcList.begin();
         while ( ( bcBaseIterator = std::find ( bcBaseIterator, beginEssEdges, elementMarker ) ) != beginEssEdges )
         {
-            if (elementMarker == 100) std::cout << std::endl << "- ";
-
             marker_found = true;
             switch ( bcBaseIterator->type() )
             {
@@ -648,8 +643,6 @@ BCHandler::bcUpdate ( Mesh& mesh, CurrentFEManifold& boundaryFE, const DOF& dof 
                     break;
 
                 case Essential:
-                    if (elementMarker == 100) std::cout << std::endl << "- ";
-
                     for (ID lDof = 0; lDof < localToGlobalMapOnBElem.size(); lDof++)
                     {
                         ID gDof = localToGlobalMapOnBElem[ lDof]; // global DOF
@@ -657,8 +650,6 @@ BCHandler::bcUpdate ( Mesh& mesh, CurrentFEManifold& boundaryFE, const DOF& dof 
                         //providing Essential boundary conditions with needed data (global DOF id and their coordinates)
                         if ( bcBaseIterator->isDataAVector() )
                         {
-                            if (elementMarker == 100) std::cout << std::endl << "- ";
-
                             bcBaseIterator->addBCIdentifier ( new BCIdentifierBase ( gDof) );
                         }
                         else

@@ -359,7 +359,6 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patches as flags in mesh
     //============================================//
-    
     auto createPatch = [] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
@@ -415,7 +414,6 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patches b.c.
     //============================================//
-    
     std::vector<vectorPtr_Type> patchVecPtr;
     std::vector<bcVectorPtr_Type> patchBCVecPtr;
     
@@ -442,7 +440,6 @@ int main (int argc, char** argv)
     //============================================//
     // Pressure b.c. on endocardia
     //============================================//
-    
     std::vector<vectorPtr_Type> pVecPtrs;
     std::vector<bcVectorPtr_Type> pBCVecPtrs;
     std::vector<vectorPtr_Type> pVecPatchesPtrs;
