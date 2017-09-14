@@ -364,7 +364,7 @@ int main (int argc, char** argv)
         std::cout << "hi1" << std::endl;
         for (auto& mesh : solver.mesh())
         {
-            mesh-showMe();
+            mesh->showMe();
             std::cout << "hi2" << std::endl;
 
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
