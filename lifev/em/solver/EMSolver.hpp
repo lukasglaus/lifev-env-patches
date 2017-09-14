@@ -449,6 +449,12 @@ public:
         std::vector<meshPtr_Type> meshVector;
         meshVector.push_back(M_fullMeshPtr);
         meshVector.push_back(M_localMeshPtr);
+        
+        std::cout << "vec size " << meshVector.size() << std::endl;
+        meshVector[0]->showMe();
+        
+        for (auto i : meshVector) i->showMe();
+        
         return meshVector;
     }
     

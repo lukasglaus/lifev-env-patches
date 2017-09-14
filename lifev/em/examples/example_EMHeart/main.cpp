@@ -361,11 +361,9 @@ int main (int argc, char** argv)
     //============================================//
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        std::cout << "hi1" << solver.mesh().size() << std::endl;
-        //for (auto mesh : solver.mesh())
-        for (int i(0); i < solver.mesh().size(); ++i)
+        std::cout << "hi1" << std::endl;
+        for (auto& mesh : solver.mesh())
         {
-            auto mesh =  solver.mesh()[i];
             mesh->showMe();
             std::cout << "hi2" << std::endl;
 
