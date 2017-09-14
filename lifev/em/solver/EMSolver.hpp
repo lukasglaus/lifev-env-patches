@@ -444,6 +444,12 @@ public:
         return M_localMeshPtr;
     }
 
+    std::vector<RegionMesh<LinearTetra> >& mesh()
+    {
+        std::vector<meshPtr_Type> meshVector;
+        meshVector.push_back(M_fullMeshPtr);
+        meshVector.push_back(M_localMeshPtr);
+    }
     
 protected:
 public:

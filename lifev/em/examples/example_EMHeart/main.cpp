@@ -359,31 +359,33 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patches as flags in mesh
     //============================================//
-    auto createPatch = [] (const boost::shared_ptr<RegionMesh<LinearTetra> >& mesh, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    auto createPatch = [] (EMSolver<RegionMesh<LinearTetra> >, EMMonodomainSolver<RegionMesh<LinearTetra> >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        for (int j(0); j < mesh->numBoundaryFacets(); j++)
+        for (auto& mesh : solver.mesh())
         {
-            auto& face = mesh->boundaryFacet(j);
-            auto faceFlag = face.markerID();
-            
-            if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
+            for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
-                int numPointsInsidePatch (0);
+                auto& face = mesh->boundaryFacet(j);
+                auto faceFlag = face.markerID();
                 
-                for (int k(0); k < 3; ++k)
+                if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
                 {
-                    auto coord = face.point(k).coordinates();
-                    bool pointInPatch = (coord - center).norm() < radius;
+                    int numPointsInsidePatch (0);
                     
-                    if (pointInPatch) ++numPointsInsidePatch;
+                    for (int k(0); k < 3; ++k)
+                    {
+                        auto coord = face.point(k).coordinates();
+                        bool pointInPatch = (coord - center).norm() < radius;
+                        
+                        if (pointInPatch) ++numPointsInsidePatch;
+                    }
+                    
+                    if (numPointsInsidePatch > 2)
+                    {
+                        face.setMarkerID(newFlag);
+                    }
+                    
                 }
-                
-                if (numPointsInsidePatch > 2)
-                {
-                    face.setMarkerID(newFlag);
-                    std::cout << " " << face.markerID();
-                }
-                
             }
         }
     };
@@ -405,10 +407,8 @@ int main (int argc, char** argv)
     int patchFlag2 (101);
     int epicardiumFlag(464);
     
-    createPatch(solver.fullMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver.localMeshPtr(), center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver.fullMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
-    createPatch(solver.localMeshPtr(), center2, radius2, epicardiumFlag, patchFlag2);
+    createPatch(solver, center1, radius1, epicardiumFlag, patchFlag1);
+    createPatch(solver, center2, radius2, epicardiumFlag, patchFlag2);
     
 
     //============================================//
