@@ -421,7 +421,7 @@ int main (int argc, char** argv)
                 if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
                 {
                     int numPointsInsidePatch (0);
-                    std::cout << " " << face.firstAdjacentElementIdentity();
+                    std::cout << face.point(3).coordinates();
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
