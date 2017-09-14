@@ -361,8 +361,11 @@ int main (int argc, char** argv)
     //============================================//
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
+        std::cout << "hi1" << std::endl;
         for (auto& mesh : solver.mesh())
         {
+            std::cout << "hi2" << std::endl;
+
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
                 auto& face = mesh->boundaryFacet(j);
@@ -409,7 +412,8 @@ int main (int argc, char** argv)
     
     createPatch(solver, center1, radius1, epicardiumFlag, patchFlag1);
     createPatch(solver, center2, radius2, epicardiumFlag, patchFlag2);
-    
+    std::cout << "hi3" << std::endl;
+
 
     //============================================//
     // Create force patches b.c.
@@ -670,8 +674,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
             
-//            modifyPatch(i*1e-4, 0, 100);
-//            modifyPatch(i*1e-4, 1, 101);
+            modifyPatch(i*1e-4, 0, 100);
+            modifyPatch(i*1e-4, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
