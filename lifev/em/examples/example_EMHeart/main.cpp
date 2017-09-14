@@ -361,33 +361,12 @@ int main (int argc, char** argv)
     //============================================//
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        std::vector<boost::shared_ptr<RegionMesh<LinearTetra> > > meshVector;
-        meshVector.push_back(solver.fullMeshPtr());
-        meshVector.push_back(solver.localMeshPtr());
-        solver.fullMeshPtr()->showMe();
-        std::cout << "vec size " << meshVector.size() << std::endl;
-        meshVector[0]->showMe();
-        
-        for (auto i : meshVector) i->showMe();
-        
-
-        
-        std::cout << "hi1" << meshVector.size() << std::endl;
-        
-        for (auto& mesh : meshVector)
+        for (auto& mesh : solver.mesh())
         {
-            std::cout << "hi2" << std::endl;
-
-            mesh->showMe();
-            std::cout << "hi2" << std::endl;
-
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
-                std::cout << "hi2.1" << std::endl;
-
                 auto& face = mesh->boundaryFacet(j);
                 auto faceFlag = face.markerID();
-                std::cout << "hi2.2" << std::endl;
 
                 if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
                 {
