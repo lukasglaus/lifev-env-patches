@@ -361,7 +361,16 @@ int main (int argc, char** argv)
     //============================================//
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
-        auto meshVector = solver.mesh();
+        std::vector<boost::shared_ptr<RegionMesh<LinearTetra> > > meshVector;
+        meshVector.push_back(solver.fullMeshPtr());
+        meshVector.push_back(solver.localMeshPtr());
+        
+        std::cout << "vec size " << meshVector.size() << std::endl;
+        meshVector[0]->showMe();
+        
+        for (auto i : meshVector) i->showMe();
+        
+
         
         std::cout << "hi1" << meshVector.size() << std::endl;
         
