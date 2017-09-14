@@ -366,7 +366,7 @@ int main (int argc, char** argv)
         {
             std::cout << "hi2" << std::endl;
 
-            for (int j(0); j < *mesh->numBoundaryFacets(); j++)
+            for (int j(0); j < (*mesh)->numBoundaryFacets(); j++)
             {
                 std::cout << "hi2.1" << std::endl;
 
