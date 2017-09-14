@@ -82,6 +82,46 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
     return positionVector;
 }
 
+//const VectorEpetra
+//normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const int& patchFlag)
+//{
+//    // New P1 Space
+//    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
+//    
+//    // Create P1 VectorEpetra
+//    VectorEpetra p1NormalVector (p1FESpace.map());
+//    p1NormalVector *= 0.;
+//    
+//    
+//    
+//    for (int j(0); j < mesh->numBoundaryFacets(); j++)
+//    {
+//        auto& face = mesh->boundaryFacet(j);
+//        auto faceFlag = face.markerID();
+//        
+//        if (faceFlag == patchFlag)        {
+//    
+//            // Fill P1 vector with mesh values
+//            Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+//            for (int j (0); j < p1nCompLocalDof; j++)
+//            {
+//                UInt iGID = p1PositionVector.blockMap().GID (j);
+//                UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+//                UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+//                
+//                p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
+//                p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
+//                p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
+//            }
+//        }
+//    }
+//    
+//    // Interpolate position vector from P1-space to current space
+//    VectorEpetra positionVector ( dFeSpace->map() );
+//    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+//    
+//    return positionVector;
+//}
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
@@ -372,7 +412,7 @@ int main (int argc, char** argv)
                 {
                     int numPointsInsidePatch (0);
                     
-                    for (int k(0); k < 3; ++k)
+                    for (int k(0); k < 4; ++k)
                     {
                         auto coord = face.point(k).coordinates();
                         bool pointInPatch = (coord - center).norm() < radius;
