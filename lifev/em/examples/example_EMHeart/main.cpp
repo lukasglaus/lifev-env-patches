@@ -99,8 +99,18 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
 //        auto& face = mesh->boundaryFacet(j);
 //        auto faceFlag = face.markerID();
 //        
-//        if (faceFlag == patchFlag)        {
-//    
+//        auto coord0 = face.point(0).coordinates();
+//        auto coord1 = face.point(1).coordinates();
+//        auto coord2 = face.point(2).coordinates();
+//        
+//        auto edge0 = coord0 - coord1;
+//        auto edge1 = coord0 - coord2;
+//        
+//        auto normal = edge0.cross(edge1);
+//        normal.normalize();
+//
+//        
+//        
 //            // Fill P1 vector with mesh values
 //            Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
 //            for (int j (0); j < p1nCompLocalDof; j++)
@@ -113,7 +123,7 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
 //                p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
 //                p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
 //            }
-//        }
+//        
 //    }
 //    
 //    // Interpolate position vector from P1-space to current space
@@ -411,8 +421,8 @@ int main (int argc, char** argv)
                 if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
                 {
                     int numPointsInsidePatch (0);
-                    
-                    for (int k(0); k < 4; ++k)
+                    face.showMe(true, std::cout);
+                    for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
                         bool pointInPatch = (coord - center).norm() < radius;
