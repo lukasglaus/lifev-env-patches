@@ -364,7 +364,7 @@ int main (int argc, char** argv)
         std::vector<boost::shared_ptr<RegionMesh<LinearTetra> > > meshVector;
         meshVector.push_back(solver.fullMeshPtr());
         meshVector.push_back(solver.localMeshPtr());
-        
+        solver.fullMeshPtr()->showMe();
         std::cout << "vec size " << meshVector.size() << std::endl;
         meshVector[0]->showMe();
         
