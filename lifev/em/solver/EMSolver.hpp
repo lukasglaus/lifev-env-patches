@@ -444,9 +444,9 @@ public:
         return M_localMeshPtr;
     }
 
-    std::vector<meshPtr_Type>& mesh()
+    std::vector<meshPtr_Type> mesh()
     {
-        std::vector<meshPtr_Type&> meshVector;
+        std::vector<meshPtr_Type> meshVector;
         meshVector.push_back(M_fullMeshPtr);
         meshVector.push_back(M_localMeshPtr);
         return meshVector;
