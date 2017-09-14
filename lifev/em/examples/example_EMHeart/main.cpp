@@ -366,11 +366,14 @@ int main (int argc, char** argv)
         {
             std::cout << "hi2" << std::endl;
 
-            for (int j(0); j < mesh->numBoundaryFacets(); j++)
+            for (int j(0); j < *mesh->numBoundaryFacets(); j++)
             {
+                std::cout << "hi2.1" << std::endl;
+
                 auto& face = mesh->boundaryFacet(j);
                 auto faceFlag = face.markerID();
-                
+                std::cout << "hi2.2" << std::endl;
+
                 if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
                 {
                     int numPointsInsidePatch (0);
@@ -764,6 +767,9 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
+        modifyPatch(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
+        modifyPatch(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
+        
 
         //============================================//
         // Load steps mechanics (activation & b.c.)
