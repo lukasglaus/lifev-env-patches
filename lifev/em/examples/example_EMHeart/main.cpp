@@ -82,7 +82,7 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
     return positionVector;
 }
 
-const VectorEpetra
+VectorEpetra
 normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace)
 {
     // New P1 Space
@@ -480,7 +480,7 @@ int main (int argc, char** argv)
     {
         vector_Type normalVector = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
         vectorPtr_Type normalVectorPtr;
-        normalVectorPtr.reset(new vector_Type(normalVector));
+        normalVectorPtr.reset(normalVector);
         patchVecPtr.push_back(normalVectorPtr);
 //        *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
