@@ -93,30 +93,30 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
-//    // Add are weighted face normal vector to every face-point
-//    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
-//    {
-//        auto& face = dFeSpace->mesh()->boundaryFacet(j);
-//        auto faceFlag = face.markerID();
-//        
-//        auto coord0 = face.point(0).coordinates();
-//        auto coord1 = face.point(1).coordinates();
-//        auto coord2 = face.point(2).coordinates();
-//        
-//        auto edge0 = coord0 - coord1;
-//        auto edge1 = coord0 - coord2;
-//        
-//        auto normal = edge0.cross(edge1);
-//        auto faceArea = 0.5 * normal.norm();
-//        normal.normalize();
-//        
-//        for (int m(0); m < 3; ++m)
-//        {
-//            UInt iGID = face.point(m).id();
-//            p1NormalVector[iGID + nP1CompLocalDof] += normal(0) * faceArea;
-//        }
-//    }
-//
+    // Add are weighted face normal vector to every face-point
+    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
+    {
+        auto& face = dFeSpace->mesh()->boundaryFacet(j);
+        auto faceFlag = face.markerID();
+        
+        auto coord0 = face.point(0).coordinates();
+        auto coord1 = face.point(1).coordinates();
+        auto coord2 = face.point(2).coordinates();
+        
+        auto edge0 = coord0 - coord1;
+        auto edge1 = coord0 - coord2;
+        
+        auto normal = edge0.cross(edge1);
+        auto faceArea = 0.5 * normal.norm();
+        normal.normalize();
+        
+        for (int m(0); m < 3; ++m)
+        {
+            UInt iGID = face.point(m).id();
+            p1NormalVector[iGID + nP1CompLocalDof] += normal(0) * faceArea;
+        }
+    }
+
 //    // Normalize normal vectors
 //    for (int j (0); j < nP1CompLocalDof; j++)
 //    {
