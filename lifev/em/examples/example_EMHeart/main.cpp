@@ -134,11 +134,12 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         p1NormalVector[jGID] = p1NormalVector[jGID] / normalVectorLength;
         p1NormalVector[kGID] = p1NormalVector[kGID] / normalVectorLength;
     }
-    std::cout << "----------------- " << test++ << std::endl;
 
     // Interpolate position vector from P1-space to current space
+//    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map() ));    
     VectorEpetra p2NormalVector ( dFeSpace->map() );
     p2NormalVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
+    
     
     return p2NormalVector;
 }
