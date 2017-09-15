@@ -82,35 +82,35 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
     return positionVector;
 }
 
-//const VectorEpetra
-//normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const int& patchFlag)
-//{
-//    // New P1 Space
-//    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
-//    
-//    // Create P1 VectorEpetra
-//    VectorEpetra p1NormalVector (p1FESpace.map());
-//    p1NormalVector *= 0.;
-//    
-//    
-//    
-//    for (int j(0); j < mesh->numBoundaryFacets(); j++)
-//    {
-//        auto& face = mesh->boundaryFacet(j);
-//        auto faceFlag = face.markerID();
-//        
-//        auto coord0 = face.point(0).coordinates();
-//        auto coord1 = face.point(1).coordinates();
-//        auto coord2 = face.point(2).coordinates();
-//        
-//        auto edge0 = coord0 - coord1;
-//        auto edge1 = coord0 - coord2;
-//        
-//        auto normal = edge0.cross(edge1);
-//        normal.normalize();
-//
-//        
-//        
+const VectorEpetra
+normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const int& patchFlag)
+{
+    // New P1 Space
+    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
+    
+    // Create P1 VectorEpetra
+    VectorEpetra p1NormalVector (p1FESpace.map());
+    p1NormalVector *= 0.;
+    
+    
+    
+    for (int j(0); j < mesh->numBoundaryFacets(); j++)
+    {
+        auto& face = mesh->boundaryFacet(j);
+        auto faceFlag = face.markerID();
+        
+        auto coord0 = face.point(0).coordinates();
+        auto coord1 = face.point(1).coordinates();
+        auto coord2 = face.point(2).coordinates();
+        
+        auto edge0 = coord0 - coord1;
+        auto edge1 = coord0 - coord2;
+        
+        auto normal = edge0.cross(edge1);
+        normal.normalize();
+
+        std::cout << face.point(0).id() << " ";
+        
 //            // Fill P1 vector with mesh values
 //            Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
 //            for (int j (0); j < p1nCompLocalDof; j++)
@@ -123,15 +123,15 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
 //                p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
 //                p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
 //            }
-//        
-//    }
-//    
-//    // Interpolate position vector from P1-space to current space
-//    VectorEpetra positionVector ( dFeSpace->map() );
-//    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
-//    
-//    return positionVector;
-//}
+        
+    }
+    
+    // Interpolate position vector from P1-space to current space
+    VectorEpetra positionVector ( dFeSpace->map() );
+    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+    
+    return positionVector;
+}
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
@@ -421,7 +421,7 @@ int main (int argc, char** argv)
                 if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
                 {
                     int numPointsInsidePatch (0);
-                    std::cout << face.point(3).coordinates();
+
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
@@ -473,6 +473,8 @@ int main (int argc, char** argv)
         *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
+
+    normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr(), patchFlag1);
     
     solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
     solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
