@@ -94,9 +94,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     
     
     
-    for (int j(0); j < mesh->numBoundaryFacets(); j++)
+    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); j++)
     {
-        auto& face = mesh->boundaryFacet(j);
+        auto& face = fullMeshPtr->boundaryFacet(j);
         auto faceFlag = face.markerID();
         
         auto coord0 = face.point(0).coordinates();
