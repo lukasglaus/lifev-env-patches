@@ -115,7 +115,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         {
             UInt iGID = face.point(m).id();
             UInt jGID = p1FESpace.dof().localToGlobalMapByBdFacet(j, m);
-            UInt kGID = p1NormalVector.blockMap().GID (j);
+            UInt kGID = p1NormalVector.blockMap().GID (iGID);
 
             std::cout << " (" << iGID << " " << kGID << ") ";
             
