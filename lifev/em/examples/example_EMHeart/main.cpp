@@ -87,12 +87,15 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
 {
     // New P1 Space
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
+    int test(0);
+    std::cout << "----------------- " << test++ << std::endl;
     
     // Create P1 VectorEpetra
     VectorEpetra p1NormalVector (p1FESpace.map());
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
-    
+    std::cout << "----------------- " << test++ << std::endl;
+
     // Add are weighted face normal vector to every face-point
     for (int j(0); j < fullMeshPtr->numBoundaryFacets(); ++j)
     {
@@ -116,7 +119,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
             p1NormalVector[iGID + nP1CompLocalDof] += normal(0) * faceArea;
         }
     }
-    
+    std::cout << "----------------- " << test++ << std::endl;
+
     // Normalize normal vectors
     for (int j (0); j < nP1CompLocalDof; j++)
     {
@@ -134,7 +138,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         p1NormalVector[jGID] = p1NormalVector[jGID] / normalVectorLength;
         p1NormalVector[kGID] = p1NormalVector[kGID] / normalVectorLength;
     }
-    
+    std::cout << "----------------- " << test++ << std::endl;
+
     // Interpolate position vector from P1-space to current space
     VectorEpetra p2NormalVector ( dFeSpace->map() );
     p2NormalVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
@@ -480,7 +485,7 @@ int main (int argc, char** argv)
     {
         vectorPtr_Type normalVectorPtr (new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) ));
         patchVecPtr.push_back(normalVectorPtr);
-//        *patchVecPtr[i] = 0.0;
+        *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
