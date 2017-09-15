@@ -127,10 +127,10 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     }
     
     // Interpolate position vector from P1-space to current space
-    VectorEpetra positionVector ( dFeSpace->map() );
-    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+    VectorEpetra p2NormalVector ( dFeSpace->map() );
+    p2NormalVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
     
-    return positionVector;
+    return p2NormalVector;
 }
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
