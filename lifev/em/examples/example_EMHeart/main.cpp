@@ -109,32 +109,36 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         auto faceArea = 0.5 * normal.norm();
         normal.normalize();
         
+        std::cout << " " << nP1CompLocalDof;
+        
         for (int m(0); m < 3; ++m)
         {
             UInt iGID = face.point(m).localId();
-//            p1NormalVector[iGID] += normal(0) * faceArea;
-//            p1NormalVector[iGID + nP1CompLocalDof] += normal(1) * faceArea;
-//            p1NormalVector[iGID + 2*nP1CompLocalDof] += normal(2) * faceArea;
+            UInt iLID = p1NormalVector.blockMap().LID(iGID);
+            
+            p1NormalVector[iGID] += normal(0) * faceArea;
+            p1NormalVector[iGID + nP1CompLocalDof] += normal(1) * faceArea;
+            p1NormalVector[iGID + 2*nP1CompLocalDof] += normal(2) * faceArea;
         }
     }
 
-//    // Normalize normal vectors
-//    for (int j (0); j < nP1CompLocalDof; j++)
-//    {
-//        UInt iGID = p1NormalVector.blockMap().GID (j);
-//        UInt jGID = p1NormalVector.blockMap().GID (j + nP1CompLocalDof);
-//        UInt kGID = p1NormalVector.blockMap().GID (j + 2 * nP1CompLocalDof);
-//        
-//        Vector3D normal;
-//        normal(0) = p1NormalVector[iGID];
-//        normal(1) = p1NormalVector[jGID];
-//        normal(2) = p1NormalVector[kGID];
-//        Real normalVectorLength = normal.norm();
-//        
-//        p1NormalVector[iGID] = p1NormalVector[iGID] / normalVectorLength;
-//        p1NormalVector[jGID] = p1NormalVector[jGID] / normalVectorLength;
-//        p1NormalVector[kGID] = p1NormalVector[kGID] / normalVectorLength;
-//    }
+    // Normalize normal vectors
+    for (int j (0); j < nP1CompLocalDof; j++)
+    {
+        UInt iGID = p1NormalVector.blockMap().GID (j);
+        UInt jGID = p1NormalVector.blockMap().GID (j + nP1CompLocalDof);
+        UInt kGID = p1NormalVector.blockMap().GID (j + 2 * nP1CompLocalDof);
+        
+        Vector3D normal;
+        normal(0) = p1NormalVector[iGID];
+        normal(1) = p1NormalVector[jGID];
+        normal(2) = p1NormalVector[kGID];
+        Real normalVectorLength = normal.norm();
+        
+        p1NormalVector[iGID] = p1NormalVector[iGID] / normalVectorLength;
+        p1NormalVector[jGID] = p1NormalVector[jGID] / normalVectorLength;
+        p1NormalVector[kGID] = p1NormalVector[kGID] / normalVectorLength;
+    }
 
     // Interpolate position vector from P1-space to current space
     boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map() ));    
