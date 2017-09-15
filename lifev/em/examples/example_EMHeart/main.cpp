@@ -91,10 +91,10 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     // Create P1 VectorEpetra
     VectorEpetra p1NormalVector (p1FESpace.map());
     p1NormalVector *= 0.;
+    Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
     
-    
-    
-    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); j++)
+    // Add are weighted face normal vector to every face-point
+    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); ++j)
     {
         auto& face = fullMeshPtr->boundaryFacet(j);
         auto faceFlag = face.markerID();
@@ -107,23 +107,32 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         auto edge1 = coord0 - coord2;
         
         auto normal = edge0.cross(edge1);
+        auto faceArea = 0.5 * normal.norm();
         normal.normalize();
-
-        std::cout << face.point(0).id() << " ";
         
-//            // Fill P1 vector with mesh values
-//            Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
-//            for (int j (0); j < p1nCompLocalDof; j++)
-//            {
-//                UInt iGID = p1PositionVector.blockMap().GID (j);
-//                UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
-//                UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
-//                
-//                p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
-//                p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
-//                p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
-//            }
+        for (int m(0); m < 3; ++m)
+        {
+            UInt iGID = face.point(m).id();
+            p1NormalVector[iGID + nP1CompLocalDof] += normal(0) * faceArea;
+        }
+    }
+    
+    // Normalize normal vectors
+    for (int j (0); j < nP1CompLocalDof; j++)
+    {
+        UInt iGID = p1NormalVector.blockMap().GID (j);
+        UInt jGID = p1NormalVector.blockMap().GID (j + nP1CompLocalDof);
+        UInt kGID = p1NormalVector.blockMap().GID (j + 2 * nP1CompLocalDof);
         
+        Vector3D normal;
+        normal(0) = p1NormalVector[iGID];
+        normal(1) = p1NormalVector[jGID];
+        normal(2) = p1NormalVector[kGID];
+        Real normalVectorLength = normal.norm();
+        
+        p1NormalVector[iGID] = p1NormalVector[iGID] / normalVectorLength;
+        p1NormalVector[jGID] = p1NormalVector[jGID] / normalVectorLength;
+        p1NormalVector[kGID] = p1NormalVector[kGID] / normalVectorLength;
     }
     
     // Interpolate position vector from P1-space to current space
