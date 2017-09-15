@@ -481,7 +481,7 @@ int main (int argc, char** argv)
     {
         std::cout << "----------------- " << i << std::endl;
         vector_Type normalVector = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-        vectorPtr_Type normalVectorPtr (new vector_Type(normalVector);
+        vectorPtr_Type normalVectorPtr (new vector_Type(normalVector));
         std::cout << "----------------- " << i+10 << std::endl;
         patchVecPtr.push_back(normalVectorPtr);
         std::cout << "----------------- " << i+20 << std::endl;
