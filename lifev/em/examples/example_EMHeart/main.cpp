@@ -479,7 +479,8 @@ int main (int argc, char** argv)
     for (int i(0); i < 2; ++i)
     {
         vector_Type normalVector = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-        vectorPtr_Type normalVectorPtr(normalVector);
+        vectorPtr_Type normalVectorPtr;
+        normalVectorPtr.reset(normalVector);
         patchVecPtr.push_back(normalVectorPtr);
 //        *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
