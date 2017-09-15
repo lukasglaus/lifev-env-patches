@@ -97,7 +97,6 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
     {
         auto& face = dFeSpace->mesh()->boundaryFacet(j);
-        auto faceFlag = face.markerID();
         
         auto coord0 = face.point(0).coordinates();
         auto coord1 = face.point(1).coordinates();
@@ -112,8 +111,10 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         
         for (int m(0); m < 3; ++m)
         {
-            UInt iGID = face.point(m).id();
-            p1NormalVector[iGID + nP1CompLocalDof] += normal(0) * faceArea;
+            UInt iGID = face.point(m).localId();
+            p1NormalVector[iGID] += normal(0) * faceArea;
+            p1NormalVector[iGID + nP1CompLocalDof] += normal(1) * faceArea
+            p1NormalVector[iGID + 2*nP1CompLocalDof] += normal(2) * faceArea
         }
     }
 
