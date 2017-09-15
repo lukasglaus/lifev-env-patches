@@ -97,9 +97,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     std::cout << "----------------- " << test++ << std::endl;
 
     // Add are weighted face normal vector to every face-point
-    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); ++j)
+    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
     {
-        auto& face = fullMeshPtr->boundaryFacet(j);
+        auto& face = dFeSpace->mesh()->boundaryFacet(j);
         auto faceFlag = face.markerID();
         
         auto coord0 = face.point(0).coordinates();
@@ -502,7 +502,7 @@ int main (int argc, char** argv)
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
         
         
-        patchVecPtr[patchNr].reset(new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) );
+        patchVecPtr[patchNr].reset(new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) ));
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
