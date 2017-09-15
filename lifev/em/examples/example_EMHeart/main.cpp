@@ -113,8 +113,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         {
             UInt iGID = face.point(m).localId();
             p1NormalVector[iGID] += normal(0) * faceArea;
-            p1NormalVector[iGID + nP1CompLocalDof] += normal(1) * faceArea
-            p1NormalVector[iGID + 2*nP1CompLocalDof] += normal(2) * faceArea
+            p1NormalVector[iGID + nP1CompLocalDof] += normal(1) * faceArea;
+            p1NormalVector[iGID + 2*nP1CompLocalDof] += normal(2) * faceArea;
         }
     }
 
