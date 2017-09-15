@@ -479,7 +479,7 @@ int main (int argc, char** argv)
     for (int i(0); i < 2; ++i)
     {
         vector_Type normalVector = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-        vectorPtr_Type normalVectorPtr = normalVector;
+        vectorPtr_Type normalVectorPtr = &normalVector;
         patchVecPtr.push_back(normalVectorPtr);
 //        *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
@@ -492,7 +492,7 @@ int main (int argc, char** argv)
     auto modifyPatch = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
-        
+        //patchVecPtr.reset(
         
         *patchVecPtr[patchNr] = - patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
