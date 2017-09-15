@@ -94,9 +94,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
     // Add are weighted face normal vector to every face-point
-    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
+    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); ++j)
     {
-        auto& face = dFeSpace->mesh()->boundaryFacet(j);
+        auto& face = fullMeshPtr->boundaryFacet(j);
         
         auto coord0 = face.point(0).coordinates();
         auto coord1 = face.point(1).coordinates();
@@ -118,8 +118,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
             UInt kGID = p1NormalVector.blockMap().GID (face.point(m).id() + 2*nP1CompLocalDof);
             
             p1NormalVector[iGID] += normal(0) * faceArea;
-            p1NormalVector[iGID] += normal(1) * faceArea;
-            p1NormalVector[iGID] += normal(2) * faceArea;
+            p1NormalVector[jGID] += normal(1) * faceArea;
+            p1NormalVector[kGID] += normal(2) * faceArea;
         }
     }
 
