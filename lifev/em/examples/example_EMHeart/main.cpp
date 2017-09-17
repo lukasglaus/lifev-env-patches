@@ -504,7 +504,7 @@ int main (int argc, char** argv)
     auto modifyPatch = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
-        auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
+//        auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
         
         patchVecPtr[patchNr] = normalVectorPtr;
         *patchVecPtr[patchNr] *= patchNormalDisp;
