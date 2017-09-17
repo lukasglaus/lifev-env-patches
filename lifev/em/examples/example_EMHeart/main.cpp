@@ -486,8 +486,13 @@ int main (int argc, char** argv)
     
     for (int i(0); i < 2; ++i)
     {
+        std::cout << "----------------- " << i << std::endl;
         auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
+//        vectorPtr_Type normalVectorPtr (new vector_Type(normalVector));
+        std::cout << "----------------- " << i+10 << std::endl;
         patchVecPtr.push_back(normalVectorPtr);
+        std::cout << "----------------- " << i+20 << std::endl;
+
         *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
@@ -500,8 +505,8 @@ int main (int argc, char** argv)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
         
+        
         //patchVecPtr[patchNr].reset(new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) ));
-        //patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
