@@ -504,9 +504,10 @@ int main (int argc, char** argv)
     auto modifyPatch = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
+        
 //        auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
         
-//        patchVecPtr[patchNr] = normalVectorPtr;
+        patchVecPtr[patchNr].reset(new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) ));
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
