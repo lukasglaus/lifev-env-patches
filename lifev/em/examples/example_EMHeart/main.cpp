@@ -119,7 +119,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
 //            UInt jGID = face.point(m).id() + nP1CompLocalDof;
 //            UInt kGID = face.point(m).id() + 2*nP1CompLocalDof;
             
-            std::cout << iGID << " " << jGID << " " << kGID << " " << face.point(m).id() << " " << face.point(m).localId() << " " << nP1CompLocalDof << std::endl;
+//            std::cout << iGID << " " << jGID << " " << kGID << " " << face.point(m).id() << " " << face.point(m).localId() << " " << nP1CompLocalDof << std::endl;
             
             p1NormalVector[iGID] += normal(0) * faceArea;
             p1NormalVector[jGID] += normal(1) * faceArea;
@@ -510,10 +510,8 @@ int main (int argc, char** argv)
     auto modifyPatch = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
-        
-        //patchVecPtr[patchNr].reset(new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) ));
+
         patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-        //patchVecPtr[patchNr].reset(new vector_Type( normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr()) ));
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
