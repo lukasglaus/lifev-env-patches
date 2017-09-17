@@ -115,6 +115,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
             UInt jGID = p1NormalVector.blockMap().GID (face.point(m).id() + nP1CompLocalDof);
             UInt kGID = p1NormalVector.blockMap().GID (face.point(m).id() + 2*nP1CompLocalDof);
             
+            std::cout << iGID << " " << jGID << " " << kGID << " " << face.point(m).id() << " " << face.point(m).localId() << " " << nP1CompLocalDof << std::endl;
+            
             p1NormalVector[iGID] += normal(0) * faceArea;
             p1NormalVector[jGID] += normal(1) * faceArea;
             p1NormalVector[kGID] += normal(2) * faceArea;
