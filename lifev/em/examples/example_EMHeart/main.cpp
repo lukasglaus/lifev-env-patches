@@ -87,6 +87,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
 {
     // New P1 Space
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
+    auto mesh = dFeSpace->mesh();
     
     // Create P1 VectorEpetra
     VectorEpetra p1NormalVector (p1FESpace.map(), Unique);
@@ -94,9 +95,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
     // Add are weighted face normal vector to every face-point
-    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); ++j)
+    for (int j(0); j < mesh->numBoundaryFacets(); ++j)
     {
-        auto& face = fullMeshPtr->boundaryFacet(j);
+        auto& face = mesh->boundaryFacet(j);
         
         auto coord0 = face.point(0).coordinates();
         auto coord1 = face.point(1).coordinates();
@@ -111,19 +112,17 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         
         for (int m(0); m < 3; ++m)
         {
-//            UInt iGID = p1NormalVector.blockMap().GID (face.point(m).id());
-//            UInt jGID = p1NormalVector.blockMap().GID (face.point(m).id() + nP1CompLocalDof);
-//            UInt kGID = p1NormalVector.blockMap().GID (face.point(m).id() + 2*nP1CompLocalDof);
-//            
-            UInt iGID = face.point(m).id();
-            UInt jGID = face.point(m).id() + nP1CompLocalDof;
-            UInt kGID = face.point(m).id() + 2*nP1CompLocalDof;
+            UInt iGID = p1NormalVector.blockMap().LID (face.point(m).id());
+            UInt jGID = p1NormalVector.blockMap().LID (face.point(m).id() + nP1CompLocalDof);
+            UInt kGID = p1NormalVector.blockMap().LID (face.point(m).id() + 2*nP1CompLocalDof);
+//
+//            UInt iGID = face.point(m).id();
+//            UInt jGID = face.point(m).id() + nP1CompLocalDof;
+//            UInt kGID = face.point(m).id() + 2*nP1CompLocalDof;
             
 //            std::cout << iGID << " " << jGID << " " << kGID << " " << face.point(m).id() << " " << face.point(m).localId() << " " << nP1CompLocalDof << std::endl;
             
-            
-            std::cout << normal;
-            
+                    
             p1NormalVector[iGID] += normal(0) * faceArea;
             p1NormalVector[jGID] += normal(1) * faceArea;
             p1NormalVector[kGID] += normal(2) * faceArea;
