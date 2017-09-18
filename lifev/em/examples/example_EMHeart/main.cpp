@@ -454,7 +454,9 @@ int main (int argc, char** argv)
                         if (pointInPatch)
                         {
                             ++numPointsInsidePatch;
-                            face.point(k).setMarkerID(newFlag);
+                            auto pointId = face.point(k).id();
+                            mesh->point(pointId).setMarkerID(newFlag);
+//                            face.point(k).setMarkerID(newFlag);
                         }
                     }
                     
