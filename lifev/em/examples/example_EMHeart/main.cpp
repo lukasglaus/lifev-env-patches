@@ -89,14 +89,14 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
     
     // Create P1 VectorEpetra
-    VectorEpetra p1NormalVector (p1FESpace.map(), Repeated);
+    VectorEpetra p1NormalVector (p1FESpace.map(), Unique);
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
     // Add are weighted face normal vector to every face-point
-    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
+    for (int j(0); j < fullMeshPtr->numBoundaryFacets(); ++j)
     {
-        auto& face = dFeSpace->mesh()->boundaryFacet(j);
+        auto& face = fullMeshPtr->boundaryFacet(j);
         
         auto coord0 = face.point(0).coordinates();
         auto coord1 = face.point(1).coordinates();
@@ -111,9 +111,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         
         for (int m(0); m < 3; ++m)
         {
-            UInt iGID = p1NormalVector.blockMap().GID (face.point(m).localId());
-            UInt jGID = p1NormalVector.blockMap().GID (face.point(m).localId() + nP1CompLocalDof);
-            UInt kGID = p1NormalVector.blockMap().GID (face.point(m).localId() + 2*nP1CompLocalDof);
+            UInt iGID = p1NormalVector.blockMap().GID (face.point(m).id());
+            UInt jGID = p1NormalVector.blockMap().GID (face.point(m).id() + nP1CompLocalDof);
+            UInt kGID = p1NormalVector.blockMap().GID (face.point(m).id() + 2*nP1CompLocalDof);
             
 //            UInt iGID = face.point(m).id();
 //            UInt jGID = face.point(m).id() + nP1CompLocalDof;
@@ -455,7 +455,7 @@ int main (int argc, char** argv)
                     {
 //                        std::cout << face.point(g).markerId() << " ";
                         std::cout << face.point(g).id() << " ";
-                        std::cout << face.point(g).localId() << " ";
+                        std::cout << face.point(g).markerID() << " ";
                         std::cout << face.point(g).flag() << " " << std::endl;
                     }
                     
