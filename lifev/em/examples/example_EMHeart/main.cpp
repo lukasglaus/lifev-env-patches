@@ -121,6 +121,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
             
 //            std::cout << iGID << " " << jGID << " " << kGID << " " << face.point(m).id() << " " << face.point(m).localId() << " " << nP1CompLocalDof << std::endl;
             
+            
+            std::cout << normal;
+            
             p1NormalVector[iGID] += normal(0) * faceArea;
             p1NormalVector[jGID] += normal(1) * faceArea;
             p1NormalVector[kGID] += normal(2) * faceArea;
@@ -448,15 +451,11 @@ int main (int argc, char** argv)
                         auto coord = face.point(k).coordinates();
                         bool pointInPatch = (coord - center).norm() < radius;
                         
-                        if (pointInPatch) ++numPointsInsidePatch;
-                    }
-                    
-                    for (int g(0); g < 2; ++g)
-                    {
-//                        std::cout << face.point(g).markerId() << " ";
-                        std::cout << face.point(g).id() << " ";
-                        std::cout << face.point(g).markerID() << " ";
-                        std::cout << face.point(g).flag() << " " << std::endl;
+                        if (pointInPatch)
+                        {
+                            ++numPointsInsidePatch;
+                            face.point(k).setMarkerID(newFlag);
+                        }
                     }
                     
                     if (numPointsInsidePatch > 2)
