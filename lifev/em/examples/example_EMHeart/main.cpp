@@ -456,7 +456,7 @@ int main (int argc, char** argv)
 //                        std::cout << face.point(g).markerId() << " ";
                         std::cout << face.point(g).id() << " ";
                         std::cout << face.point(g).localId() << " ";
-                        std::cout << face.point(g).flag() << " ";
+                        std::cout << face.point(g).flag() << " " << std::endl;
                     }
                     
                     if (numPointsInsidePatch > 2)
