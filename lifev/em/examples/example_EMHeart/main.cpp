@@ -453,7 +453,7 @@ int main (int argc, char** argv)
                     
                     for (int g(0); g < 2; ++g)
                     {
-                        std::cout << face.point(g).markerId() << " ";
+//                        std::cout << face.point(g).markerId() << " ";
                         std::cout << face.point(g).id() << " ";
                         std::cout << face.point(g).localId() << " ";
                         std::cout << face.point(g).flag() << " ";
