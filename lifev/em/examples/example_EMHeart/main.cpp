@@ -450,8 +450,6 @@ int main (int argc, char** argv)
                         if (pointInPatch)
                         {
                             ++numPointsInsidePatch;
-//                            auto pointId = face.point(k).id();
-//                            mesh->point(pointId).setMarkerID(newFlag);
                         }
                     }
                     
@@ -503,8 +501,8 @@ int main (int argc, char** argv)
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
-//    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
-//    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
+    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
 
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
@@ -751,8 +749,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
-//            modifyPatchBC(i*1e-2, 0, 100);
-//            modifyPatchBC(i*1e-2, 1, 101);
+            modifyPatchBC(i*1e-2, 0, 100);
+            modifyPatchBC(i*1e-2, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
@@ -841,8 +839,8 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
-//        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
-//        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
+        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
+        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
         
 
         //============================================//
