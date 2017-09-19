@@ -453,7 +453,6 @@ int main (int argc, char** argv)
                             ++numPointsInsidePatch;
                             auto pointId = face.point(k).id();
                             mesh->point(pointId).setMarkerID(newFlag);
-//                            face.point(k).setMarkerID(newFlag);
                         }
                     }
                     
@@ -752,7 +751,7 @@ int main (int argc, char** argv)
             }
             
             // Update pressure b.c.
-            modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
+            modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
             modifyPatchBC(i*1e-2, 0, 100);
             modifyPatchBC(i*1e-2, 1, 101);
