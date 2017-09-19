@@ -519,6 +519,8 @@ int main (int argc, char** argv)
 //        patchVecPtr.push_back(normalVectorPtr);
 //        std::cout << "----------------- " << i+20 << std::endl;
 
+        patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
+        pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
@@ -527,7 +529,7 @@ int main (int argc, char** argv)
     solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
 
 
-    auto modifyPatch = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
+    auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
 
@@ -771,8 +773,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyFeBC(preloadPressure(bcValues, i, preloadSteps));
             
-            modifyPatch(i*1e-2, 0, 100);
-            modifyPatch(i*1e-2, 1, 101);
+            modifyPatchBC(i*1e-2, 0, 100);
+            modifyPatchBC(i*1e-2, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
