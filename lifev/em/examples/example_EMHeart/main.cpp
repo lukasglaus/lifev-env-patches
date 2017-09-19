@@ -878,7 +878,7 @@ int main (int argc, char** argv)
             
             // Load step mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-            modifyFeBC(bcValuesLoadstep);
+            modifyPressureBC(bcValuesLoadstep);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
         }
