@@ -123,22 +123,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
                 int globalId = gDof + iDim * dFeSpace->dof().numTotalDof();
                 p1NormalVector[globalId] += normal(iDim) * faceArea;
             }
-            
-//            UInt iGID = p1NormalVector.blockMap().LID (face.point(m).id());
-//            UInt jGID = p1NormalVector.blockMap().LID (face.point(m).id() + nP1CompLocalDof);
-//            UInt kGID = p1NormalVector.blockMap().LID (face.point(m).id() + 2*nP1CompLocalDof);
-//
-//            UInt iGID = face.point(m).id();
-//            UInt jGID = face.point(m).id() + nP1CompLocalDof;
-//            UInt kGID = face.point(m).id() + 2*nP1CompLocalDof;
-            
-//            std::cout << iGID << " " << jGID << " " << kGID << " " << face.point(m).id() << " " << face.point(m).localId() << " " << nP1CompLocalDof << std::endl;
-            
-            
-//            p1NormalVector[iGID] += normal(0) * faceArea;
-//            p1NormalVector[jGID] += normal(1) * faceArea;
-//            p1NormalVector[kGID] += normal(2) * faceArea;
         }
+        
     }
 
     // Normalize normal vectors
@@ -512,15 +498,12 @@ int main (int argc, char** argv)
     
     for (int i(0); i < 2; ++i)
     {
-//        std::cout << "----------------- " << i << std::endl;
 //        auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
 ////        vectorPtr_Type normalVectorPtr (new vector_Type(normalVector));
-//        std::cout << "----------------- " << i+10 << std::endl;
 //        patchVecPtr.push_back(normalVectorPtr);
-//        std::cout << "----------------- " << i+20 << std::endl;
 
         patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        pBCVecPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         *patchVecPtr[i] = 0.0;
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
