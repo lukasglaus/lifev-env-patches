@@ -90,7 +90,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     auto mesh = dFeSpace->mesh();
     
     // Create P1 VectorEpetra
-    VectorEpetra p1NormalVector (p1FESpace.map(), Repeated);
+    VectorEpetra p1NormalVector (p1FESpace.map(), Unique);
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
