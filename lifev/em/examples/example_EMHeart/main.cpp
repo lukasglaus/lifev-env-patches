@@ -503,8 +503,8 @@ int main (int argc, char** argv)
         patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
     }
     
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
+//    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
+//    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
 
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
