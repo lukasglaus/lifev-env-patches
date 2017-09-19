@@ -508,7 +508,7 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchVecPtr;
     std::vector<bcVectorPtr_Type> patchBCVecPtr;
     
-    auto abc = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
+//    auto abc = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
     
     for (int i(0); i < 2; ++i)
     {
