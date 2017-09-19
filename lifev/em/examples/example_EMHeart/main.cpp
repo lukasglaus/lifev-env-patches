@@ -507,15 +507,15 @@ int main (int argc, char** argv)
 //    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
 
 
-    auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
-    {
-        // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
-
-        patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr(), solver.bcInterfacePtr() -> handler()->operator[](patchNr));
-        *patchVecPtr[patchNr] *= patchNormalDisp;
-        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
-    };
+//    auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
+//    {
+//        // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
+//
+//        patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr(), solver.bcInterfacePtr() -> handler()->operator[](patchNr));
+//        *patchVecPtr[patchNr] *= patchNormalDisp;
+//        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
+//    };
     
     
     //============================================//
