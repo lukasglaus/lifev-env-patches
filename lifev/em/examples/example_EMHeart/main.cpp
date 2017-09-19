@@ -706,7 +706,7 @@ int main (int argc, char** argv)
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
-        modifyFeBC(bcValues);
+        modifyPressureBC(bcValues);
     }
 
     
@@ -989,7 +989,7 @@ int main (int argc, char** argv)
                     dispCurrent = disp;
                     
                     // Left ventricle
-                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
+                    modifyPressureBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
@@ -1002,7 +1002,7 @@ int main (int argc, char** argv)
                     disp = dispCurrent;
                     
                     // Right ventricle
-                    modifyFeBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
+                    modifyPressureBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
                     solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                     solver.solveMechanicsLin();
                     
@@ -1041,7 +1041,7 @@ int main (int argc, char** argv)
                 //============================================//
                 // Solve mechanics
                 //============================================//
-                modifyFeBC(bcValues);
+                modifyPressureBC(bcValues);
                 solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                 solver.solveMechanics();
                 
