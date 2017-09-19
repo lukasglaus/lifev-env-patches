@@ -494,8 +494,6 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchVecPtr;
     std::vector<bcVectorPtr_Type> patchBCVecPtr;
     
-//    auto abc = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-    
     for (int i(0); i < 2; ++i)
     {
 //        auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
@@ -565,7 +563,7 @@ int main (int argc, char** argv)
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     // Functions to modify b.c.
-    auto modifyFeBC = [&] (const std::vector<Real>& bcValues)
+    auto modifyPressureBC = [&] (const std::vector<Real>& bcValues)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
@@ -846,8 +844,8 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
-        modifyPatch(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
-        modifyPatch(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
+        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
+        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
         
 
         //============================================//
@@ -930,7 +928,7 @@ int main (int argc, char** argv)
             //============================================//
             // Solve mechanics
             //============================================//
-            modifyFeBC(bcValues);
+            modifyPressureBC(bcValues);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
