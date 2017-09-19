@@ -531,7 +531,7 @@ int main (int argc, char** argv)
     {
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
 
-        patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr(), solver.bcInterfacePtr() -> handler()[patchNr]);
+        patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr(), solver.bcInterfacePtr() -> handler[patchNr]);
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
