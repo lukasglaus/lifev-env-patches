@@ -90,7 +90,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     auto mesh = dFeSpace->mesh();
     
     // Create P1 VectorEpetra
-    VectorEpetra p1NormalVector (p1FESpace.map(), Unique);
+    VectorEpetra p1NormalVector (p1FESpace.map(), Repeated);
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
@@ -149,7 +149,6 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map() ));    
 //    VectorEpetra p2NormalVector ( dFeSpace->map() );
     *p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
-    
     
     return p2NormalVectorPtr;
 }
@@ -752,8 +751,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
-            modifyPatchBC(i*1e-2, 0, 100);
-            modifyPatchBC(i*1e-2, 1, 101);
+//            modifyPatchBC(i*1e-2, 0, 100);
+//            modifyPatchBC(i*1e-2, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
