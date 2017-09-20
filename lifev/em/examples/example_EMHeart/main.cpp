@@ -94,6 +94,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
+    int z(0);
+    std::cout << fullMeshPtr->comm->MyPID() << " " << z++ << std::endl;
     
     // Add are weighted face normal vector to every face-point
     for (int j(0); j < bcBase.list_size(); ++j)
@@ -114,18 +116,27 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         auto faceArea = 0.5 * normal.norm();
         normal.normalize();
         
+        std::cout << fullMeshPtr->comm->MyPID() << " "  << z++ << std::endl;
+
         for (int iDof(0); iDof < 3; ++iDof)
         {
             auto gDof = pId->boundaryLocalToGlobalMap(iDof);
-            
+            std::cout << fullMeshPtr->comm->MyPID() << " "  << z++ << std::endl;
+
             for (int iDim(0); iDim < 3; ++iDim)
             {
+                std::cout << fullMeshPtr->comm->MyPID() << " "  << z++ << std::endl;
+
                 int globalId = gDof + iDim * dFeSpace->dof().numTotalDof();
                 p1NormalVector[globalId] += normal(iDim) * faceArea;
+                std::cout << z++ << std::endl;
+
             }
         }
         
     }
+
+    std::cout << fullMeshPtr->comm->MyPID() << " "  << z++ << std::endl;
 
     // Normalize normal vectors
     for (int j (0); j < nP1CompLocalDof; j++)
