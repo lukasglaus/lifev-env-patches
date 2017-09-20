@@ -116,19 +116,21 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         auto faceArea = 0.5 * normal.norm();
         normal.normalize();
         
-        std::cout << mesh->comm()->MyPID() << " a) "  << z++ << std::endl;
+        //std::cout << mesh->comm()->MyPID() << " a) "  << z++ << std::endl;
 
         for (int iDof(0); iDof < 3; ++iDof)
         {
             auto gDof = pId->boundaryLocalToGlobalMap(iDof);
-            std::cout << mesh->comm()->MyPID() << " b) "  << z++ << std::endl;
+            //std::cout << mesh->comm()->MyPID() << " b) "  << z++ << std::endl;
 
             for (int iDim(0); iDim < 3; ++iDim)
             {
-                std::cout << mesh->comm()->MyPID() << " c) "  << z++ << std::endl;
+                std::cout << mesh->comm()->MyPID() << " c) "  << gDof;
 
                 int globalId = gDof + iDim * nP1CompLocalDof;
                 p1NormalVector[globalId] += normal(iDim) * faceArea;
+                
+                std::cout << " " << globalId << std::endl;
             }
         }
         
