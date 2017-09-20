@@ -83,7 +83,7 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
 }
 
 boost::shared_ptr<VectorEpetra>
-normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const BCBase& bcBase)
+normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const BCBase* bcBase)
 {
     // New P1 Space
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
@@ -98,7 +98,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     std::cout << mesh->comm()->MyPID() << " x) " << z++ << std::endl;
     
     // Add are weighted face normal vector to every face-point
-    for (int j(0); j < bcBase.list_size(); ++j)
+    for (int j(0); j < bcBase->list_size(); ++j)
     {
         auto* pId = static_cast< const BCIdentifierNatural* > ( bcBase[j] );
         auto ibF = pId->id();
@@ -130,7 +130,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
                 int globalId = gDof + iDim * nP1CompLocalDof;
                 p1NormalVector[globalId] += normal(iDim) * faceArea;
                 
-                std::cout << " " << globalId << " " << nP1CompLocalDof  << " " << bcBase.list_size() << std::endl;
+                std::cout << " " << globalId << " " << nP1CompLocalDof  << " " << bcBase->list_size() << std::endl;
             }
         }
         
