@@ -87,7 +87,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
 {
     // New P1 Space
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
-    auto mesh = dFeSpace->mesh();
+    auto mesh = p1FESpace.mesh(); // dFeSpace->mesh();
     
     // Create P1 VectorEpetra
     VectorEpetra p1NormalVector (p1FESpace.map(), Repeated);
