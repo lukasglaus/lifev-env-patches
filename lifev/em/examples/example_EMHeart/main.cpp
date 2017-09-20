@@ -160,7 +160,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map() ));    
 //    VectorEpetra p2NormalVector ( dFeSpace->map() );
     *p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
-    
+    std::cout << mesh->comm()->MyPID() << " f) "  << z++ << std::endl;
+
     return p2NormalVectorPtr;
 }
 
@@ -521,6 +522,7 @@ int main (int argc, char** argv)
         // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
 
         patchVecPtr[patchNr] = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr(), solver.bcInterfacePtr() -> handler()->operator[](patchNr));
+        std::cout << "normalEBCV done!" << std::endl;
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
