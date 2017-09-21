@@ -100,8 +100,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     // Add are weighted face normal vector to every face-point
     for (int j(0); j < bcBase->list_size(); ++j)
     {
-        auto* pId = static_cast< const BCIdentifierNatural* > ( bcBase->operator[](j) );
-        auto ibF = pId->id();
+        auto* pId = static_cast< const BCIdentifierNatural* > ( bcBase->operator[](j) ); //  ( bcBase[j] );
+        auto ibF = bcBase[i]->id();
         
         auto& face = mesh->boundaryFacet(ibF);
         
@@ -125,9 +125,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
 
             for (int iDim(0); iDim < 3; ++iDim)
             {
-                std::cout << mesh->comm()->MyPID() << " c) "  << gDof;
+                std::cout << mesh->comm()->MyPID() << " c) "  << ibF;
 
-                int globalId = gDof + iDim * nP1CompLocalDof;
+                int globalId = ibF + iDim * nP1CompLocalDof;
                 p1NormalVector[globalId] += normal(iDim) * faceArea;
                 
                 std::cout << " " << globalId << " " << nP1CompLocalDof  << " " << bcBase->list_size() << std::endl;
