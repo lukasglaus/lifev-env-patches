@@ -94,6 +94,8 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
 
+    auto totalDof = p1FESpace.dof().numTotalDof();
+    
     int z(0);
     std::cout << mesh->comm()->MyPID() << " x) " << z++ << std::endl;
     
@@ -116,22 +118,14 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         auto faceArea = 0.5 * normal.norm();
         normal.normalize();
         
-        //std::cout << mesh->comm()->MyPID() << " a) "  << z++ << std::endl;
-
-        for (int iDof(0); iDof < 3; ++iDof)
+        for (int iDim(0); iDim < 3; ++iDim)
         {
-            //auto gDof = pId->boundaryLocalToGlobalMap(iDof);
-            //std::cout << mesh->comm()->MyPID() << " b) "  << z++ << std::endl;
+            std::cout << mesh->comm()->MyPID() << " c) "  << ibF;
 
-            for (int iDim(0); iDim < 3; ++iDim)
-            {
-                std::cout << mesh->comm()->MyPID() << " c) "  << ibF;
-
-                int globalId = ibF + iDim * nP1CompLocalDof;
-                p1NormalVector[globalId] += normal(iDim) * faceArea;
-                
-                std::cout << " " << globalId << " " << nP1CompLocalDof  << " " << bcBase->list_size() << std::endl;
-            }
+            int globalId = ibF + bcBase->component(iDim) * totalDof;
+            p1NormalVector[globalId] += normal(iDim) * faceArea;
+            
+            std::cout << " " << globalId << " " << nP1CompLocalDof  << " " << totalDof << std::endl;
         }
         
     }
