@@ -101,7 +101,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     for (int j(0); j < bcBase->list_size(); ++j)
     {
         auto* pId = static_cast< const BCIdentifierNatural* > ( bcBase->operator[](j) ); //  ( bcBase[j] );
-        auto ibF = bcBase->operator[](i)->id();
+        auto ibF = bcBase->operator[](j)->id();
         
         auto& face = mesh->boundaryFacet(ibF);
         
