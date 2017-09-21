@@ -120,7 +120,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
 
         for (int iDof(0); iDof < 3; ++iDof)
         {
-            auto gDof = pId->boundaryLocalToGlobalMap(iDof);
+            //auto gDof = pId->boundaryLocalToGlobalMap(iDof);
             //std::cout << mesh->comm()->MyPID() << " b) "  << z++ << std::endl;
 
             for (int iDim(0); iDim < 3; ++iDim)
