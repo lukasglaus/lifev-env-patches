@@ -166,7 +166,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     std::cout << mesh->comm()->MyPID() << " e) "  << z++ << std::endl;
 
     // Interpolate position vector from P1-space to current space
-    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map() ));    
+    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map(), Repeated ));    
 //    VectorEpetra p2NormalVector ( dFeSpace->map() );
     *p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
     std::cout << mesh->comm()->MyPID() << " f) "  << z++ << std::endl;
