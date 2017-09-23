@@ -134,7 +134,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
             UInt kGID = face.point(iDim).id() + 2*nP1CompLocalDof;
             
             
-            std::cout << mesh->comm()->MyPID() << j << "/" << bcBase->list_size() << " c) "  << ibF;
+            std::cout << mesh->comm()->MyPID() << j << "/" << bcBase->list_size() << " c) ";//  << ibF;
 
             int globalId = ibF + bcBase->component(iDim) * totalDof;
             (*p2NormalVectorPtr_)[globalId] += normal(iDim) * faceArea;
