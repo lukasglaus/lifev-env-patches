@@ -530,7 +530,7 @@ int main (int argc, char** argv)
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
-        auto normalVec = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
+        auto* normalVec = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
         std::cout << "normalEBCdone!" << std::endl;
 
         patchVecPtr[patchNr].reset( new vector_Type( *normalVec ) );
