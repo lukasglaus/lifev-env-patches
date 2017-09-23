@@ -171,7 +171,7 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     //*p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
     std::cout << mesh->comm()->MyPID() << " f) "  << z++ << std::endl;
 
-    return p2NormalVectorPtr;
+    return *p2NormalVectorPtr;
 }
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
@@ -530,7 +530,7 @@ int main (int argc, char** argv)
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
-        auto* normalVec = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
+        auto normalVec = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
         std::cout << "normalEBCdone!" << std::endl;
 
         patchVecPtr[patchNr].reset( new vector_Type( *normalVec ) );
