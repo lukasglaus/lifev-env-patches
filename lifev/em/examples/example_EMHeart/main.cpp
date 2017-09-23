@@ -530,9 +530,8 @@ int main (int argc, char** argv)
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
-        // auto bcBasePatch = solver.bcInterfacePtr()->handler()->findBCWithName(patchName);
-
-        patchVecPtr[patchNr].reset( new vector_Type(*normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr])) ) );
+        auto normalVec = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
+        patchVecPtr[patchNr].reset( new vector_Type( *normalVec ) );
         std::cout << "normalEBCV done!" << std::endl;
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
