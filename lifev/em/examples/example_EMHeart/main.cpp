@@ -97,16 +97,18 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     auto totalDof = p1FESpace.dof().numTotalDof();
     
     // Create P2 VectorEpetra
-    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr_ (new VectorEpetra( dFeSpace->map() ));
+    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr_ (new VectorEpetra( dFeSpace->map(), Repeated ));
     
     int z(0);
     std::cout << mesh->comm()->MyPID() << " x) " << z++ << std::endl;
     
     // Add are weighted face normal vector to every face-point
-    for (int j(0); j < bcBase->list_size(); ++j)
+    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
+//    for (int j(0); j < bcBase->list_size(); ++j)
     {
-        // auto* pId = static_cast< const BCIdentifierNatural* > ( (*bcBase)[j] );
-        auto ibF = (*bcBase)[j]->id();
+        auto* pId = static_cast< const BCIdentifierNatural* > ( (*bcBase)[j] );
+        
+        auto ibF = pId->id();
         
         auto& face = mesh->boundaryFacet(ibF);
         
@@ -123,6 +125,15 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
         
         for (int iDim(0); iDim < 3; ++iDim)
         {
+//            UInt iGID = p1NormalVector.blockMap().LID (face.point(m).id());
+//            UInt jGID = p1NormalVector.blockMap().LID (face.point(m).id() + nP1CompLocalDof);
+//            UInt kGID = p1NormalVector.blockMap().LID (face.point(m).id() + 2*nP1CompLocalDof);
+
+            UInt iGID = face.point(iDim).id();
+            UInt jGID = face.point(iDim).id() + nP1CompLocalDof;
+            UInt kGID = face.point(iDim).id() + 2*nP1CompLocalDof;
+            
+            
             std::cout << mesh->comm()->MyPID() << j << "/" << bcBase->list_size() << " c) "  << ibF;
 
             int globalId = ibF + bcBase->component(iDim) * totalDof;
