@@ -133,42 +133,49 @@ normalEssentialBCVector (boost::shared_ptr<VectorEpetra>& pxVectorPtr, const boo
             UInt kGID = face.point(iDim).id() + 2*nP1CompLocalDof;
             
             
-            std::cout << mesh->comm()->MyPID() << j << "/" << bcBase->list_size() << " c) ";//  << ibF;
+            std::cout << "\n " << mesh->comm()->MyPID();
+            std::cout << " " << j;
+            std::cout << " " << pxVectorPtr->epetraVector().MyLength() / 3;
+            std::cout << " " << bcBase->list_size();
+            std::cout << " " << iGID;
+            std::cout << " " << jGID;
+            std::cout << " " << kGID;
+
 
             //int globalId = ibF + bcBase->component(iDim) * totalDof;
             (*pxVectorPtr)[iGID] += normal(iDim) * faceArea;
             (*pxVectorPtr)[jGID] += normal(iDim) * faceArea;
             (*pxVectorPtr)[kGID] += normal(iDim) * faceArea;
 
-            std::cout << " " << iGID << " " << nP1CompLocalDof  << " " << (p2NormalVectorPtr_->epetraVector().MyLength() / 3) << std::endl;
         }
         
     }
 
-    std::cout << mesh->comm()->MyPID() << " d) "  << z++ << std::endl;
+    std::cout << " d) "  << z++ << std::endl;
 
     // Normalize normal vectors
-    for (int j (0); j < nP1CompLocalDof; j++)
+    auto nPxCompLocalDof = pxVectorPtr->epetraVector().MyLength() / 3;
+    for (int j (0); j < nPxCompLocalDof; j++)
     {
-        UInt iGID = p1NormalVector.blockMap().GID (j);
-        UInt jGID = p1NormalVector.blockMap().GID (j + nP1CompLocalDof);
-        UInt kGID = p1NormalVector.blockMap().GID (j + 2 * nP1CompLocalDof);
+        UInt iGID = pxVectorPtr->blockMap().GID (j);
+        UInt jGID = pxVectorPtr->blockMap().GID (j + nPxCompLocalDof);
+        UInt kGID = pxVectorPtr->blockMap().GID (j + 2 * nPxCompLocalDof);
         
         Vector3D normal;
-        normal(0) = p1NormalVector[iGID];
-        normal(1) = p1NormalVector[jGID];
-        normal(2) = p1NormalVector[kGID];
+        normal(0) = pxVectorPtr[iGID];
+        normal(1) = pxVectorPtr[jGID];
+        normal(2) = pxVectorPtr[kGID];
         Real normalVectorLength = normal.norm();
         
-        p1NormalVector[iGID] = p1NormalVector[iGID] / normalVectorLength;
-        p1NormalVector[jGID] = p1NormalVector[jGID] / normalVectorLength;
-        p1NormalVector[kGID] = p1NormalVector[kGID] / normalVectorLength;
+        pxVectorPtr[iGID] = pxVectorPtr[iGID] / normalVectorLength;
+        pxVectorPtr[jGID] = pxVectorPtr[jGID] / normalVectorLength;
+        pxVectorPtr[kGID] = pxVectorPtr[kGID] / normalVectorLength;
     }
 
     std::cout << mesh->comm()->MyPID() << " e) "  << z++ << std::endl;
 
     // Interpolate position vector from P1-space to current space
-//    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map(), Repeated ));    
+//    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map(), Repeated ));
 //    VectorEpetra p2NormalVector ( dFeSpace->map() );
     //*p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
     std::cout << mesh->comm()->MyPID() << " f) "  << z++ << std::endl;
