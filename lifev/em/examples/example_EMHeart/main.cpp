@@ -82,22 +82,24 @@ undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > full
     return positionVector;
 }
 
-boost::shared_ptr<VectorEpetra>
-normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const BCBase* bcBase)
+void
+normalEssentialBCVector (boost::shared_ptr<VectorEpetra>& pxVectorPtr, const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const BCBase* bcBase)
 {
     // New P1 Space
     FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
+//    auto mesh = fullMeshPtr;
+//    auto mesh = p1FESpace.mesh();
     auto mesh = dFeSpace->mesh();
     
     // Create P1 VectorEpetra
     VectorEpetra p1NormalVector (p1FESpace.map(), Repeated);
     p1NormalVector *= 0.;
     Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
-
-    auto totalDof = p1FESpace.dof().numTotalDof();
     
     // Create P2 VectorEpetra
     boost::shared_ptr<VectorEpetra> p2NormalVectorPtr_ (new VectorEpetra( dFeSpace->map(), Repeated ));
+    
+    *pxVectorPtr *= 0;
     
     int z(0);
     std::cout << mesh->comm()->MyPID() << " x) " << z++ << std::endl;
@@ -134,9 +136,9 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
             std::cout << mesh->comm()->MyPID() << j << "/" << bcBase->list_size() << " c) ";//  << ibF;
 
             //int globalId = ibF + bcBase->component(iDim) * totalDof;
-            (*p2NormalVectorPtr_)[iGID] += normal(iDim) * faceArea;
-            (*p2NormalVectorPtr_)[jGID] += normal(iDim) * faceArea;
-            (*p2NormalVectorPtr_)[kGID] += normal(iDim) * faceArea;
+            (*pxVectorPtr)[iGID] += normal(iDim) * faceArea;
+            (*pxVectorPtr)[jGID] += normal(iDim) * faceArea;
+            (*pxVectorPtr)[kGID] += normal(iDim) * faceArea;
 
             std::cout << " " << iGID << " " << nP1CompLocalDof  << " " << (p2NormalVectorPtr_->epetraVector().MyLength() / 3) << std::endl;
         }
@@ -166,12 +168,12 @@ normalEssentialBCVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullM
     std::cout << mesh->comm()->MyPID() << " e) "  << z++ << std::endl;
 
     // Interpolate position vector from P1-space to current space
-    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map(), Repeated ));    
+//    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map(), Repeated ));    
 //    VectorEpetra p2NormalVector ( dFeSpace->map() );
     //*p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
     std::cout << mesh->comm()->MyPID() << " f) "  << z++ << std::endl;
 
-    return *p2NormalVectorPtr;
+//    return p2NormalVectorPtr;
 }
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
@@ -530,10 +532,9 @@ int main (int argc, char** argv)
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
-        auto normalVec = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
+        normalEssentialBCVector(patchVecPtr[patchNr], solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
         std::cout << "normalEBCdone!" << std::endl;
 
-        patchVecPtr[patchNr].reset( new vector_Type( *normalVec ) );
         std::cout << "normalEBCV done!" << std::endl;
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
