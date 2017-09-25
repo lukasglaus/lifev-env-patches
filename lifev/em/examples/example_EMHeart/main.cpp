@@ -215,13 +215,6 @@ Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Rea
     return - patchForce(t, 0.2, 0.3, 0.3); // -0.001;// (t * 1e-5);
 }
 
-Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
-{
-    bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
-    Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
-    return ( time ? force : 0 );
-}
-
 Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     Real disp = std::pow( std::sin(fmod(t, 800.) * 3.14159265359/300) , 2 )*15;
