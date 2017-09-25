@@ -569,8 +569,9 @@ int main (int argc, char** argv)
 //        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
     };
     
+    BCFunctionBase patchFun (patchDispFun);
     
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchDispFun, 3);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchDisp, 3);
 
     
     
