@@ -205,7 +205,7 @@ Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, 
 
 Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
-    return 0.01;// (t * 1e-5);
+    return -0.1;// (t * 1e-5);
 }
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
@@ -576,9 +576,10 @@ int main (int argc, char** argv)
     BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
 
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
 
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
 
     
