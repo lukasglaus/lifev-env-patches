@@ -188,7 +188,7 @@ Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, 
     switch (i)
     {
         case 0:
-            return 0;
+            return (t * 1e-5);
             break;
         case 1:
             return 0;
@@ -572,6 +572,7 @@ int main (int argc, char** argv)
     BCFunctionBase patchFun (patchDispFun);
     
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
 
     
     
