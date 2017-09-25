@@ -143,9 +143,9 @@ normalEssentialBCVector (boost::shared_ptr<VectorEpetra>& pxVectorPtr, const boo
 
 
             //int globalId = ibF + bcBase->component(iDim) * totalDof;
-            (*pxVectorPtr)[iGID] += normal(iDim) * faceArea;
-            (*pxVectorPtr)[jGID] += normal(iDim) * faceArea;
-            (*pxVectorPtr)[kGID] += normal(iDim) * faceArea;
+            (*pxVectorPtr)[iGID] += normal(0) * faceArea;
+            (*pxVectorPtr)[jGID] += normal(1) * faceArea;
+            (*pxVectorPtr)[kGID] += normal(2) * faceArea;
 
         }
         
@@ -782,8 +782,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
-            modifyPatchBC(i*1e-10, 0, 100);
-            modifyPatchBC(i*1e-10, 1, 101);
+            modifyPatchBC(i*1e-4, 0, 100);
+            modifyPatchBC(i*1e-4, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
