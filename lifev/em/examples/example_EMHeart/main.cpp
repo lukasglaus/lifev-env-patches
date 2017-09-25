@@ -782,8 +782,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
-            modifyPatchBC(i*1e-4, 0, 100);
-            modifyPatchBC(i*1e-4, 1, 101);
+            modifyPatchBC(i*1e-6, 0, 100);
+            modifyPatchBC(i*1e-6, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
