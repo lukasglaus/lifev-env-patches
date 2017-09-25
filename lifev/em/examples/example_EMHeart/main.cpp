@@ -816,13 +816,13 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
-            modifyPatchBC(i*1e-10, 0, 100);
-            modifyPatchBC(i*1e-10, 1, 101);
+//            modifyPatchBC(i*1e-10, 0, 100);
+//            modifyPatchBC(i*1e-10, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            solver.saveSolution (i-1);
+            //solver.saveSolution (i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
@@ -906,8 +906,8 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
-        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
-        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
+//        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
+//        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
         
 
         //============================================//
