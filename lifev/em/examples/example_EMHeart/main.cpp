@@ -571,7 +571,7 @@ int main (int argc, char** argv)
     
     BCFunctionBase patchFun (patchDispFun);
     
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchDisp, 3);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
 
     
     
