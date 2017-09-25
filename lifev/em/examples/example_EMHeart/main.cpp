@@ -540,9 +540,9 @@ int main (int argc, char** argv)
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
         normalEssentialBCVector(patchVecPtr[patchNr], solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
-        std::cout << "normalEBCdone!" << std::endl;
 
         std::cout << "normalEBCV done!" << std::endl;
+
         *patchVecPtr[patchNr] *= patchNormalDisp;
         patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
         solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
@@ -782,8 +782,8 @@ int main (int argc, char** argv)
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
             
-            modifyPatchBC(i*1e-6, 0, 100);
-            modifyPatchBC(i*1e-6, 1, 101);
+            modifyPatchBC(i*1e-10, 0, 100);
+            modifyPatchBC(i*1e-10, 1, 101);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
