@@ -205,7 +205,7 @@ Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, 
 
 Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
-    return -0.02;// (t * 1e-5);
+    return -0.001;// (t * 1e-5);
 }
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
