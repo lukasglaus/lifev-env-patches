@@ -154,23 +154,23 @@ normalEssentialBCVector (boost::shared_ptr<VectorEpetra>& pxVectorPtr, const boo
     std::cout << " d) "  << z++ << std::endl;
 
     // Normalize normal vectors
-//    auto nPxCompLocalDof = pxVectorPtr->epetraVector().MyLength() / 3;
-//    for (int j (0); j < nPxCompLocalDof; j++)
-//    {
-//        UInt iGID = pxVectorPtr->blockMap().GID (j);
-//        UInt jGID = pxVectorPtr->blockMap().GID (j + nPxCompLocalDof);
-//        UInt kGID = pxVectorPtr->blockMap().GID (j + 2 * nPxCompLocalDof);
-//
-//        Vector3D normal;
-//        normal(0) = pxVectorPtr[iGID];
-//        normal(1) = pxVectorPtr[jGID];
-//        normal(2) = pxVectorPtr[kGID];
-//        Real normalVectorLength = normal.norm();
-//
-//        pxVectorPtr[iGID] = pxVectorPtr[iGID] / normalVectorLength;
-//        pxVectorPtr[jGID] = pxVectorPtr[jGID] / normalVectorLength;
-//        pxVectorPtr[kGID] = pxVectorPtr[kGID] / normalVectorLength;
-//    }
+    auto nPxCompLocalDof = pxVectorPtr->epetraVector().MyLength() / 3;
+    for (int j (0); j < nPxCompLocalDof; j++)
+    {
+        UInt iGID = pxVectorPtr->blockMap().GID (j);
+        UInt jGID = pxVectorPtr->blockMap().GID (j + nPxCompLocalDof);
+        UInt kGID = pxVectorPtr->blockMap().GID (j + 2 * nPxCompLocalDof);
+
+        Vector3D normal;
+        normal(0) = (*pxVectorPtr)[iGID];
+        normal(1) = (*pxVectorPtr)[jGID];
+        normal(2) = (*pxVectorPtr)[kGID];
+        Real normalVectorLength = normal.norm();
+
+        (*pxVectorPtr)[iGID] = (*pxVectorPtr)[iGID] / normalVectorLength;
+        (*pxVectorPtr)[jGID] = (*pxVectorPtr)[jGID] / normalVectorLength;
+        (*pxVectorPtr)[kGID] = (*pxVectorPtr)[kGID] / normalVectorLength;
+    }
 
     std::cout << mesh->comm()->MyPID() << " e) "  << z++ << std::endl;
 
