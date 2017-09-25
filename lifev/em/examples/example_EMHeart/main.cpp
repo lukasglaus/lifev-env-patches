@@ -203,6 +203,10 @@ Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, 
     }
 }
 
+Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+{
+    return (t * 1e-5);
+}
 
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
@@ -570,11 +574,13 @@ int main (int argc, char** argv)
     };
     
     BCFunctionBase patchFun (patchDispFun);
-    
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
+    BCFunctionBase patchFunNormal (patchDispFunNormal);
 
-    
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
+
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
+
     
     //============================================//
     // Pressure b.c. on endocardia
