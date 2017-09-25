@@ -183,6 +183,27 @@ normalEssentialBCVector (boost::shared_ptr<VectorEpetra>& pxVectorPtr, const boo
 //    return p2NormalVectorPtr;
 }
 
+Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+{
+    switch (i)
+    {
+        case 0:
+            return 0;
+            break;
+        case 1:
+            return 0;
+            break;
+        case 2:
+            return 0;
+            break;
+        default:
+            ERROR_MSG ("This entry is not allowed");
+            return 0.;
+            break;
+    }
+}
+
+
 Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
 {
     bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
@@ -533,20 +554,24 @@ int main (int argc, char** argv)
     
     std::vector<std::string> patchNames {"Patch1", "Patch2"};
     
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
-    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
+//    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
+//    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
 
 
     auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
     {
-        normalEssentialBCVector(patchVecPtr[patchNr], solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
-
-        std::cout << "normalEBCV done!" << std::endl;
-
-        *patchVecPtr[patchNr] *= patchNormalDisp;
-        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
+//        normalEssentialBCVector(patchVecPtr[patchNr], solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
+//
+//        std::cout << "normalEBCV done!" << std::endl;
+//
+//        *patchVecPtr[patchNr] *= patchNormalDisp;
+//        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
+//        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
     };
+    
+    
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchDispFun, 3);
+
     
     
     //============================================//
