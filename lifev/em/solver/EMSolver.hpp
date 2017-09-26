@@ -547,15 +547,16 @@ void
 EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
 {
     M_data.setup (dataFile);
-    setupElectroSolver ( dataFile );
+    
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "\nEMSolver - endtime = " << M_data.activationParameter<Real>("endtime");
-        std::cout << "\nEMS - electro solver setup done! ";
+        std::cout << "\nEMSolver: setup ... ";
+        std::cout << "endtime = " << M_data.activationParameter<Real>("endtime");
     }
+    
+    setupElectroSolver ( dataFile );
     setupMechanicalSolver ( dataFile );
     setupActivation ( M_electroSolverPtr -> potentialPtr() ->map() );
-
 }
 
 
@@ -598,7 +599,7 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
 //    }
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "... `Done\n";
+        std::cout << "... done\n";
     }
 
 }
@@ -661,12 +662,18 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalBC (std::string data_file_name,
 {
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "EMS - setting up bc interface\n";
+        std::cout << "\nEMSolver: setupMechanicalBC ... ";
     }
+
     M_bcInterfacePtr.reset (new bcInterface_Type() );
     M_bcInterfacePtr->createHandler();
     M_bcInterfacePtr->fillHandler ( data_file_name, "solid" );
     // M_bcInterfacePtr->handler()->bcUpdate ( *dFESpace->mesh(), dFESpace->feBd(), dFESpace->dof() );
+    
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "done";
+    }
 }
 
     
@@ -699,7 +706,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
 {
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "EMS - setting up exporters\n";
+        std::cout << "\nEMSolver: setupExporters ... ";
     }
     
     // Electrophysiology
@@ -845,6 +852,11 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
                                             M_EMStructuralOperatorPtr -> dispFESpacePtr(),
                                             M_EMStructuralOperatorPtr -> EMMaterial() -> sheetVectorPtr(),
                                             UInt (0) );
+    
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "done";
+    }
 }
 
 template<typename Mesh , typename ElectroSolver>
@@ -916,8 +928,11 @@ template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, Real time )
 {
-    if (M_commPtr -> MyPID() == 0) std::cout << "\nSolve Electrophysiology:" << "\n";
-
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "\nEMSolver: solveElectrophysiology ... ";
+    }
+    
     setAppliedCurrent ( stimulus, time );
 
     M_electroSolverPtr -> solveOneStepGatingVariablesFE();
@@ -926,15 +941,30 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     M_electroSolverPtr -> solveOneICIStep();
     
     //M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "done";
+    }
 }
 
 template<typename Mesh , typename ElectroSolver>
 void
 EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
+    
 {
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "\nEMSolver: solveActivation ... ";
+    }
+    
     computeI4f (M_activationModelPtr->I4f(), *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), M_EMStructuralOperatorPtr->dispFESpacePtr());
 
     M_activationModelPtr -> solveModelPathology ( dt, M_fullMeshPtr, M_EMStructuralOperatorPtr -> dispFESpacePtr() );
+    
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "done";
+    }
 }
 
 template<typename Mesh , typename ElectroSolver>
