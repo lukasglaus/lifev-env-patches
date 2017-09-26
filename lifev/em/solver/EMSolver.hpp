@@ -147,7 +147,11 @@ public:
 
     void loadMesh (std::string meshName, std::string meshPath)
     {
-        std::cout << "EMS - Loading mesh\n";
+        if (M_commPtr -> MyPID() == 0)
+        {
+            std::cout << "\nEMSolver: loadMesh ...";
+        }
+        
         M_fullMeshPtr.reset( new Mesh() );
         MeshUtility::loadMesh (M_localMeshPtr, M_fullMeshPtr, meshName, meshPath);
         if(M_commPtr)
@@ -159,7 +163,11 @@ public:
         {
         	M_commPtr = M_localMeshPtr -> comm();
         }
-
+        
+        if (M_commPtr -> MyPID() == 0)
+        {
+            std::cout << " done";
+        }
     }
 
     void setupElectroExporter ( std::string problemFolder = "./", std::string outputFileName = "ElectroSolution" )
@@ -226,12 +234,19 @@ public:
     {
         if (M_commPtr -> MyPID() == 0)
         {
-            std::cout << "EMS - setting up activation solver\n";
+            std::cout << "\nEMSolver: setupActivation ... ";
         }
+        
         M_activationModelPtr.reset ( Activation::EMActivationFactory::instance().createObject ( M_data.activationParameter<std::string>( "ActivationModel" ) ) );
         M_activationModelPtr->setup(M_data, map);
         M_activationModelPtr->setVariablesPtr(*M_electroSolverPtr);
         M_activationModelPtr->setI4fPtr( M_EMStructuralOperatorPtr -> I4fPtr() );
+
+        if (M_commPtr -> MyPID() == 0)
+        {
+            std::cout << " done";
+        }
+
     }
 
     void setup (GetPot& dataFile, Teuchos::ParameterList& list)
@@ -567,18 +582,13 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
 {
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "EMS - creating ionic model ";
+        std::cout << "\nEMSolver: setupElectroSolver ... ";
     }
 	ionicModelPtr_Type ionicModelPtr;
 	std::string ionicModelName = M_data.electroParameter<std::string>("IonicModel");
 	ionicModelPtr.reset (ionicModel_Type::IonicModelFactory::instance().createObject ( ionicModelName ) );
 
 //    M_electroSolverPtr.reset( new ElectroSolver ( meshName, meshPath, dataFile , ionicModelPtr ) );
-
-    if (M_commPtr -> MyPID() == 0)
-    {
-        std::cout << "EMS - setting up electrophysiology solver ";
-    }
 
     M_electroSolverPtr.reset ( new ElectroSolver() );
     M_electroSolverPtr -> setIonicModelPtr (ionicModelPtr);
@@ -599,7 +609,7 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
 //    }
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "... done\n";
+        std::cout << " done";
     }
 
 }
