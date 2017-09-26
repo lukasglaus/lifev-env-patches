@@ -565,7 +565,7 @@ EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
     
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "\n\nEMSolver: setup (simulation endtime = " << M_data.activationParameter<Real>("endtime") << ")" << " ... " << '\r' << std::flush;
+        std::cout << "\n\nEMSolver: setup (simulation endtime = " << M_data.activationParameter<Real>("endtime") << ")" << " ...";
     }
     
     setupElectroSolver ( dataFile );
@@ -574,7 +574,7 @@ EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
     
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "EMSolver: setup (simulation endtime = " << M_data.activationParameter<Real>("endtime") << ")" << " - done" << '\r' << std::flush;
+        std::cout << "\nEMSolver: setup (simulation endtime = " << M_data.activationParameter<Real>("endtime") << ")" << " - done" << '\r' << std::flush;
     }
 
 }

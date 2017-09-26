@@ -369,10 +369,7 @@ int main (int argc, char** argv)
     //============================================//
     // Resize mesh
     //============================================//
-    displayer.leaderPrint ("\nResizing mesh ... ");
-    
     if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh ... " << '\r' << std::flush;
-
 
     std::vector<Real> scale (3, dataFile("solid/space_discretization/mesh_scaling", 1.0));
     std::vector<Real> rotate { dataFile("solid/space_discretization/mesh_rotation_0", 0.0) , dataFile("solid/space_discretization/mesh_rotation_1", 0.0) , dataFile("solid/space_discretization/mesh_rotation_2", 0.0) };
@@ -390,13 +387,9 @@ int main (int argc, char** argv)
     //============================================//
     // Setup solver (including fe-spaces & b.c.)
     //============================================//
-    displayer.leaderPrint ("\nSetting up EM solver ... ");
-    
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
     solver.setup (dataFile);
     
-    displayer.leaderPrint ("\ndone!");
-
     
     //============================================//
     // Setup anisotropy vectors
