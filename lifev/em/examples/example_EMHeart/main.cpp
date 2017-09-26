@@ -629,7 +629,7 @@ int main (int argc, char** argv)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
-            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
+            *pVecPtrs[i] = 0.;//- bcValues[ ventIdx[i] ] * 1333.224;
             // Check coordinates of pVecPtrs and assign only values to certain cells
             // Implement vector for both natural and essential b.c.
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
@@ -804,28 +804,28 @@ int main (int argc, char** argv)
         LifeChrono chronoPreload;
         chronoPreload.start();
         
-        for (int i (1); i <= preloadSteps; i++)
-        {
-            if ( 0 == comm->MyPID() )
-            {
-                std::cout << "\n*****************************************************************";
-                std::cout << "\nPreload step: " << i << " / " << preloadSteps;
-                std::cout << "\n*****************************************************************\n";
-            }
-            
-            // Update pressure b.c.
-            modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
-            
-//            modifyPatchBC(i*1e-10, 0, 100);
-//            modifyPatchBC(i*1e-10, 1, 101);
-
-            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(i+150);
-            
-            // Solve mechanics
-            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            solver.solveMechanics();
-            solver.saveSolution (i-1);
-        }
+//        for (int i (1); i <= preloadSteps; i++)
+//        {
+//            if ( 0 == comm->MyPID() )
+//            {
+//                std::cout << "\n*****************************************************************";
+//                std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+//                std::cout << "\n*****************************************************************\n";
+//            }
+//
+//            // Update pressure b.c.
+//            modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
+//
+////            modifyPatchBC(i*1e-10, 0, 100);
+////            modifyPatchBC(i*1e-10, 1, 101);
+//
+//            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(i+150);
+//
+//            // Solve mechanics
+//            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+//            solver.solveMechanics();
+//            solver.saveSolution (i-1);
+//        }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
         auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
