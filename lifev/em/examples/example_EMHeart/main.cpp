@@ -313,9 +313,7 @@ int main (int argc, char** argv)
 #endif
 
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
-    
     Displayer displayer ( comm );
-    displayer.leaderPrint ("\nUsing MPI\n");
 
     
     //============================================//
@@ -362,20 +360,19 @@ int main (int argc, char** argv)
     //============================================//
     // Load mesh
     //============================================//
-    displayer.leaderPrint ("\nLoading mesh ... ");
-
     std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
     std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
     
     solver.loadMesh (meshName, meshPath);
     
-    displayer.leaderPrint ("\ndone!");
-
     
     //============================================//
     // Resize mesh
     //============================================//
     displayer.leaderPrint ("\nResizing mesh ... ");
+    
+    if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh ... " << '\r' << std::flush;
+
 
     std::vector<Real> scale (3, dataFile("solid/space_discretization/mesh_scaling", 1.0));
     std::vector<Real> rotate { dataFile("solid/space_discretization/mesh_rotation_0", 0.0) , dataFile("solid/space_discretization/mesh_rotation_1", 0.0) , dataFile("solid/space_discretization/mesh_rotation_2", 0.0) };
@@ -387,7 +384,7 @@ int main (int argc, char** argv)
     transformerFull.transformMesh (scale, rotate, translate);
     transformerLocal.transformMesh (scale, rotate, translate);
     
-    displayer.leaderPrint ("\ndone!");
+    displayer.leaderPrint ("done");
     
     
     //============================================//
