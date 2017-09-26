@@ -82,7 +82,7 @@ void printMeshInfos ( boost::shared_ptr<RegionMeshType > mesh )
 #endif
     Displayer displayer ( Comm );
     MeshUtility::MeshStatistics::meshSize meshSize = MeshUtility::MeshStatistics::computeSize ( *mesh );
-    displayer.leaderPrint ( "Mesh size (max): ", meshSize.maxH, "\n" );
+    displayer.leaderPrint ( "\nMesh size (max): ", meshSize.maxH, "\n" );
     displayer.leaderPrint ( "Mesh size (min): ", meshSize.minH, "\n" );
     displayer.leaderPrint ( "Mesh size (av.): ", meshSize.meanH, "\n" );
 }
