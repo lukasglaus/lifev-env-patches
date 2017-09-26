@@ -819,10 +819,12 @@ int main (int argc, char** argv)
 //            modifyPatchBC(i*1e-10, 0, 100);
 //            modifyPatchBC(i*1e-10, 1, 101);
 
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(i+150);
+            
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            //solver.saveSolution (i-1);
+            solver.saveSolution (i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
