@@ -384,7 +384,7 @@ int main (int argc, char** argv)
     transformerFull.transformMesh (scale, rotate, translate);
     transformerLocal.transformMesh (scale, rotate, translate);
     
-    if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh done" << '\r' << std::flush;
+    if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
 
     
     //============================================//

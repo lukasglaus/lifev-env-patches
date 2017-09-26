@@ -565,7 +565,7 @@ EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
     
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "\nEMSolver: setup ... ";
+        std::cout << "\n\nEMSolver: setup ... ";
         std::cout << "endtime = " << M_data.activationParameter<Real>("endtime");
     }
     
