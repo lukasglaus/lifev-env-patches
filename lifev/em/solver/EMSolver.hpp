@@ -149,7 +149,7 @@ public:
     {
         if (M_commPtr -> MyPID() == 0)
         {
-            std::cout << "\nEMSolver: loadMesh ... " << '\r' << std::flush;
+            std::cout << "\n\nEMSolver: loadMesh ... " << '\r' << std::flush;
         }
 
         M_fullMeshPtr.reset( new Mesh() );
@@ -166,7 +166,7 @@ public:
         
         if (M_commPtr -> MyPID() == 0)
         {
-            std::cout << "\EMSolver: loadMesh - done" << '\r' << std::flush;
+            std::cout << "EMSolver: loadMesh - done" << '\r' << std::flush;
         }
 
     }

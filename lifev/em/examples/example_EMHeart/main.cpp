@@ -315,6 +315,7 @@ int main (int argc, char** argv)
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
     Displayer displayer ( comm );
 
+    displayer.leaderPrint("EMHeart running ...");
     
     //============================================//
     // Read data file and create output folder
@@ -425,24 +426,16 @@ int main (int argc, char** argv)
     //============================================//
     // Building Matrices
     //============================================//
-    displayer.leaderPrint ("\nBuilding matrices ... ");
-
     solver.oneWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
-    displayer.leaderPrint ("\ndone!");
-
     
     //============================================//
     // Setup exporters for EMSolver
     //============================================//
-    displayer.leaderPrint ("\nSetting up exporters ... ");
-
     solver.setupExporters (problemFolder);
-    
-    displayer.leaderPrint ("\ndone!");
-    
+        
     
     //============================================//
     // Electric stimulus function
