@@ -519,7 +519,7 @@ int main (int argc, char** argv)
     };
     
     
-    solver.fullMeshPtr()->showMe();
+    if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
         
     Vector3D center1, center2;
     Real radius1 = 2;
@@ -726,7 +726,7 @@ int main (int argc, char** argv)
         //std::cout << "\nJFe   = " << JFe;
         //std::cout << "\nJCirc = " << JCirc;
         //std::cout << "\nJR    = " << JR;
-        std::cout << "\n==============================================================="; }
+        std::cout << "\n===============================================================\n"; }
     };
     
     

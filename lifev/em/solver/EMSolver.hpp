@@ -612,8 +612,9 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
 {
     if (M_commPtr -> MyPID() == 0)
     {
-        std::cout << "EMS - setting up mechanical solver\n";
+        std::cout << "\nEMSolver: setupMechanicalSolver ... ";
     }
+    
     boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
     dataStructure->setup (dataFile);
 
@@ -642,6 +643,12 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
     M_wteTotal.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, M_EMStructuralOperatorPtr->EMMaterial());
 //    M_wtePassive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "passive");
 //    M_wteActive.setup(dataStructure, dFESpace, dETFESpace, M_commPtr, 0, "active");
+    
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "done";
+    }
+
 }
 
 /////////////////////
