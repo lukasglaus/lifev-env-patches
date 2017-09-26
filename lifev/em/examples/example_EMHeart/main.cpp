@@ -384,8 +384,8 @@ int main (int argc, char** argv)
     transformerFull.transformMesh (scale, rotate, translate);
     transformerLocal.transformMesh (scale, rotate, translate);
     
-    displayer.leaderPrint ("done");
-    
+    if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh done" << '\r' << std::flush;
+
     
     //============================================//
     // Setup solver (including fe-spaces & b.c.)
