@@ -1432,7 +1432,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
 {
     if (displayer->isLeader())
     {
-        std::cout << "\EMStructuralConstitutiveLaw: setup ... " << '\r' << std::flush;
+        std::cout << "\nEMStructuralConstitutiveLaw: setup ... " << '\r' << std::flush;
     }
     
     this->M_displayer = displayer;
@@ -1461,7 +1461,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     
     if (displayer->isLeader())
     {
-        std::cout << "EMStructuralConstitutiveLaw: setup - Active strain Holzapfel-Ogden material" << '\r' << std::flush;
+        std::cout << "EMStructuralConstitutiveLaw: setup - Orthotropic active strain Holzapfel-Ogden material created" << '\r' << std::flush;
     }
 
 }

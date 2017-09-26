@@ -566,12 +566,18 @@ EMSolver<Mesh, ElectroSolver>::setup ( GetPot& dataFile )
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << "\n\nEMSolver: setup ... ";
-        std::cout << "endtime = " << M_data.activationParameter<Real>("endtime");
     }
     
     setupElectroSolver ( dataFile );
     setupMechanicalSolver ( dataFile );
     setupActivation ( M_electroSolverPtr -> potentialPtr() ->map() );
+    
+    if (M_commPtr -> MyPID() == 0)
+    {
+        std::cout << "\nEMSolver: setup - done ";
+        std::cout << "(simulation endtime = " << M_data.activationParameter<Real>("endtime") << ")";
+    }
+
 }
 
 
@@ -607,6 +613,7 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
         }
         M_electroSolverPtr ->  setup (dataFile, ionicModelPtr->Size() );
 //    }
+    
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << " done";

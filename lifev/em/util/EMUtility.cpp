@@ -61,8 +61,7 @@ std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
     
     if (comm.MyPID() == 0)
     {
-        std::cout << "\nEMUtility: createOutputFolder ... ";
-        std::cout << "(with name: " << problemFolder << ") ";
+        std::cout << "\nEMUtility: createOutputFolder (with name: " << problemFolder << ") ... " << '\r' << std::flush;
     }
     
     if ( problemFolder.compare ("./") )
@@ -77,7 +76,7 @@ std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
     
     if (comm.MyPID() == 0)
     {
-        std::cout << "done";
+        std::cout << "EMUtility: createOutputFolder (with name: " << problemFolder << ") - done " << '\r' << std::flush;
     }
     
     return problemFolder;
