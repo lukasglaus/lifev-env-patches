@@ -295,8 +295,13 @@ public:
 						   const std::string& postDir = "./",
 						   const std::string& polynomialDegree = "P1"  )
     {
+        if (M_commPtr -> MyPID() == 0) std::cout << "\nsetupFiberVector ... " << '\r' << std::flush;
+
     	setupMechanicalFiberVector(fileName, fieldName, postDir, polynomialDegree);
     	M_electroSolverPtr->setFiberPtr(getMechanicsFibers());
+        
+        if (M_commPtr -> MyPID() == 0) std::cout << "setupFiberVector - done" << '\r' << std::flush;
+
     }
 
     void setupMechanicalFiberVector( const std::string& fileName,
@@ -304,6 +309,7 @@ public:
 									 const std::string& postDir = "./",
                                      const std::string& polynomialDegree = "P1"  )
     {
+        if (M_commPtr -> MyPID() == 0) std::cout << "\nsetupMechanicalFiberVector ... " << '\r' << std::flush;
         
         ElectrophysiologyUtility::importVectorField (getMechanicsFibers(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
         
@@ -314,6 +320,7 @@ public:
 //            vector_Type p1FibersRep = M_EMStructuralOperatorPtr -> dispFESpacePtr() -> feToFEInterpolate(p2FESpace, p2FibersRep);
 //            getMechanicsFibers().reset ( new vector_Type (p1FibersRep, Unique) );
 //        }
+        if (M_commPtr -> MyPID() == 0) std::cout << "setupMechanicalFiberVector - done" << '\r' << std::flush;
 
     }
 
@@ -322,7 +329,11 @@ public:
 									 const std::string& postDir = "./",
                                      const std::string& polynomialDegree = "P1"  )
     {
+        if (M_commPtr -> MyPID() == 0) std::cout << "\nsetupMechanicalSheetVector ... " << '\r' << std::flush;
+
         ElectrophysiologyUtility::importVectorField (getMechanicsSheets(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
+        if (M_commPtr -> MyPID() == 0) std::cout << "setupMechanicalSheetVector - done" << '\r' << std::flush;
+
     }
 
     void setupElectroFiberVector( const std::string& fileName,

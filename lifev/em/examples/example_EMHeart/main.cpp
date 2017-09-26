@@ -394,8 +394,6 @@ int main (int argc, char** argv)
     //============================================//
     // Setup anisotropy vectors
     //============================================//
-    displayer.leaderPrint ("\nSetting up anisotropy vectors ... ");
-
     bool anisotropy = dataFile ( "solid/space_discretization/anisotropic", false );
 
     if ( anisotropy )
@@ -417,8 +415,6 @@ int main (int argc, char** argv)
         solver.setupSheetVector (0., 1., 0.);
     }
     
-    displayer.leaderPrint ("\ndone!");
-
     
     //============================================//
     // Initialize electrophysiology
