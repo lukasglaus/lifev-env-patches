@@ -1430,7 +1430,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                                                const dataPtr_Type&                         dataMaterial,
                                                const displayerPtr_Type&                    displayer)
 {
-    if (M_dispFESpace.comm().MyPID() == 0)
+    if (this->M_dispFESpace.comm().MyPID() == 0)
     {
         std::cout << "\EMStructuralConstitutiveLaw: setup ... " << '\r' << std::flush;
     }
@@ -1459,7 +1459,7 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
     std::string passiveMaterialType ( dataMaterial -> passiveType() );
     std::string activeStressMaterialType (dataMaterial -> activeStressType() );
     
-    if (M_dispFESpace.comm().MyPID() == 0)
+    if (this->M_dispFESpace.comm().MyPID() == 0)
     {
         std::cout << "EMStructuralConstitutiveLaw: setup - Active strain Holzapfel-Ogden material" << '\r' << std::flush;
     }
