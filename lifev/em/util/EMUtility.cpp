@@ -58,7 +58,13 @@ std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
     //  std::string problemFolder = "Output";//command_line.follow("Output", 2, "-o","--output");//) command_line.follow ( "Output", 2, "-o", "--output" );
     std::string problemFolder = command_line.follow ("Output", 2, "-o", "--output"); //) command_line.follow ( "Output", 2, "-o", "--output" );
     // Create the problem folder
-    std::cout << "EMU - creating output folder: " << problemFolder << "\n";
+    
+    if (comm.MyPID() == 0)
+    {
+        std::cout << "\nEMUtility: createOutputFolder ... ";
+        std::cout << "(with name: " << problemFolder << ") ";
+    }
+    
     if ( problemFolder.compare ("./") )
     {
         problemFolder += "/";
@@ -68,6 +74,12 @@ std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
             mkdir ( problemFolder.c_str(), 0777 );
         }
     }
+    
+    if (comm.MyPID() == 0)
+    {
+        std::cout << "done";
+    }
+    
     return problemFolder;
 }
 
