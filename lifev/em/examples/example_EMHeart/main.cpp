@@ -419,12 +419,8 @@ int main (int argc, char** argv)
     //============================================//
     // Initialize electrophysiology
     //============================================//
-    displayer.leaderPrint ("\nInitialize electrophysiology ... ");
-
     solver.initialize();
     
-    displayer.leaderPrint ("\ndone!");
-
     
     //============================================//
     // Building Matrices
