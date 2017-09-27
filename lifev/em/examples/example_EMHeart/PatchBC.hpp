@@ -20,16 +20,25 @@ namespace LifeV
 class PatchBC
 {
 public:
+    
     typedef EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > > EMSolverType;
     typedef boost::function<Real ( const Real&, const Real&, const Real&, const Real&, const ID& ) > function_Type;
     
     PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
-    m_solver (solver),
-    m_bcName (bcName),
-    m_prevFaceFlag (prevFaceFlag),
-    m_patchFlag (patchFlag)
+        m_solver (solver),
+        m_bcName (bcName),
+        m_prevFaceFlag (prevFaceFlag),
+        m_patchFlag (patchFlag)
     {}
     
+    PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag, BCFunctionBase& bcFunctionBase) :
+        m_solver (solver),
+        m_bcName (bcName),
+        m_prevFaceFlag (prevFaceFlag),
+        m_patchFlag (patchFlag),
+        m_bcFunctionBase (bcFunctionBase)
+    {}
+
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
         m_bcFunctionBase.setFunction(bcFunctionBase);
@@ -44,31 +53,6 @@ public:
     
 protected:
     
-    virtual void createPatchArea() = 0;
-    virtual void addPatchBC() = 0;
-    
-    EMSolverType m_solver;
-    const std::string m_bcName;
-    const int m_prevFaceFlag;
-    const int m_patchFlag;
-    BCFunctionBase m_bcFunctionBase;
-};
-
-
-
-class PatchCircleBCEssentialNormal : public PatchBC
-{
-public:
-    using PatchBC::PatchBC;
-    typedef PatchBC::function_Type function_Type;
-    
-    void setShapeParameters(const Vector3D& center, const Real& radius)
-    {
-        m_center = center;
-        m_radius = radius;
-    }
-    
-protected:
     virtual void createPatchArea()
     {
         for (auto& mesh : m_solver.mesh())
@@ -101,6 +85,35 @@ protected:
             }
         }
     }
+
+    virtual void createPatchArea() = 0;
+    virtual void addPatchBC() = 0;
+    
+    EMSolverType m_solver;
+    const std::string m_bcName;
+    const int m_prevFaceFlag;
+    const int m_patchFlag;
+    BCFunctionBase m_bcFunctionBase;
+    
+    Vector3D m_center { 0. , 0. , 0. };
+    Real m_radius { 0. };
+};
+
+    
+class PatchCircleBCEssentialNormal : public PatchBC
+{
+public:
+    
+    using PatchBC::PatchBC;
+    typedef PatchBC::function_Type function_Type;
+    
+    void setShapeParameters(const Vector3D& center, const Real& radius)
+    {
+        m_center = center;
+        m_radius = radius;
+    }
+    
+protected:
     
     virtual void addPatchBC()
     {
@@ -109,8 +122,6 @@ protected:
         //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
     }
     
-    Vector3D m_center { 0. , 0. , 0. };
-    Real m_radius { 0. };
 };
     
 }
