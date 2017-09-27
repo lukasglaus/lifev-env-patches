@@ -554,8 +554,8 @@ int main (int argc, char** argv)
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
         
-        Vector3D m_center(0., 0., 0.);
-        Real m_radius(0.);
+        Vector3D m_center;//(0., 0., 0.);
+        Real m_radius;//(0.);
     };
     
     
