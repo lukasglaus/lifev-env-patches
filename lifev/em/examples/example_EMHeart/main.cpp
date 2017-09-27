@@ -564,7 +564,7 @@ int main (int argc, char** argv)
 
         virtual void addPatchBC()
         {
-            m_bcFunctionBase = bcFunction;
+            m_bcFunctionBase.setFunction(bcFunction);
             m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
