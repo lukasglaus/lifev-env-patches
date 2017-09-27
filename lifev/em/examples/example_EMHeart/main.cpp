@@ -564,7 +564,7 @@ int main (int argc, char** argv)
 
         virtual void addPatchBC()
         {
-            BCFunctionBase mf_bcFunctionBase (directionFct);
+            BCFunctionBase mf_bcFunctionBase (patchDispFunNormal);
             m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, mf_bcFunctionBase);
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
