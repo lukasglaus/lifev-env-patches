@@ -14,6 +14,9 @@
 #endif /* PatchBC_hpp */
 
 
+namespace LifeV
+{
+
 class PatchBC
 {
 public:
@@ -110,3 +113,5 @@ protected:
     Vector3D m_center { 0. , 0. , 0. };
     Real m_radius { 0. };
 };
+    
+}
