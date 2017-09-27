@@ -502,7 +502,7 @@ int main (int argc, char** argv)
         BCFunctionBase m_bcFunctionBase;
     };
     
-    class PatchCircleBCEssentialNormal
+    class PatchCircleBCEssentialNormal : public PatchBC
     {
     public:
         using PatchBC::PatchBC
