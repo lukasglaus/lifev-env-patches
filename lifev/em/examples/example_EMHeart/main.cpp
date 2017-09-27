@@ -523,6 +523,7 @@ int main (int argc, char** argv)
     {
     public:
         using PatchBC::PatchBC;
+        typedef PatchBC::function_Type function_Type;
         
         void setShapeParameters(const Vector3D& center, const Real& radius)
         {
