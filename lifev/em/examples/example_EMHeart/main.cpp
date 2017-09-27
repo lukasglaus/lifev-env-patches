@@ -490,7 +490,7 @@ int main (int argc, char** argv)
             return ( time ? force : 0 );
         }
         
-        virtual Real bcFunction(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+        Real bcFunction(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
         {
             return (-0.000 - 0.00001*t);// sinusSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
         }
@@ -554,8 +554,8 @@ int main (int argc, char** argv)
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
         
-        Vector3D m_center;//(0., 0., 0.);
-        Real m_radius;//(0.);
+        Vector3D m_center ( 0. , 0. , 0.);
+        Real m_radius ( 0. );
     };
     
     
