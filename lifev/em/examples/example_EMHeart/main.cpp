@@ -470,17 +470,19 @@ int main (int argc, char** argv)
             m_bcName (bcName),
             m_prevFaceFlag (prevFaceFlag),
             m_patchFlag (patchFlag)
+        {}
+        
+        void addBC()
         {
             createPatch();
             addPatchBC();
         }
         
-        virtual void createPatch() = 0;
-        
-        virtual void addPatchBC() = 0;
-        
     protected:
         
+        virtual void createPatch() = 0;
+        virtual void addPatchBC() = 0;
+
         Real sinusSquared(const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
         {
             bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
@@ -498,12 +500,18 @@ int main (int argc, char** argv)
         const int m_prevFaceFlag;
         const int m_patchFlag;
         BCFunctionBase m_bcFunctionBase;
-    }
+    };
     
     class PatchCircleBCEssentialNormal
     {
     public:
         using PatchBC::PatchBC
+        
+        void setShapeParameters(const Vector3D& center, const Real& radius)
+        {
+            m_center = center;
+            m_radius = radius;
+        }
      
     protected:
         virtual void createPatch()
@@ -546,14 +554,8 @@ int main (int argc, char** argv)
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
         
-        void setShapeParameters(const Vector3D& center, const Real& radius)
-        {
-            m_center = center;
-            m_radius = radius;
-        }
-        
-        Vector3D m_center;
-        Real m_radius;
+        Vector3D m_center(0., 0., 0.);
+        Real m_radius(0.);
     };
     
     
