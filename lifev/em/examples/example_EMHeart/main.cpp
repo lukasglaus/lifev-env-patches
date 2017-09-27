@@ -529,47 +529,15 @@ int main (int argc, char** argv)
     PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
     PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
 
-    //patch1.setShapeParameters(center1, radius1);
-    //patch1.setup(patchDispFunNormal);
+    patch1.setShapeParameters(center1, radius1);
+    patch1.setup(patchDispFunNormal);
+    
+    patch2.setShapeParameters(center2, radius2);
+    patch2.setup(patchDispFunNormal);
     
     //============================================//
-    // Create force patches b.c.
+    // Create force patch b.c.
     //============================================//
-    std::vector<vectorPtr_Type> patchVecPtr;
-    std::vector<bcVectorPtr_Type> patchBCVecPtr;
-    
-    for (int i(0); i < 2; ++i)
-    {
-//        auto normalVectorPtr = normalEssentialBCVector(solver.fullMeshPtr(), solver.structuralOperatorPtr() -> dispFESpacePtr());
-////        vectorPtr_Type normalVectorPtr (new vector_Type(normalVector));
-//        patchVecPtr.push_back(normalVectorPtr);
-
-        patchVecPtr.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        *patchVecPtr[i] = 0.0;
-        patchBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-    }
-    
-    std::vector<std::string> patchNames {"Patch1", "Patch2"};
-    
-//    solver.bcInterfacePtr() -> handler() -> addBC("Patch1", patchFlag1, Essential, Full, *patchBCVecPtr[0], 3);
-//    solver.bcInterfacePtr() -> handler() -> addBC("Patch2", patchFlag2, Essential, Full, *patchBCVecPtr[1], 3);
-
-
-    auto modifyPatchBC = [&] (const Real& patchNormalDisp, const int& patchNr, const int& flag)
-    {
-//        normalEssentialBCVector(patchVecPtr[patchNr], solver.fullMeshPtr(), solver.structuralOperatorPtr()->dispFESpacePtr(), solver.bcInterfacePtr()->handler()->findBCWithName(patchNames[patchNr]));
-//
-//        std::cout << "normalEBCV done!" << std::endl;
-//
-//        *patchVecPtr[patchNr] *= patchNormalDisp;
-//        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
-//        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
-    };
-    
-//    auto addPatchBC = [] (BCFunctionBase& bcfunction)
-//    {
-//
-//    }
     
     BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
