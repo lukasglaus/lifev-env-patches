@@ -30,13 +30,12 @@ public:
     m_patchFlag (patchFlag)
     {}
     
-    void setBCFunctionBase(function_Type ft)
+    void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFunctionBase (ft);
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
-    void setup(function_Type bcFunctionBase)
+    void setup(BCFunctionBase& bcFunctionBase)
     {
         setBCFunctionBase(bcFunctionBase);
         createPatchArea();

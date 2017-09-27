@@ -526,22 +526,24 @@ int main (int argc, char** argv)
     createPatch(solver, center1, radius1, epicardiumFlag, patchFlag1);
     createPatch(solver, center2, radius2, epicardiumFlag, patchFlag2);
 
-    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
-    PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
-
-    patch1.setShapeParameters(center1, radius1);
-    patch1.setup(patchDispFunNormal);
-    
-    patch2.setShapeParameters(center2, radius2);
-    patch2.setup(patchDispFunNormal);
     
     //============================================//
     // Create force patch b.c.
     //============================================//
     
-    BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
+    BCFunctionBase patchFun (patchDispFun);
     BCFunctionDirectional directionFct (patchDispFunNormal, normalDirection);
+
+    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
+    patch1.setShapeParameters(center1, radius1);
+    patch1.setup(patchFunNormal);
+    
+    PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
+    patch2.setShapeParameters(center2, radius2);
+    patch2.setup(patchFunNormal);
+    
+
 
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
