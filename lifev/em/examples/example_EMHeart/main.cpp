@@ -529,8 +529,8 @@ int main (int argc, char** argv)
     PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
     PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
 
-    patch1.setShapeParameters(center1, radius1);
-    patch1.setup(patchDispFunNormal);
+    //patch1.setShapeParameters(center1, radius1);
+    //patch1.setup(patchDispFunNormal);
     
     //============================================//
     // Create force patches b.c.
@@ -579,10 +579,10 @@ int main (int argc, char** argv)
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
 
     
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Directional, directionFct);
-    
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
+//    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Directional, directionFct);
+//
+//    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
+//    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
 
     
     //============================================//
