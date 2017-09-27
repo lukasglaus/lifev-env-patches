@@ -500,7 +500,7 @@ int main (int argc, char** argv)
             m_bcFunctionBase.setFunction(bcFunctionBase);
         }
 
-        void setup(BCFunctionBase& bcFunctionBase)
+        void setup(function_Type& bcFunctionBase)
         {
             setBCFunctionBase(bcFunctionBase);
             createPatchArea();
