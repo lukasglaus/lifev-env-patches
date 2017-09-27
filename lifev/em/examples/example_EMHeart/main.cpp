@@ -57,135 +57,6 @@ using namespace LifeV;
 // Functions
 //============================================//
 
-const VectorEpetra
-undeformedPositionVector (const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace)
-{
-    // New P1 Space
-    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
-    
-    // Create P1 VectorEpetra
-    VectorEpetra p1PositionVector (p1FESpace.map());
-    
-    // Fill P1 vector with mesh values
-    Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
-    for (int j (0); j < p1nCompLocalDof; j++)
-    {
-        UInt iGID = p1PositionVector.blockMap().GID (j);
-        UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
-        UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
-        
-        p1PositionVector[iGID] = fullMeshPtr->point (iGID).x();
-        p1PositionVector[jGID] = fullMeshPtr->point (iGID).y();
-        p1PositionVector[kGID] = fullMeshPtr->point (iGID).z();
-    }
-    
-    // Interpolate position vector from P1-space to current space
-    VectorEpetra positionVector ( dFeSpace->map() );
-    positionVector = dFeSpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
-    
-    return positionVector;
-}
-
-void
-normalEssentialBCVector (boost::shared_ptr<VectorEpetra>& pxVectorPtr, const boost::shared_ptr<RegionMesh<LinearTetra> > fullMeshPtr, const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const BCBase* bcBase)
-{
-    // New P1 Space
-    FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->map().commPtr() );
-//    auto mesh = fullMeshPtr;
-//    auto mesh = p1FESpace.mesh();
-    auto mesh = dFeSpace->mesh();
-    
-    // Create P1 VectorEpetra
-    VectorEpetra p1NormalVector (p1FESpace.map(), Repeated);
-    p1NormalVector *= 0.;
-    Int nP1CompLocalDof = p1NormalVector.epetraVector().MyLength() / 3;
-    
-    // Create P2 VectorEpetra
-    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr_ (new VectorEpetra( dFeSpace->map(), Repeated ));
-    
-    *pxVectorPtr *= 0;
-    
-    int z(0);
-    std::cout << mesh->comm()->MyPID() << " x) " << z++ << std::endl;
-    
-    // Add are weighted face normal vector to every face-point
-    for (int j(0); j < dFeSpace->mesh()->numBoundaryFacets(); ++j)
-//    for (int j(0); j < bcBase->list_size(); ++j)
-    {
-//        auto* pId = static_cast< const BCIdentifierNatural* > ( (*bcBase)[j] );
-//
-//        auto ibF = pId->id();
-        
-        auto& face = mesh->boundaryFacet(j);
-        
-        auto coord0 = face.point(0).coordinates();
-        auto coord1 = face.point(1).coordinates();
-        auto coord2 = face.point(2).coordinates();
-        
-        auto edge0 = coord0 - coord1;
-        auto edge1 = coord0 - coord2;
-        
-        auto normal = edge0.cross(edge1);
-        auto faceArea = 0.5 * normal.norm();
-        normal.normalize();
-        
-        for (int iDim(0); iDim < 3; ++iDim)
-        {
-
-            UInt iGID = face.point(iDim).id();
-            UInt jGID = face.point(iDim).id() + nP1CompLocalDof;
-            UInt kGID = face.point(iDim).id() + 2*nP1CompLocalDof;
-            
-            
-            std::cout << "\n " << mesh->comm()->MyPID();
-            std::cout << " " << j;
-            std::cout << " " << pxVectorPtr->epetraVector().MyLength() / 3;
-            std::cout << " " << bcBase->list_size();
-            std::cout << " " << iGID;
-            std::cout << " " << jGID;
-            std::cout << " " << kGID;
-
-
-            //int globalId = ibF + bcBase->component(iDim) * totalDof;
-            (*pxVectorPtr)[iGID] += normal(0) * faceArea;
-            (*pxVectorPtr)[jGID] += normal(1) * faceArea;
-            (*pxVectorPtr)[kGID] += normal(2) * faceArea;
-
-        }
-        
-    }
-
-    std::cout << " d) "  << z++ << std::endl;
-
-    // Normalize normal vectors
-    auto nPxCompLocalDof = pxVectorPtr->epetraVector().MyLength() / 3;
-    for (int j (0); j < nPxCompLocalDof; j++)
-    {
-        UInt iGID = pxVectorPtr->blockMap().GID (j);
-        UInt jGID = pxVectorPtr->blockMap().GID (j + nPxCompLocalDof);
-        UInt kGID = pxVectorPtr->blockMap().GID (j + 2 * nPxCompLocalDof);
-
-        Vector3D normal;
-        normal(0) = (*pxVectorPtr)[iGID];
-        normal(1) = (*pxVectorPtr)[jGID];
-        normal(2) = (*pxVectorPtr)[kGID];
-        Real normalVectorLength = normal.norm();
-
-        (*pxVectorPtr)[iGID] = (*pxVectorPtr)[iGID] / normalVectorLength;
-        (*pxVectorPtr)[jGID] = (*pxVectorPtr)[jGID] / normalVectorLength;
-        (*pxVectorPtr)[kGID] = (*pxVectorPtr)[kGID] / normalVectorLength;
-    }
-
-    std::cout << mesh->comm()->MyPID() << " e) "  << z++ << std::endl;
-
-    // Interpolate position vector from P1-space to current space
-//    boost::shared_ptr<VectorEpetra> p2NormalVectorPtr (new VectorEpetra( dFeSpace->map(), Repeated ));
-//    VectorEpetra p2NormalVector ( dFeSpace->map() );
-    //*p2NormalVectorPtr = dFeSpace -> feToFEInterpolate(p1FESpace, p1NormalVector);
-    std::cout << mesh->comm()->MyPID() << " f) "  << z++ << std::endl;
-
-//    return p2NormalVectorPtr;
-}
 
 Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
@@ -259,33 +130,6 @@ Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const
     bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
     return 1.4 * time; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
 }
-
-
-//class Stimulus
-//{
-//public:
-//    Stimulus(Real ta, Real tb, Real y, Real f) :
-//        M_ta    (ta),
-//        M_tb    (tb),
-//        M_y     (y),
-//        M_f     (f)
-//    {}
-//    
-//    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-//    {
-//        bool coords ( Y < M_y );
-//        //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
-//        bool time ( fmod(t, 800.) < M_tb && fmod(t, 800.) > M_ta);
-//        return ( coords && time ? M_f : 0 );
-//    }
-//    
-//private:
-//    Real M_ta;
-//    Real M_tb;
-//    Real M_y;
-//    Real M_f;
-//    
-//};
 
 
 int main (int argc, char** argv)
@@ -467,20 +311,16 @@ int main (int argc, char** argv)
     // Electric stimulus function
     //============================================//
     function_Type stim = &Iapp;
-    
+
     
     //============================================//
-    // Force patch coordinates
+    // Create force patch b.c.
     //============================================//
     Vector3D center1 {-0.7, -6.0, -4.7};
     Vector3D center2 {4.5, -6.0, 1.0};
     Real radius1 = 2;
     Real radius2 = 2;
     
-
-    //============================================//
-    // Create force patch b.c.
-    //============================================//
     BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
     BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
@@ -491,9 +331,11 @@ int main (int argc, char** argv)
     PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
     patch1.setup(patchFunDirectional, center1, radius1);
     
-    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
-    patch2.setup(patchFunNormal, center2, radius2);
+//    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
+//    patch2.setup(patchFunNormal, center2, radius2);
     
+    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
+    patch1.setup(patchFunDirectional, center2, radius2);
     
     //============================================//
     // Pressure b.c. on endocardia
