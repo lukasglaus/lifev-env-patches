@@ -897,6 +897,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << "EMSolver: setupExporters - done" << '\r' << std::flush;
+        std::cout << "\n\n";
     }
 }
 

@@ -1630,7 +1630,7 @@ void
 StructuralOperator<Mesh>::setDataFromGetPot ( const GetPot& dataFile )
 {
 
-    M_Displayer->leaderPrint ( "\nSetting up Preconditioner... \n" );
+    M_Displayer->leaderPrint ( "\nSetting up Preconditioner ... \n" );
     //Setting up the preconditioner
     const std::string preconditionerType = dataFile ( "solid/prec/prectype", "Ifpack" );
     const std::string xmlFileName = dataFile ( "solid/prec/xmlName", "xmlParameters.xml" );
@@ -1656,7 +1656,7 @@ StructuralOperator<Mesh>::setDataFromGetPot ( const GetPot& dataFile )
     }
 
 
-    M_Displayer->leaderPrint ( "Setting up LinearSolver... \n" );
+    M_Displayer->leaderPrint ( "Setting up LinearSolver ... \n" );
 
     Teuchos::RCP< Teuchos::ParameterList > paramList = Teuchos::rcp ( new Teuchos::ParameterList );
     paramList = Teuchos::getParametersFromXmlFile ( xmlFileName );
@@ -1672,7 +1672,7 @@ StructuralOperator<Mesh>::setDataFromGetPot ( const GetPot& dataFile )
 template <typename Mesh>
 void StructuralOperator<Mesh>::updateJacobian ( const vector_Type& sol, matrixPtr_Type& jacobian  )
 {
-    M_Displayer->leaderPrint ("  S-  Solid: Updating JACOBIAN... ");
+    M_Displayer->leaderPrint ("  S-  Solid: Updating JACOBIAN ... ");
 
     LifeChrono chrono;
     chrono.start();

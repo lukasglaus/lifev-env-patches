@@ -339,8 +339,8 @@ int main (int argc, char** argv)
 
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
     Displayer displayer ( comm );
-
-    displayer.leaderPrint("EMHeart running ...");
+    
+    displayer.leaderPrint("\n\nEMHeart running ...\n\n");
     
     //============================================//
     // Read data file and create output folder
@@ -467,19 +467,6 @@ int main (int argc, char** argv)
     //============================================//
     function_Type stim = &Iapp;
     
-    
-    //============================================//
-    // Kept-normal boundary conditions
-    //============================================//
-    // Get b.c. flags
-    // ID LvFlag =  dataFile ( "solid/boundary_conditions/LvFlag", 0);
-    
-    // Boundary vector normal in deformed configuration
-    // solver.structuralOperatorPtr() -> setBCFlag( LvFlag );
-    
-    //solver.bcInterfacePtr() -> handler() -> addBC("LvPressure", LVFlag, Natural, Full, *pLvBCVectorPtr, 3); // BC for using function which keeps bc normal
-    // Todo: Normal boundary condition!!
-
     
     //============================================//
     // Create force patches as flags in mesh
