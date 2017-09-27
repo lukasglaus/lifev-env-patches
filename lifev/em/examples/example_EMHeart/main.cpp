@@ -545,7 +545,7 @@ int main (int argc, char** argv)
                     }
                 }
             }
-        };
+        }
 
         virtual void addPatchBC()
         {
