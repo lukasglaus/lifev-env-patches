@@ -221,6 +221,21 @@ Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     return disp;
 }
 
+Real normalDirection ( const Real& /*t*/, const Real& x , const Real& y, const Real& /*z*/ , const ID& i)
+{
+    Real nnorm (x * x + y * y);
+    if (i == 0)
+    {
+        return x / nnorm;
+    }
+    else if (i == 1)
+    {
+        return y / nnorm;
+    }
+    
+    return 0.0;
+};
+
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
 {
     bool coords ( Y < -7. );
@@ -490,7 +505,7 @@ int main (int argc, char** argv)
             return ( time ? force : 0 );
         }
         
-        Real bcFunction(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+        virtual Real bcFunction(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
         {
             return (-0.000 - 0.00001*t);// sinusSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
         }
@@ -549,13 +564,13 @@ int main (int argc, char** argv)
 
         virtual void addPatchBC()
         {
-            m_bcFunctionBase.setFunction(bcFunction);
+            m_bcFunctionBase = bcFunction;
             m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
         
-        Vector3D m_center ( 0. , 0. , 0.);
-        Real m_radius ( 0. );
+        Vector3D m_center { 0. , 0. , 0. };
+        Real m_radius { 0. };
     };
     
     
@@ -655,11 +670,15 @@ int main (int argc, char** argv)
     
     BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
+    BCFunctionDirectional directionFct (patchDispFunNormal, normalDirection);
 
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
 
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
+    
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, directionFct);
+    
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
 
     
