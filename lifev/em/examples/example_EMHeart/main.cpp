@@ -221,19 +221,25 @@ Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     return disp;
 }
 
-Real normalDirection ( const Real& /*t*/, const Real& x , const Real& y, const Real& /*z*/ , const ID& i)
+Real normalDirection ( const Real& /*t*/, const Real& x , const Real& y, const Real& z, const ID& i)
 {
-    Real nnorm (x * x + y * y);
-    if (i == 0)
+    Real nnorm = std::sqrt(x * x + y * y + z * z);
+    switch (i)
     {
-        return x / nnorm;
+        case 0:
+            return 1/std::sqrt(2);
+            break;
+        case 1:
+            return 0;
+            break;
+        case 2:
+            return 1/std::sqrt(2);
+            break;
+        default:
+            ERROR_MSG ("This entry is not allowed");
+            return 0.;
+            break;
     }
-    else if (i == 1)
-    {
-        return y / nnorm;
-    }
-    
-    return 0.0;
 };
 
 Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
@@ -489,7 +495,7 @@ int main (int argc, char** argv)
         
         void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
         {
-            m_bcFunctionBase = bcFunctionBase;
+            m_bcFunctionBase.setFunction(bcFunctionBase);
         }
 
         void setup(BCFunctionBase& bcFunctionBase)
