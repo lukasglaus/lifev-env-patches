@@ -505,7 +505,7 @@ int main (int argc, char** argv)
             return ( time ? force : 0 );
         }
         
-        virtual Real bcFunctionDisplacement(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+        virtual Real bcFunctionPatch(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
         {
             return (-0.000 - 0.00001*t);// sinusSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
         }
@@ -564,8 +564,8 @@ int main (int argc, char** argv)
 
         virtual void addPatchBC()
         {
-            BCFunctionBase mf_bcFunctionBase (patchDispFunNormal);
-            m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, mf_bcFunctionBase);
+            m_bcFunctionBase.setFunction (PatchBC::bcFunctionPatch);
+            m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
             //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
         }
         
