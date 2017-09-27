@@ -502,18 +502,6 @@ int main (int argc, char** argv)
         
         virtual void createPatch() = 0;
         virtual void addPatchBC() = 0;
-
-//        Real sinusSquared(const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
-//        {
-//            bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
-//            Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
-//            return ( time ? force : 0 );
-//        }
-//
-//        virtual Real bcFunctionPatch(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-//        {
-//            return (-0.000 - 0.00001*t);// sinusSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
-//        }
         
         EMSolverType m_solver;
         const std::string m_bcName;
@@ -681,7 +669,7 @@ int main (int argc, char** argv)
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
 
     
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, directionFct);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Directional, directionFct);
     
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
