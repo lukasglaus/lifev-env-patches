@@ -494,13 +494,13 @@ int main (int argc, char** argv)
             m_patchFlag (patchFlag)
         {}
         
-        void setBCFunctionBase(function_Type& ft)
+        void setBCFunctionBase(function_Type ft)
         {
             BCFunctionBase bcFunctionBase (ft);
             m_bcFunctionBase.setFunction(bcFunctionBase);
         }
 
-        void setup(function_Type& bcFunctionBase)
+        void setup(function_Type bcFunctionBase)
         {
             setBCFunctionBase(bcFunctionBase);
             createPatchArea();
