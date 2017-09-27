@@ -636,7 +636,7 @@ int main (int argc, char** argv)
     PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
 
     patch1.setShapeParameters(center1, radius1);
-    patch1.setup(patchDispFunNormal)
+    patch1.setup(patchDispFunNormal);
     
     //============================================//
     // Create force patches b.c.
