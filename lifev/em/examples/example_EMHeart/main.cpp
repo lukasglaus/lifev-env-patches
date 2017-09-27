@@ -472,7 +472,7 @@ int main (int argc, char** argv)
 
     
     //============================================//
-    // Create force patches as flags in mesh
+    // Force patch classes/objects
     //============================================//
     
     class PatchBC
@@ -492,15 +492,16 @@ int main (int argc, char** argv)
             m_bcFunctionBase = bcFunctionBase;
         }
 
-        void addBC()
+        void setup(BCFunctionBase& bcFunctionBase)
         {
-            createPatch();
+            setBCFunctionBase(bcFunctionBase);
+            createPatchArea();
             addPatchBC();
         }
         
     protected:
         
-        virtual void createPatch() = 0;
+        virtual void createPatchArea() = 0;
         virtual void addPatchBC() = 0;
         
         EMSolverType m_solver;
@@ -522,7 +523,7 @@ int main (int argc, char** argv)
         }
      
     protected:
-        virtual void createPatch()
+        virtual void createPatchArea()
         {
             for (auto& mesh : m_solver.mesh())
             {
@@ -567,6 +568,10 @@ int main (int argc, char** argv)
     };
     
     
+    //============================================//
+    // Create force patches as flags in mesh
+    //============================================//
+    
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (auto& mesh : solver.mesh())
@@ -603,7 +608,7 @@ int main (int argc, char** argv)
     
     
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
-        
+    
     Vector3D center1, center2;
     Real radius1 = 2;
     Real radius2 = 2;
@@ -621,7 +626,8 @@ int main (int argc, char** argv)
     createPatch(solver, center1, radius1, epicardiumFlag, patchFlag1);
     createPatch(solver, center2, radius2, epicardiumFlag, patchFlag2);
 
-
+    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
+    
     //============================================//
     // Create force patches b.c.
     //============================================//
