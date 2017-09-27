@@ -485,6 +485,7 @@ int main (int argc, char** argv)
     {
     public:
         typedef EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > > EMSolverType;
+        typedef boost::function<Real ( const Real&, const Real&, const Real&, const Real&, const ID& ) > function_Type;
 
         PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
             m_solver (solver),
@@ -493,8 +494,9 @@ int main (int argc, char** argv)
             m_patchFlag (patchFlag)
         {}
         
-        void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
+        void setBCFunctionBase(function_Type& ft)
         {
+            BCFunctionBase bcFunctionBase (ft);
             m_bcFunctionBase.setFunction(bcFunctionBase);
         }
 
