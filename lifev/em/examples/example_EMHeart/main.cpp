@@ -530,13 +530,16 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patch b.c.
     //============================================//
-    
-    BCFunctionBase patchFunNormal (patchDispFunNormal);
-    BCFunctionBase patchFun (patchDispFun);
-    BCFunctionDirectional directionFct (patchDispFunNormal, normalDirection);
 
-    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
-    patch1.setup(patchFunNormal, center1, radius1);
+    BCFunctionBase patchFun (patchDispFun);
+    BCFunctionBase patchFunNormal (patchDispFunNormal);
+    BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
+
+//    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
+//    patch1.setup(patchFunNormal, center1, radius1);
+
+    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
+    patch1.setup(patchFunDirectional, center1, radius1);
     
     PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
     patch2.setup(patchFunNormal, center2, radius2);

@@ -33,7 +33,7 @@ public:
     
     void setup(BCFunctionBase& bcFunctionBase, const Vector3D& center, const Real& radius)
     {
-        setShapeParameters(center, radius)
+        setShapeParameters(center, radius);
         setBCFunctionBase(bcFunctionBase);
         createPatchArea();
         addPatchBC();
