@@ -459,6 +459,31 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patches as flags in mesh
     //============================================//
+    class PatchBC
+    {
+    public:
+        typedef EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > > EMSolverType;
+        PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
+            m_solver (solver),
+            m_bcName (bcName),
+            m_prevFaceFlag (prevFaceFlag),
+            m_patchFlag (patchFlag)
+        {}
+        
+        //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
+        
+        //m_solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
+
+    private:
+        EMSolverType m_solver;
+        const std::string m_bcName;
+        const int m_prevFaceFlag;
+        const int m_patchFlag;
+        Vector3D m_center;
+        Real m_radius;
+    };
+    
+    
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (auto& mesh : solver.mesh())
@@ -547,6 +572,11 @@ int main (int argc, char** argv)
 //        patchBCVecPtr[patchNr].reset ( ( new bcVector_Type (*patchVecPtr[patchNr], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
 //        solver.bcInterfacePtr() -> handler() -> modifyBC(flag, *patchBCVecPtr[patchNr]);
     };
+    
+//    auto addPatchBC = [] (BCFunctionBase& bcfunction)
+//    {
+//
+//    }
     
     BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
