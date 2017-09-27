@@ -459,26 +459,99 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patches as flags in mesh
     //============================================//
+    
     class PatchBC
     {
     public:
         typedef EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > > EMSolverType;
+
         PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
             m_solver (solver),
             m_bcName (bcName),
             m_prevFaceFlag (prevFaceFlag),
             m_patchFlag (patchFlag)
-        {}
+        {
+            createPatch();
+            addPatchBC();
+        }
         
-        //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
+        virtual void createPatch() = 0;
         
-        //m_solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
-
-    private:
+        virtual void addPatchBC() = 0;
+        
+    protected:
+        
+        Real sinusSquared(const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
+        {
+            bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
+            Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
+            return ( time ? force : 0 );
+        }
+        
+        virtual Real bcFunction(const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+        {
+            return (-0.000 - 0.00001*t);// sinusSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
+        }
+        
         EMSolverType m_solver;
         const std::string m_bcName;
         const int m_prevFaceFlag;
         const int m_patchFlag;
+        BCFunctionBase m_bcFunctionBase;
+    }
+    
+    class PatchCircleBCEssentialNormal
+    {
+    public:
+        using PatchBC::PatchBC
+     
+    protected:
+        virtual void createPatch()
+        {
+            for (auto& mesh : m_solver.mesh())
+            {
+                for (int j(0); j < mesh->numBoundaryFacets(); j++)
+                {
+                    auto& face = mesh->boundaryFacet(j);
+                    auto faceFlag = face.markerID();
+                    
+                    if (faceFlag == m_prevFaceFlag || faceFlag == 470 || faceFlag == 471)
+                    {
+                        int numPointsInsidePatch (0);
+                        
+                        for (int k(0); k < 3; ++k)
+                        {
+                            auto coord = face.point(k).coordinates();
+                            bool pointInPatch = (coord - m_center).norm() < m_radius;
+                            
+                            if (pointInPatch)
+                            {
+                                ++numPointsInsidePatch;
+                            }
+                        }
+                        
+                        if (numPointsInsidePatch > 2)
+                        {
+                            face.setMarkerID(m_patchFlag);
+                        }
+                    }
+                }
+            }
+        };
+
+        virtual void addPatchBC()
+        {
+            m_bcFunctionBase.setFunction(bcFunction);
+            m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
+            //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
+        }
+        
+        void setShapeParameters(const Vector3D& center, const Real& radius)
+        {
+            m_center = center;
+            m_radius = radius;
+        }
+        
         Vector3D m_center;
         Real m_radius;
     };
