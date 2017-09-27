@@ -470,28 +470,17 @@ int main (int argc, char** argv)
     
     
     //============================================//
-    // Force patch coordinates and flags
+    // Force patch coordinates
     //============================================//
-    
-    Vector3D center1, center2;
+    Vector3D center1 {-0.7, -6.0, -4.7};
+    Vector3D center2 {4.5, -6.0, 1.0};
     Real radius1 = 2;
     Real radius2 = 2;
-    center1[0] = -0.7;
-    center1[1] = -6;
-    center1[2] = -4.7;
-    center2[0] = 4.5;
-    center2[1] = -6;
-    center2[2] = 1.0;
-    
-    int patchFlag1 (100);
-    int patchFlag2 (101);
-    int epicardiumFlag(464);
     
 
     //============================================//
     // Create force patch b.c.
     //============================================//
-
     BCFunctionBase patchFun (patchDispFun);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
     BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
@@ -499,10 +488,10 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
 //    patch1.setup(patchFunNormal, center1, radius1);
 
-    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
+    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
     patch1.setup(patchFunDirectional, center1, radius1);
     
-    PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
+    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
     patch2.setup(patchFunNormal, center2, radius2);
     
     
