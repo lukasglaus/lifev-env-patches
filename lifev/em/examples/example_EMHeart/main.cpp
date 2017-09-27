@@ -505,7 +505,7 @@ int main (int argc, char** argv)
     class PatchCircleBCEssentialNormal : public PatchBC
     {
     public:
-        using PatchBC::PatchBC
+        using PatchBC::PatchBC;
         
         void setShapeParameters(const Vector3D& center, const Real& radius)
         {
