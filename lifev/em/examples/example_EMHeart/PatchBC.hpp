@@ -105,12 +105,6 @@ public:
     using PatchBC::PatchBC;
     typedef PatchBC::function_Type function_Type;
     
-    void setShapeParameters(const Vector3D& center, const Real& radius)
-    {
-        m_center = center;
-        m_radius = radius;
-    }
-    
 protected:
     
     virtual void addPatchBC()

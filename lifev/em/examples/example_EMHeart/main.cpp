@@ -408,6 +408,7 @@ int main (int argc, char** argv)
     transformerLocal.transformMesh (scale, rotate, translate);
     
     if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
+    if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
     
     //============================================//
@@ -469,45 +470,8 @@ int main (int argc, char** argv)
     
     
     //============================================//
-    // Create force patches as flags in mesh
+    // Force patch coordinates and flags
     //============================================//
-    
-    auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
-    {
-        for (auto& mesh : solver.mesh())
-        {
-            for (int j(0); j < mesh->numBoundaryFacets(); j++)
-            {
-                auto& face = mesh->boundaryFacet(j);
-                auto faceFlag = face.markerID();
-
-                if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
-                {
-                    int numPointsInsidePatch (0);
-
-                    for (int k(0); k < 3; ++k)
-                    {
-                        auto coord = face.point(k).coordinates();
-                        bool pointInPatch = (coord - center).norm() < radius;
-                        
-                        if (pointInPatch)
-                        {
-                            ++numPointsInsidePatch;
-                        }
-                    }
-                    
-                    if (numPointsInsidePatch > 2)
-                    {
-                        face.setMarkerID(newFlag);
-                    }
-                    
-                }
-            }
-        }
-    };
-    
-    
-    if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
     
     Vector3D center1, center2;
     Real radius1 = 2;
@@ -523,10 +487,7 @@ int main (int argc, char** argv)
     int patchFlag2 (101);
     int epicardiumFlag(464);
     
-    createPatch(solver, center1, radius1, epicardiumFlag, patchFlag1);
-    createPatch(solver, center2, radius2, epicardiumFlag, patchFlag2);
 
-    
     //============================================//
     // Create force patch b.c.
     //============================================//
@@ -544,17 +505,6 @@ int main (int argc, char** argv)
     PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
     patch2.setup(patchFunNormal, center2, radius2);
     
-
-
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
-
-    
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Directional, directionFct);
-//
-//    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
-
     
     //============================================//
     // Pressure b.c. on endocardia
