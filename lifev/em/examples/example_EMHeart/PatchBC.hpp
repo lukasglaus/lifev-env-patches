@@ -31,27 +31,26 @@ public:
         m_patchFlag (patchFlag)
     {}
     
-    PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag, BCFunctionBase& bcFunctionBase) :
-        m_solver (solver),
-        m_bcName (bcName),
-        m_prevFaceFlag (prevFaceFlag),
-        m_patchFlag (patchFlag),
-        m_bcFunctionBase (bcFunctionBase)
-    {}
-
-    void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
+    void setup(BCFunctionBase& bcFunctionBase, const Vector3D& center, const Real& radius)
     {
-        m_bcFunctionBase.setFunction(bcFunctionBase);
-    }
-    
-    void setup(BCFunctionBase& bcFunctionBase)
-    {
+        setShapeParameters(center, radius)
         setBCFunctionBase(bcFunctionBase);
         createPatchArea();
         addPatchBC();
     }
     
 protected:
+    
+    void setShapeParameters(const Vector3D& center, const Real& radius)
+    {
+        m_center = center;
+        m_radius = radius;
+    }
+    
+    void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
+    {
+        m_bcFunctionBase.setFunction(bcFunctionBase);
+    }
     
     virtual void createPatchArea()
     {
@@ -86,7 +85,6 @@ protected:
         }
     }
 
-    virtual void createPatchArea() = 0;
     virtual void addPatchBC() = 0;
     
     EMSolverType m_solver;
@@ -117,11 +115,28 @@ protected:
     
     virtual void addPatchBC()
     {
-        //m_bcFunctionBase.setFunction (PatchBC::bcFunctionPatch);
         m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
-        //solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
+        //m_solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
     }
     
 };
+   
+
+class PatchCircleBCEssentialDirectional : public PatchBC
+{
+public:
+    
+    using PatchBC::PatchBC;
+    typedef PatchBC::function_Type function_Type;
+    
+protected:
+    
+    virtual void addPatchBC()
+    {
+        solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Directional, m_bcFunctionBase);
+    }
+    
+};
+    
     
 }

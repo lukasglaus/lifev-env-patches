@@ -536,12 +536,10 @@ int main (int argc, char** argv)
     BCFunctionDirectional directionFct (patchDispFunNormal, normalDirection);
 
     PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
-    patch1.setShapeParameters(center1, radius1);
-    patch1.setup(patchFunNormal);
+    patch1.setup(patchFunNormal, center1, radius1);
     
     PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
-    patch2.setShapeParameters(center2, radius2);
-    patch2.setup(patchFunNormal);
+    patch2.setup(patchFunNormal, center2, radius2);
     
 
 
