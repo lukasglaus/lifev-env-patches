@@ -212,7 +212,7 @@ Real patchDispNormal (const Real& t, const Real& Tmax, const Real& tmax, const R
 
 Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
-    return (-0.000 - 0.001*t);// patchDispNormal(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
+    return (-0.000 - 0.0001*t);// patchDispNormal(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
 }
 
 Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
