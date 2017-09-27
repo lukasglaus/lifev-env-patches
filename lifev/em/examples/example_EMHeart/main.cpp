@@ -212,7 +212,7 @@ Real sinSquared (const Real& t, const Real& Tmax, const Real& tmax, const Real& 
 
 Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
-    return (-0.000 - 0.001*t);// sinSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
+    return (-0.000 - 0.0001*t);// sinSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
 }
 
 Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
@@ -633,6 +633,10 @@ int main (int argc, char** argv)
     createPatch(solver, center2, radius2, epicardiumFlag, patchFlag2);
 
     PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
+    PatchCircleBCEssentialNormal patch2(solver, "Patch2", epicardiumFlag, patchFlag2);
+
+    patch1.setShapeParameters(center1, radius1);
+    patch1.setup(patchDispFunNormal)
     
     //============================================//
     // Create force patches b.c.
