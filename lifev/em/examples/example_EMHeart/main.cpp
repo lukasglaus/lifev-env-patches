@@ -63,13 +63,13 @@ Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     switch (i)
     {
         case 0:
-            return (0.00005*t);
+            return (-0.00005*t);
             break;
         case 1:
             return 0;
             break;
         case 2:
-            return (0.00005*t);
+            return (-0.00005*t);
             break;
         default:
             ERROR_MSG ("This entry is not allowed");
@@ -351,7 +351,7 @@ int main (int argc, char** argv)
 //    patch1.setup(patchFunDirectional, center1, radius1);
     
     PatchCircleBCEssentialFull patch1(solver, "Patch1", 464, 100);
-    patch1.setup(patchFun1, center1, 2.0);
+    patch1.setup(patchFun1, center1, 1.5);
     
 //    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(patchFunNormal, center2, radius2);
@@ -360,7 +360,7 @@ int main (int argc, char** argv)
 //    patch1.setup(patchFunDirectional, center2, radius2);
 
     PatchCircleBCEssentialFull patch2(solver, "Patch2", 464, 101);
-    patch1.setup(patchFun2, center2, 1.0);
+    patch1.setup(patchFun2, center2, 1.5);
     
     
     //============================================//
