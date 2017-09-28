@@ -38,13 +38,13 @@ public:
         switch (i)
         {
             case 0:
-                return (0.000001*t);
+                return (m_velocity[0] * t);
                 break;
             case 1:
-                return 0;
+                return (m_velocity[1] * t);
                 break;
             case 2:
-                return (0.000001*t);
+                return (m_velocity[2] * t);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
