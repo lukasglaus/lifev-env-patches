@@ -87,7 +87,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFB (m_bcFunctionBase.fct());
+        BCFunctionBase bcFB (m_patchBCFunctionBase.fct());
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
