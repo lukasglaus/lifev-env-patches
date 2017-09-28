@@ -130,7 +130,7 @@ protected:
 };
     
     
-class PatchCircleBCEssentialComponent : public PatchBC
+class PatchCircleBCEssentialFull : public PatchBC
 {
 public:
     

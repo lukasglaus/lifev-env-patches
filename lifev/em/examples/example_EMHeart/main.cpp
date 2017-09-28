@@ -58,7 +58,27 @@ using namespace LifeV;
 //============================================//
 
 
-Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+{
+    switch (i)
+    {
+        case 0:
+            return (0.00005*t);
+            break;
+        case 1:
+            return 0;
+            break;
+        case 2:
+            return (0.00005*t);
+            break;
+        default:
+            ERROR_MSG ("This entry is not allowed");
+            return 0.;
+            break;
+    }
+}
+
+Real patchDispFun2 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
     switch (i)
     {
@@ -321,7 +341,8 @@ int main (int argc, char** argv)
     Real radius1 = 2;
     Real radius2 = 2;
     
-    BCFunctionBase patchFun (patchDispFun);
+    BCFunctionBase patchFun1 (patchDispFun1);
+    BCFunctionBase patchFun2 (patchDispFun2);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
     BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
 
@@ -331,14 +352,18 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
 //    patch1.setup(patchFunDirectional, center1, radius1);
     
-    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
-    patch1.setup(patchFun, center1, radius1);
+    PatchCircleBCEssentialFull patch1(solver, "Patch1", 464, 100);
+    patch1.setup(patchFun1, center1, radius1);
     
 //    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(patchFunNormal, center2, radius2);
     
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch1.setup(patchFunDirectional, center2, radius2);
+
+    PatchCircleBCEssentialFull patch2(solver, "Patch2", 464, 101);
+    patch1.setup(patchFun2, center2, radius2);
+    
     
     //============================================//
     // Pressure b.c. on endocardia
