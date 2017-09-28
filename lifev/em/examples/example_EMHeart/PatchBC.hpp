@@ -110,9 +110,7 @@ protected:
     virtual void addPatchBC()
     {
         m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
-        //m_solver.bcInterfacePtr() -> handler()->addBC (bcName, patchFlag,  Essential, Full, patchFun, 3);
     }
-    
 };
    
 
@@ -129,8 +127,24 @@ protected:
     {
         m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Directional, m_bcFunctionBase);
     }
-    
 };
+    
+    
+class PatchCircleBCEssentialComponent : public PatchBC
+{
+public:
+    
+    using PatchBC::PatchBC;
+    typedef PatchBC::function_Type function_Type;
+    
+protected:
+    
+    virtual void addPatchBC()
+    {
+        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Full, patchFun, 3);
+    }
+};
+
     
     
 }

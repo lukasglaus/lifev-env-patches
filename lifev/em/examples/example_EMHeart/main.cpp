@@ -63,13 +63,13 @@ Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, 
     switch (i)
     {
         case 0:
-            return (t * 1e-5);
+            return (-0.00005*t);
             break;
         case 1:
             return 0;
             break;
         case 2:
-            return 0;
+            return (-0.00005*t);
             break;
         default:
             ERROR_MSG ("This entry is not allowed");
@@ -328,14 +328,17 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
 //    patch1.setup(patchFunNormal, center1, radius1);
 
-    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
-    patch1.setup(patchFunDirectional, center1, radius1);
+//    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
+//    patch1.setup(patchFunDirectional, center1, radius1);
+    
+    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
+    patch1.setup(patchFun, center1, radius1);
     
 //    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(patchFunNormal, center2, radius2);
     
-    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
-    patch1.setup(patchFunDirectional, center2, radius2);
+//    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
+//    patch1.setup(patchFunDirectional, center2, radius2);
     
     //============================================//
     // Pressure b.c. on endocardia
