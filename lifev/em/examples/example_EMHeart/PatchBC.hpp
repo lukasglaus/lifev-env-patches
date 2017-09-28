@@ -38,13 +38,13 @@ public:
         switch (i)
         {
             case 0:
-                return (0.00005*t);
+                return (0.000001*t);
                 break;
             case 1:
                 return 0;
                 break;
             case 2:
-                return (0.00005*t);
+                return (0.000001*t);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
@@ -52,6 +52,24 @@ public:
                 break;
         }
     }
+    
+    Real sinSquared (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
+    {
+        bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
+        Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
+        return ( time ? force : 0 );
+    }
+
+    void setVelocity(const Vector3D& velocity)
+    {
+        m_velocity = velocity;
+    }
+    
+    
+private:
+    
+    Vector3D m_velocity {0.,0.,0.};
+    
 };
 
     
@@ -87,6 +105,8 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
+        Vector3D velocity {0.000001,0,0.000001};
+        m_patchBCFunctionBase.setVelocity(velocity);
         BCFunctionBase bcFB (m_patchBCFunctionBase.fct());
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
