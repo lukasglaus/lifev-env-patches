@@ -49,7 +49,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFB (static_cast<function_Type>(patchDispFun));
+//        BCFunctionBase bcFB (static_cast<function_Type>(patchDispFun));
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
