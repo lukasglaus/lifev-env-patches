@@ -21,9 +21,19 @@ namespace LifeV
 class PatchBCFunctionBase
 {
 public:
+    
+    typedef boost::function<Real ( const Real&, const Real&, const Real&, const Real&, const ID& ) > function_Type;
+
     PatchBCFunctionBase(){}
     
-    Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    function_Type fct()
+    {
+        function_Type f;
+        f = boost::bind (&PatchBCFunctionBase::functionXY, this, _1, _2, _3, _4, _5);
+        return f;
+    }
+    
+    Real functionXY (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
         switch (i)
         {
@@ -77,7 +87,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFB (boost::bind (&PatchBCFunctionBase.patchDispFun, _1, _2, _3, _4, _5));
+        BCFunctionBase bcFB (m_bcFunctionBase.fct());
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
