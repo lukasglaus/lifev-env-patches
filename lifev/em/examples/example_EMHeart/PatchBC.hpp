@@ -28,7 +28,8 @@ public:
         m_solver (solver),
         m_bcName (bcName),
         m_prevFaceFlag (prevFaceFlag),
-        m_patchFlag (patchFlag)
+        m_patchFlag (patchFlag),
+        m_patchBCFunctionBase (PatchBCFunctionBase)
     {}
     
     void setup(BCFunctionBase& bcFunctionBase, const Vector3D& center, const Real& radius)
