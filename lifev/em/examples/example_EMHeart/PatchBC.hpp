@@ -77,7 +77,6 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        boost::bind (&PatchBCFunctionBase::patchDispFun, _1, _2, _3, _4, _5)
         BCFunctionBase bcFB (boost::bind (&PatchBCFunctionBase::patchDispFun, _1, _2, _3, _4, _5));
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
