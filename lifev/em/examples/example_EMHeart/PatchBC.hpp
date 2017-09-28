@@ -49,7 +49,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-//        BCFunctionBase bcFB (static_cast<function_Type>(patchDispFun));
+        BCFunctionBase bcFB (m_patchBCFunctionBase.patchdispFun);
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
@@ -88,32 +88,12 @@ protected:
 
     virtual void addPatchBC() = 0;
     
-    Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-    {
-        switch (i)
-        {
-            case 0:
-                return (0.00005*t);
-                break;
-            case 1:
-                return 0;
-                break;
-            case 2:
-                return (0.00005*t);
-                break;
-            default:
-                ERROR_MSG ("This entry is not allowed");
-                return 0.;
-                break;
-        }
-    }
-
-    
     EMSolverType m_solver;
     const std::string m_bcName;
     const int m_prevFaceFlag;
     const int m_patchFlag;
     BCFunctionBase m_bcFunctionBase;
+    PatchBCFunctionBase m_patchBCFunctionBase;
     
     Vector3D m_center { 0. , 0. , 0. };
     Real m_radius { 0. };
@@ -167,6 +147,32 @@ protected:
     }
 };
 
+    
+class PatchBCFunctionBase
+{
+public:
+    PatchBCFunctionBase(){}
+    
+    Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    {
+        switch (i)
+        {
+            case 0:
+                return (0.00005*t);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return (0.00005*t);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
+        }
+    }
+};
     
     
 }
