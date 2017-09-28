@@ -49,7 +49,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-//        BCFunctionBase bcFB (&patchDispFun);
+        BCFunctionBase bcFB (PatchBC::patchDispFun);
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
