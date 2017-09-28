@@ -49,6 +49,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
+        BCFunctionBase bcFB (patchDispFun);
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
@@ -86,6 +87,27 @@ protected:
     }
 
     virtual void addPatchBC() = 0;
+    
+    Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    {
+        switch (i)
+        {
+            case 0:
+                return (0.00005*t);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return (0.00005*t);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
+        }
+    }
+
     
     EMSolverType m_solver;
     const std::string m_bcName;
