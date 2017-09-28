@@ -23,7 +23,7 @@ class PatchBCFunctionBase
 public:
     PatchBCFunctionBase(){}
     
-    Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    static Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
         switch (i)
         {
@@ -77,7 +77,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFB (m_patchBCFunctionBase.patchDispFun);
+        BCFunctionBase bcFB (PatchBCFunctionBase::patchDispFun);
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
