@@ -17,32 +17,34 @@
 namespace LifeV
 {
 
-    class PatchBCFunctionBase
+    
+class PatchBCFunctionBase
+{
+public:
+    PatchBCFunctionBase(){}
+    
+    Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
-    public:
-        PatchBCFunctionBase(){}
-        
-        Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+        switch (i)
         {
-            switch (i)
-            {
-                case 0:
-                    return (0.00005*t);
-                    break;
-                case 1:
-                    return 0;
-                    break;
-                case 2:
-                    return (0.00005*t);
-                    break;
-                default:
-                    ERROR_MSG ("This entry is not allowed");
-                    return 0.;
-                    break;
-            }
+            case 0:
+                return (0.00005*t);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return (0.00005*t);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
         }
-    };
+    }
+};
 
+    
 class PatchBC
 {
 public:
@@ -75,7 +77,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFB (m_patchBCFunctionBase.patchdispFun);
+        BCFunctionBase bcFB (m_patchBCFunctionBase.patchDispFun);
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }
     
