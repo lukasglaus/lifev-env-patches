@@ -141,7 +141,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Full, patchFun, 3);
+        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Full, m_bcFunctionBase, 3);
     }
 };
 
