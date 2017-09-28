@@ -38,13 +38,13 @@ public:
         switch (i)
         {
             case 0:
-                return (m_velocity[0] * t);
+                return (m_direction[0] * t);
                 break;
             case 1:
-                return (m_velocity[1] * t);
+                return (m_direction[1] * t);
                 break;
             case 2:
-                return (m_velocity[2] * t);
+                return (m_direction[2] * t);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
@@ -60,15 +60,15 @@ public:
         return ( time ? force : 0 );
     }
 
-    void setVelocity(const Vector3D& velocity)
+    void setDirection(const Vector3D& direction)
     {
-        m_velocity = velocity;
+        m_direction = direction;
     }
     
     
 private:
     
-    Vector3D m_velocity {0.,0.,0.};
+    Vector3D m_direction {0.,0.,0.};
     
 };
 
@@ -87,9 +87,9 @@ public:
         m_patchFlag (patchFlag)
     {}
     
-    void setup(BCFunctionBase& bcFunctionBase, const Vector3D& center, const Real& radius)
+    void setup(BCFunctionBase& bcFunctionBase, const Vector3D& direction, const Vector3D& center, const Real& radius)
     {
-        setShapeParameters(center, radius);
+        setParameters(center, radius, direction);
         setBCFunctionBase(bcFunctionBase);
         createPatchArea();
         addPatchBC();
@@ -97,16 +97,15 @@ public:
     
 protected:
     
-    void setShapeParameters(const Vector3D& center, const Real& radius)
+    void setParameters(const Vector3D& center, const Real& radius, const Vector3D& direction)
     {
         m_center = center;
         m_radius = radius;
+        m_patchBCFunctionBase.setDirection(direction);
     }
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        Vector3D velocity {0.000001,0,0.000001};
-        m_patchBCFunctionBase.setVelocity(velocity);
         BCFunctionBase bcFB (m_patchBCFunctionBase.fct());
         m_bcFunctionBase.setFunction(bcFunctionBase);
     }

@@ -339,6 +339,10 @@ int main (int argc, char** argv)
     Vector3D center1 {-0.7, -6.0, -4.7};
     Vector3D center2 {4.5, -6.0, 1.0};
     
+    Vector3D direction1 {1.0, 0.0, 1.0};
+    Vector3D direction2 {-1.0, 0.0, -1.0};
+
+    
     BCFunctionBase patchFun1 (patchDispFun1);
     BCFunctionBase patchFun2 (patchDispFun2);
     BCFunctionBase patchFunNormal (patchDispFunNormal);
@@ -351,7 +355,7 @@ int main (int argc, char** argv)
 //    patch1.setup(patchFunDirectional, center1, radius1);
     
     PatchCircleBCEssentialFull patch1(solver, "Patch1", 464, 100);
-    patch1.setup(patchFun1, center1, 1.5);
+    patch1.setup(patchFun1, direction1, center1, 1.5);
     
 //    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(patchFunNormal, center2, radius2);
@@ -360,7 +364,7 @@ int main (int argc, char** argv)
 //    patch1.setup(patchFunDirectional, center2, radius2);
 
     PatchCircleBCEssentialFull patch2(solver, "Patch2", 464, 101);
-    patch1.setup(patchFun2, center2, 1.5);
+    patch1.setup(patchFun2, direction2, center2, 1.5);
     
     
     //============================================//
