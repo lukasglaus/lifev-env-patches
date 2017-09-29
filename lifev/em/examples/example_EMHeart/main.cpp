@@ -353,7 +353,7 @@ int main (int argc, char** argv)
 
     
     
-    PatchBC* patch1 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
+    PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
 
     
     PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
