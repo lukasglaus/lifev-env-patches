@@ -35,16 +35,45 @@ public:
     
     Real patchForceFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
+        return (t * 1e-6);
+//        switch (i)
+//        {
+//            case 0:
+//                return (m_direction[0] * t * 1e-8);
+//                break;
+//            case 1:
+//                return (m_direction[1] * t * 1e-8);
+//                break;
+//            case 2:
+//                return (m_direction[2] * t * 1e-8);
+//                break;
+//            default:
+//                ERROR_MSG ("This entry is not allowed");
+//                return 0.;
+//                break;
+//        }
+    }
+    
+    function_Type dirFct()
+    {
+        function_Type f;
+        f = boost::bind (&PatchBCFunctionBaseCreator::directionFct, this, _1, _2, _3, _4, _5);
+        return f;
+    }
+
+    
+    Real directionFct (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    {
         switch (i)
         {
             case 0:
-                return (m_direction[0] * t * 1e-8);
+                return (m_direction[0]);
                 break;
             case 1:
-                return (m_direction[1] * t * 1e-8);
+                return (m_direction[1]);
                 break;
             case 2:
-                return (m_direction[2] * t * 1e-8);
+                return (m_direction[2]);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
@@ -52,6 +81,7 @@ public:
                 break;
         }
     }
+
     
     Real sinSquared (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
     {
@@ -87,10 +117,10 @@ public:
         m_patchFlag (patchFlag)
     {}
     
-    void setup(BCFunctionBase& bcFunctionBase, Vector3D& direction, const Vector3D& center, const Real& radius)
+    void setup(Vector3D& direction, const Vector3D& center, const Real& radius)
     {
         setParameters(center, radius, direction);
-        setBCFunctionBase(bcFunctionBase);
+        setBCFunctionBase();
         createPatchArea();
         addPatchBC();
     }
@@ -104,7 +134,7 @@ protected:
         m_patchBCFunctionBaseCreator.setDirection(direction.normalized());
     }
     
-    void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
+    void setBCFunctionBase()
     {
         BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
         m_bcFunctionBase.setFunction(bcFB);
@@ -168,7 +198,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Normal, m_bcFunctionBase);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Normal, m_bcFunctionBase);
     }
 };
    
@@ -184,7 +214,8 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Directional, m_bcFunctionBase);
+        BCFunctionDirectional bcFunctionDirectional (m_bcFunctionBase, m_patchBCFunctionBaseCreator.dirFct());
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
     }
 };
     
@@ -200,7 +231,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Full, m_bcFunctionBase, 3);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Full, m_bcFunctionBase, 3);
     }
 };
 
@@ -216,7 +247,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr() -> handler()->addBC (m_bcName, m_patchFlag,  Essential, Component, m_bcFunctionBase, 0);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
     }
 };
 
