@@ -101,7 +101,7 @@ protected:
     {
         m_center = center;
         m_radius = radius;
-        m_patchBCFunctionBase.setDirection(direction.normalized());
+        m_patchBCFunctionBaseCreator.setDirection(direction.normalized());
     }
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
