@@ -14,7 +14,7 @@
 #include <typeinfo>
 
 
-namespace FiniteElementAnalysis {
+namespace LifeV {
 
 template<class factory_type>
 class Factory;

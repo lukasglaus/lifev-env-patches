@@ -238,7 +238,9 @@ protected:
     }
 };
 
-    
+REGISTER(PatchBC, PatchCircleBCEssentialFull);
+
+
 class PatchCircleBCEssentialComponent : public PatchBC
 {
 public:
@@ -253,6 +255,8 @@ protected:
         m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
     }
 };
+
+REGISTER(PatchBC, PatchCircleBCEssentialComponent);
 
     
 }
