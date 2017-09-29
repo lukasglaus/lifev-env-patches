@@ -201,7 +201,9 @@ protected:
     }
 };
    
-
+REGISTER(PatchBC, PatchCircleBCEssentialNormal);
+    
+    
 class PatchCircleBCEssentialDirectional : public PatchBC
 {
 public:
@@ -218,6 +220,8 @@ protected:
     }
 };
     
+REGISTER(PatchBC, PatchCircleBCEssentialDirectional);
+
     
 class PatchCircleBCEssentialFull : public PatchBC
 {
