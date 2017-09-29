@@ -351,6 +351,11 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
 //    patch1.setup(patchFunNormal, center1, radius1);
 
+    
+    
+    PatchBC* patch1 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
+
+    
     PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
     patch1.setup(direction1, center1, 1.5);
     
