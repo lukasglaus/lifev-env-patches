@@ -177,9 +177,9 @@ protected:
     virtual void addPatchBC() = 0;
     
     EMSolverType m_solver;
-    const std::string m_bcName;
-    const int m_prevFaceFlag;
-    const int m_patchFlag;
+     std::string m_bcName;
+     int m_prevFaceFlag;
+     int m_patchFlag;
     BCFunctionBase m_bcFunctionBase;
     PatchBCFunctionBaseCreator m_patchBCFunctionBaseCreator;
     
