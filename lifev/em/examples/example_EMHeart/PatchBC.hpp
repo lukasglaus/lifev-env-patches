@@ -10,8 +10,7 @@
 #define PatchBC_hpp
 
 #include <stdio.h>
-
-#endif /* PatchBC_hpp */
+#include <lifev/em/examples/example_EMHeart/GenericFactory.hpp>
 
 
 namespace LifeV
@@ -253,3 +252,5 @@ protected:
 
     
 }
+
+#endif /* PatchBC_hpp */
