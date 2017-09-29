@@ -111,20 +111,20 @@ public:
     
     PatchBC(){}
     
-    PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
-        m_solver (solver),
-        m_bcName (bcName),
-        m_prevFaceFlag (prevFaceFlag),
-        m_patchFlag (patchFlag)
-    {}
-    
-    void initialize(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag)
-    {
-        m_solver = solver;
-        m_bcName = bcName;
-        m_prevFaceFlag = prevFaceFlag;
-        m_patchFlag = patchFlag;
-    }
+//    PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
+//        m_solver (solver),
+//        m_bcName (bcName),
+//        m_prevFaceFlag (prevFaceFlag),
+//        m_patchFlag (patchFlag)
+//    {}
+//
+//    void initialize(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag)
+//    {
+//        m_solver = solver;
+//        m_bcName = bcName;
+//        m_prevFaceFlag = prevFaceFlag;
+//        m_patchFlag = patchFlag;
+//    }
     
     void setup(Vector3D& direction, const Vector3D& center, const Real& radius)
     {
