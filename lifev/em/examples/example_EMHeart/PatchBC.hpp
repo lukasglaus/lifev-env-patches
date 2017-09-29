@@ -38,13 +38,13 @@ public:
         switch (i)
         {
             case 0:
-                return (m_direction[0] * t);
+                return (m_direction[0] * t * 1e-6);
                 break;
             case 1:
-                return (m_direction[1] * t);
+                return (m_direction[1] * t * 1e-6);
                 break;
             case 2:
-                return (m_direction[2] * t);
+                return (m_direction[2] * t * 1e-6);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
@@ -87,7 +87,7 @@ public:
         m_patchFlag (patchFlag)
     {}
     
-    void setup(BCFunctionBase& bcFunctionBase, const Vector3D& direction, const Vector3D& center, const Real& radius)
+    void setup(BCFunctionBase& bcFunctionBase, Vector3D& direction, const Vector3D& center, const Real& radius)
     {
         setParameters(center, radius, direction);
         setBCFunctionBase(bcFunctionBase);
@@ -97,7 +97,7 @@ public:
     
 protected:
     
-    void setParameters(const Vector3D& center, const Real& radius, const Vector3D& direction)
+    void setParameters(const Vector3D& center, const Real& radius, Vector3D& direction)
     {
         m_center = center;
         m_radius = radius;
