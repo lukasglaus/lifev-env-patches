@@ -1,13 +1,13 @@
 //
-//  Factory.hpp
+//  GenericFactory.hpp
 //  FiniteElementAnalysis
 //
 //  Created by Thomas Kummer on 05.05.17.
 //  Copyright © 2017 Thomas Kummer. All rights reserved.
 //
 
-#ifndef Factory_hpp
-#define Factory_hpp
+#ifndef GenericFactory_hpp
+#define GenericFactory_hpp
 
 #include <stdio.h>
 #include <exception>
@@ -17,7 +17,7 @@
 namespace LifeV {
 
 template<class factory_type>
-class Factory;
+class GenericFactory;
 
 template<class factory_type>
 class iCreator
@@ -41,13 +41,13 @@ public:
 };
     
 template<class factory_type>
-class Factory
+class GenericFactory
 {
 public:
     
-    static Factory& Instance()
+    static GenericFactory& Instance()
     {
-        static Factory factory;
+        static GenericFactory factory;
         return factory;
     }
     
@@ -87,16 +87,16 @@ private:
 template<class factory_type, class product_type>
 Creator<factory_type, product_type>::Creator(const std::string& key)
 {
-    Factory<factory_type>::Instance().RegisterMaker(key, this);
+    GenericFactory<factory_type>::Instance().RegisterMaker(key, this);
 }
 
     
 #define REGISTER(factory_type, product_type) static Creator<factory_type, product_type> (creator_ ## product_type)(#product_type)
-#define CREATE(factory_type, product_type) Factory<factory_type>::Instance().Create(product_type)
-#define PRINT_FACTORY(factory_type) Factory<factory_type>::Instance().printRegisteredCreators(#factory_type)
+#define CREATE(factory_type, product_type) GenericFactory<factory_type>::Instance().Create(product_type)
+#define PRINT_FACTORY(factory_type) GenericFactory<factory_type>::Instance().printRegisteredCreators(#factory_type)
 
 }
 
 
 
-#endif /* Factory_hpp */
+#endif /* GenericFactory_hpp */
