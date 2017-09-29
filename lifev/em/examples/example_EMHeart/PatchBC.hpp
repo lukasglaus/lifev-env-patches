@@ -18,18 +18,18 @@ namespace LifeV
 {
 
     
-class PatchBCFunctionBase
+class PatchBCFunctionBaseCreator
 {
 public:
     
     typedef boost::function<Real ( const Real&, const Real&, const Real&, const Real&, const ID& ) > function_Type;
 
-    PatchBCFunctionBase(){}
+    PatchBCFunctionBaseCreator(){}
     
     function_Type fct()
     {
         function_Type f;
-        f = boost::bind (&PatchBCFunctionBase::patchForceFunction, this, _1, _2, _3, _4, _5);
+        f = boost::bind (&PatchBCFunctionBaseCreator::patchForceFunction, this, _1, _2, _3, _4, _5);
         return f;
     }
     
@@ -38,13 +38,13 @@ public:
         switch (i)
         {
             case 0:
-                return (m_direction[0] * t * 1e-6);
+                return (m_direction[0] * t * 1e-8);
                 break;
             case 1:
-                return (m_direction[1] * t * 1e-6);
+                return (m_direction[1] * t * 1e-8);
                 break;
             case 2:
-                return (m_direction[2] * t * 1e-6);
+                return (m_direction[2] * t * 1e-8);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
@@ -106,7 +106,7 @@ protected:
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
-        BCFunctionBase bcFB (m_patchBCFunctionBase.fct());
+        BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
         m_bcFunctionBase.setFunction(bcFB);
     }
     
@@ -150,7 +150,7 @@ protected:
     const int m_prevFaceFlag;
     const int m_patchFlag;
     BCFunctionBase m_bcFunctionBase;
-    PatchBCFunctionBase m_patchBCFunctionBase;
+    PatchBCFunctionBaseCreator m_patchBCFunctionBaseCreator;
     
     Vector3D m_center { 0. , 0. , 0. };
     Real m_radius { 0. };
