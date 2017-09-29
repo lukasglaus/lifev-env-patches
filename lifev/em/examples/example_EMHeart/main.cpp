@@ -354,7 +354,7 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
 //    patch1.setup(patchFunDirectional, center1, radius1);
     
-    PatchCircleBCEssentialFull patch1(solver, "Patch1", 464, 100);
+    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
     patch1.setup(patchFun1, direction1, center1, 1.5);
     
 //    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
@@ -363,7 +363,7 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch1.setup(patchFunDirectional, center2, radius2);
 
-    PatchCircleBCEssentialFull patch2(solver, "Patch2", 464, 101);
+    PatchCircleBCEssentialComponent patch2(solver, "Patch2", 464, 101);
     patch1.setup(patchFun2, direction2, center2, 1.5);
     
     
