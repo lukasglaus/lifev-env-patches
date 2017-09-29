@@ -29,11 +29,11 @@ public:
     function_Type fct()
     {
         function_Type f;
-        f = boost::bind (&PatchBCFunctionBase::functionXY, this, _1, _2, _3, _4, _5);
+        f = boost::bind (&PatchBCFunctionBase::patchForceFunction, this, _1, _2, _3, _4, _5);
         return f;
     }
     
-    Real functionXY (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    Real patchForceFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
         switch (i)
         {
@@ -101,13 +101,13 @@ protected:
     {
         m_center = center;
         m_radius = radius;
-        m_patchBCFunctionBase.setDirection(direction);
+        m_patchBCFunctionBase.setDirection(direction.normalized());
     }
     
     void setBCFunctionBase(BCFunctionBase& bcFunctionBase)
     {
         BCFunctionBase bcFB (m_patchBCFunctionBase.fct());
-        m_bcFunctionBase.setFunction(bcFunctionBase);
+        m_bcFunctionBase.setFunction(bcFB);
     }
     
     virtual void createPatchArea()
