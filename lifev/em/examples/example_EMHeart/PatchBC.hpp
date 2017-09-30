@@ -117,14 +117,14 @@ public:
 //        m_prevFaceFlag (prevFaceFlag),
 //        m_patchFlag (patchFlag)
 //    {}
-//
-//    void initialize(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag)
-//    {
-//        m_solver = solver;
-//        m_bcName = bcName;
-//        m_prevFaceFlag = prevFaceFlag;
-//        m_patchFlag = patchFlag;
-//    }
+
+    void initialize(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag)
+    {
+        m_solver = solver;
+        m_bcName = bcName;
+        m_prevFaceFlag = prevFaceFlag;
+        m_patchFlag = patchFlag;
+    }
     
     void setup(Vector3D& direction, const Vector3D& center, const Real& radius)
     {
@@ -151,7 +151,7 @@ protected:
     
     virtual void createPatchArea()
     {
-        for (auto& mesh : m_solver.mesh())
+        for (auto& mesh : m_solver->mesh())
         {
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
@@ -184,10 +184,10 @@ protected:
 
     virtual void addPatchBC() = 0;
     
-    EMSolverType m_solver;
-     std::string m_bcName;
-     int m_prevFaceFlag;
-     int m_patchFlag;
+    boost::share_ptr<EMSolverType> m_solver;
+    std::string m_bcName;
+    int m_prevFaceFlag;
+    int m_patchFlag;
     BCFunctionBase m_bcFunctionBase;
     PatchBCFunctionBaseCreator m_patchBCFunctionBaseCreator;
     
@@ -207,7 +207,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Normal, m_bcFunctionBase);
+        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Normal, m_bcFunctionBase);
     }
 };
    
@@ -226,7 +226,7 @@ protected:
     virtual void addPatchBC()
     {
         BCFunctionDirectional bcFunctionDirectional (m_bcFunctionBase, m_patchBCFunctionBaseCreator.dirFct());
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
+        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
     }
 };
     
@@ -244,7 +244,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Full, m_bcFunctionBase, 3);
+        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Full, m_bcFunctionBase, 3);
     }
 };
 
@@ -262,7 +262,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
+        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
     }
 };
 
