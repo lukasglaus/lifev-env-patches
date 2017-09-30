@@ -120,7 +120,7 @@ public:
 
     void initialize(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag)
     {
-        m_solver = solver;
+        m_solver = &solver;
         m_bcName = bcName;
         m_prevFaceFlag = prevFaceFlag;
         m_patchFlag = patchFlag;
