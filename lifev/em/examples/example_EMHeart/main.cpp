@@ -416,7 +416,7 @@ int main (int argc, char** argv)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
-            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
+            *pVecPtrs[i] = 0;//- bcValues[ ventIdx[i] ] * 1333.224;
             // Check coordinates of pVecPtrs and assign only values to certain cells
             // Implement vector for both natural and essential b.c.
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );

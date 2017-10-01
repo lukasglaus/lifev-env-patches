@@ -145,9 +145,16 @@ protected:
     
     void setBCFunctionBase()
     {
-        BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
+        auto bcFB (m_patchBCFunctionBaseCreator.fct());
         m_bcFunctionBase.setFunction(bcFB);
     }
+    
+//    void setBCFunctionDirectional()
+//    {
+//        BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
+//
+//        m_bcFunctionDirectional.setFunction_Directional(bcFB);
+//    }
     
     virtual void createPatchArea()
     {
@@ -190,6 +197,8 @@ protected:
     const int m_patchFlag;
     
     BCFunctionBase m_bcFunctionBase;
+    BCFunctionDirectional m_bcFunctionDirectional;
+    
     PatchBCFunctionBaseCreator m_patchBCFunctionBaseCreator;
     
     Vector3D m_center { 0. , 0. , 0. };
