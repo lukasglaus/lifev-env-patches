@@ -145,7 +145,7 @@ protected:
     
     void setBCFunctionBase()
     {
-        auto bcFB (m_patchBCFunctionBaseCreator.fct());
+        BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
         m_bcFunctionBase.setFunction(bcFB);
     }
     
@@ -235,7 +235,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        BCFunctionDirectional bcFunctionDirectional (m_bcFunctionBase, m_patchBCFunctionBaseCreator.dirFct());
+        BCFunctionDirectional bcFunctionDirectional (m_patchBCFunctionBaseCreator.fct(), m_patchBCFunctionBaseCreator.dirFct());
         m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
     }
 };
