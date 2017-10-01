@@ -184,7 +184,7 @@ protected:
 
     virtual void addPatchBC() = 0;
     
-    boost::shared_ptr<EMSolverType> m_solver;
+    EMSolverType m_solver;
     const std::string m_bcName;
     const int m_prevFaceFlag;
     const int m_patchFlag;
