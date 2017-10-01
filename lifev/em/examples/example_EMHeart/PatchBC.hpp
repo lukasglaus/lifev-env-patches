@@ -130,6 +130,7 @@ public:
     {
         setParameters(center, radius, direction);
         setBCFunctionBase();
+        setBCFunctionDirectional();
         createPatchArea();
         addPatchBC();
     }
@@ -146,15 +147,13 @@ protected:
     void setBCFunctionBase()
     {
         BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
-        m_bcFunctionBase.setFunction(bcFB);
+        m_bcFunctionBase.setFunction(m_patchBCFunctionBaseCreator.fct());
     }
     
-//    void setBCFunctionDirectional()
-//    {
-//        BCFunctionBase bcFB (m_patchBCFunctionBaseCreator.fct());
-//
-//        m_bcFunctionDirectional.setFunction_Directional(bcFB);
-//    }
+    void setBCFunctionDirectional()
+    {
+        m_bcFunctionDirectional.setFunctions_Directional(m_patchBCFunctionBaseCreator.fct(), m_patchBCFunctionBaseCreator.fctDir());
+    }
     
     virtual void createPatchArea()
     {
@@ -235,8 +234,8 @@ protected:
     
     virtual void addPatchBC()
     {
-        BCFunctionDirectional bcFunctionDirectional (m_patchBCFunctionBaseCreator.fct(), m_patchBCFunctionBaseCreator.dirFct());
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
+        BCFunctionDirectional bcFunctionDirectional (m_bcFunctionBase, m_patchBCFunctionBaseCreator.dirFct());
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, m_bcFunctionDirectional);
     }
 };
     
