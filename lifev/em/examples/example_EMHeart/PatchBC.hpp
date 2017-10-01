@@ -208,7 +208,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Normal, m_bcFunctionBase);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Normal, m_bcFunctionBase);
     }
 };
    
@@ -227,7 +227,7 @@ protected:
     virtual void addPatchBC()
     {
         BCFunctionDirectional bcFunctionDirectional (m_bcFunctionBase, m_patchBCFunctionBaseCreator.dirFct());
-        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
     }
 };
     
@@ -245,7 +245,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Full, m_bcFunctionBase, 3);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Full, m_bcFunctionBase, 3);
     }
 };
 
@@ -263,7 +263,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
     }
 };
 
@@ -281,7 +281,7 @@ protected:
     
     virtual void addPatchBC()
     {
-        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Natural, Component, m_bcFunctionBase, 0);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Natural, Component, m_bcFunctionBase, 0);
     }
 };
 
