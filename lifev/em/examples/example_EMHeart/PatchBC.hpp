@@ -152,7 +152,7 @@ protected:
     
     void setBCFunctionDirectional()
     {
-        m_bcFunctionDirectional.setFunctions_Directional(m_patchBCFunctionBaseCreator.fct(), m_patchBCFunctionBaseCreator.fctDir());
+        m_bcFunctionDirectional.setFunctions_Directional(m_patchBCFunctionBaseCreator.fct(), m_patchBCFunctionBaseCreator.dirFct());
     }
     
     virtual void createPatchArea()
