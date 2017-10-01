@@ -212,7 +212,7 @@ protected:
     }
 };
    
-REGISTER(PatchBC, PatchCircleBCEssentialNormal);
+//REGISTER(PatchBC, PatchCircleBCEssentialNormal);
     
     
 class PatchCircleBCEssentialDirectional : public PatchBC
@@ -231,7 +231,7 @@ protected:
     }
 };
     
-REGISTER(PatchBC, PatchCircleBCEssentialDirectional);
+//REGISTER(PatchBC, PatchCircleBCEssentialDirectional);
 
     
 class PatchCircleBCEssentialFull : public PatchBC
@@ -249,7 +249,7 @@ protected:
     }
 };
 
-REGISTER(PatchBC, PatchCircleBCEssentialFull);
+//REGISTER(PatchBC, PatchCircleBCEssentialFull);
 
 
 class PatchCircleBCEssentialComponent : public PatchBC
@@ -267,7 +267,7 @@ protected:
     }
 };
 
-REGISTER(PatchBC, PatchCircleBCEssentialComponent);
+//REGISTER(PatchBC, PatchCircleBCEssentialComponent);
 
     
 class PatchCircleBCNaturalComponent : public PatchBC
@@ -285,7 +285,7 @@ protected:
     }
 };
 
-REGISTER(PatchBC, PatchCircleBCEssentialComponent);
+//REGISTER(PatchBC, PatchCircleBCEssentialComponent);
     
 }
 
