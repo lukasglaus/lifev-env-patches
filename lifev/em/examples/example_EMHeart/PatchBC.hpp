@@ -34,7 +34,7 @@ public:
     
     Real patchForceFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
-        return (t * 1e-3);
+        return (t * 1e-5);
 //        switch (i)
 //        {
 //            case 0:
