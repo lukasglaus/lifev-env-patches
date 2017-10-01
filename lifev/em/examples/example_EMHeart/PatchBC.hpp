@@ -109,7 +109,7 @@ public:
     typedef EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > > EMSolverType;
     typedef boost::function<Real ( const Real&, const Real&, const Real&, const Real&, const ID& ) > function_Type;
     
-    PatchBC(){}
+//    PatchBC(){}
     
     PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
         m_solver (solver),
@@ -269,6 +269,23 @@ protected:
 
 REGISTER(PatchBC, PatchCircleBCEssentialComponent);
 
+    
+class PatchCircleBCNaturalComponent : public PatchBC
+{
+public:
+    
+    using PatchBC::PatchBC;
+    typedef PatchBC::function_Type function_Type;
+    
+protected:
+    
+    virtual void addPatchBC()
+    {
+        m_solver->bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Natural, Component, m_bcFunctionBase, 0);
+    }
+};
+
+REGISTER(PatchBC, PatchCircleBCEssentialComponent);
     
 }
 
