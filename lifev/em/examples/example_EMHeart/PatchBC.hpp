@@ -201,7 +201,7 @@ class PatchCircleBCEssentialNormal : public PatchBC
 {
 public:
     
-    PatchCircleBCEssentialNormal(){}
+    using PatchBC::PatchBC;
     typedef PatchBC::function_Type function_Type;
     
 protected:
