@@ -151,7 +151,7 @@ protected:
     
     virtual void createPatchArea()
     {
-        for (auto& mesh : m_solver->mesh())
+        for (auto& mesh : m_solver.mesh())
         {
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
