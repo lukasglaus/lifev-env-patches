@@ -354,7 +354,7 @@ int main (int argc, char** argv)
     
     
     PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
-    patch5->initialize(solver, std::string("Patch1"), 464, 100);
+    patch5->initialize(solver, std::string {"Patch1"}, 464, 100);
     
 //    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
 //    patch1.setup(direction1, center1, 1.5);
