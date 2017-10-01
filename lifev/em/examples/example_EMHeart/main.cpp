@@ -348,29 +348,26 @@ int main (int argc, char** argv)
     BCFunctionBase patchFunNormal (patchDispFunNormal);
     BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
 
+//    PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
+//    patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
+    
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
 //    patch1.setup(patchFunNormal, center1, radius1);
+    
+    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
+    patch1.setup(direction1, center1, 1.5);
 
-    
-    boost::shared_ptr<EMSolver<mesh_Type, monodomain_Type> > solverPtr (solver);
-    
-    PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
-    patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
-    
-//    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
+//    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
 //    patch1.setup(direction1, center1, 1.5);
-//
-////    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
-////    patch1.setup(direction1, center1, 1.5);
-//
-////    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
-////    patch2.setup(patchFunNormal, center2, radius2);
-//
-//    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
+
+//    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
+//    patch2.setup(patchFunNormal, center2, radius2);
+
+    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
+    patch2.setup(direction2, center2, 1.5);
+
+//    PatchCircleBCEssentialComponent patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
-//
-////    PatchCircleBCEssentialComponent patch2(solver, "Patch2", 464, 101);
-////    patch2.setup(direction2, center2, 1.5);
     
     
     //============================================//

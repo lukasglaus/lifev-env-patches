@@ -111,12 +111,12 @@ public:
     
     PatchBC(){}
     
-//    PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
-//        m_solver (solver),
-//        m_bcName (bcName),
-//        m_prevFaceFlag (prevFaceFlag),
-//        m_patchFlag (patchFlag)
-//    {}
+    PatchBC(EMSolverType& solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag) :
+        m_solver (solver),
+        m_bcName (bcName),
+        m_prevFaceFlag (prevFaceFlag),
+        m_patchFlag (patchFlag)
+    {}
 
     void initialize(boost::shared_ptr<EMSolverType> solver, const std::string& bcName, const int& prevFaceFlag, const int& patchFlag)
     {
