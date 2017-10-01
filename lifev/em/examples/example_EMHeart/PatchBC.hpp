@@ -235,7 +235,7 @@ protected:
     virtual void addPatchBC()
     {
         BCFunctionDirectional bcFunctionDirectional (m_bcFunctionBase, m_bcFunctionDirectional);
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, m_bcFunctionDirectional);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Directional, bcFunctionDirectional);
     }
 };
     
