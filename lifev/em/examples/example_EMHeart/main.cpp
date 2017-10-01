@@ -350,12 +350,11 @@ int main (int argc, char** argv)
 
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
 //    patch1.setup(patchFunNormal, center1, radius1);
+
     
-    
-    const std::string bcName5 ("Patch1");
     
     PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
-    patch5->initialize(solver, bcName5, 464, 100);
+    patch5->initialize(&solver, std::string ("Patch1"), 464, 100);
     
 //    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
 //    patch1.setup(direction1, center1, 1.5);
