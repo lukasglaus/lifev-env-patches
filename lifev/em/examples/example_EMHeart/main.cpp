@@ -352,7 +352,7 @@ int main (int argc, char** argv)
 //    patch1.setup(patchFunNormal, center1, radius1);
 
     
-    boost::shared_ptr<EMSolver<mesh_Type, monodomain_Type> > solverPtr = solver;
+    boost::shared_ptr<EMSolver<mesh_Type, monodomain_Type> > solverPtr = &solver;
     
     PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
     patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
