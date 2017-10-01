@@ -34,7 +34,7 @@ public:
     
     Real patchForceFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
-        return (t * 1e-6);
+        return (t * 1e-3);
 //        switch (i)
 //        {
 //            case 0:
@@ -69,10 +69,10 @@ public:
                 return 1;//(m_direction[0]);
                 break;
             case 1:
-                return (m_direction[1]);
+                return 1;//(m_direction[1]);
                 break;
             case 2:
-                return (m_direction[2]);
+                return 1;//(m_direction[2]);
                 break;
             default:
                 ERROR_MSG ("This entry is not allowed");
