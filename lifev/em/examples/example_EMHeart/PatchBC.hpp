@@ -66,7 +66,7 @@ public:
         switch (i)
         {
             case 0:
-                return (m_direction[0]);
+                return 1;//(m_direction[0]);
                 break;
             case 1:
                 return (m_direction[1]);
