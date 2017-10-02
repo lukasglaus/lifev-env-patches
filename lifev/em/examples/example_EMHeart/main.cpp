@@ -351,23 +351,28 @@ int main (int argc, char** argv)
 //    PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
 //    patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
     
+
+    
+    
+    // Normal
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
 //    patch1.setup(patchFunNormal, center1, radius1);
-    
-    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
-    patch1.setup(direction1, center1, 1.5);
-
-//    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
-//    patch1.setup(direction1, center1, 1.5);
-
 //    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(patchFunNormal, center2, radius2);
 
-    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
+    // Component
+    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
+    patch1.setup(direction1, center1, 1.5);
+    PatchCircleBCEssentialComponent patch2(solver, "Patch2", 464, 101);
     patch2.setup(direction2, center2, 1.5);
-
-//    PatchCircleBCEssentialComponent patch2(solver, "Patch2", 464, 101);
+    
+    // Directional
+//    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
+//    patch1.setup(direction1, center1, 1.5);
+//    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
+
+
     
     
     //============================================//
