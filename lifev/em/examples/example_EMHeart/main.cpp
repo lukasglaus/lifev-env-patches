@@ -736,7 +736,7 @@ int main (int argc, char** argv)
         }
 
         
-//        solver.solveElectrophysiology (stim, t);
+        solver.solveElectrophysiology (stim, t);
 //        solver.solveActivation (dt_activation);
 
 //        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
