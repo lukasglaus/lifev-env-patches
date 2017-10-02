@@ -57,6 +57,24 @@ using namespace LifeV;
 // Functions
 //============================================//
 
+boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const Vector3D& direction)
+{
+    boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
+    auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+    
+    for (int j (0); j < nCompLocalDof; j++)
+    {
+        UInt iGID = vectorField->blockMap().GID (j);
+        UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+        UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+        
+        (*vectorField)[iGID] = direction[0];
+        (*vectorField)[jGID] = direction[1];
+        (*vectorField)[kGID] = direction[2];
+    }
+    
+    return p2NormalVectorPtr;
+}
 
 Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
 {
@@ -406,6 +424,8 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
+    auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1);
+    
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
