@@ -63,7 +63,7 @@ Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     switch (i)
     {
         case 0:
-            return (0.0001*t);
+            return (0.1*t);
             break;
         case 1:
             return 0;
@@ -83,7 +83,7 @@ Real patchDispFun2 (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     switch (i)
     {
         case 0:
-            return (-0.0001*t);
+            return (-0.1*t);
             break;
         case 1:
             return 0;
