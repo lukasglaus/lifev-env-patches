@@ -425,10 +425,12 @@ int main (int argc, char** argv)
 //    patch2.setup(direction2, center2, 1.5);
 
     auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1);
+    bcVectorPtr_Type direction5BC ( new bcVector_Type( *direction5, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) )
     
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
+//    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, direction5BC);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
