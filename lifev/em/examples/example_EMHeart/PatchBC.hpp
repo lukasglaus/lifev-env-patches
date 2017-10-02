@@ -278,7 +278,7 @@ protected:
     {
         BCFunctionBase bcFB (patchForceFunction);
 
-        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
+        m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, bcFB, 0);
     }
 };
 
