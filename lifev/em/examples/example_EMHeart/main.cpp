@@ -372,7 +372,10 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
-
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun, 3);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun, 3);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
     
     
     //============================================//

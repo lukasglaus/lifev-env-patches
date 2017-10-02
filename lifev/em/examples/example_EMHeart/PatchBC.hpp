@@ -16,6 +16,11 @@
 namespace LifeV
 {
 
+Real patchForceFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+{
+    return (t * 1e-5);
+}
+
     
 class PatchBCFunctionBaseCreator
 {
@@ -271,6 +276,8 @@ protected:
     
     virtual void addPatchBC()
     {
+        BCFunctionBase bcFB (patchForceFunction);
+
         m_solver.bcInterfacePtr()->handler()->addBC (m_bcName, m_patchFlag, Essential, Component, m_bcFunctionBase, 0);
     }
 };
