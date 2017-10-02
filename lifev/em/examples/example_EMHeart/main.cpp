@@ -57,7 +57,7 @@ using namespace LifeV;
 // Functions
 //============================================//
 
-boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const Vector3D& direction, const Real& disp = 1.0)
+boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp = 1.0)
 {
     boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
     auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
