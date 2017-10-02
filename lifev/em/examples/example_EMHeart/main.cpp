@@ -57,10 +57,13 @@ using namespace LifeV;
 // Functions
 //============================================//
 
-boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const Vector3D& direction)
+boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const Vector3D& direction, const Real& disp = 1.0)
 {
     boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
     auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+    
+    direction.normalize();
+    direction *= disp;
     
     for (int j (0); j < nCompLocalDof; j++)
     {
@@ -424,7 +427,7 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
-    auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1);
+    auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.0001);
     bcVectorPtr_Type direction5BC ( new bcVector_Type( *direction5, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
     
     createPatch(solver, center1, 2.5, 464, 100);
