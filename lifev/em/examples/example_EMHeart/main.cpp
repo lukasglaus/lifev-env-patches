@@ -73,7 +73,7 @@ boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<
         (*vectorField)[kGID] = direction[2];
     }
     
-    return p2NormalVectorPtr;
+    return vectorField;
 }
 
 Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
