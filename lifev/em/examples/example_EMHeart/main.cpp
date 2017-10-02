@@ -427,7 +427,7 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
-    auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.0001);
+    auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.000001);
     bcVectorPtr_Type direction5BC ( new bcVector_Type( *direction5, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
     
     createPatch(solver, center1, 2.5, 464, 100);
