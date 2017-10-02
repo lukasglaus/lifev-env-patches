@@ -37,6 +37,26 @@ public:
         return f;
     }
     
+    static Real patchDispFun (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    {
+        switch (i)
+        {
+            case 0:
+                return (0.00005*t);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return (0.00005*t);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
+        }
+    }
+
     Real patchForceFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
         return (t * 1e-5);
