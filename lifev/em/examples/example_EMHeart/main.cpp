@@ -63,13 +63,13 @@ Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     switch (i)
     {
         case 0:
-            return (0.1*t);
+            return (t);
             break;
         case 1:
             return 0;
             break;
         case 2:
-            return 0;
+            return (t);
             break;
         default:
             ERROR_MSG ("This entry is not allowed");
@@ -83,13 +83,13 @@ Real patchDispFun2 (const Real& t, const Real&  X, const Real& Y, const Real& Z,
     switch (i)
     {
         case 0:
-            return (-0.1*t);
+            return (-t);
             break;
         case 1:
             return 0;
             break;
         case 2:
-            return 0;
+            return (-t);
             break;
         default:
             ERROR_MSG ("This entry is not allowed");
@@ -406,8 +406,8 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
-    createPatch(solver, center1, 1.5, 464, 100);
-    createPatch(solver, center2, 1.5, 464, 101);
+    createPatch(solver, center1, 2.5, 464, 100);
+    createPatch(solver, center2, 2.5, 464, 101);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
