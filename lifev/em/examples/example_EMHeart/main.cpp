@@ -336,6 +336,41 @@ int main (int argc, char** argv)
     //============================================//
     // Create force patch b.c.
     //============================================//
+    
+    auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    {
+        for (auto& mesh : solver.mesh())
+        {
+            for (int j(0); j < mesh->numBoundaryFacets(); j++)
+            {
+                auto& face = mesh->boundaryFacet(j);
+                auto faceFlag = face.markerID();
+                
+                if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
+                {
+                    int numPointsInsidePatch (0);
+                    
+                    for (int k(0); k < 3; ++k)
+                    {
+                        auto coord = face.point(k).coordinates();
+                        bool pointInPatch = (coord - center).norm() < radius;
+                        
+                        if (pointInPatch)
+                        {
+                            ++numPointsInsidePatch;
+                        }
+                    }
+                    
+                    if (numPointsInsidePatch > 2)
+                    {
+                        face.setMarkerID(newFlag);
+                    }
+                    
+                }
+            }
+        }
+    };
+    
     Vector3D center1 {-0.7, -6.0, -4.7};
     Vector3D center2 {4.5, -6.0, 1.0};
     
@@ -352,7 +387,6 @@ int main (int argc, char** argv)
 //    patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
     
 
-    
     
     // Normal
 //    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
@@ -372,6 +406,8 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
+    createPatch(solver, center1, 1.5, 464, 100);
+    createPatch(solver, center2, 1.5, 464, 101);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, patchFun1, 3);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Full, patchFun2, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
