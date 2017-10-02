@@ -823,7 +823,7 @@ int main (int argc, char** argv)
             //============================================//
             // Solve mechanics
             //============================================//
-            modifyPressureBC(bcValues);
+//            modifyPressureBC(bcValues);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
