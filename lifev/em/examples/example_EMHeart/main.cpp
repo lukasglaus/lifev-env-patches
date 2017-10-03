@@ -427,17 +427,24 @@ int main (int argc, char** argv)
 //    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
 //    patch2.setup(direction2, center2, 1.5);
 
-    auto direction5 = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.00000001);
-    bcVectorPtr_Type direction5BC ( new bcVector_Type( *direction5, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
+    auto directionVector = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.00000001);
+    bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
     
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
 //    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *direction5BC, 0);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 0);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
     
+    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
+    {
+        directionVector = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, time*factor);
+        directionBCVector.reset ( new bcVector_Type( *directionVector, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
+        
+        solver.bcInterfacePtr() -> handler() -> modifyBC(100, *directionBCVector);
+    };
     
     //============================================//
     // Pressure b.c. on endocardia
@@ -815,7 +822,7 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            // modifyFeBCPatches(t);
+            modifyEssentialVectorBC(t, 0.0001);
             
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
