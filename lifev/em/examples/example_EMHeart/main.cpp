@@ -447,10 +447,10 @@ int main (int argc, char** argv)
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
     
-    auto modifyEssentialVectorBC = [&] (const Real& time, Real& factor)
+    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
-        factor = 0.0000001;
-        auto directionVec = directionalVectorField(FESpace, direction1, time*factor);
+        Real factor2 = 0.0000001;
+        auto directionVec = directionalVectorField(FESpace, direction1, time*factor2);
         bcVectorPtr_Type directionBCVec ( new bcVector_Type( *directionVec, FESpace->dof().numTotalDof(), 1 ) );
         
         solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVec);
