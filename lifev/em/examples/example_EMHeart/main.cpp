@@ -57,7 +57,7 @@ using namespace LifeV;
 // Functions
 //============================================//
 
-boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp = 1.0)
+boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp)
 {
     boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
     auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
@@ -302,6 +302,11 @@ int main (int argc, char** argv)
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
     solver.setup (dataFile);
     
+    auto& disp = solver.structuralOperatorPtr() -> displacement();
+    auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
+    auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
+    auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr()
+    
     
     //============================================//
     // Setup anisotropy vectors
@@ -431,8 +436,8 @@ int main (int argc, char** argv)
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
 
-    auto directionVector = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.001);
-    bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
+    auto directionVector = directionalVectorField(FESpace, direction1, 0.1);
+    bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector);
 
     // Natural BCVector
@@ -444,10 +449,10 @@ int main (int argc, char** argv)
     
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
-        directionVector = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, time*factor);
-        directionBCVector.reset ( new bcVector_Type( *directionVector, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
+        directionVector = directionalVectorField(FESpace, direction1, time*factor);
+        directionBCVector.reset ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
         
-        solver.bcInterfacePtr() -> handler() -> modifyBC(100, *directionBCVector);
+        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector);
     };
     
     //============================================//
@@ -510,11 +515,6 @@ int main (int argc, char** argv)
     //============================================//
     // Volume integrators
     //============================================//
-    auto& disp = solver.structuralOperatorPtr() -> displacement();
-    auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
-    auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
-    auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
-    
     std::vector<int> LVFlags;
     std::vector<int> RVFlags;
 
