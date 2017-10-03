@@ -431,7 +431,7 @@ int main (int argc, char** argv)
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
 
-    auto directionVector = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.00000001);
+    auto directionVector = directionalVectorField(solver.structuralOperatorPtr() -> dispFESpacePtr(), direction1, 0.001);
     bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) );
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector);
 
