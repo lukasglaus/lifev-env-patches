@@ -438,7 +438,7 @@ int main (int argc, char** argv)
 
     auto directionVector = directionalVectorField(FESpace, direction1, 0.1);
     bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 3);
 
     // Natural BCVector
 //    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
