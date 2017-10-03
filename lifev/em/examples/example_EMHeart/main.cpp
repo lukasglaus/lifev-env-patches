@@ -436,7 +436,7 @@ int main (int argc, char** argv)
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
 
-    auto directionVector = directionalVectorField(FESpace, direction1, 0.0000001);
+    auto directionVector = directionalVectorField(FESpace, direction1, 0.000000001);
     bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
     solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 3);
 
@@ -449,6 +449,7 @@ int main (int argc, char** argv)
     
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
+        factor = 0.0000001;
         auto directionVec = directionalVectorField(FESpace, direction1, time*factor);
         bcVectorPtr_Type directionBCVec ( new bcVector_Type( *directionVec, FESpace->dof().numTotalDof(), 1 ) );
         
