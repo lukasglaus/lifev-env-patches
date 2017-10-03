@@ -65,7 +65,7 @@ boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<
     direction.normalize();
     direction *= disp;
     
-    for (int j (0); j < nCompLocalDof; j++)
+    for (int j (0); j < nCompLocalDof; ++j)
     {
         UInt iGID = vectorField->blockMap().GID (j);
         UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
@@ -449,10 +449,10 @@ int main (int argc, char** argv)
     
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
-        directionVector = directionalVectorField(FESpace, direction1, time*factor);
-        directionBCVector.reset ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
+        auto directionVec = directionalVectorField(FESpace, direction1, time*factor);
+        bcVectorPtr_Type directionBCVec ( new bcVector_Type( *directionVec, FESpace->dof().numTotalDof(), 1 ) );
         
-        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector);
+        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVec);
     };
     
     //============================================//
@@ -826,7 +826,7 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            modifyEssentialVectorBC(t, 0.0001);
+            modifyEssentialVectorBC(t, 0.001);
             
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
