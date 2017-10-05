@@ -73,10 +73,9 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    list =  'BaseSemilunar BaseAV Epicardium AorticRing MitralRing TricuspidRing'
+    list =  'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing'
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
-    #listForcePatchesBC = 'Patch1 Patch2'
-    #listDispPatchesBC = 'Patch1 Patch2'
+
 
     numPreloadSteps  = 50
 
@@ -203,14 +202,7 @@ monodomain_xml_file = ParamListE.xml
             flag    = 459
             index   = 1
 
-
-        [../Patch1]
-            flag       = 464
-
-        [../Patch2]
-            flag       = 464
-
-        [../]
+    [../]
 
     [../patches]
     Tmax            = 20
