@@ -439,7 +439,7 @@ int main (int argc, char** argv)
     auto directionVector = directionalVectorField(FESpace, direction1, 1e-10);
     bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 3);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Component, *directionBCVector, 2);
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Component, *directionBCVector, std::vector<int> {2});
     
     // Natural BCVector
 //    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
@@ -451,10 +451,10 @@ int main (int argc, char** argv)
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
         Real factor2 = 1e-10;
-        auto directionVec = directionalVectorField(FESpace, direction1, time*factor2);
-        bcVectorPtr_Type directionBCVec ( new bcVector_Type( *directionVec, FESpace->dof().numTotalDof(), 1 ) );
+        directionVector = directionalVectorField(FESpace, direction1, time*factor2);
+        directionBCVector.reset( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
         
-        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVec);
+        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector);
     };
     
     //============================================//
@@ -774,7 +774,7 @@ int main (int argc, char** argv)
         }
 
         
-        solver.solveElectrophysiology (stim, t);
+//        solver.solveElectrophysiology (stim, t);
 //        solver.solveActivation (dt_activation);
 
 //        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
@@ -865,25 +865,25 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
-            VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
-            VFeNew[1] = RV.volume(disp, dETFESpace, 1);
-
-            //============================================//
-            // Solve circlation
-            //============================================//
-            circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
-            VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-            VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
-
-            //============================================//
-            // Residual computation
-            //============================================//
-            R = VFeNew - VCircNew;
-            printCoupling("Residual Computation");
-            
-            //============================================//
-            // Newton iterations
-            //============================================//
+//            VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
+//            VFeNew[1] = RV.volume(disp, dETFESpace, 1);
+//
+//            //============================================//
+//            // Solve circlation
+//            //============================================//
+//            circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
+//            VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+//            VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+//
+//            //============================================//
+//            // Residual computation
+//            //============================================//
+//            R = VFeNew - VCircNew;
+//            printCoupling("Residual Computation");
+//
+//            //============================================//
+//            // Newton iterations
+//            //============================================//
 //            while ( R.norm() > couplingError )
 //            {
 //                ++iter;
