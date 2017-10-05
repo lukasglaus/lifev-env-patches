@@ -272,7 +272,7 @@ monodomain_xml_file = ParamListE.xml
     reuse           = true
     max_iter_reuse  = 250
     kspace          = 800
-    tol             = 1.e-5   # 1.e-10 		# AztecOO tolerance
+    tol             = 1.e-9   # 1.e-10 		# AztecOO tolerance
 
     [../prec]
     prectype        = Ifpack	 		# Ifpack or ML
