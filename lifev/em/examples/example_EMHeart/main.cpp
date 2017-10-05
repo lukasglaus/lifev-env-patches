@@ -450,7 +450,7 @@ int main (int argc, char** argv)
     
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
-        Real factor2 = 1e-5;
+        Real factor2 = 1e-4;
         directionVector = directionalVectorField(FESpace, direction1, time*factor2);
         directionBCVector.reset( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
         
