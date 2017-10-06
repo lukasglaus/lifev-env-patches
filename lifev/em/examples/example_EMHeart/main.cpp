@@ -433,8 +433,8 @@ int main (int argc, char** argv)
 //    patch2.setup(direction2, center2, 1.5);
 
     // Essential BCVector
-    createPatch(solver, center1, 2.5, 464, 100);
-    createPatch(solver, center2, 2.5, 464, 101);
+    createPatch(solver, center1, 1.5, 464, 100);
+    createPatch(solver, center2, 1.5, 464, 101);
 
     auto directionVector1 = directionalVectorField(FESpace, direction1, 1e-10);
     bcVectorPtr_Type directionBCVector1 ( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
