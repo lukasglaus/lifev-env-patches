@@ -441,25 +441,30 @@ int main (int argc, char** argv)
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 3);
     solver.bcInterfacePtr() -> handler()->addBC ("Patch1", 100,  Essential, Component, *directionBCVector1, std::vector<ID> {0,2});
     
-//    auto directionVector2 = directionalVectorField(FESpace, direction2, 1e-10);
-//    bcVectorPtr_Type directionBCVector2 ( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch2", 101,  Essential, Component, *directionBCVector2, std::vector<ID> {0,2});
+    auto directionVector2 = directionalVectorField(FESpace, direction2, 1e-10);
+    bcVectorPtr_Type directionBCVector2 ( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch2", 101,  Essential, Component, *directionBCVector2, std::vector<ID> {0,2});
+    
+
+    Real patchTimeFactor = dataFile ( "solid/patches/patchTimeFactor", 1.0 )
+    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
+    {
+        directionVector1 = directionalVectorField(FESpace, direction1, time*factor);
+        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
+        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
+        
+        directionVector2 = directionalVectorField(FESpace, direction2, time*factor);
+        directionBCVector2.reset( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
+        solver.bcInterfacePtr()->handler()->modifyBC(101, *directionBCVector2);
+    };
+    
     
     // Natural BCVector
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
+    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
     
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
-    
-//    Real patchTimeFactor = dataFile ( "solid/time_discretization/dt_loadstep", 1.0 )
-    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
-    {
-        Real factor2 = 1e-1;
-        directionVector1 = directionalVectorField(FESpace, direction1, time*factor2);
-        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
-        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
-    };
     
     //============================================//
     // Pressure b.c. on endocardia
@@ -832,7 +837,7 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            modifyEssentialVectorBC(t, 0.001);
+            modifyEssentialVectorBC(t, patchTimeFactor);
             
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
