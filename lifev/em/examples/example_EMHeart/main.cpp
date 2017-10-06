@@ -447,7 +447,6 @@ int main (int argc, char** argv)
     
 
     Real patchTimeFactor = dataFile ( "solid/patches/patchTimeFactor", 1.0 );
-    
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
         directionVector1 = directionalVectorField(FESpace, direction1, time*factor);
