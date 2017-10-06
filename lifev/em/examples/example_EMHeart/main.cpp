@@ -436,10 +436,14 @@ int main (int argc, char** argv)
     createPatch(solver, center1, 2.5, 464, 100);
     createPatch(solver, center2, 2.5, 464, 101);
 
-    auto directionVector = directionalVectorField(FESpace, direction1, 1e-10);
-    bcVectorPtr_Type directionBCVector ( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
+    auto directionVector1 = directionalVectorField(FESpace, direction1, 1e-10);
+    bcVectorPtr_Type directionBCVector1 ( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 3);
-    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Component, *directionBCVector, std::vector<ID> {2});
+    solver.bcInterfacePtr() -> handler()->addBC ("Patch1", 100,  Essential, Component, *directionBCVector1, std::vector<ID> {0,2});
+    
+//    auto directionVector2 = directionalVectorField(FESpace, direction2, 1e-10);
+//    bcVectorPtr_Type directionBCVector2 ( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
+//    solver.bcInterfacePtr() -> handler()->addBC ("Patch2", 101,  Essential, Component, *directionBCVector2, std::vector<ID> {0,2});
     
     // Natural BCVector
 //    solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
@@ -448,13 +452,13 @@ int main (int argc, char** argv)
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
     //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
     
+//    Real patchTimeFactor = dataFile ( "solid/time_discretization/dt_loadstep", 1.0 )
     auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
     {
         Real factor2 = 1e-1;
-        directionVector = directionalVectorField(FESpace, direction1, time*factor2);
-        directionBCVector.reset( new bcVector_Type( *directionVector, FESpace->dof().numTotalDof(), 1 ) );
-        
-        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector);
+        directionVector1 = directionalVectorField(FESpace, direction1, time*factor2);
+        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
+        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
     };
     
     //============================================//
