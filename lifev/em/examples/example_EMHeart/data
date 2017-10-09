@@ -77,7 +77,7 @@ monodomain_xml_file = ParamListE.xml
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
 
 
-    numPreloadSteps  = 100
+    numPreloadSteps  = 50
 
         [./BaseSemilunar]
         type       = Essential #Robin
