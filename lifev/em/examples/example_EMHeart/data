@@ -205,10 +205,10 @@ monodomain_xml_file = ParamListE.xml
     [../]
 
     [../patches]
-    Tmax            = 20
-    tmax            = 250
-    tduration       = 300
-    patchTimeFactor = 1e-2
+    Tmax                = 20
+    tmax                = 250
+    tduration           = 300
+    patchDisplacement   = 1e-2
 
 
     [../coupling]

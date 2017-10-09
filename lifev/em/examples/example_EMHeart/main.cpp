@@ -446,14 +446,14 @@ int main (int argc, char** argv)
     solver.bcInterfacePtr() -> handler()->addBC ("Patch2", 101,  Essential, Component, *directionBCVector2, std::vector<ID> {0,2});
     
 
-    Real patchTimeFactor = dataFile ( "solid/patches/patchTimeFactor", 1.0 );
-    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& factor)
+    Real patchDisplacement = dataFile ( "solid/patches/patchDisplacement", 1.0 );
+    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& displacement)
     {
-        directionVector1 = directionalVectorField(FESpace, direction1, time*factor);
+        directionVector1 = directionalVectorField(FESpace, direction1, displacement);
         directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
         
-        directionVector2 = directionalVectorField(FESpace, direction2, time*factor);
+        directionVector2 = directionalVectorField(FESpace, direction2, displacement);
         directionBCVector2.reset( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(101, *directionBCVector2);
     };
@@ -816,7 +816,7 @@ int main (int argc, char** argv)
             // Load step mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             modifyPressureBC(bcValuesLoadstep);
-            modifyEssentialVectorBC(t, patchTimeFactor);
+            modifyEssentialVectorBC(t, sinSquared(t, patchDisplacement, tmax, tduration));
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
         }
@@ -832,7 +832,7 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            modifyEssentialVectorBC(t, patchTimeFactor);
+            modifyEssentialVectorBC(t, sinSquared(t, patchDisplacement, tmax, tduration));
             
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
