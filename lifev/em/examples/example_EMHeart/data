@@ -295,7 +295,7 @@ monodomain_xml_file = ParamListE.xml
             overlap 	= 4
 
             [../schwarz]
-            reordering_type 	= metis 			# metis, rcm, none
+            reordering_type 	= rcm 			# metis, rcm, none
             filter_singletons 	= true
 
             [../]
