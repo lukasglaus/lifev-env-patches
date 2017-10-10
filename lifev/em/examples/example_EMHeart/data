@@ -289,10 +289,10 @@ monodomain_xml_file = ParamListE.xml
             relax_value             = 0
 
             [../amesos]
-            solvertype  =  Amesos_KLU #Amesos_Superludist 	# Amesos_KLU
+            solvertype  =  Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
-            overlap 	= 2
+            overlap 	= 1
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
