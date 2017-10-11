@@ -292,7 +292,7 @@ monodomain_xml_file = ParamListE.xml
             solvertype  =  Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
-            overlap 	= 4
+            overlap 	= 2
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
