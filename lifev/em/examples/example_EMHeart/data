@@ -205,7 +205,7 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-    listPatchBC = ' ' #'Patch1 Patch2'
+    listPatchBC = 'Patch1 Patch2'
 
         [./Patch1]
         flag            = 464
@@ -213,7 +213,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 1.0
+        displacement    = 0.01
 
         [../Patch2]
         flag            = 464
@@ -221,7 +221,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 1.0
+        displacement    = 0.01
 
     [../]
 
