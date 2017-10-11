@@ -515,16 +515,19 @@ int main (int argc, char** argv)
     }
 
 
-//    auto modifyPatchBC = [&] (const Real& time)
-//    {
-//        for ( UInt i (0) ; i < nPatchBC ; ++i )
-//        {
-//            Real currentPatchDisp = sinSquared(time, patchDisplacement[i], 300., 300.)
-//            *patchDispVecPtr[i] = directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
-//            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-//            solver.bcInterfacePtr()->handler()->modifyBC((900+i), patchDispBCVecPtr[i]);
-//        }
-//    };
+    Real tmax = dataFile ( "solid/patches/tmax", 0. );
+    Real tduration = dataFile ( "solid/patches/tduration", 0. );
+    
+    auto modifyPatchBC = [&] (const Real& time)
+    {
+        for ( UInt i (0) ; i < nPatchBC ; ++i )
+        {
+            Real currentPatchDisp = sinSquared(time, patchDisplacement[i], tmax, tduration)
+            patchDispVecPtr[i].reset( vectorPtr_Type (directionalVectorField(FESpace, patchDirection[i], currentPatchDisp) ) );
+            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
+            solver.bcInterfacePtr()->handler()->modifyBC((900+i), patchDispBCVecPtr[i]);
+        }
+    };
     
 
     //============================================//
@@ -631,10 +634,6 @@ int main (int argc, char** argv)
     const UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
     
     const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
-
-    Real Tmax = dataFile ( "solid/patches/Tmax", 0. );
-    Real tmax = dataFile ( "solid/patches/tmax", 0. );
-    Real tduration = dataFile ( "solid/patches/tduration", 0. );
     
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
