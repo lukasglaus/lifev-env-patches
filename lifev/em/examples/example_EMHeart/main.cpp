@@ -41,7 +41,6 @@
 // PatchBC
 #include <lifev/em/examples/example_EMHeart/PatchBC.hpp>
 
-
 // Track nan
 // #include <fenv.h>
 
@@ -54,7 +53,6 @@ int main (int argc, char** argv)
 {
 
 //    feenableexcept(FE_INVALID | FE_OVERFLOW);
-    
     
     //============================================//
     // Typedefs
@@ -234,45 +232,6 @@ int main (int argc, char** argv)
     // Electric stimulus function
     //============================================//
     function_Type stim = &HeartSolver<EMSolver<mesh_Type, monodomain_Type> >::Iapp;
-
-    
-    //============================================//
-    // createPatch function
-    //============================================//
-    
-    auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
-    {
-        for (auto& mesh : solver.mesh())
-        {
-            for (int j(0); j < mesh->numBoundaryFacets(); j++)
-            {
-                auto& face = mesh->boundaryFacet(j);
-                auto faceFlag = face.markerID();
-                
-                if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
-                {
-                    int numPointsInsidePatch (0);
-                    
-                    for (int k(0); k < 3; ++k)
-                    {
-                        auto coord = face.point(k).coordinates();
-                        bool pointInPatch = (coord - center).norm() < radius;
-                        
-                        if (pointInPatch)
-                        {
-                            ++numPointsInsidePatch;
-                        }
-                    }
-                    
-                    if (numPointsInsidePatch > 2)
-                    {
-                        face.setMarkerID(newFlag);
-                    }
-                    
-                }
-            }
-        }
-    };
 
     
 //    //============================================//
