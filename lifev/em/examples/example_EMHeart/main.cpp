@@ -233,7 +233,7 @@ int main (int argc, char** argv)
     //============================================//
     // Electric stimulus function
     //============================================//
-    function_Type stim = &heartSolver.Iapp;
+    function_Type stim = &HeartSolver::Iapp;
 
     
     //============================================//

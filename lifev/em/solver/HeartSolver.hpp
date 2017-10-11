@@ -167,7 +167,7 @@ public:
         return vectorField;
     }
     
-    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
+    static Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
     {
         bool coords ( Y < -7. );
         //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
