@@ -482,6 +482,8 @@ int main (int argc, char** argv)
     
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
     
+    std::cout << std::endl << nPatchBC << std::endl;
+    
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
