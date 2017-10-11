@@ -213,6 +213,13 @@ monodomain_xml_file = ParamListE.xml
         direction       = '0 1 2'
         displacement    = 1.0
 
+        [../Patch2]
+        flag            = 459
+        center          = '0 1 2'
+        radius          = 1.5
+        component       = '0 1 2'
+        direction       = '0 1 2'
+        displacement    = 1.0
 
     [../]
 
