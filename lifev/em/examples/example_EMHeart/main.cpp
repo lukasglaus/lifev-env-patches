@@ -491,13 +491,23 @@ int main (int argc, char** argv)
     }
 
 
-    auto modifyPatchBC = [&] (const Real& time)
-    {
-        directionVector1 = directionalVectorField(FESpace, direction1, displacement);
-        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
-        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
-
-    };
+//    auto modifyPatchBC = [&] (const Real& time)
+//    {
+//        for ( UInt i (0) ; i < nPatchBC ; ++i )
+//        {
+//
+//            directionVector1 = directionalVectorField(FESpace, direction1, displacement);
+//            directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
+//            solver.bcInterfacePtr()->handler()->modifyBC((900+i), *directionBCVector1);
+//
+//        }
+//
+//
+//        directionVector1 = directionalVectorField(FESpace, direction1, displacement);
+//        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
+//        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
+//
+//    };
     
 
     
