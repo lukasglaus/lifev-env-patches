@@ -464,7 +464,7 @@ int main (int argc, char** argv)
         
         patchDispVecPtr.push_back ( vectorPtr_Type ( directionalVectorField(FESpace, direction2, 1e-10) ) );
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler()->addBC (patchName, patchFlag,  Essential, Component, *directionBCVector2, std::vector<ID> {0,2});
+        solver.bcInterfacePtr() -> handler()->addBC (patchName, patchFlag,  Essential, Component, *patchDispBCVecPtr[i], std::vector<ID> {0,2});
     }
 
     
