@@ -554,8 +554,6 @@ int main (int argc, char** argv)
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     std::vector<double> bcValuesPre ( bcValues );
 
-    VectorSmall<4> ABdplv, ABdprv;
-
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
 
@@ -798,7 +796,7 @@ int main (int argc, char** argv)
             // 4th order Adam-Bashforth pressure extrapol.
             //============================================//
             
-            heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, ABdplv, ABdprv, dpMax);
+            heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, dpMax);
             
             if ( 0 == comm->MyPID() )
             {
