@@ -145,6 +145,26 @@ public:
         M_circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
     }
     
+    template<class bcVectorType>
+    void extrapolate4thOrderAdamBashforth(bcVectorType& bcValues, bcVectorType& bcValuesPre, VectorSmall<4>& ABdplv, VectorSmall<4>& ABdprv, const Real& dpMax)
+    {
+        VectorSmall<4> ABcoef;
+        ABcoef (0) = 55/24; ABcoef (1) = -59/24; ABcoef (2) = 37/24; ABcoef (3) = -3/8;
+        
+        for ( unsigned int i = ABcoef.size() - 1; i > 0; --i )
+        {
+            ABdplv(i) = ABdplv(i-1);
+            ABdprv(i) = ABdprv(i-1);
+        }
+        
+        ABdplv(0) = bcValues[0] - bcValuesPre[0];
+        ABdprv(0) = bcValues[1] - bcValuesPre[1];
+        
+        bcValuesPre = bcValues;
+        
+        bcValues[0] += std::min( std::max( ABcoef.dot( ABdplv ) , - dpMax ) , dpMax );
+        bcValues[1] += std::min( std::max( ABcoef.dot( ABdprv ) , - dpMax ) , dpMax );        
+    }
     
     
 protected:
@@ -159,8 +179,8 @@ protected:
     VectorSmall<2> M_pressure;
     VectorSmall<2> M_volume;
 
-    
 
+    
     
     std::string pipeToString ( const char* command )
     {
