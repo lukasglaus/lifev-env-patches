@@ -450,7 +450,8 @@ int main (int argc, char** argv)
     
     
     
-    std::vector<ID> patchFlag;
+    std::vector<Real> patchDisplacement;
+
     std::vector<vectorPtr_Type> patchDispVecPtr;
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
@@ -459,8 +460,9 @@ int main (int argc, char** argv)
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
-        patchFlag.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 ) );
+        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
         Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
+        Real patchDisplacement = dataFile ( ("solid/boundary_conditions/" + patchName + "/displacement").c_str(), 1.0 );
 
         Vector3D center;
         for ( UInt j (0); j < 3; ++j )
@@ -488,6 +490,15 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], component);
     }
 
+
+    auto modifyPatchBC = [&] (const Real& time)
+    {
+        directionVector1 = directionalVectorField(FESpace, direction1, displacement);
+        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
+        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
+
+    };
+    
 
     
     
