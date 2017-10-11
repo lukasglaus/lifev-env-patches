@@ -877,6 +877,7 @@ int main (int argc, char** argv)
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             modifyPressureBC(bcValuesLoadstep);
 //            modifyEssentialVectorBC(t, sinSquared(t, patchDisplacement, tmax, tduration));
+            modifyPatchBC(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
         }
@@ -893,7 +894,8 @@ int main (int argc, char** argv)
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
 //            modifyEssentialVectorBC(t, sinSquared(t, patchDisplacement, tmax, tduration));
-            
+            modifyPatchBC(t);
+
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
             //============================================//
