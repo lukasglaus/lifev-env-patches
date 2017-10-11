@@ -145,6 +145,43 @@ public:
         M_circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
     }
     
+    boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp)
+    {
+        boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
+        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+        
+        direction.normalize();
+        direction *= disp;
+        
+        for (int j (0); j < nCompLocalDof; ++j)
+        {
+            UInt iGID = vectorField->blockMap().GID (j);
+            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+            
+            (*vectorField)[iGID] = direction[0];
+            (*vectorField)[jGID] = direction[1];
+            (*vectorField)[kGID] = direction[2];
+        }
+        
+        return vectorField;
+    }
+    
+    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
+    {
+        bool coords ( Y < -7. );
+        //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
+        bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
+        return ( coords && time ? 30 : 0 );
+    }
+    
+    Real sinSquared (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
+    {
+        bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
+        Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
+        return ( time ? force : 0 );
+    }
+    
     template<class bcVectorType>
     void extrapolate4thOrderAdamBashforth(bcVectorType& bcValues, bcVectorType& bcValuesPre, const Real& dpMax)
     {
@@ -197,32 +234,87 @@ protected:
         return stm.str() ;
     };
     
-    Real patchForce (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration) const
+
+
+    Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
-        bool time ( fmod(t-tmax+0.5*tduration, 700.) < tduration && fmod(t-tmax+0.5*tduration, 700.) > 0);
-        Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 700.)*3.14159265359/tduration) , 2 ) * Tmax;
-        return ( time ? force : 0 );
+        return (-0.000 - 0.00005*t);// sinSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
     }
     
-    Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/) const
+    Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
     {
-        Real disp = std::pow( std::sin(fmod(t, 700.) * 3.14159265359/300) , 2 )*15;
+        Real disp = std::pow( std::sin(fmod(t, 800.) * 3.14159265359/300) , 2 )*15;
         return disp;
     }
     
-    Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/) const
+    Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
     {
-        bool coords ( Y < -7. );
-        //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
-        bool time ( fmod(t, 700.) < 4 && fmod(t, 700.) > 2);
-        return ( coords && time ? 30 : 0 );
-    }
-    
-    Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/) const
-    {
-        bool time ( fmod(t, 700.) < 4 && fmod(t, 700.) > 2);
+        bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
         return 1.4 * time; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
     }
+    
+    Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    {
+        switch (i)
+        {
+            case 0:
+                return (t);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return (t);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
+        }
+    }
+    
+    Real patchDispFun2 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
+    {
+        switch (i)
+        {
+            case 0:
+                return (-t);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return (-t);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
+        }
+    }
+    
+    Real normalDirection ( const Real& /*t*/, const Real& x , const Real& y, const Real& z, const ID& i)
+    {
+        Real nnorm = std::sqrt(x * x + y * y + z * z);
+        switch (i)
+        {
+            case 0:
+                return 1/std::sqrt(2);
+                break;
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return 1/std::sqrt(2);
+                break;
+            default:
+                ERROR_MSG ("This entry is not allowed");
+                return 0.;
+                break;
+        }
+    }
+
+    
     
     Real
     externalPower ( const VectorEpetra& dispCurrent,

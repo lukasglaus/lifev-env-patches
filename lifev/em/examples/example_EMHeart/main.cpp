@@ -47,130 +47,7 @@
 
 
 
-
-
-// Namespaces
 using namespace LifeV;
-
-
-//============================================//
-// Functions
-//============================================//
-
-boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp)
-{
-    boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
-    auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
-    
-    direction.normalize();
-    direction *= disp;
-    
-    for (int j (0); j < nCompLocalDof; ++j)
-    {
-        UInt iGID = vectorField->blockMap().GID (j);
-        UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-        UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-        
-        (*vectorField)[iGID] = direction[0];
-        (*vectorField)[jGID] = direction[1];
-        (*vectorField)[kGID] = direction[2];
-    }
-    
-    return vectorField;
-}
-
-Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-{
-    switch (i)
-    {
-        case 0:
-            return (t);
-            break;
-        case 1:
-            return 0;
-            break;
-        case 2:
-            return (t);
-            break;
-        default:
-            ERROR_MSG ("This entry is not allowed");
-            return 0.;
-            break;
-    }
-}
-
-Real patchDispFun2 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-{
-    switch (i)
-    {
-        case 0:
-            return (-t);
-            break;
-        case 1:
-            return 0;
-            break;
-        case 2:
-            return (-t);
-            break;
-        default:
-            ERROR_MSG ("This entry is not allowed");
-            return 0.;
-            break;
-    }
-}
-
-Real sinSquared (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
-{
-    bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
-    Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
-    return ( time ? force : 0 );
-}
-
-Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-{
-    return (-0.000 - 0.00005*t);// sinSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
-}
-
-Real patchFunction (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-{
-    Real disp = std::pow( std::sin(fmod(t, 800.) * 3.14159265359/300) , 2 )*15;
-    return disp;
-}
-
-Real normalDirection ( const Real& /*t*/, const Real& x , const Real& y, const Real& z, const ID& i)
-{
-    Real nnorm = std::sqrt(x * x + y * y + z * z);
-    switch (i)
-    {
-        case 0:
-            return 1/std::sqrt(2);
-            break;
-        case 1:
-            return 0;
-            break;
-        case 2:
-            return 1/std::sqrt(2);
-            break;
-        default:
-            ERROR_MSG ("This entry is not allowed");
-            return 0.;
-            break;
-    }
-};
-
-Real Iapp (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-{
-    bool coords ( Y < -7. );
-    //bool coords ( Y > 4. ); //( Y > 1.5 && Y < 3 );
-    bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
-    return ( coords && time ? 30 : 0 );
-}
-
-Real potentialMultiplyerFcn (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& /*i*/)
-{
-    bool time ( fmod(t, 800.) < 4 && fmod(t, 800.) > 2);
-    return 1.4 * time; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
-}
 
 
 int main (int argc, char** argv)
@@ -356,7 +233,7 @@ int main (int argc, char** argv)
     //============================================//
     // Electric stimulus function
     //============================================//
-    function_Type stim = &Iapp;
+    function_Type stim = &heartSolver.Iapp;
 
     
     //============================================//
@@ -727,7 +604,7 @@ int main (int argc, char** argv)
         
         createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
         
-        patchDispVecPtr.push_back ( vectorPtr_Type ( directionalVectorField(FESpace, patchDirection[i], 1e-10) ) );
+        patchDispVecPtr.push_back ( vectorPtr_Type ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) ) );
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
@@ -741,7 +618,7 @@ int main (int argc, char** argv)
         for ( UInt i (0) ; i < nPatchBC ; ++i )
         {
             Real currentPatchDisp = sinSquared(time, patchDisplacement[i], tmax, tduration);
-            patchDispVecPtr[i] = directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
+            patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
         }
