@@ -561,7 +561,7 @@ int main (int argc, char** argv)
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
         }
         
-        createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
+        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
         
         patchDispVecPtr.push_back ( vectorPtr_Type ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) ) );
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
