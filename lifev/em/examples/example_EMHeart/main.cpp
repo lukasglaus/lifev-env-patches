@@ -525,7 +525,7 @@ int main (int argc, char** argv)
             Real currentPatchDisp = sinSquared(time, patchDisplacement[i], tmax, tduration);
             patchDispVecPtr[i] = directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-            solver.bcInterfacePtr()->handler()->modifyBC((900+i), patchDispBCVecPtr[i]);
+            solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
         }
     };
     
