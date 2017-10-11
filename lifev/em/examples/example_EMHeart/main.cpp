@@ -495,10 +495,12 @@ int main (int argc, char** argv)
             patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
         }
         
+        Vector3D pd;
         for ( UInt j (0); j < 3; ++j )
         {
-            patchDirection[i](j) = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
+            pd[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
         }
+        patchDirection.push_back(pd);
         
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
         std::vector<ID> patchComponent (componentSize);
