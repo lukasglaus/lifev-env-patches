@@ -360,7 +360,7 @@ int main (int argc, char** argv)
 
     
     //============================================//
-    // Create force patch b.c.
+    // createPatch function
     //============================================//
     
     auto createPatch = [] (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
@@ -396,84 +396,11 @@ int main (int argc, char** argv)
             }
         }
     };
-    
-//    Vector3D center1 {-0.7, -7.0, -4.7};
-//    Vector3D center2 {4.5, -7.0, 1.0};
-//
-//    Vector3D direction1 {1.0, 0.0, 1.0};
-//    Vector3D direction2 {-1.0, 0.0, -1.0};
-//
-//
-//    BCFunctionBase patchFun1 (patchDispFun1);
-//    BCFunctionBase patchFun2 (patchDispFun2);
-//    BCFunctionBase patchFunNormal (patchDispFunNormal);
-//    BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
 
-//    PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
-//    patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
-    
-
-    
-    // Normal
-//    PatchCircleBCEssentialNormal patch1(solver, "Patch1", epicardiumFlag, patchFlag1);
-//    patch1.setup(patchFunNormal, center1, radius1);
-//    PatchCircleBCEssentialNormal patch2(solver, "Patch2", 464, 101);
-//    patch2.setup(patchFunNormal, center2, radius2);
-
-    // Component
-//    PatchCircleBCEssentialComponent patch1(solver, "Patch1", 464, 100);
-//    patch1.setup(direction1, center1, 1.5);
-//    PatchCircleBCEssentialComponent patch2(solver, "Patch2", 464, 101);
-//    patch2.setup(direction2, center2, 1.5);
-    
-    // Directional
-//    PatchCircleBCEssentialDirectional patch1(solver, "Patch1", 464, 100);
-//    patch1.setup(direction1, center1, 1.5);
-//    PatchCircleBCEssentialDirectional patch2(solver, "Patch2", 464, 101);
-//    patch2.setup(direction2, center2, 1.5);
-
-    // Essential BCVector
-//    createPatch(solver, center1, 1.5, 464, 100);
-//    createPatch(solver, center2, 1.5, 464, 101);
-
-//    auto directionVector1 = directionalVectorField(FESpace, direction1, 1e-10);
-//    bcVectorPtr_Type directionBCVector1 ( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
-//    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Full, *directionBCVector, 3);
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch1", 100,  Essential, Component, *directionBCVector1, std::vector<ID> {0,2});
-//
-//    auto directionVector2 = directionalVectorField(FESpace, direction2, 1e-10);
-//    bcVectorPtr_Type directionBCVector2 ( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
-//    solver.bcInterfacePtr() -> handler()->addBC ("Patch2", 101,  Essential, Component, *directionBCVector2, std::vector<ID> {0,2});
-//
-
-    
-//    Real patchDisplacement = dataFile ( "solid/patches/patchDisplacement", 1.0 );
-//    auto modifyEssentialVectorBC = [&] (const Real& time, const Real& displacement)
-//    {
-//        //        directionVector1 = directionalVectorField(FESpace, direction1, displacement);
-//        //        directionBCVector1.reset( new bcVector_Type( *directionVector1, FESpace->dof().numTotalDof(), 1 ) );
-//        //        solver.bcInterfacePtr()->handler()->modifyBC(100, *directionBCVector1);
-//        //
-//        //        directionVector2 = directionalVectorField(FESpace, direction2, displacement);
-//        //        directionBCVector2.reset( new bcVector_Type( *directionVector2, FESpace->dof().numTotalDof(), 1 ) );
-//        //        solver.bcInterfacePtr()->handler()->modifyBC(101, *directionBCVector2);
-//    };
-    
-    
-    // Natural BCVector
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Natural, Full, patchFun1, 3);
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Natural, Full, patchFun2, 3);
-    
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch3", 100,  Essential, Normal, patchFunNormal);
-    //solver.bcInterfacePtr() -> handler()->addBC ("Patch4", 101,  Essential, Normal, patchFunNormal);
-    
-    
-    
     
     //============================================//
     // Create displacement patch b.c.
     //============================================//
-
     std::vector<Real> patchDisplacement;
     std::vector<Vector3D> patchDirection;
 
@@ -537,12 +464,8 @@ int main (int argc, char** argv)
     //============================================//
     std::vector<vectorPtr_Type> pVecPtrs;
     std::vector<bcVectorPtr_Type> pBCVecPtrs;
-    std::vector<vectorPtr_Type> pVecPatchesPtrs;
-    std::vector<bcVectorPtr_Type> pBCVecPatchesPtrs;
 
     std::vector<ID> flagsBC;
-    std::vector<ID> flagsBCPatches;
-
     std::vector<UInt> ventIdx;
 
     // Endocardia
@@ -558,34 +481,24 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
     }
     
-    // Patches natural b.c.
-    UInt nVarPatchesBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listForcePatchesBC" ) );
-    for ( UInt i (0) ; i < nVarPatchesBC ; ++i )
-    {
-        std::string varBCPatchesSection = dataFile ( ( "solid/boundary_conditions/listPatchesBC" ), " ", i );
-        flagsBCPatches.push_back ( dataFile ( ("solid/boundary_conditions/" + varBCPatchesSection + "/flag").c_str(), 0 ) );
-        
-        pVecPatchesPtrs.push_back ( vectorPtr_Type ( new vector_Type ( solver.structuralOperatorPtr() -> displacement().map(), Repeated ) ) );
-        pBCVecPatchesPtrs.push_back ( bcVectorPtr_Type( new bcVector_Type( *pVecPatchesPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler() -> addBC(varBCPatchesSection, flagsBCPatches[i], Natural, Full, *pBCVecPatchesPtrs[i], 3);
-    }
 
-    
-    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
-    
     // Functions to modify b.c.
     auto modifyPressureBC = [&] (const std::vector<Real>& bcValues)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
             *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
-            // Check coordinates of pVecPtrs and assign only values to certain cells
-            // Implement vector for both natural and essential b.c.
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
         }
     };
 
+    
+    //============================================//
+    // Update and print bcHandler
+    //============================================//
+    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+    
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
     
@@ -765,11 +678,7 @@ int main (int argc, char** argv)
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
         auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
         
-//        if ( 0 == comm->MyPID() )
-//        {
-//            std::cout << "\nI4fmax = " << maxI4fValue;
-//            std::cout << "\nI4fmin = " << minI4fValue << std::endl;
-//        }
+        if ( 0 == comm->MyPID() ) std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
 
         if ( 0 == comm->MyPID() )
         {
@@ -831,20 +740,10 @@ int main (int argc, char** argv)
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
         auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
         
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\nI4fmax = " << maxI4fValue;
-            std::cout << "\nI4fmin = " << minI4fValue << std::endl;
-
-        }
-
+        if ( 0 == comm->MyPID() ) std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
         
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
-
-//        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 0, 100);
-//        modifyPatchBC(std::pow(std::sin(fmod(t, 800.) * 3.14159265359/300), 2), 1, 101);
-        
 
         //============================================//
         // Load steps mechanics (activation & b.c.)
@@ -878,7 +777,6 @@ int main (int argc, char** argv)
             // Load step mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             modifyPressureBC(bcValuesLoadstep);
-//            modifyEssentialVectorBC(t, sinSquared(t, patchDisplacement, tmax, tduration));
             modifyPatchBC(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
@@ -895,7 +793,6 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-//            modifyEssentialVectorBC(t, sinSquared(t, patchDisplacement, tmax, tduration));
             modifyPatchBC(t);
 
             //============================================//
