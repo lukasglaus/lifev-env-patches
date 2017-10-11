@@ -73,11 +73,9 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium
-    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
-
-
     numPreloadSteps  = 50
+
+    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -170,6 +168,8 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
 
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
+
         [../EndocardiumLV]
             flag    = 454
             index   = 0
@@ -201,6 +201,18 @@ monodomain_xml_file = ParamListE.xml
         [../TricuspidRingP]
             flag    = 459
             index   = 1
+
+
+    listPatchBC = 'Patch1'
+
+        [../Patch1]
+        flag            = 459
+        center          = '0 1 2'
+        radius          = 1.5
+        component       = '0 1 2'
+        direction       = '0 1 2'
+        displacement    = 1.0
+
 
     [../]
 

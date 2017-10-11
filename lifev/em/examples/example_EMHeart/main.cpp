@@ -449,25 +449,46 @@ int main (int argc, char** argv)
     
     
     
-//    std::vector<ID> patchFlag;
-//    std::vector<ID> patchIdx;
-//    std::vector<vectorPtr_Type> patchDispVecPtr;
-//    std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
-//    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
-//    for ( UInt i (0) ; i < nPatchBC ; ++i )
-//    {
-//        std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
-//        patchFlag.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 ) );
-//        patchIdx.push_back ( dataFile ( ("solid/boundary_conditions/" + patchName + "/index").c_str(), 0 ) );
-//
-//        createPatch(solver, center1, 1.5, 464, 100);
-//
-//        patchDispVecPtr.push_back ( vectorPtr_Type ( directionalVectorField(FESpace, direction2, 1e-10) ) );
-//        patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-//        solver.bcInterfacePtr() -> handler()->addBC (patchName, patchFlag,  Essential, Component, *patchDispBCVecPtr[i], std::vector<ID> {0,2});
-//    }
-
     
+    std::vector<ID> patchFlag;
+    std::vector<vectorPtr_Type> patchDispVecPtr;
+    std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
+    
+    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
+    
+    for ( UInt i (0) ; i < nPatchBC ; ++i )
+    {
+        std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
+        patchFlag.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 ) );
+        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
+
+        Vector3D center;
+        for ( UInt j (0); j < 3; ++j )
+        {
+            center[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
+        }
+        
+        Vector3D direction;
+        for ( UInt j (0); j < 3; ++j )
+        {
+            center[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
+        }
+        
+        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
+        std::vector<ID> component (componentSize);
+        for ( UInt j (0); j < 3; ++j )
+        {
+            center[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
+        }
+        
+        createPatch(solver, center, patchRadius, patchFlag, (900+i));
+        
+        patchDispVecPtr.push_back ( vectorPtr_Type ( directionalVectorField(FESpace, direction, 1e-10) ) );
+        patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+        solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], component);
+    }
+
+
     
     
     
