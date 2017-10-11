@@ -497,7 +497,7 @@ int main (int argc, char** argv)
         
         for ( UInt j (0); j < 3; ++j )
         {
-            patchDirection[i][j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
+            (patchDirection[i])[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
         }
         
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
