@@ -482,8 +482,6 @@ int main (int argc, char** argv)
     
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
     
-    std::cout << std::endl << nPatchBC << std::endl;
-    
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
@@ -504,7 +502,7 @@ int main (int argc, char** argv)
         
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
         std::vector<ID> patchComponent (componentSize);
-        for ( UInt j (0); j < 3; ++j )
+        for ( UInt j (0); j < componentSize; ++j )
         {
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
         }
