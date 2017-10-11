@@ -470,6 +470,10 @@ int main (int argc, char** argv)
     
     
     
+    //============================================//
+    // Create displacement patch b.c.
+    //============================================//
+
     std::vector<Real> patchDisplacement;
     std::vector<Vector3D> patchDirection;
 
@@ -511,21 +515,16 @@ int main (int argc, char** argv)
     }
 
 
-    auto modifyPatchBC = [&] (const Real& time)
-    {
-        for ( UInt i (0) ; i < nPatchBC ; ++i )
-        {
-            Real currentPatchDisp = sinSquared(time, patchDisplacement[i], 300., 300.)
-            *patchDispVecPtr[i] = directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
-            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-            solver.bcInterfacePtr()->handler()->modifyBC((900+i), patchDispBCVecPtr[i]);
-        }
-    };
-    
-
-    
-    
-    
+//    auto modifyPatchBC = [&] (const Real& time)
+//    {
+//        for ( UInt i (0) ; i < nPatchBC ; ++i )
+//        {
+//            Real currentPatchDisp = sinSquared(time, patchDisplacement[i], 300., 300.)
+//            *patchDispVecPtr[i] = directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
+//            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
+//            solver.bcInterfacePtr()->handler()->modifyBC((900+i), patchDispBCVecPtr[i]);
+//        }
+//    };
     
 
     //============================================//
