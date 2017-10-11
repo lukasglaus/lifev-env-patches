@@ -167,10 +167,11 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
+        [../]
 
     listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
 
-        [../EndocardiumLV]
+        [./EndocardiumLV]
             flag    = 454
             index   = 0
 
@@ -202,10 +203,11 @@ monodomain_xml_file = ParamListE.xml
             flag    = 459
             index   = 1
 
+            [../]
 
     listPatchBC = 'Patch1 Patch2'
 
-        [../Patch1]
+        [./Patch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 1.5
