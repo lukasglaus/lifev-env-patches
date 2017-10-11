@@ -397,17 +397,17 @@ int main (int argc, char** argv)
         }
     };
     
-    Vector3D center1 {-0.7, -7.0, -4.7};
-    Vector3D center2 {4.5, -7.0, 1.0};
-    
-    Vector3D direction1 {1.0, 0.0, 1.0};
-    Vector3D direction2 {-1.0, 0.0, -1.0};
-
-    
-    BCFunctionBase patchFun1 (patchDispFun1);
-    BCFunctionBase patchFun2 (patchDispFun2);
-    BCFunctionBase patchFunNormal (patchDispFunNormal);
-    BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
+//    Vector3D center1 {-0.7, -7.0, -4.7};
+//    Vector3D center2 {4.5, -7.0, 1.0};
+//
+//    Vector3D direction1 {1.0, 0.0, 1.0};
+//    Vector3D direction2 {-1.0, 0.0, -1.0};
+//
+//
+//    BCFunctionBase patchFun1 (patchDispFun1);
+//    BCFunctionBase patchFun2 (patchDispFun2);
+//    BCFunctionBase patchFunNormal (patchDispFunNormal);
+//    BCFunctionDirectional patchFunDirectional (patchDispFunNormal, normalDirection);
 
 //    PatchBC* patch5 = CREATE(PatchBC, "PatchCircleBCEssentialNormal");
 //    patch5->initialize(solverPtr, std::string ("Patch1"), 464, 100);
