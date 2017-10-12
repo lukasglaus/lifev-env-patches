@@ -566,7 +566,7 @@ int main (int argc, char** argv)
         heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
         
         patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
-//        patchDispVecPtr[i] += heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10);
+        *patchDispVecPtr[i] += *dispPreload;
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
