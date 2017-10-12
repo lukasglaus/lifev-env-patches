@@ -205,7 +205,7 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-    listPatchBC = 'Patch1' #'Patch1 Patch2'
+    listPatchBC = 'Patch1 Patch2'
 
         [./Patch1]
         flag            = 464
@@ -299,7 +299,7 @@ monodomain_xml_file = ParamListE.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 2
+        overlap  	= 1
 
             [./fact]
             ilut_level-of-fill      = 1
