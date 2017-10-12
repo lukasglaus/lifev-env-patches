@@ -581,10 +581,8 @@ int main (int argc, char** argv)
         {
             Real currentPatchDisp = heartSolver.sinSquared(time, patchDisplacement[i], tmax, tduration);
             
-//            patchDispVecPtr.push_back ( vectorPtr_Type ( disp ) );
-//            *patchDispVecPtr[i] += heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10);
-            
             patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
+            *patchDispVecPtr[i] += *dispPreload;
             
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
