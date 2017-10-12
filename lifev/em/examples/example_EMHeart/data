@@ -73,7 +73,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 50
+    numPreloadSteps  = 0
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
 
