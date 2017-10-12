@@ -532,7 +532,7 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchDispVecPtr;
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
-    VectorEpetra dispPreload ( disp );
+    const vectorPtr_Type dispPreload ( disp );
     
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
     
@@ -565,7 +565,7 @@ int main (int argc, char** argv)
         
         heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
         
-        patchDispVecPtr.push_back ( vectorPtr_Type ( disp ) );
+        patchDispVecPtr.push_back ( dispPreload );
         patchDispVecPtr[i] += heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10);
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
