@@ -40,7 +40,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -7.0 # -7.0 # -7.3
+    ActiveForceCoefficient  = -0.0 # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -205,7 +205,7 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-#    listPatchBC = 'Patch1 Patch2'
+    listPatchBC = 'Patch1 Patch2'
 
         [./Patch1]
         flag            = 464
