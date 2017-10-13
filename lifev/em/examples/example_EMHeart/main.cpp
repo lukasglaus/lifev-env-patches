@@ -337,7 +337,6 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
-        solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     //============================================//
     // Volume integrators
