@@ -40,7 +40,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -0.0 # -7.0 # -7.3
+    ActiveForceCoefficient  = -7.0 # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -73,7 +73,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 1
+    numPreloadSteps  = 50
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
 
@@ -205,7 +205,7 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-    listPatchBC = 'Patch1'
+#    listPatchBC = 'Patch1'
 
         [./Patch1]
         flag            = 464
@@ -299,7 +299,7 @@ monodomain_xml_file = ParamListE.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 1
+        overlap  	= 2
 
             [./fact]
             ilut_level-of-fill      = 1
