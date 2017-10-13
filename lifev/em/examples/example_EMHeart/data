@@ -205,7 +205,7 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-    listPatchBC = 'Patch1 Patch2'
+#    listPatchBC = 'Patch1 Patch2'
 
         [./Patch1]
         flag            = 464
