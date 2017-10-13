@@ -337,6 +337,7 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
+        solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     //============================================//
     // Volume integrators
@@ -598,7 +599,7 @@ int main (int argc, char** argv)
     //============================================//
     // Time loop
     //============================================//
-    
+/Users/thomas/LIFE5/lifev-em/lifev/em/examples/exampleHO_withFiberRotation
     VFe[0] = LV.volume(disp, dETFESpace, - 1);
     VFe[1] = RV.volume(disp, dETFESpace, 1);
     VCirc = VFe;
