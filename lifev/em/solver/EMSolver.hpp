@@ -312,6 +312,9 @@ public:
         if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupFiberVector ... " << '\r' << std::flush;
 
     	setupMechanicalFiberVector(fileName, fieldName, postDir, polynomialDegree);
+        
+        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setElectroFibers ... " << '\r' << std::flush;
+
     	M_electroSolverPtr->setFiberPtr(getMechanicsFibers());
         
         if (M_commPtr -> MyPID() == 0) std::cout << "EMSolver: setupFiberVector - done" << '\r' << std::flush;
