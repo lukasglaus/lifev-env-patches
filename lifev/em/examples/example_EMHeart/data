@@ -251,8 +251,8 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartVCoaPatch/
-    mesh_file           = heartVCoaPatch.mesh
+    mesh_dir            = heartVVCoaPatch/
+    mesh_file           = heartVVCoaPatch.mesh
     mesh_scaling        = 1.15
 #    mesh_translation_0  = -66
 #    mesh_translation_1  = -72
@@ -276,7 +276,7 @@ monodomain_xml_file = ParamListE.xml
     verbose   	= 1
 
 
-    [../newton] #
+    [../newton]
     maxiter             = 50
     reltol              = 1.e-7
     abstol              = 5e-5 #5e-6
@@ -299,7 +299,7 @@ monodomain_xml_file = ParamListE.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 7
+        overlap  	= 1
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -310,7 +310,7 @@ monodomain_xml_file = ParamListE.xml
             solvertype  =  Amesos_Umfpack #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
-            overlap 	= 8
+            overlap 	= 4
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
