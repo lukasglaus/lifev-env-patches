@@ -1,8 +1,6 @@
-# Human Heart Framework
+# IFD's Human Heart Framework
 
-The framework is developed at the Institute of Fluid Dynamics (IFD) at ETH Zurich. The model is based on LifeV (pronounced "life five"), which is a C++ parallel finite element library for the solution of PDEs.
-
-> IFD
+The framework is developed at the [Institute of Fluid Dynamics (IFD)](http://www.ifd.mavt.ethz.ch) at ETH Zurich. It is based on LifeV, which is a C++ parallel finite element library for the solution of PDEs.
 
 The library is distributed under LGPL by CMCS – EPFL, E(CM)2 – Emory, MOX – Polimi, REO, ESTIME– INRIA. ([Copyright](https://github.com/lifev/lifev/blob/master/Copyright.md))
 
