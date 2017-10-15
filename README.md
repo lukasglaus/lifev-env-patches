@@ -2,9 +2,9 @@ Human heart model developed at the Institute of Fluid Dynamics (IFD) at ETH Zuri
 
 The library is distributed under LGPL by CMCS – EPFL, E(CM)2 – Emory, MOX – Polimi, REO, ESTIME– INRIA. ([Copyright](https://github.com/lifev/lifev/blob/master/Copyright.md))
 
-[LifeV web site](http://www.lifev.org)
+[LifeV github page](https://github.com/lifev/lifev)
 
-[Development pages](http://cmcsforge.epfl.ch/projects/lifev)
+[Development pages](http://www.lifev.org)
 
 [Tutorial](http://cmcsforge.epfl.ch/documents/3)
 
