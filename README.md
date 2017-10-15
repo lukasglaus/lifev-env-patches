@@ -1,8 +1,6 @@
-LifeV (pronounced "life five")
-the C++ parallel finite element library for the solution of PDEs.
+Human heart model developed at Institute of Fluid Dynamics (IFD) at ETH Zurich. The model is based on LifeV (pronounced "life five"), a C++ parallel finite element library for the solution of PDEs.
 
 Distributed under LGPL by CMCS – EPFL, E(CM)2 – Emory, MOX – Polimi, REO, ESTIME– INRIA.
-about 30 active developers.
 
 [Copyright](https://github.com/lifev/lifev/blob/master/Copyright.md)
 
