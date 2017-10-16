@@ -295,6 +295,24 @@ int main (int argc, char** argv)
 //    };
     
 
+    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
+    
+    for ( UInt i (0) ; i < nPatchBC ; ++i )
+    {
+        std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
+        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
+        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
+        
+        Vector3D patchCenter;
+        for ( UInt j (0); j < 3; ++j )
+        {
+            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
+        }
+
+        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
+    }
+    
+    
     //============================================//
     // Pressure b.c. on endocardia
     //============================================//
@@ -572,7 +590,7 @@ int main (int argc, char** argv)
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
         }
         
-        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
+        //heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
         
         patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
 //        *patchDispVecPtr[i] += dispPreload;
