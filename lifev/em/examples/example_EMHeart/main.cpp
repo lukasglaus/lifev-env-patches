@@ -561,7 +561,7 @@ int main (int argc, char** argv)
     }
 
     
-    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
+//    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
     
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
