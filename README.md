@@ -6,10 +6,10 @@ In order to compile the framework, some packages are required to be preinstalled
 
 The library is distributed under LGPL license by CMCS – EPFL, E(CM)2 – Emory, MOX – Polimi, REO, ESTIME– INRIA ([Copyright](https://github.com/lifev/lifev/blob/master/Copyright.md)). Some helpful links to the official LifeV distribution are:
 
-[LifeV github page](https://github.com/lifev/lifev)
-
 [Development pages](http://www.lifev.org)
 
-[Tutorial](http://cmcsforge.epfl.ch/documents/3)
+[LifeV github page](https://github.com/lifev/lifev)
+
+[Tutorial](https://cmcsforge.epfl.ch/attachments/download/152/lifev-manual.pdf)
 
 [Google group](https://groups.google.com/forum/?fromgroups#!forum/lifev-user)
