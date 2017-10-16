@@ -538,7 +538,7 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() )
     {
         std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Patch BC"
+        std::cout << "\nCreate Patch BC";
         std::cout << "\n*****************************************************************\n";
     }
 
@@ -583,7 +583,7 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() )
     {
         std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Patch BC done"
+        std::cout << "\nCreate Patch BC done";
         std::cout << "\n*****************************************************************\n";
     }
     
@@ -611,7 +611,7 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() )
     {
         std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Patch BC update done"
+        std::cout << "\nCreate Patch BC update done";
         std::cout << "\n*****************************************************************\n";
     }
     
