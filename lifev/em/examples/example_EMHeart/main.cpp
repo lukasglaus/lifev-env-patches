@@ -535,6 +535,13 @@ int main (int argc, char** argv)
 //    const vectorPtr_Type dispPreload ( new vector_Type ( disp ) );
 //    const VectorEpetra dispPreload (disp);
     
+    if ( 0 == comm->MyPID() )
+    {
+        std::cout << "\n*****************************************************************";
+        std::cout << "\nCreate Patch BC
+        std::cout << "\n*****************************************************************\n";
+    }
+
     
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listPatchBC" ) );
     
@@ -573,6 +580,12 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
     
+    if ( 0 == comm->MyPID() )
+    {
+        std::cout << "\n*****************************************************************";
+        std::cout << "\nCreate Patch BC done
+        std::cout << "\n*****************************************************************\n";
+    }
     
     Real tmax = dataFile ( "solid/patches/tmax", 0. );
     Real tduration = dataFile ( "solid/patches/tduration", 0. );
@@ -595,6 +608,12 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
+    if ( 0 == comm->MyPID() )
+    {
+        std::cout << "\n*****************************************************************";
+        std::cout << "\nCreate Patch BC update done
+        std::cout << "\n*****************************************************************\n";
+    }
     
     //============================================//
     // Time loop
