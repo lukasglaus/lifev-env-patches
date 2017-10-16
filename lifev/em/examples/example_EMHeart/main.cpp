@@ -551,7 +551,7 @@ int main (int argc, char** argv)
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
 //    const vectorPtr_Type dispPreload ( new vector_Type ( disp ) );
-//    const VectorEpetra dispPreload (disp);
+    const VectorEpetra dispPreload (disp);
     
     if ( 0 == comm->MyPID() )
     {
