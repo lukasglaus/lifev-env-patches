@@ -73,7 +73,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 1
+    numPreloadSteps  = 50
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
 
@@ -232,7 +232,7 @@ monodomain_xml_file = ParamListE.xml
     [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
-    dpMax                   = 0.1 #0.3
+    dpMax                   = 0.3 #0.3
     couplingError           = 1e-5 #1e-6
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
