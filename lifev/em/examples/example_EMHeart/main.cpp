@@ -532,7 +532,7 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchDispVecPtr;
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
-    const vectorPtr_Type dispPreload ( new vector_Type ( disp ) );
+//    const vectorPtr_Type dispPreload ( new vector_Type ( disp ) );
     const VectorEpetra dispPreload (disp);
     
     
