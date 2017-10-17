@@ -702,10 +702,7 @@ int main (int argc, char** argv)
         std::cout << "\nCreate Natural Patch BC done";
         std::cout << "\n*****************************************************************\n";
     }
-    
-    Real tmax = dataFile ( "solid/patches/tmax", 0. );
-    Real tduration = dataFile ( "solid/patches/tduration", 0. );
-    
+
     auto modifyNaturalPatchBC = [&] (const Real& time)
     {
         for ( UInt i (0) ; i < nForcePatchBC ; ++i )
