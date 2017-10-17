@@ -223,6 +223,8 @@ monodomain_xml_file = ParamListE.xml
         direction       = '-1.0 0.0 -1.0'
         displacement    = 0.0001
 
+        [../]
+
     listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
 
         [./NaturalPatch1]
