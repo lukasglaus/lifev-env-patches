@@ -73,7 +73,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 50
+    numPreloadSteps  = 1
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
 
@@ -205,9 +205,9 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-    listPatchBC = 'Patch1 Patch2'
+#    listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
-        [./Patch1]
+        [./EssentialPatch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 1.5
@@ -215,13 +215,32 @@ monodomain_xml_file = ParamListE.xml
         direction       = '1.0 0.0 1.0'
         displacement    = 0.0001
 
-        [../Patch2]
+        [../EssentialPatch2]
         flag            = 464
         center          = '4.5 -7.0 1.0'
         radius          = 1.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
         displacement    = 0.0001
+
+    listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
+
+        [./NaturalPatch1]
+        flag            = 464
+        center          = '-0.7 -7.0 -4.7'
+        radius          = 1.5
+        component       = '0 2'
+        direction       = '1.0 0.0 1.0'
+        force    = 0.1
+
+        [../NaturalPatch2]
+        flag            = 464
+        center          = '4.5 -7.0 1.0'
+        radius          = 1.5
+        component       = '0 2'
+        direction       = '-1.0 0.0 -1.0'
+        force    = 0.1
+
 
     [../]
 
