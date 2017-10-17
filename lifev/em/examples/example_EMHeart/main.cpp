@@ -629,7 +629,7 @@ int main (int argc, char** argv)
     
     auto modifyEssentialPatchBC = [&] (const Real& time)
     {
-        for ( UInt i (0) ; i < nPatchBC ; ++i )
+        for ( UInt i (0) ; i < nDispPatchBC ; ++i )
         {
             Real currentPatchDisp = heartSolver.sinSquared(time, patchDisplacement[i], tmax, tduration);
             
@@ -708,7 +708,7 @@ int main (int argc, char** argv)
     
     auto modifyNaturalPatchBC = [&] (const Real& time)
     {
-        for ( UInt i (0) ; i < nPatchBC ; ++i )
+        for ( UInt i (0) ; i < nForcePatchBC ; ++i )
         {
             Real currentPatchForce = heartSolver.sinSquared(time, patchForce[i], tmax, tduration);
             patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchForce);
@@ -816,7 +816,8 @@ int main (int argc, char** argv)
             // Load step mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             modifyPressureBC(bcValuesLoadstep);
-            modifyPatchBC(t);
+            modifyEssentialPatchBC(t);
+            modifyForcePatchBC(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
         }
@@ -832,8 +833,9 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            modifyPatchBC(t);
-
+            modifyEssentialPatchBC(t);
+            modifyForcePatchBC(t);
+            
             //============================================//
             // 4th order Adam-Bashforth pressure extrapol.
             //============================================//
