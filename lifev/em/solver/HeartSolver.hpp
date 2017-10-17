@@ -146,7 +146,7 @@ public:
     }
     
     
-    boost::shared_ptr<VectorEpetra> createPatch (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
+    void createPatch (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag)
     {
         for (auto& mesh : solver.mesh())
         {
