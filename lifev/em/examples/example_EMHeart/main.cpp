@@ -657,6 +657,8 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchForceVecPtr;
     std::vector<bcVectorPtr_Type> patchForceBCVecPtr;
     
+    BCHandler patchBCHandler;
+    
     if ( 0 == comm->MyPID() )
     {
         std::cout << "\n*****************************************************************";
@@ -693,7 +695,7 @@ int main (int argc, char** argv)
         
         patchForceVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchForceDirection[i], 1e-10) );
         patchForceBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchForceVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
+        patchBCHandler.addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
     }
     
     if ( 0 == comm->MyPID() )
@@ -711,7 +713,7 @@ int main (int argc, char** argv)
             patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-            solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
+            patchBCHandler.modifyBC((800+i), *patchForceBCVecPtr[i]);
         }
     };
     
@@ -722,7 +724,7 @@ int main (int argc, char** argv)
         std::cout << "\n*****************************************************************\n";
     }
     
-    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
+    patchBCHandler.bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
