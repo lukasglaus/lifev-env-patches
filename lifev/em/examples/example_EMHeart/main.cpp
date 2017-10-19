@@ -170,10 +170,6 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\nNode number: " << solver.structuralOperatorPtr() -> displacement().epetraVector().MyLength() << std::endl;
-    }
     
     //============================================//
     // Setup solver (including fe-spaces & b.c.)
@@ -225,6 +221,11 @@ int main (int argc, char** argv)
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
+    if ( 0 == comm->MyPID() )
+    {
+        std::cout << "\nNode number: " << disp.epetraVector().MyLength() << std::endl;
+    }
+
     
     //============================================//
     // Setup exporters for EMSolver

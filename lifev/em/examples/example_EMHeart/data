@@ -272,8 +272,8 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_dir            = heartCoaTr/
-    mesh_file           = heartCoaTr.mesh
+    mesh_dir            = heartMedTr/
+    mesh_file           = heartMedTr.mesh
     mesh_scaling        = 1.15
 #    mesh_translation_0  = -66
 #    mesh_translation_1  = -72
