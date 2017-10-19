@@ -233,7 +233,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        force           = 0.001
+        force           = 0.1
 
         [../NaturalPatch2]
         flag            = 464
@@ -241,7 +241,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        force           = 0.001
+        force           = 0.1
 
 
     [../]
@@ -253,7 +253,7 @@ monodomain_xml_file = ParamListE.xml
     [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
-    dpMax                   = 0.05 #0.3
+    dpMax                   = 0.1 #0.3
     couplingError           = 1e-5 #1e-6
     couplingJFeIter         = 20
     couplingJFeSubStart     = 2
