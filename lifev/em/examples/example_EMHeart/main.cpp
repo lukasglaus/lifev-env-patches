@@ -223,7 +223,7 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() )
     {
-        std::cout << "\nNode number: " << disp.epetraVector().MyLength() << std::endl;
+        std::cout << "\nNode number: " << disp.size() << std::endl;
     }
 
     
