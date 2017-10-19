@@ -149,7 +149,7 @@ int main (int argc, char** argv)
     std::string meshName = dataFile("solid/space_discretization/mesh_name", "cube4");
     std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "../../data/mesh/");
     
-    solver.loadMesh (meshName + ".mesh", meshPath + meshPath + "/");
+    solver.loadMesh (meshName + ".mesh", meshPath + meshName + "/");
     
     
     //============================================//
