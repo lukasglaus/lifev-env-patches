@@ -146,10 +146,10 @@ int main (int argc, char** argv)
     //============================================//
     // Load mesh
     //============================================//
-    std::string meshName = dataFile("solid/space_discretization/mesh_file", "cube4.mesh");
-    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "./");
+    std::string meshName = dataFile("solid/space_discretization/mesh_name", "cube4");
+    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "../../data/mesh/");
     
-    solver.loadMesh (meshName, meshPath);
+    solver.loadMesh (meshName + ".mesh", meshPath + meshPath + "/");
     
     
     //============================================//
@@ -221,10 +221,8 @@ int main (int argc, char** argv)
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\nNode number: " << disp.size() << std::endl;
-    }
+    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() << std::endl;
+    
 
     
     //============================================//
