@@ -285,10 +285,8 @@ monodomain_xml_file = ParamListE.xml
     anisotropic         = true
     fiber_name          = FiberDirection
     fiber_fieldname     = fibers
-    #fiber_dir           = biVentCoarse/
     sheet_name          = SheetsDirection
     sheet_fieldname     = sheets
-    #sheet_dir           = biVentCoarse/
 
 
     [../miscellaneous]
