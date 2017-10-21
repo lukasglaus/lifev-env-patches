@@ -222,10 +222,9 @@ int main (int argc, char** argv)
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
-    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() / 3 << std::endl;
+    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() / 3 << " -> dof: " << disp.size() << std::endl;
     
 
-    
     //============================================
     // Setup exporters for EMSolver
     //============================================

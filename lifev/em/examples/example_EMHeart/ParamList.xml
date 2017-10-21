@@ -31,10 +31,10 @@
 
 		<!-- Trilinos parameters -->
 		<ParameterList name="Trilinos: AztecOO List">
-    		<Parameter name="solver" type="string" value="cgs"/>
+    		<Parameter name="solver" type="string" value="bicgstab"/>
 	    	<Parameter name="conv" type="string" value="rhs"/>
     		<Parameter name="scaling" type="string" value="none"/>
-	    	<Parameter name="output" type="string" value="summary"/>
+	    	<Parameter name="output" type="string" value="last"/>
     		<Parameter name="tol" type="double" value="1.e-9"/>
 	    	<Parameter name="max_iter" type="int" value="300"/>
     		<Parameter name="kspace" type="int" value="100"/>
