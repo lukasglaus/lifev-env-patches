@@ -177,6 +177,50 @@ int main (int argc, char** argv)
 
     
     //============================================
+    // Create patches for essential patch b.c.
+    //============================================
+    
+    UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+    
+    for ( UInt i (0) ; i < nDispPatchBC ; ++i )
+    {
+        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
+        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
+        
+        Vector3D patchCenter;
+        for ( UInt j (0); j < 3; ++j )
+        {
+            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
+        }
+        
+        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
+    }
+    
+    
+    //============================================
+    // Create patches for natural patch b.c.
+    //============================================
+    
+    UInt nForcePatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listNaturalPatchBC" ) );
+    
+    for ( UInt i (0) ; i < nForcePatchBC ; ++i )
+    {
+        std::string patchName = dataFile ( ( "solid/boundary_conditions/listNaturalPatchBC" ), " ", i );
+        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
+        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
+        
+        Vector3D patchCenter;
+        for ( UInt j (0); j < 3; ++j )
+        {
+            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
+        }
+        
+        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (800+i));
+    }
+    
+    
+    //============================================
     // Setup solver (including fe-spaces & b.c.)
     //============================================
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
@@ -240,50 +284,6 @@ int main (int argc, char** argv)
     //============================================
     function_Type stim = &HeartSolver<EMSolver<mesh_Type, monodomain_Type> >::Iapp;
 
-    
-    //============================================
-    // Create patches for essential patch b.c.
-    //============================================
-
-    UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
-    
-    for ( UInt i (0) ; i < nDispPatchBC ; ++i )
-    {
-        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
-        
-        Vector3D patchCenter;
-        for ( UInt j (0); j < 3; ++j )
-        {
-            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
-        }
-
-        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
-    }
-    
-    
-    //============================================
-    // Create patches for natural patch b.c.
-    //============================================
-
-    UInt nForcePatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listNaturalPatchBC" ) );
-    
-    for ( UInt i (0) ; i < nForcePatchBC ; ++i )
-    {
-        std::string patchName = dataFile ( ( "solid/boundary_conditions/listNaturalPatchBC" ), " ", i );
-        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
-        
-        Vector3D patchCenter;
-        for ( UInt j (0); j < 3; ++j )
-        {
-            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
-        }
-        
-        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (800+i));
-    }
-    
     
     //============================================
     // Create displacement patch b.c.
