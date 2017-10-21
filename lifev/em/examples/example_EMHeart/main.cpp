@@ -147,7 +147,7 @@ int main (int argc, char** argv)
     // Load mesh
     //============================================//
     std::string meshName = dataFile("solid/space_discretization/mesh_name", "cube4");
-    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "../../data/mesh/humanHeart/");
+    std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "mesh/humanHeart/");
     
     solver.loadMesh (meshName + ".mesh", meshPath + meshName + "/");
     
