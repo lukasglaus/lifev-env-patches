@@ -247,7 +247,7 @@ monodomain_xml_file = ParamListE.xml
     [../]
 
     [../patches]
-    tmax                = 250
+    tmax                = 150 # 250
     tduration           = 300
 
     [../coupling]
