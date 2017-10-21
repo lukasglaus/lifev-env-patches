@@ -161,7 +161,7 @@ int main (int argc, char** argv)
     Vector3D scale, rotate, translate;
     for ( UInt j (0); j < 3; ++j )
     {
-        scale[j] = dataFile ( "solid/space_discretization/mesh_scaling", 0, j );
+        scale[j] = dataFile ( "solid/space_discretization/mesh_scaling", 1, j );
         rotate[j] = dataFile ( "solid/space_discretization/mesh_rotation", 0, j );
         translate[j] = dataFile ( "solid/space_discretization/mesh_translation", 0, j );
     }
