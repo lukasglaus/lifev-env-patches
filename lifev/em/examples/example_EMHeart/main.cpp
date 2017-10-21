@@ -1,6 +1,6 @@
-//============================================//
+//============================================
 // Includes
-//============================================//
+//============================================
 
 #include <lifev/core/LifeV.hpp>
 
@@ -54,9 +54,9 @@ int main (int argc, char** argv)
 
 //    feenableexcept(FE_INVALID | FE_OVERFLOW);
     
-    //============================================//
+    //============================================
     // Typedefs
-    //============================================//
+    //============================================
     
     typedef RegionMesh<LinearTetra>                         mesh_Type;
     typedef boost::shared_ptr<mesh_Type>                    meshPtr_Type;
@@ -90,9 +90,9 @@ int main (int argc, char** argv)
     typedef boost::shared_ptr< bcInterface_Type >           bcInterfacePtr_Type;
     
 
-    //============================================//
+    //============================================
     // Communicator and displayer
-    //============================================//
+    //============================================
 #ifdef HAVE_MPI
     MPI_Init ( &argc, &argv );
 #endif
@@ -102,24 +102,24 @@ int main (int argc, char** argv)
     
     displayer.leaderPrint("\n\nEMHeart running ...\n\n");
     
-    //============================================//
+    //============================================
     // Read data file and create output folder
-    //============================================//
+    //============================================
     GetPot command_line (argc, argv);
     const std::string data_file_name = command_line.follow ("data", 2, "-f", "--file");
     GetPot dataFile (data_file_name);
     std::string problemFolder = EMUtility::createOutputFolder (command_line, *comm);
 
     
-    //============================================//
+    //============================================
     // Electromechanic solver
-    //============================================//
+    //============================================
     EMSolver<mesh_Type, monodomain_Type> solver(comm);
     
     
-    //============================================//
+    //============================================
     // Body circulation
-    //============================================//
+    //============================================
     const std::string circulationInputFile = command_line.follow ("circulation", 2, "-cif", "--cifile");
     const std::string circulationOutputFile = command_line.follow ( (problemFolder + "solution.dat").c_str(), 2, "-cof", "--cofile");
     
@@ -130,22 +130,22 @@ int main (int argc, char** argv)
     auto p = [&circulationSolver] (const std::string& N1) { return circulationSolver.solution ( N1 ); };
     
     
-    //============================================//
+    //============================================
     // Heart solver
-    //============================================//
+    //============================================
     HeartSolver<EMSolver<mesh_Type, monodomain_Type> > heartSolver (solver, circulationSolver);
     
     
-    //============================================//
+    //============================================
     // Setup material data
-    //============================================//
+    //============================================
     EMData emdata;
     emdata.setup (dataFile);
     
     
-    //============================================//
+    //============================================
     // Load mesh
-    //============================================//
+    //============================================
     std::string meshType = dataFile("solid/space_discretization/mesh_type", ".mesh");
     std::string meshName = dataFile("solid/space_discretization/mesh_name", "cube4");
     std::string meshPath = dataFile("solid/space_discretization/mesh_dir", "mesh/humanHeart/") + meshName + "/";
@@ -153,9 +153,9 @@ int main (int argc, char** argv)
     solver.loadMesh (meshName + meshType, meshPath);
     
     
-    //============================================//
+    //============================================
     // Resize mesh
-    //============================================//
+    //============================================
     if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh ... " << '\r' << std::flush;
 
     std::vector<Real> scale (3, dataFile("solid/space_discretization/mesh_scaling", 1.0));
@@ -172,9 +172,9 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
     
-    //============================================//
+    //============================================
     // Setup solver (including fe-spaces & b.c.)
-    //============================================//
+    //============================================
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
     solver.setup (dataFile);
     
@@ -184,9 +184,9 @@ int main (int argc, char** argv)
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
     
-    //============================================//
+    //============================================
     // Setup anisotropy vectors
-    //============================================//
+    //============================================
     bool anisotropy = dataFile ( "solid/space_discretization/anisotropic", false );
 
     if ( anisotropy )
@@ -209,38 +209,38 @@ int main (int argc, char** argv)
     }
     
     
-    //============================================//
+    //============================================
     // Initialize electrophysiology
-    //============================================//
+    //============================================
     solver.initialize();
     
     
-    //============================================//
+    //============================================
     // Building Matrices
-    //============================================//
+    //============================================
     solver.oneWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
-    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() << std::endl;
+    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() / 3 << std::endl;
     
 
     
-    //============================================//
+    //============================================
     // Setup exporters for EMSolver
-    //============================================//
+    //============================================
     solver.setupExporters (problemFolder);
         
     
-    //============================================//
+    //============================================
     // Electric stimulus function
-    //============================================//
+    //============================================
     function_Type stim = &HeartSolver<EMSolver<mesh_Type, monodomain_Type> >::Iapp;
 
     
-    //============================================//
+    //============================================
     // Create patches for essential patch b.c.
-    //============================================//
+    //============================================
 
     UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     
@@ -260,10 +260,10 @@ int main (int argc, char** argv)
     }
     
     
-    //============================================//
+    //============================================
     // Create patches for natural patch b.c.
-    //============================================//
-    
+    //============================================
+
     UInt nForcePatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listNaturalPatchBC" ) );
     
     for ( UInt i (0) ; i < nForcePatchBC ; ++i )
@@ -282,9 +282,9 @@ int main (int argc, char** argv)
     }
     
     
-    //============================================//
+    //============================================
     // Create displacement patch b.c.
-    //============================================//
+    //============================================
     std::vector<Real> patchDisplacement;
     std::vector<Vector3D> patchDirection;
     
@@ -292,13 +292,6 @@ int main (int argc, char** argv)
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
     const VectorEpetra dispPreload (disp);
-    
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Essential Patch BC";
-        std::cout << "\n*****************************************************************\n";
-    }
     
     for ( UInt i (0) ; i < nDispPatchBC ; ++i )
     {
@@ -333,12 +326,6 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Essential Patch BC done";
-        std::cout << "\n*****************************************************************\n";
-    }
     
     Real tmax = dataFile ( "solid/patches/tmax", 0. );
     Real tduration = dataFile ( "solid/patches/tduration", 0. );
@@ -356,29 +343,16 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
         }
     };
+
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Essential Patch BC update done";
-        std::cout << "\n*****************************************************************\n";
-    }
-    
-    //============================================//
+    //============================================
     // Create force patch b.c.
-    //============================================//
+    //============================================
     std::vector<Real> patchForce;
     std::vector<Vector3D> patchForceDirection;
     
     std::vector<vectorPtr_Type> patchForceVecPtr;
     std::vector<bcVectorPtr_Type> patchForceBCVecPtr;
-    
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Natural Patch BC";
-        std::cout << "\n*****************************************************************\n";
-    }
     
     for ( UInt i (0) ; i < nForcePatchBC ; ++i )
     {
@@ -412,13 +386,6 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
     }
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Natural Patch BC done";
-        std::cout << "\n*****************************************************************\n";
-    }
-    
     auto modifyNaturalPatchBC = [&] (const Real& time)
     {
         for ( UInt i (0) ; i < nForcePatchBC ; ++i )
@@ -430,18 +397,11 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
         }
     };
+
     
-    if ( 0 == comm->MyPID() )
-    {
-        std::cout << "\n*****************************************************************";
-        std::cout << "\nCreate Natural Patch BC update done";
-        std::cout << "\n*****************************************************************\n";
-    }
-    
-    
-    //============================================//
+    //============================================
     // Pressure b.c. on endocardia
-    //============================================//
+    //============================================
     std::vector<vectorPtr_Type> pVecPtrs;
     std::vector<bcVectorPtr_Type> pBCVecPtrs;
 
@@ -474,17 +434,17 @@ int main (int argc, char** argv)
     };
 
     
-    //============================================//
+    //============================================
     // Update and print bcHandler
-    //============================================//
+    //============================================
     solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
     
     if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
     
     
-    //============================================//
+    //============================================
     // Volume integrators
-    //============================================//
+    //============================================
     std::vector<int> LVFlags;
     std::vector<int> RVFlags;
 
@@ -508,9 +468,9 @@ int main (int argc, char** argv)
     VolumeIntegrator RV (RVFlags, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
 
     
-    //============================================//
+    //============================================
     // Set variables and functions
-    //============================================//
+    //============================================
     const Real dt_activation = solver.data().electroParameter<Real>("timestep");
     const Real dt_loadstep =  dataFile ( "solid/time_discretization/dt_loadstep", 1.0 );
     const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
@@ -560,9 +520,9 @@ int main (int argc, char** argv)
     };
     
     
-    //============================================//
+    //============================================
     // Load restart file
-    //============================================//
+    //============================================
     
     std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
     const bool restart ( restartInput != "noRestart" );
@@ -603,9 +563,9 @@ int main (int argc, char** argv)
     }
 
     
-    //============================================//
+    //============================================
     // Preload
-    //============================================//
+    //============================================
     
     if ( ! restart )
     {
@@ -667,9 +627,9 @@ int main (int argc, char** argv)
     }
 
 
-    //============================================//
+    //============================================
     // Time loop
-    //============================================//
+    //============================================
     
     VFe[0] = LV.volume(disp, dETFESpace, - 1);
     VFe[1] = RV.volume(disp, dETFESpace, 1);
@@ -709,9 +669,9 @@ int main (int argc, char** argv)
 
         t = t + dt_activation;
 
-        //============================================//
+        //============================================
         // Solve electrophysiology and activation
-        //============================================//
+        //============================================
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
         auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
@@ -721,9 +681,9 @@ int main (int argc, char** argv)
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
-        //============================================//
+        //============================================
         // Load steps mechanics (activation & b.c.)
-        //============================================//
+        //============================================
 
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
 
@@ -760,9 +720,9 @@ int main (int argc, char** argv)
         }
         
         
-        //============================================//
+        //============================================
         // Iterate mechanics / circulation
-        //============================================//
+        //============================================
         
         if ( k % mechanicsCouplingIter == 0 )
         {
@@ -773,9 +733,9 @@ int main (int argc, char** argv)
             modifyEssentialPatchBC(t);
             modifyNaturalPatchBC(t);
             
-            //============================================//
+            //============================================
             // 4th order Adam-Bashforth pressure extrapol.
-            //============================================//
+            //============================================
             
             heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, dpMax);
             
@@ -789,9 +749,9 @@ int main (int argc, char** argv)
             }
 
             
-            //============================================//
+            //============================================
             // Solve mechanics
-            //============================================//
+            //============================================
             modifyPressureBC(bcValues);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
@@ -799,29 +759,29 @@ int main (int argc, char** argv)
             VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
             VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
-            //============================================//
+            //============================================
             // Solve circlation
-            //============================================//
+            //============================================
             circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
             VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
             VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
-            //============================================//
+            //============================================
             // Residual computation
-            //============================================//
+            //============================================
             R = VFeNew - VCircNew;
             printCoupling("Residual Computation");
 
-            //============================================//
+            //============================================
             // Newton iterations
-            //============================================//
+            //============================================
             while ( R.norm() > couplingError )
             {
                 ++iter;
 
-                //============================================//
+                //============================================
                 // Jacobian circulation
-                //============================================//
+                //============================================
 
                 // Left ventricle
                 circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 0), iter);
@@ -840,9 +800,9 @@ int main (int argc, char** argv)
                 JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
 
 
-                //============================================//
+                //============================================
                 // Jacobian fe
-                //============================================//
+                //============================================
 
                 const bool jFeIter ( ! ( k % (couplingJFeIter * mechanicsCouplingIter) ) );
                 const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
@@ -880,9 +840,9 @@ int main (int argc, char** argv)
                     disp = dispCurrent;
                 }
 
-                //============================================//
+                //============================================
                 // Update pressure b.c.
-                //============================================//
+                //============================================
                 JR = JFe - JCirc;
 
                 if ( JR.determinant() != 0 )
@@ -896,16 +856,16 @@ int main (int argc, char** argv)
 
                 printCoupling("Pressure Update");
 
-                //============================================//
+                //============================================
                 // Solve circulation
-                //============================================//
+                //============================================
                 circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
                 VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
-                //============================================//
+                //============================================
                 // Solve mechanics
-                //============================================//
+                //============================================
                 modifyPressureBC(bcValues);
                 solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
                 solver.solveMechanics();
@@ -913,9 +873,9 @@ int main (int argc, char** argv)
                 VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
                 VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
-                //============================================//
+                //============================================
                 // Residual update
-                //============================================//
+                //============================================
                 R = VFeNew - VCircNew;
                 printCoupling("Residual Update");
             }
@@ -927,31 +887,31 @@ int main (int argc, char** argv)
                 std::cout << "\n*****************************************************************\n\n";
             }
             
-            //============================================//
+            //============================================
             // Update volume variables
-            //============================================//
+            //============================================
             VCirc = VCircNew;
             VFe = VFeNew;
             
-            //============================================//
+            //============================================
             // Export circulation solution
-            //============================================//
+            //============================================
             if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             
         }
         
-        //============================================//
+        //============================================
         // Export FE-solution
-        //============================================//
+        //============================================
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
         if ( save ) solver.saveSolution(t);
 
     }
 
     
-    //============================================//
+    //============================================
     // Close all exporters
-    //============================================//
+    //============================================
     solver.closeExporters();
     
 
