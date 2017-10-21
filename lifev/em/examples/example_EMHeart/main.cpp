@@ -158,10 +158,6 @@ int main (int argc, char** argv)
     //============================================
     if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh ... " << '\r' << std::flush;
 
-//    std::vector<Real> scale (3, dataFile("solid/space_discretization/mesh_scaling", 1.0));
-//    std::vector<Real> rotate { dataFile("solid/space_discretization/mesh_rotation_0", 0.0) , dataFile("solid/space_discretization/mesh_rotation_1", 0.0) , dataFile("solid/space_discretization/mesh_rotation_2", 0.0) };
-//    std::vector<Real> translate { dataFile("solid/space_discretization/mesh_translation_0", 0.0) , dataFile("solid/space_discretization/mesh_translation_1", 0.0) , dataFile("solid/space_discretization/mesh_translation_2", 0.0) };
-    
     Vector3D scale, rotate, translate;
     for ( UInt j (0); j < 3; ++j )
     {
