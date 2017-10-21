@@ -232,7 +232,7 @@ monodomain_xml_file = ParamListE.xml
         center          = '-0.7 -7.0 -4.7'
         radius          = 1.5
         component       = '0 2'
-        direction       = '1.0 0.0 1.0'
+        direction       = '-1.0 0.0 -1.0'
         force           = 10000
 
         [../NaturalPatch2]
@@ -240,7 +240,7 @@ monodomain_xml_file = ParamListE.xml
         center          = '4.5 -7.0 1.0'
         radius          = 1.5
         component       = '0 2'
-        direction       = '1.0 0.0 1.0'
+        direction       = '-1.0 0.0 -1.0'
         force           = 10000
 
 
