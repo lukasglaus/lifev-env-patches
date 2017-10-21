@@ -437,10 +437,6 @@ int main (int argc, char** argv)
         std::cout << "\n*****************************************************************\n";
     }
     
-    solver.bcInterfacePtr() -> handler() -> bcUpdate( *solver.structuralOperatorPtr() -> dispFESpacePtr() -> mesh(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> feBd(), solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof() );
-    
-    if ( 0 == comm->MyPID() ) solver.bcInterfacePtr() -> handler() -> showMe();
-    
     
     //============================================//
     // Pressure b.c. on endocardia
