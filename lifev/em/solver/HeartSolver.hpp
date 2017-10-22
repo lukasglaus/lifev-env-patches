@@ -20,6 +20,8 @@
 namespace LifeV
 {
 
+#define PI 3.14159265359
+
     
 template <class EmSolver>
 class HeartSolver {
@@ -212,9 +214,9 @@ public:
     
     Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration)
     {
-        Real timeInPeriod = fmod(t-tmax+0.5*tduration, 800.);
+        Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod*3.14159265359/tduration) , 2 ) * Tmax;
+        Real sinusSquared = std::pow( std::sin(timeInPeriod*PI/tduration) , 2 ) * Tmax;
         return ( inPeriod ? sinusSquared : 0 );
     }
     
