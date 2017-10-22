@@ -193,7 +193,7 @@ public:
             UInt iGID = vectorField->blockMap().GID (j);
             UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
             UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-            
+            std::cout << direction;
             (*vectorField)[iGID] = direction[0];
             (*vectorField)[jGID] = direction[1];
             (*vectorField)[kGID] = direction[2];
