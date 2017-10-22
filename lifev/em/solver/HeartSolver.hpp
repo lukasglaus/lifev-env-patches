@@ -20,7 +20,7 @@
 namespace LifeV
 {
 
-#define PI 3.14159265359
+//#define PI 3.14159265359
 
     
 template <class EmSolver>
@@ -216,7 +216,7 @@ public:
     {
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod*PI/tduration) , 2 ) * Tmax;
+        Real sinusSquared = std::pow( std::sin(timeInPeriod*3.14159265359/tduration) , 2 ) * Tmax;
         return ( inPeriod ? sinusSquared : 0 );
     }
     
