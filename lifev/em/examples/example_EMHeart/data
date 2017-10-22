@@ -225,7 +225,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
+    listNaturalPatchBC = 'NaturalPatch1'
 
         [./NaturalPatch1]
         flag            = 464
