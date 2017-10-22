@@ -233,7 +233,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '0.0 0.0 1.0'
-        force           = 10000
+        force           = 10000000
 
         [../NaturalPatch2]
         flag            = 464
