@@ -185,7 +185,7 @@ public:
         boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
         
-        //direction.normalize();
+        direction.normalize();
         direction *= disp;
         
         for (int j (0); j < nCompLocalDof; ++j)
