@@ -210,11 +210,12 @@ public:
         return ( coords && time ? 30 : 0 );
     }
     
-    Real sinSquared (const Real& t, const Real& Tmax, const Real& tmax, const Real& tduration)
+    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration)
     {
-        bool time ( fmod(t-tmax+0.5*tduration, 800.) < tduration && fmod(t-tmax+0.5*tduration, 800.) > 0);
-        Real force = std::pow( std::sin(fmod(t-tmax+0.5*tduration, 800.)*3.14159265359/tduration) , 2 ) * Tmax;
-        return ( time ? force : 0 );
+        Real timeInPeriod = fmod(t-tmax+0.5*tduration, 800.);
+        bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
+        Real sinusSquared = std::pow( std::sin(timeInPeriod*3.14159265359/tduration) , 2 ) * Tmax;
+        return ( inPeriod ? sinusSquared : 0 );
     }
     
     template<class bcVectorType>
