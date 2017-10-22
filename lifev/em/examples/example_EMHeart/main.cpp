@@ -386,8 +386,8 @@ int main (int argc, char** argv)
         
         patchForceVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchForceDirection[i], 1e-10) );
         patchForceBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchForceVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        //solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
-        solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Full, *patchForceBCVecPtr[i], 3);
+        solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
+        //solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Full, *patchForceBCVecPtr[i], 3);
     }
     
     auto modifyNaturalPatchBC = [&] (const Real& time)
