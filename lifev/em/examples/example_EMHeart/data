@@ -231,7 +231,7 @@ monodomain_xml_file = ParamListE.xml
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 3.5
-        component       = '0 1 2'
+        component       = '0 2'
         direction       = '1.0 1.0 1.0'
         force           = 10000
 
