@@ -396,9 +396,6 @@ int main (int argc, char** argv)
         for ( UInt i (0) ; i < nForcePatchBC ; ++i )
         {
             Real currentPatchForce = heartSolver.sinSquared(time, patchForce[i], tmax, tduration);
-            
-            std::cout << "Patch force: " << currentPatchForce << std::endl;
-            
             patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
