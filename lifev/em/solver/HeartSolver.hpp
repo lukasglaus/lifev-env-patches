@@ -276,7 +276,7 @@ public:
     }
     
     
-    exorterPtr_Type exporter()
+    exporterPtr_Type exporter()
     {
         return m_exporter;
     }
