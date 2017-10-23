@@ -943,6 +943,7 @@ int main (int argc, char** argv)
     // Close all exporters
     //============================================
     solver.closeExporters();
+    heartSolver.exporter()->closeFile();
     
 
 #ifdef HAVE_MPI
