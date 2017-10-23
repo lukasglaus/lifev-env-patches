@@ -360,7 +360,7 @@ int main (int argc, char** argv)
     for ( UInt i (0) ; i < nForcePatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listNaturalPatchBC" ), " ", i );
-        Real patchMode = dataFile ( ("solid/boundary_conditions/" + patchName + "/mode").c_str(), "Full" );
+        std::string patchMode = dataFile ( ("solid/boundary_conditions/" + patchName + "/mode").c_str(), "Full" );
         Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
         Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
         patchForce.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/force").c_str(), 1.0 ) );
@@ -403,7 +403,8 @@ int main (int argc, char** argv)
         for ( UInt i (0) ; i < nForcePatchBC ; ++i )
         {
             Real currentPatchForce = heartSolver.sinSquared(time, patchForce[i], tmax, tduration);
-            patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
+            //patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
+            *patchForceVecPtr[i] = - currentPatchForce * 1333.224
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
