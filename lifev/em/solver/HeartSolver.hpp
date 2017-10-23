@@ -259,8 +259,8 @@ public:
         
         m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                    "displacement",
-                                   m_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                   m_emSolver.structuralOperatorPtr()->displacementPtr(),
+                                   M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                   M_emSolver.structuralOperatorPtr()->displacementPtr(),
                                    UInt (0) );
     }
 
