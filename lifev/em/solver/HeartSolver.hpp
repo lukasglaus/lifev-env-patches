@@ -252,7 +252,7 @@ public:
     void setupExporter(std::string problemFolder = "./", std::string outputFileName = "heartSolution")
     {
         m_exporter.reset (new exporter_Type());
-        setupExporter(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
+        setupExporter<mesh_Type>(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
 
         m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                    "displacement",
