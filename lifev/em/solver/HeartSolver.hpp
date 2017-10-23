@@ -254,7 +254,7 @@ public:
         m_exporter.reset (new exporter_Type());
         m_exporter->setMeshProcId (M_emSolver.localMeshPtr(), M_emSolver.comm()->MyPID() );
         m_exporter->setPrefix (outputFileName);
-        m_exporter->exportPID (*M_emSolver.localMeshPtr(), *M_emSolver.comm());
+        m_exporter->exportPID (M_emSolver.localMeshPtr(), *M_emSolver.comm());
         m_exporter->setPostDir (problemFolder);
         
         m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
