@@ -20,7 +20,7 @@
 namespace LifeV
 {
 
-//#define PI 3.14159265359
+#define PI 3.14159265359
 
     
 template <class EmSolver>
@@ -222,7 +222,7 @@ public:
     {
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod*3.14159265359/tduration) , 2 ) * Tmax;
+        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
         return ( inPeriod ? sinusSquared : 0 );
     }
     
@@ -252,11 +252,9 @@ public:
     void setupExporter(std::string problemFolder = "./", std::string outputFileName = "finiteElementSolution")
     {
         m_exporter.reset (new exporter_Type());
-        m_exporter->setMeshProcId (M_emSolver.localMeshPtr(), M_emSolver.comm()->MyPID() );
-        m_exporter->setPrefix (outputFileName);
-        m_exporter->exportPID (M_emSolver.localMeshPtr(), *M_emSolver.comm());
-        m_exporter->setPostDir (problemFolder);
         
+        setupExporter(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
+
         m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                    "displacement",
                                    M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
@@ -264,6 +262,20 @@ public:
                                    UInt (0) );
     }
 
+    
+    template<class Mesh>
+    void setupExporter (ExporterHDF5<Mesh>& exporter,
+                        boost::shared_ptr<Mesh> localMeshPtr,
+                        boost::shared_ptr<Epetra_Comm> commPtr,
+                        std::string fileName,
+                        std::string folder)
+    {
+        exporter.setMeshProcId (localMeshPtr, commPtr->MyPID() );
+        exporter.setPrefix (fileName);
+        exporter.exportPID (localMeshPtr, commPtr);
+        exporter.setPostDir (folder);
+    }
+    
     
 protected:
     
