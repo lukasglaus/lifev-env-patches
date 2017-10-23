@@ -404,7 +404,7 @@ int main (int argc, char** argv)
         {
             Real currentPatchForce = heartSolver.sinSquared(time, patchForce[i], tmax, tduration);
             //patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
-            *patchForceVecPtr[i] = - currentPatchForce * 1333.224
+            *patchForceVecPtr[i] = - currentPatchForce * 1333.224;
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
