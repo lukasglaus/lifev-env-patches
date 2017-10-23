@@ -274,7 +274,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_name           = heartVVCoa
+    mesh_name           = heartVCoaPatch
     mesh_scaling        = '1.15 1.15 1.15'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'
