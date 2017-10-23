@@ -218,7 +218,7 @@ public:
         return ( coords && time ? 30 : 0 );
     }
     
-    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration)
+    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
@@ -252,7 +252,6 @@ public:
     void setupExporter(std::string problemFolder = "./", std::string outputFileName = "finiteElementSolution")
     {
         m_exporter.reset (new exporter_Type());
-        
         setupExporter(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
 
         m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
@@ -274,6 +273,12 @@ public:
         exporter.setPrefix (fileName);
         exporter.exportPID (localMeshPtr, commPtr);
         exporter.setPostDir (folder);
+    }
+    
+    
+    exorterPtr_Type exporter()
+    {
+        return m_exporter;
     }
     
     

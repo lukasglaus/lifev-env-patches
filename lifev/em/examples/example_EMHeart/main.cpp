@@ -279,7 +279,7 @@ int main (int argc, char** argv)
     solver.setupExporters(problemFolder);
     
     heartSolver.setupExporter(problemFolder);
-    
+    heartSolver.exporter()->postProcess(0);
     
     //============================================
     // Electric stimulus function
