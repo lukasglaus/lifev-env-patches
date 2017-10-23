@@ -278,7 +278,8 @@ int main (int argc, char** argv)
     //============================================
     solver.setupExporters(problemFolder);
     
-    heartSolver.setupExporter(problemFolder)
+    heartSolver.setupExporter(problemFolder);
+    
     
     //============================================
     // Electric stimulus function
