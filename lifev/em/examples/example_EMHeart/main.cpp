@@ -276,8 +276,9 @@ int main (int argc, char** argv)
     //============================================
     // Setup exporters for EMSolver
     //============================================
-    solver.setupExporters (problemFolder);
-        
+    solver.setupExporters(problemFolder);
+    
+    heartSolver.setupExporter(problemFolder)
     
     //============================================
     // Electric stimulus function

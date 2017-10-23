@@ -28,6 +28,12 @@ class HeartSolver {
    
 public:
     
+    typedef RegionMesh<LinearTetra>                         mesh_Type;
+    typedef boost::shared_ptr<mesh_Type>                    meshPtr_Typ
+    typedef ExporterHDF5<mesh_Type>                         exporter_Type;
+    typedef boost::shared_ptr<exporter_Type>                exporterPtr_Type;
+    
+    
     HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver) :
         M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver),
@@ -220,6 +226,7 @@ public:
         return ( inPeriod ? sinusSquared : 0 );
     }
     
+    
     template<class bcVectorType>
     void extrapolate4thOrderAdamBashforth(bcVectorType& bcValues, bcVectorType& bcValuesPre, const Real& dpMax)
     {
@@ -242,6 +249,22 @@ public:
     }
     
     
+    void setupExporter(std::string problemFolder = "./", std::string outputFileName = "finiteElementSolution")
+    {
+        m_exporter.reset (new exporter_Type());
+        m_exporter->setMeshProcId (M_emSolver.localMeshPtr(), M_emSolver.comm()->MyPID() );
+        m_exporter->setPrefix (outputFileName);
+        m_exporter->exportPID (M_emSolver.localMeshPtr(), M_emSolver.comm());
+        m_exporter->setPostDir (problemFolder);
+        
+        m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                   "displacement",
+                                   m_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                   m_emSolver.structuralOperatorPtr()->displacementPtr(),
+                                   UInt (0) );
+    }
+
+    
 protected:
     
     
@@ -250,6 +273,7 @@ protected:
     
     HeartData M_heartData;
     
+    exporterPtr_Type m_exporter;
     
     VectorSmall<2> M_pressure;
     VectorSmall<2> M_volume;
