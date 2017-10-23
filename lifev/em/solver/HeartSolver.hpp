@@ -249,7 +249,7 @@ public:
     }
     
     
-    void setupExporter(std::string problemFolder = "./", std::string outputFileName = "finiteElementSolution")
+    void setupExporter(std::string problemFolder = "./", std::string outputFileName = "heartSolution")
     {
         m_exporter.reset (new exporter_Type());
         setupExporter(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);

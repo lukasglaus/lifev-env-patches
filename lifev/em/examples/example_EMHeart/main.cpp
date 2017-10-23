@@ -398,6 +398,12 @@ int main (int argc, char** argv)
         {
             solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
         }
+        
+        heartSolver.exporter()->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                     patchName,
+                     solver.structuralOperatorPtr()->dispFESpacePtr(),
+                     patchForceVecPtr[i],
+                     UInt (0) );
     }
     
     auto modifyNaturalPatchBC = [&] (const Real& time)
@@ -598,7 +604,8 @@ int main (int argc, char** argv)
         chronoSave.start();
 
         solver.saveSolution (-1.0);
-        
+        heartSolver.exporter()->postProcess(-1.0);
+
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*****************************************************************";
@@ -627,6 +634,7 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             solver.saveSolution (i-1);
+            heartSolver.exporter()->postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
@@ -671,7 +679,8 @@ int main (int argc, char** argv)
 
     if ( ! restart )
     {
-        solver.saveSolution (t);
+        solver.saveSolution(t);
+        heartSolver.exporter()->postProcess(t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
 
@@ -921,8 +930,12 @@ int main (int argc, char** argv)
         // Export FE-solution
         //============================================
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
-        if ( save ) solver.saveSolution(t);
-
+        if ( save )
+        {
+            solver.saveSolution(t);
+            heartSolver.exporter()->postProcess(t);
+        }
+        
     }
 
     
