@@ -29,7 +29,7 @@ class HeartSolver {
 public:
     
     typedef RegionMesh<LinearTetra>                         mesh_Type;
-    typedef boost::shared_ptr<mesh_Type>                    meshPtr_Typ
+    typedef boost::shared_ptr<mesh_Type>                    meshPtr_Typ;
     typedef ExporterHDF5<mesh_Type>                         exporter_Type;
     typedef boost::shared_ptr<exporter_Type>                exporterPtr_Type;
     
