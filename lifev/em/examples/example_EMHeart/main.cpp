@@ -402,7 +402,7 @@ int main (int argc, char** argv)
         heartSolver.exporter()->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
                      patchName,
                      solver.structuralOperatorPtr()->dispFESpacePtr(),
-                     patchForceVecPtr[i],
+                     *patchForceVecPtr[i],
                      UInt (0) );
     }
     
