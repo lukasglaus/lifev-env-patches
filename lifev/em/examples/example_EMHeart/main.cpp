@@ -276,8 +276,10 @@ int main (int argc, char** argv)
     //============================================
     // Setup exporters for EMSolver
     //============================================
-    solver.setupExporters (problemFolder);
-        
+    solver.setupExporters(problemFolder);
+    
+    heartSolver.setupExporter(problemFolder);
+    heartSolver.exporter()->postProcess(0);
     
     //============================================
     // Electric stimulus function
@@ -360,6 +362,7 @@ int main (int argc, char** argv)
     for ( UInt i (0) ; i < nForcePatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listNaturalPatchBC" ), " ", i );
+        std::string patchMode = dataFile ( ("solid/boundary_conditions/" + patchName + "/mode").c_str(), "Full" );
         Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
         Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
         patchForce.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/force").c_str(), 1.0 ) );
@@ -386,9 +389,21 @@ int main (int argc, char** argv)
         
         patchForceVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchForceDirection[i], 1e-10) );
         patchForceBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchForceVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        //solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
-        solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Full, *patchForceBCVecPtr[i], 3);
 
+        if ( patchMode == "Full" )
+        {
+            solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Full, *patchForceBCVecPtr[i], 3);
+        }
+        else if ( patchMode == "Component" )
+        {
+            solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
+        }
+        
+        heartSolver.exporter()->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                     patchName,
+                     solver.structuralOperatorPtr()->dispFESpacePtr(),
+                     patchForceVecPtr[i],
+                     UInt (0) );
     }
     
     auto modifyNaturalPatchBC = [&] (const Real& time)
@@ -397,6 +412,7 @@ int main (int argc, char** argv)
         {
             Real currentPatchForce = heartSolver.sinSquared(time, patchForce[i], tmax, tduration);
             patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
+            //*patchForceVecPtr[i] = - currentPatchForce * 1333.224;
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
@@ -588,7 +604,8 @@ int main (int argc, char** argv)
         chronoSave.start();
 
         solver.saveSolution (-1.0);
-        
+        heartSolver.exporter()->postProcess(-1.0);
+
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*****************************************************************";
@@ -609,14 +626,15 @@ int main (int argc, char** argv)
             }
 
             // Update pressure b.c.
-            //modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
-            modifyNaturalPatchBC(i);
+            modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
+            //modifyNaturalPatchBC(i);
 
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            solver.saveSolution (i-1);
+            //solver.saveSolution (i-1);
+            //heartSolver.exporter()->postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
@@ -661,7 +679,8 @@ int main (int argc, char** argv)
 
     if ( ! restart )
     {
-        solver.saveSolution (t);
+        solver.saveSolution(t);
+        heartSolver.exporter()->postProcess(t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
 
@@ -911,8 +930,12 @@ int main (int argc, char** argv)
         // Export FE-solution
         //============================================
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
-        if ( save ) solver.saveSolution(t);
-
+        if ( save )
+        {
+            solver.saveSolution(t);
+            heartSolver.exporter()->postProcess(t);
+        }
+        
     }
 
     
@@ -920,6 +943,7 @@ int main (int argc, char** argv)
     // Close all exporters
     //============================================
     solver.closeExporters();
+    heartSolver.exporter()->closeFile();
     
 
 #ifdef HAVE_MPI

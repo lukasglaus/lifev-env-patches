@@ -225,23 +225,25 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listNaturalPatchBC = 'NaturalPatch1'
+    listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
 
         [./NaturalPatch1]
+        mode            = Full
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 1.5
         component       = '0 2'
         direction       = '1.0 1.0 1.0'
-        force           = -10000
+        force           = -1000
 
         [../NaturalPatch2]
+        mode            = Full
         flag            = 464
         center          = '4.5 -7.0 1.0'
         radius          = 1.5
         component       = '0 2'
         direction       = '1.0 1.0 1.0'
-        force           = -10000
+        force           = -1000
 
 
     [../]
@@ -272,7 +274,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_name           = heartCoaTr
+    mesh_name           = heartCoaTr #heartVCoaPatch
     mesh_scaling        = '1.15 1.15 1.15'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'

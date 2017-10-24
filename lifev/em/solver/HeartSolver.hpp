@@ -28,6 +28,12 @@ class HeartSolver {
    
 public:
     
+    typedef RegionMesh<LinearTetra>                         mesh_Type;
+    typedef boost::shared_ptr<mesh_Type>                    meshPtr_Typ;
+    typedef ExporterHDF5<mesh_Type>                         exporter_Type;
+    typedef boost::shared_ptr<exporter_Type>                exporterPtr_Type;
+    
+    
     HeartSolver(EmSolver& emSolver,  Circulation& circulationSolver) :
         M_emSolver          (emSolver),
         M_circulationSolver (circulationSolver),
@@ -212,13 +218,14 @@ public:
         return ( coords && time ? 30 : 0 );
     }
     
-    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration)
+    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod*PI/tduration) , 2 ) * Tmax;
+        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
         return ( inPeriod ? sinusSquared : 0 );
     }
+    
     
     template<class bcVectorType>
     void extrapolate4thOrderAdamBashforth(bcVectorType& bcValues, bcVectorType& bcValuesPre, const Real& dpMax)
@@ -242,6 +249,39 @@ public:
     }
     
     
+    void setupExporter(std::string problemFolder = "./", std::string outputFileName = "heartSolution")
+    {
+        m_exporter.reset (new exporter_Type());
+        setupExporter<mesh_Type>(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
+
+        m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                   "displacement",
+                                   M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                   M_emSolver.structuralOperatorPtr()->displacementPtr(),
+                                   UInt (0) );
+    }
+
+    
+    template<class Mesh>
+    void setupExporter (ExporterHDF5<Mesh>& exporter,
+                        boost::shared_ptr<Mesh> localMeshPtr,
+                        boost::shared_ptr<Epetra_Comm> commPtr,
+                        std::string fileName,
+                        std::string folder)
+    {
+        exporter.setMeshProcId (localMeshPtr, commPtr->MyPID() );
+        exporter.setPrefix (fileName);
+        exporter.exportPID (localMeshPtr, commPtr);
+        exporter.setPostDir (folder);
+    }
+    
+    
+    exporterPtr_Type exporter()
+    {
+        return m_exporter;
+    }
+    
+    
 protected:
     
     
@@ -250,6 +290,7 @@ protected:
     
     HeartData M_heartData;
     
+    exporterPtr_Type m_exporter;
     
     VectorSmall<2> M_pressure;
     VectorSmall<2> M_volume;
