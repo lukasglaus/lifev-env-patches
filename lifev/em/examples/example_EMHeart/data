@@ -228,7 +228,7 @@ monodomain_xml_file = ParamListE.xml
     listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
 
         [./NaturalPatch1]
-        mode            = Component
+        mode            = Full
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 1.5
@@ -237,7 +237,7 @@ monodomain_xml_file = ParamListE.xml
         force           = 1000
 
         [../NaturalPatch2]
-        mode            = Component
+        mode            = Full
         flag            = 464
         center          = '4.5 -7.0 1.0'
         radius          = 1.5
