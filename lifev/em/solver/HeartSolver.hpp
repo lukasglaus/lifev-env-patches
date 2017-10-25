@@ -254,17 +254,36 @@ public:
         m_exporter.reset (new exporter_Type());
         setupExporter<mesh_Type>(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
 
-        m_exporter->addVariable (  ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                   "displacement",
-                                   M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                   M_emSolver.structuralOperatorPtr()->displacementPtr(),
-                                   UInt (0) );
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "displacement",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.structuralOperatorPtr()->displacementPtr(),
+                                     UInt (0) );
         
-        m_exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                                    "Von Mises Stress",
-                                                    M_emSolver.electroSolverPtr()->feSpacePtr(),
-                                                M_emSolver.tensionEstimator().vonMisesStressPtr(),
-                                                    UInt (0) );
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                     "Von Mises Stress",
+                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                     M_emSolver.tensionEstimator().vonMisesStressPtr(),
+                                     UInt (0) );
+        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "fibers",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(),
+                                     UInt (0) );
+        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "fibers",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(),
+                                     UInt (0) );
+        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                     "Activation",
+                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                     M_emSolver.activationModelPtr()->fiberActivationPtr(),
+                                     UInt (0) );
+        
     }
 
     
@@ -284,7 +303,7 @@ public:
     
     void postProcess(const Real& time)
     {
-        M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()-> displacement() );
+        M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()->displacement() );
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
 
         m_exporter->postProcess(time);

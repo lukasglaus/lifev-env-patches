@@ -267,7 +267,7 @@ int main (int argc, char** argv)
     //============================================
     // Building Matrices
     //============================================
-    solver.oneWayCoupling();
+    solver.twoWayCoupling();
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
@@ -604,7 +604,7 @@ int main (int argc, char** argv)
         chronoSave.start();
 
         solver.saveSolution (-1.0);
-        heartSolver.exporter()->postProcess(-1.0);
+        heartSolver.postProcess(-1.0);
 
         if ( 0 == comm->MyPID() )
         {
@@ -634,7 +634,7 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             //solver.saveSolution (i-1);
-            //heartSolver.exporter()->postProcess(i-1);
+            //heartSolver.postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
@@ -680,7 +680,7 @@ int main (int argc, char** argv)
     if ( ! restart )
     {
         solver.saveSolution(t);
-        heartSolver.exporter()->postProcess(t);
+        heartSolver.postProcess(t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
 
@@ -933,7 +933,7 @@ int main (int argc, char** argv)
         if ( save )
         {
             solver.saveSolution(t);
-            heartSolver.exporter()->postProcess(t);
+            heartSolver.postProcess(t);
         }
         
     }
