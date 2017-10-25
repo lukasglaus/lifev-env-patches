@@ -596,29 +596,29 @@ void EMMonodomainSolver<Mesh>::setupMassMatrixWithMehcanicalFeedback ()
 {
     if (this->M_verbose && this->M_commPtr->MyPID() == 0)
     {
-        std::cout << "\nEM Monodomain Solver: Setting up mass matrix with coupling with mechanics ";
+        std::cout << "\nEM Monodomain Solver: Setting up mass matrix for coupling with mechanics ";
     }
 
     *this->M_massMatrixPtr *= 0.0;
     {
         using namespace ExpressionAssembly;
 
-        if (M_displacementETFESpacePtr)
-        {
-            std::cout << "Disp ETFE space available\n";
-        }
-        if (M_displacementPtr)
-        {
-            std::cout << "Disp available\n";
-        }
-        if (super::M_localMeshPtr)
-        {
-            std::cout << "Local Mesh available\n";
-        }
-        if (super::M_massMatrixPtr)
-        {
-            std::cout << "Mass Matrix available\n";
-        }
+//        if (M_displacementETFESpacePtr)
+//        {
+//            std::cout << "Disp ETFE space available\n";
+//        }
+//        if (M_displacementPtr)
+//        {
+//            std::cout << "Disp available\n";
+//        }
+//        if (super::M_localMeshPtr)
+//        {
+//            std::cout << "Local Mesh available\n";
+//        }
+//        if (super::M_massMatrixPtr)
+//        {
+//            std::cout << "Mass Matrix available\n";
+//        }
         auto I  = value (super::M_identity);
         auto Grad_u = grad (M_displacementETFESpacePtr, *M_displacementPtr);
         auto F = Grad_u + I;
@@ -707,9 +707,9 @@ void EMMonodomainSolver<Mesh>::setupStiffnessMatrix()
 
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
     {
-        std::cout << "=========================\n";
-        std::cout << "Using mechanical feedback\n";
-        std::cout << "=========================\n";
+//        std::cout << "=========================\n";
+//        std::cout << "Using mechanical feedback\n";
+//        std::cout << "=========================\n";
         //        setupStiffnessMatrix (M_displacementPtr);
         setupStiffnessMatrixWithMehcanicalFeedback ();
     }
