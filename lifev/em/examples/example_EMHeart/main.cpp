@@ -48,7 +48,7 @@
 
 using namespace LifeV;
 
-#define mmHg * 1333.224
+#define mmHg 1333.224
 
 int main (int argc, char** argv)
 {
