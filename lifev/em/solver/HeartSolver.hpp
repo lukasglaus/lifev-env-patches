@@ -284,7 +284,7 @@ public:
                                      M_emSolver.activationModelPtr()->fiberActivationPtr(),
                                      UInt (0) );
         
-        for (int i = 0; i < M_emSolver.electroSolverPtr()->ionicModelPtr->Size(); +++i)
+        for (int i = 0; i < M_emSolver.electroSolverPtr()->ionicModelPtr->Size(); ++i)
         {
             std::string variableName = "Ionic Variable " + boost::lexical_cast<std::string> (i);
             m_exporter->addVariable (ExporterData<mesh_Type>::ScalarField,
