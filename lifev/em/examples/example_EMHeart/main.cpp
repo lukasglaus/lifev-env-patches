@@ -277,7 +277,7 @@ int main (int argc, char** argv)
     //============================================
     // Setup exporters for EMSolver
     //============================================
-    solver.setupExporters(problemFolder);
+    //solver.setupExporters(problemFolder);
     heartSolver.setupExporter(problemFolder);
     
     
@@ -603,7 +603,7 @@ int main (int argc, char** argv)
         LifeChrono chronoSave;
         chronoSave.start();
 
-        solver.saveSolution (-1.0);
+        //solver.saveSolution (-1.0);
         heartSolver.postProcess(-1.0);
 
         if ( 0 == comm->MyPID() )
@@ -679,7 +679,7 @@ int main (int argc, char** argv)
 
     if ( ! restart )
     {
-        solver.saveSolution(t);
+        //solver.saveSolution(t);
         heartSolver.postProcess(t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
@@ -932,7 +932,7 @@ int main (int argc, char** argv)
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
         if ( save )
         {
-            solver.saveSolution(t);
+            //solver.saveSolution(t);
             heartSolver.postProcess(t);
         }
         
