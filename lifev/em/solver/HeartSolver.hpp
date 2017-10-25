@@ -260,11 +260,11 @@ public:
                                    M_emSolver.structuralOperatorPtr()->displacementPtr(),
                                    UInt (0) );
         
-//        m_exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-//                                                    "Von Mises Stress",
-//                                                    M_emSolver.electroSolverPtr()->feSpacePtr(),
-//                                                    M_wteTotal.vonMisesStressPtr(),
-//                                                    UInt (0) );
+        m_exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                                    "Von Mises Stress",
+                                                    M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                                M_emSolver.tensionEstimator().vonMisesStressPtr(),
+                                                    UInt (0) );
     }
 
     
@@ -282,13 +282,13 @@ public:
     }
     
     
-//    void postProcess(const Real& time)
-//    {
-//        M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
-//        M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
-//
-//        m_exporter->postProcess(time);
-//    }
+    void postProcess(const Real& time)
+    {
+        M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()-> displacement() );
+        M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
+
+        m_exporter->postProcess(time);
+    }
     
     
     exporterPtr_Type exporter()

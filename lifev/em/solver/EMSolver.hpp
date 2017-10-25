@@ -474,6 +474,11 @@ public:
 
     void showMe() const {}
     
+    WallTensionEstimator<RegionMesh<LinearTetra> >& tensionEstimator()
+    {
+        return M_wteTotal;
+    }
+    
     meshPtr_Type fullMeshPtr()
     {
         return M_fullMeshPtr;
