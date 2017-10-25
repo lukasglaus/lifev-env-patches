@@ -249,7 +249,7 @@ public:
     }
     
     
-    void setupExporter(std::string problemFolder = "./", std::string outputFileName = "heartSolution")
+    void setupExporter(std::string problemFolder = "./", std::string outputFileName = "humanHeartSolution")
     {
         m_exporter.reset (new exporter_Type());
         setupExporter<mesh_Type>(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
@@ -259,6 +259,12 @@ public:
                                    M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                    M_emSolver.structuralOperatorPtr()->displacementPtr(),
                                    UInt (0) );
+        
+//        m_exporter->addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+//                                                    "Von Mises Stress",
+//                                                    M_emSolver.electroSolverPtr()->feSpacePtr(),
+//                                                    M_wteTotal.vonMisesStressPtr(),
+//                                                    UInt (0) );
     }
 
     
@@ -274,6 +280,15 @@ public:
         exporter.exportPID (localMeshPtr, commPtr);
         exporter.setPostDir (folder);
     }
+    
+    
+//    void postProcess(const Real& time)
+//    {
+//        M_wteTotal.setDisplacement ( M_EMStructuralOperatorPtr -> displacement() );
+//        M_wteTotal.analyzeTensionsRecoveryVonMisesStress();
+//
+//        m_exporter->postProcess(time);
+//    }
     
     
     exporterPtr_Type exporter()
