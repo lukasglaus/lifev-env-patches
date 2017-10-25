@@ -48,7 +48,7 @@
 
 using namespace LifeV;
 
-#define mmHg 1333.224
+#define mmHg * 1333.224
 
 int main (int argc, char** argv)
 {
@@ -412,7 +412,7 @@ int main (int argc, char** argv)
         {
             Real currentPatchForce = - heartSolver.sinSquared(time, patchForce[i], tmax, tduration) mmHg;
             patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
-            //*patchForceVecPtr[i] = - currentPatchForce * 1333.224;
+            //*patchForceVecPtr[i] = - currentPatchForce mmHg;
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
@@ -448,7 +448,7 @@ int main (int argc, char** argv)
     {
         for ( UInt i (0) ; i < nVarBC ; ++i )
         {
-            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] * 1333.224;
+            *pVecPtrs[i] = - bcValues[ ventIdx[i] ] mmHg;
             pBCVecPtrs[i].reset ( ( new bcVector_Type (*pVecPtrs[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1) ) );
             solver.bcInterfacePtr() -> handler() -> modifyBC(flagsBC[i], *pBCVecPtrs[i]);
         }
