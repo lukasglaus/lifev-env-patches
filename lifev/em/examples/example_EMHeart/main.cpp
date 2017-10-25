@@ -410,7 +410,7 @@ int main (int argc, char** argv)
     {
         for ( UInt i (0) ; i < nForcePatchBC ; ++i )
         {
-            Real currentPatchForce = - 1333.224 * heartSolver.sinSquared(time, patchForce[i], tmax, tduration);
+            Real currentPatchForce = - heartSolver.sinSquared(time, patchForce[i], tmax, tduration) mmHg;
             patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
             //*patchForceVecPtr[i] = - currentPatchForce * 1333.224;
             
