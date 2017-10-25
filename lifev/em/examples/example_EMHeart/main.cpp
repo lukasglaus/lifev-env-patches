@@ -398,12 +398,6 @@ int main (int argc, char** argv)
         {
             solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
         }
-        
-//        heartSolver.exporter()->addVariable ( ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                     patchName,
-//                     solver.structuralOperatorPtr()->dispFESpacePtr(),
-//                     patchForceVecPtr[i],
-//                     UInt (0) );
     }
     
     auto modifyNaturalPatchBC = [&] (const Real& time)
@@ -634,7 +628,7 @@ int main (int argc, char** argv)
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             //solver.saveSolution (i-1);
-            //heartSolver.postProcess(i-1);
+            heartSolver.postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
