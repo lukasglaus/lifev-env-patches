@@ -627,14 +627,14 @@ int main (int argc, char** argv)
 
             // Update pressure b.c.
             modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
-            //modifyNaturalPatchBC(i);
+            modifyNaturalPatchBC(i);
 
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             //solver.saveSolution (i-1);
-            //heartSolver.exporter()->postProcess(i-1);
+            heartSolver.exporter()->postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
