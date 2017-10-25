@@ -255,7 +255,7 @@ public:
         setupExporter<mesh_Type>(*m_exporter, M_emSolver.localMeshPtr(), M_emSolver.comm(), outputFileName, problemFolder);
 
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "displacement",
+                                     "Displacement",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.structuralOperatorPtr()->displacementPtr(),
                                      UInt (0) );
@@ -267,13 +267,13 @@ public:
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "fibers",
+                                     "Fibers",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "fibers",
+                                     "Sheets",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(),
                                      UInt (0) );
@@ -283,6 +283,17 @@ public:
                                      M_emSolver.electroSolverPtr()->feSpacePtr(),
                                      M_emSolver.activationModelPtr()->fiberActivationPtr(),
                                      UInt (0) );
+        
+        for (int i = 0; i < M_emSolver.electroSolverPtr()->ionicModelPtr->Size(); i++)
+        {
+            std::string variableName = "Ionic Variable " + boost::lexical_cast<std::string> (i);
+            m_exporter.addVariable ( ExporterData<mesh_Type>::ScalarField,
+                                     variableName,
+                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                     M_emSolver.electroSolverPtr()->globalSolution().at(i),
+                                     UInt (0) );
+        }
+
         
     }
 
