@@ -267,7 +267,10 @@ int main (int argc, char** argv)
     //============================================
     // Building Matrices
     //============================================
-    solver.twoWayCoupling();
+    std::string electroMechanicsCoupling = dataFile("electrophysiology/discretization/coupling", "one-way");
+    if (coupling == "two-way") solver.twoWayCoupling();
+    else solver.oneWayCoupling();
+    
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     

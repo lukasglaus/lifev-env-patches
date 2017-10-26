@@ -26,6 +26,7 @@ monodomain_xml_file = ParamListE.xml
     
     [../discretization]
     LumpedMass = false
+    coupling = two-way
 
     [../flags]
     lvendo = 65 #50
@@ -265,8 +266,8 @@ monodomain_xml_file = ParamListE.xml
     initialtime                 = 0.
     endtime                     = 10000.
     timestep                    = 0.5 #1.0
-    dt_loadstep                 = 0.5
-    activation_limit_loadstep   = -0.07
+    dt_loadstep                 = 0.1
+    activation_limit_loadstep   = 0.0 #-0.07
     theta                       = 0.35
     zeta                        = 0.75
     BDF_order                   = 2
