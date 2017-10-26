@@ -504,7 +504,6 @@ int main (int argc, char** argv)
     const Real couplingError = dataFile ( "solid/coupling/couplingError", 1e-6 );
     const UInt couplingJFeSubIter = dataFile ( "solid/coupling/couplingJFeSubIter", 1 );
     const UInt couplingJFeSubStart = dataFile ( "solid/coupling/couplingJFeSubStart", 1 );
-    const UInt couplingJFeIter = dataFile ( "solid/coupling/couplingJFeIter", 1 );
     
     const Real dpMax = dataFile ( "solid/coupling/dpMax", 0.1 );
     
@@ -710,9 +709,11 @@ int main (int argc, char** argv)
 
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
 
-        const bool makeLoadstep (k % mechanicsLoadstepIter == 0);
-        
-        if ( makeLoadstep && k % mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
+        const bool activationBelowLoadstepThreshold (minActivationValue < activationLimit_loadstep);
+        const bool makeLoadstep (k % mechanicsLoadstepIter == 0 && activationLimit_loadstep);
+        const bool makeMechanicsCirculationCoupling (k % mechanicsCouplingIter == 0);
+
+        if ( makeLoadstep && !makeMechanicsCirculationCoupling )
         {
             if ( 0 == comm->MyPID() )
             {
@@ -749,7 +750,7 @@ int main (int argc, char** argv)
         // Iterate mechanics / circulation
         //============================================
         
-        if ( k % mechanicsCouplingIter == 0 )
+        if ( makeMechanicsCirculationCoupling )
         {
             iter = 0;
             const double dt_circulation ( dt_mechanics / 1000 );
@@ -829,11 +830,10 @@ int main (int argc, char** argv)
                 // Jacobian fe
                 //============================================
 
-                const bool jFeIter ( ! ( k % (couplingJFeIter * mechanicsCouplingIter) ) );
-                const bool jFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
-                const bool jFeEmpty ( JFe.norm() == 0 );
+                const bool jacobianFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
+                const bool jacobianFeEmpty ( JFe.norm() == 0 );
 
-                if ( jFeIter || jFeSubIter || jFeEmpty )
+                if ( jacobianFeSubIter || jacobianFeEmpty )
                 {
                     JFe *= 0.0;
                     dispCurrent = disp;

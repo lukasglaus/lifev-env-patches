@@ -258,7 +258,6 @@ monodomain_xml_file = ParamListE.xml
     pPerturbationCirc       = 1e-3
     dpMax                   = 0.1 #0.3
     couplingError           = 1e-5 #1e-6
-    couplingJFeIter         = 20
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 1
 
