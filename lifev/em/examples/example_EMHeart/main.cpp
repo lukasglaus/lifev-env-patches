@@ -710,7 +710,9 @@ int main (int argc, char** argv)
 
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
 
-        if ( k % mechanicsLoadstepIter == 0 && k % mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
+        const bool makeLoadstep (k % mechanicsLoadstepIter == 0);
+        
+        if ( makeLoadstep && k % mechanicsCouplingIter != 0 && minActivationValue < activationLimit_loadstep )
         {
             if ( 0 == comm->MyPID() )
             {
