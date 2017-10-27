@@ -6,8 +6,10 @@
 [exporter]
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
+preload    = true
 start      = 0
 save       = 1
+
 
 [electrophysiology]
 

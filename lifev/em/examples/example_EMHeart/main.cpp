@@ -589,7 +589,8 @@ int main (int argc, char** argv)
         solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
         
         const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
-        
+        const bool exportPreload = dataFile ( "exporter/preload", false );
+
         auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
         {
             for (auto& i : p) {i *= double(step) / double(steps);}
@@ -600,7 +601,7 @@ int main (int argc, char** argv)
         chronoSave.start();
 
         //solver.saveSolution (-1.0);
-        heartSolver.postProcess(-1.0);
+        heartSolver.postProcess( (exportPreload ? -preloadSteps : -1.0) );
 
         if ( 0 == comm->MyPID() )
         {
