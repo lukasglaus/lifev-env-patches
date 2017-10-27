@@ -590,6 +590,7 @@ int main (int argc, char** argv)
         
         const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
         const bool exportPreload = dataFile ( "exporter/preload", false );
+        const bool testPatchesAtPreload = dataFile ( "solid/patches/testAtPreload", false );
 
         auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
         {
@@ -623,15 +624,14 @@ int main (int argc, char** argv)
             }
 
             // Update pressure b.c.
-            //modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
-            modifyNaturalPatchBC(i);
-
+            if (!testPatchesAtPreload) modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
+            if (testPatchesAtPreload) modifyNaturalPatchBC(i);
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
-            //solver.saveSolution (i-1);
-            heartSolver.postProcess(i-1);
+            
+            if (exportPreload) heartSolver.postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
