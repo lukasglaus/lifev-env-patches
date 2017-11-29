@@ -11,6 +11,7 @@ SET(mesh_HEADERS
   mesh/MeshPartitioner.hpp
   mesh/MarkerDefinitions.hpp
   mesh/MeshUtility.hpp
+  mesh/MeshLoadingUtility.hpp
   mesh/BareMesh.hpp
   mesh/ConvertBareMesh.hpp
   mesh/MeshElement.hpp

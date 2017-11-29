@@ -1,7 +1,14 @@
-INCLUDE_DIRECTORIES(/usr/local/Cellar/eigen/3.2.4/include/eigen3)
-
 SET( solver_circulation_HEADERS
 	solver/circulation/Circulation.hpp
+    solver/circulation/CirculationAssembler.hpp
+    solver/circulation/CirculationBCHandler.hpp
+    solver/circulation/CirculationCoupling.hpp
+    solver/circulation/CirculationDofHandler.hpp
+    solver/circulation/CirculationElementFactory.hpp
+    solver/circulation/CirculationGridView.hpp
+    solver/circulation/CirculationIO.hpp
+    solver/circulation/CirculationTimeIntegrator.hpp
+    solver/circulation/CirculationVolumeIntegrator.hpp
 CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)

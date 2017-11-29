@@ -1,6 +1,7 @@
 SET(expression_HEADERS
     expression/BuildGraph.hpp
 	expression/EvaluationAddition.hpp
+    expression/EvaluationCofactor.hpp
 	expression/EvaluationDivI.hpp
 	expression/EvaluationDivision.hpp
 	expression/EvaluationDivJ.hpp
@@ -25,6 +26,7 @@ SET(expression_HEADERS
 	expression/EvaluationPower.hpp
 	expression/EvaluationLogarithm.hpp
 	expression/EvaluationExponential.hpp
+    expression/EvaluationMinusTransposed.hpp
 	expression/EvaluationNormal.hpp
 	expression/EvaluationScalar.hpp
 	expression/EvaluationSubstraction.hpp
@@ -35,6 +37,7 @@ SET(expression_HEADERS
 	expression/EvaluationVector.hpp
 	expression/ExpressionAddition.hpp
 	expression/ExpressionBase.hpp
+    expression/ExpressionCofactor.hpp
 	expression/ExpressionDivI.hpp
 	expression/ExpressionDivision.hpp
 	expression/ExpressionDivJ.hpp
@@ -51,6 +54,7 @@ SET(expression_HEADERS
 	expression/ExpressionInterpolateValue.hpp
 	expression/ExpressionMatrix.hpp
 	expression/ExpressionMeas.hpp
+    expression/ExpressionMinusTransposed.hpp
 	expression/ExpressionOuterProduct.hpp
 	expression/ExpressionPhiI.hpp
 	expression/ExpressionPhiJ.hpp

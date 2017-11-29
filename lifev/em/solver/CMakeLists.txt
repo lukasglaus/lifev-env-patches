@@ -12,6 +12,8 @@ SET(solver_HEADERS
   solver/EMSolver.hpp
   solver/EMETAFunctors.hpp
   solver/EMData.hpp
+    solver/HeartSolver.hpp
+    solver/HeartData.hpp
 #  solver/EMGeneralizedActiveHolzapfelOgdenMaterial.hpp
 #  solver/EMActiveStructuralConstitutiveLaw.hpp
 #  solver/EMNeoHookeanActivatedMaterial.hpp

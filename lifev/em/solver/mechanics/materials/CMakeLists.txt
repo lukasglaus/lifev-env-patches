@@ -5,6 +5,9 @@ ADD_SUBDIRECTORY(active_stress_materials)
 
 SET( solver_mechanics_materials_HEADERS
   solver/mechanics/materials/EMMaterialType.hpp
+solver/mechanics/materials/EMActiveMaterialType.hpp
+solver/mechanics/materials/EMPassiveMaterialType.hpp
+  solver/mechanics/materials/MaterialsList.hpp
 CACHE INTERNAL "")
 
 SET( solver_mechanics_materials_SOURCES

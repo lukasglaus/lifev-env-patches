@@ -3,6 +3,9 @@ SET( solver_mechanics_materials_functions_HEADERS
  solver/mechanics/materials/functions/EMActiveStrainMaterialFunctions.hpp
  solver/mechanics/materials/functions/FunctionsActiveStrainNeoHookean.hpp
  solver/mechanics/materials/functions/FunctionsAnisotropicExponential.hpp
+solver/mechanics/materials/functions/FunctionsActiveStrainIsotropicExponential.hpp
+solver/mechanics/materials/functions/FunctionsActiveStrainAnisotropicExponential.hpp
+solver/mechanics/materials/functions/FunctionsActiveStrainShearExponential.hpp
  solver/mechanics/materials/functions/FunctionsIsotropicExponential.hpp
  solver/mechanics/materials/functions/FunctionsLinearizedNeoHookean.hpp
  solver/mechanics/materials/functions/FunctionsList.hpp

@@ -7,7 +7,8 @@ SET( solver_mechanics_materials_passive_HEADERS
  solver/mechanics/materials/passive_materials/PassiveNeoHookean.hpp
  solver/mechanics/materials/passive_materials/PassiveOrthotropicFung.hpp
  solver/mechanics/materials/passive_materials/PassiveVolumetric.hpp
-# solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicFung.hpp
+solver/mechanics/materials/passive_materials/PassiveIsotropicFung.hpp
+ solver/mechanics/materials/passive_materials/PassiveTransverselyIsotropicFung.hpp
  solver/mechanics/materials/passive_materials/PassiveMooneyRivlin.hpp
  solver/mechanics/materials/passive_materials/PassiveMooneyRivlinCompact.hpp
 

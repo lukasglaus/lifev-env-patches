@@ -10,7 +10,7 @@ SET( solver_activation_activeStressModels_SOURCES
  CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)
-FOREACH(INC ${solver_acitvation_activeStressModels_HEADERS})
+FOREACH(INC ${solver_activation_activeStressModels_HEADERS})
   STRING(REPLACE "solver/activation/activeStressModels/" "" LOCAL_INC ${INC})
   SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
 ENDFOREACH()

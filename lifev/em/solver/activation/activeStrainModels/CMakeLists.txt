@@ -8,7 +8,7 @@ SET( solver_activation_activeStrainModels_SOURCES
  CACHE INTERNAL "")
 
 SET(LOCAL_HEADERS)
-FOREACH(INC ${solver_acitvation_activeStrainModels_HEADERS})
+FOREACH(INC ${solver_activation_activeStrainModels_HEADERS})
   STRING(REPLACE "solver/activation/activeStrainModels/" "" LOCAL_INC ${INC})
   SET(LOCAL_HEADERS ${LOCAL_HEADERS} ${LOCAL_INC})
 ENDFOREACH()
@@ -18,3 +18,4 @@ INSTALL(
   DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/lifev/em/solver/activation/activeStrainModels/"
   COMPONENT ${PACKAGE_NAME}
 )
+

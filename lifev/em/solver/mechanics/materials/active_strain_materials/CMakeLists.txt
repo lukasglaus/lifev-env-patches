@@ -1,5 +1,8 @@
-SET( solver_mechanics_materials_activeSrain_HEADERS
+SET( solver_mechanics_materials_activeStrain_HEADERS
  solver/mechanics/materials/active_strain_materials/ActiveNeoHookean.hpp
+solver/mechanics/materials/active_strain_materials/ActiveIsotropicExponential.hpp
+solver/mechanics/materials/active_strain_materials/ActiveHolzapfelOgden.hpp
+solver/mechanics/materials/active_strain_materials/ActiveHolzapfelOgdenNIIsotropicSplitting.hpp
  CACHE INTERNAL "")
 
 SET( solver_mechanics_materials_activeStrain_SOURCES
