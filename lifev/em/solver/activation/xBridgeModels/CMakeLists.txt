@@ -6,7 +6,6 @@ SET( solver_activation_xBridgeModels_SOURCES
   solver/activation/XBridgeModels/XBridge4SM.cpp
  CACHE INTERNAL "")
 
-
 SET(LOCAL_HEADERS)
 FOREACH(INC ${solver_activation_xBridgeModels_HEADERS})
   STRING(REPLACE "solver/activation/XBridgeModels/" "" LOCAL_INC ${INC})
