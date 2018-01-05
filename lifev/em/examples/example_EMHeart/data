@@ -237,7 +237,7 @@ monodomain_xml_file = ParamListE.xml
         radius          =  3.5
         component       = '0 2'
         direction       = '1.0 0.0 0.0'
-        force           = 10
+        force           = 2 #10
 
         [../NaturalPatch2]
         mode            = Full
@@ -246,14 +246,14 @@ monodomain_xml_file = ParamListE.xml
         radius          = 3.5
         component       = '0 2'
         direction       = '1.0 0.0 0.0'
-        force           = 10
+        force           = 2 #10
 
 
     [../]
 
     [../patches]
     testAtPreload       = false
-    tmax                = 150 # 250
+    tmax                = 200 #150 # 250
     tduration           = 300
 
     [../coupling]
