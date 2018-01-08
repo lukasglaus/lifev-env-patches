@@ -237,7 +237,7 @@ monodomain_xml_file = ParamListE.xml
         radius          =  3.5
         component       = '0 2'
         direction       = '1.0 0.0 0.0'
-        force           = 0.001 #10
+        force           = 0.0 #10
 
         [../NaturalPatch2]
         mode            = Full
@@ -246,7 +246,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 3.5
         component       = '0 2'
         direction       = '1.0 0.0 0.0'
-        force           = 0.001 #10
+        force           = 0.0 #10
 
 
     [../]
