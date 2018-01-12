@@ -6,7 +6,7 @@
 [exporter]
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
-preload    = true
+preload    = false
 start      = 0
 save       = 1
 
@@ -252,7 +252,7 @@ monodomain_xml_file = ParamListE.xml
     [../]
 
     [../patches]
-    testAtPreload       = true
+    testAtPreload       = false
     tmax                = 150 #200 #150 # 250
     tduration           = 300
 
