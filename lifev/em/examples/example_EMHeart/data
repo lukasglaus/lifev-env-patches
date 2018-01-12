@@ -43,7 +43,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -7.0 # -7.0 # -7.3
+    ActiveForceCoefficient  = -0.0 # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -228,7 +228,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-#    listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
+    listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
 
         [./NaturalPatch1]
         mode            = Full
@@ -252,7 +252,7 @@ monodomain_xml_file = ParamListE.xml
     [../]
 
     [../patches]
-    testAtPreload       = false
+    testAtPreload       = true
     tmax                = 200 #150 # 250
     tduration           = 300
 
