@@ -712,7 +712,7 @@ int main (int argc, char** argv)
         auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
 
         const bool activationBelowLoadstepThreshold (minActivationValue < activationLimit_loadstep);
-        const bool makeLoadstep (k % mechanicsLoadstepIter == 0 && activationLimit_loadstep);
+        const bool makeLoadstep (k % mechanicsLoadstepIter == 0 && activationBelowLoadstepThreshold);
         const bool makeMechanicsCirculationCoupling (k % mechanicsCouplingIter == 0);
 
         if ( makeLoadstep && !makeMechanicsCirculationCoupling )
