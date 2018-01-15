@@ -118,7 +118,7 @@ monodomain_xml_file = ParamListE.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '10000' #' 5.00 * 1000' # D
+            function = '1000000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
