@@ -6,7 +6,7 @@
 [exporter]
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
-preload    = false
+preload    = true
 start      = 0
 save       = 1
 
@@ -76,7 +76,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 50
+    numPreloadSteps  = 500
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
 
@@ -118,7 +118,7 @@ monodomain_xml_file = ParamListE.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '1000000' #' 5.00 * 1000' # D
+            function = '1000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
@@ -252,7 +252,7 @@ monodomain_xml_file = ParamListE.xml
     [../]
 
     [../patches]
-    testAtPreload       = false
+    testAtPreload       = true
     tmax                = 150 #200 #150 # 250
     tduration           = 300
 
