@@ -126,7 +126,7 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
         [../AorticRing]
-        type       = Robin
+        type       = Essential
         flag       = 461
         mode       = Component
         component  = '0 1 2'
@@ -141,7 +141,7 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
         [../MitralRing]
-        type       = Robin
+        type       = Essential
         flag       = 460
         mode       = Component
         component  = '0 1 2'
@@ -156,7 +156,7 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
         [../TricuspidRing]
-        type       = Robin
+        type       = Essential
         flag       = 459
         mode       = Component
         component  = '0 1 2'
