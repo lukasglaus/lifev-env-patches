@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-list = 'BaseSemilunar BaseAV Patch_1E Patch_2E Patch_3E' # AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
+list = 'BaseSemilunar BaseAV Patch_1E Patch_2E' # AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -174,15 +174,15 @@ list = 'BaseSemilunar BaseAV Patch_1E Patch_2E Patch_3E' # AorticRing MitralRing
         type       = Essential
         flag       = 901
         mode       = Component
-        component  = '0 2'
-        function = '[0.01 0.01]'
+        component  = '0 1 2'
+        function = '[0.01 0 0.01]'
 
         [../Patch_2E]
         type       = Essential
         flag       = 902
         mode       = Component
-        component  = '0 2'
-        function = '[-0.01 -0.01]'
+        component  = '0 1 2'
+        function = '[-0.01 0 -0.01]'
 
         [../Patch_3E]
         type       = Essential
@@ -242,7 +242,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         [../EssentialPatch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
-        radius          = 4.5
+        radius          = 1.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
         displacement    = 0.1
@@ -250,7 +250,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         [../EssentialPatch2]
         flag            = 464
         center          = '4.5 -7.0 1.0'
-        radius          = 4.5
+        radius          = 1.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
         displacement    = 0.0
