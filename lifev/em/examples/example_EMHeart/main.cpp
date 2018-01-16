@@ -625,15 +625,22 @@ int main (int argc, char** argv)
                 std::cout << "\n*****************************************************************\n";
             }
 
-            // Update pressure b.c.
-            if (!testPatchesAtPreload) modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
-            if (testPatchesAtPreload) modifyNaturalPatchBC(i);
+            // Update b.c.
+            if (!testPatchesAtPreload)
+            {
+                modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
+            }
+            else
+            {
+                modifyNaturalPatchBC(i);
+                modifyEssentialPatchBC(i);
+            }
 
             // Solve mechanics
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
-            if (exportPreload) heartSolver.postProcess(i-1);
+            if (testPatchesAtPreload) heartSolver.postProcess(i-1);
         }
 
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
