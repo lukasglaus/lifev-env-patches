@@ -129,11 +129,11 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
 #list = 'Top Bottom Front Back Left Right'
     list = 'Front Back'
         [./Top]
-        type       = Natural
+        type       = Essential
         flag       = 400
-        mode       = Full
-        component  = 3
-    	function  = '[0.0, 0.0, 0.0]'
+        mode       = Component
+        component  = 1
+    	function  = '0.01'
 
         [../Bottom]
         type       = Essential
@@ -147,7 +147,7 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
         flag       = 500
         mode       = Full
         component  = 3
-    	function  = '[0.0, 1.0, 0.0]'
+    	function  = '[0.0, 0.0, 0.0]'
 
         [../Back]
         type       = Essential
