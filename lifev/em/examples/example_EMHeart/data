@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
+# list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -179,7 +179,7 @@ function = '0.0'
 
         [../]
 
-# listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
 
         [./EndocardiumLV]
             flag    = 454
