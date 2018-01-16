@@ -649,6 +649,8 @@ int main (int argc, char** argv)
 
     }
 
+    dispPreload = disp;
+    
 
     //============================================
     // Time loop
