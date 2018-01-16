@@ -183,7 +183,7 @@ BDF_order   	= 2
 [../space_discretization]
 mesh_type = .mesh
 mesh_dir  	= ../../data/mesh/
-mesh_file 	= Cube.mesh 
+mesh_file 	= Cube4.mesh 
 order     	= P1
 
 
