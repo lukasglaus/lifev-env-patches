@@ -155,27 +155,6 @@ list = 'BaseSemilunar BaseAV Patch_1E Patch_2E Patch_3E' # AorticRing MitralRing
 
             [../]
 
-        [../Patch_1E]
-        type       = Essential
-        flag       = 901
-        mode       = Component
-        component  = '0 2'
-        function = '[0.01 0.01]'
-
-        [../Patch_2E]
-        type       = Essential
-        flag       = 902
-        mode       = Component
-        component  = '0 2'
-        function = '[-0.01 -0.01]'
-
-[../Patch_3E]
-type       = Essential
-flag       = 900
-mode       = Full
-component  = '3'
-function = '0.0'
-
         [../TricuspidRing]
         type       = Robin
         flag       = 459
@@ -190,6 +169,27 @@ function = '0.0'
             function = '1' #' 5.00 * 1000' # D
 
             [../]
+
+        [../Patch_1E]
+        type       = Essential
+        flag       = 901
+        mode       = Component
+        component  = '0 2'
+        function = '[0.01 0.01]'
+
+        [../Patch_2E]
+        type       = Essential
+        flag       = 902
+        mode       = Component
+        component  = '0 2'
+        function = '[-0.01 -0.01]'
+
+        [../Patch_3E]
+        type       = Essential
+        flag       = 900
+        mode       = Full
+        component  = '3'
+        function = '0.0'
 
         [../]
 
@@ -346,7 +346,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 1
+        overlap  	= 3
 
             [./fact]
             ilut_level-of-fill      = 1
