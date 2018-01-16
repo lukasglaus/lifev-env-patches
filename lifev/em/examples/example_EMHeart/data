@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-# list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
+    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
