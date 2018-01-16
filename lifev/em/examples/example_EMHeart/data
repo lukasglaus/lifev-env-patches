@@ -316,7 +316,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
     NonLinearLineSearch = 0
 
     [../solver]
-    solver          = gmres
+    solver          = cg #gmres
     scaling         = none
     output          = all 			# none
     conv            = rhs
