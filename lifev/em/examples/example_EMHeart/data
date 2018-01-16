@@ -99,8 +99,8 @@ list = 'BaseSemilunar BaseAV' # AorticRing MitralRing TricuspidRing Epicardium P
         type       = Essential #Robin
         flag       = 463
         mode       = Component
-        component  = '0 1 2'
-        function = '0.0'
+        component  = '1'
+        function = '0.001'
 
             [./RobinAlpha]
             function = '100000' #' 5.00 * 1000' # D
