@@ -175,14 +175,14 @@ list = 'BaseSemilunar BaseAV Patch_1E Patch_2E Patch_3E' # AorticRing MitralRing
         flag       = 901
         mode       = Component
         component  = '0 2'
-        function = '[0.0001 0.0001]'
+        function = '[0.01 0.01]'
 
         [../Patch_2E]
         type       = Essential
         flag       = 902
         mode       = Component
         component  = '0 2'
-        function = '[-0.0001 -0.0001]'
+        function = '[-0.01 -0.01]'
 
         [../Patch_3E]
         type       = Essential
@@ -305,7 +305,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_name           = humanHeart160
+    mesh_name           = humanHeart35
     mesh_scaling        = '1.15 1.15 1.15'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'
@@ -354,7 +354,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
             relax_value             = 0
 
             [../amesos]
-            solvertype  =  Amesos_Umfpack #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
+            solvertype  =  Amesos_KLU #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
             overlap 	= 4
