@@ -341,7 +341,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
     tol             = 1.e-9   # 1.e-10 		# AztecOO tolerance
 
     [../prec]
-    prectype        = Ifpack	 		# Ifpack or ML
+    prectype        = ML	 		# Ifpack or ML
     displayList     = true
     xmlName         = ParamList.xml #xmlParameters.xml
 
