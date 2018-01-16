@@ -332,7 +332,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 1
+        overlap  	= 3
 
             [./fact]
             ilut_level-of-fill      = 1
@@ -343,7 +343,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
             solvertype  =  Amesos_Umfpack #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
-            overlap 	= 1
+            overlap 	= 4
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
