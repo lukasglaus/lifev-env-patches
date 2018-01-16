@@ -160,7 +160,7 @@ monodomain_xml_file = ParamListE.xml
         flag       = 900
         mode       = Component
         component  = '2'
-        function = '0.1'
+        function = '0.0001'
 
         [../TricuspidRing]
         type       = Robin
