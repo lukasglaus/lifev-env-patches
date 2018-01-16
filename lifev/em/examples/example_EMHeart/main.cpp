@@ -346,7 +346,8 @@ int main (int argc, char** argv)
             
             patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
             //*patchDispVecPtr[i] += dispPreload;
-            
+            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch displacement: " << currentPatchForce << " mm" << std::endl;
+
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
         }
