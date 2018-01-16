@@ -155,12 +155,12 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-[../Patch_1E]
-type       = Natural #Robin
-flag       = 900
-mode       = Component
-component  = '0'
-function = '5.0'
+        [../Patch_1E]
+        type       = Natural
+        flag       = 900
+        mode       = Component
+        component  = '0'
+        function = '5.0'
 
         [../TricuspidRing]
         type       = Robin
@@ -215,7 +215,7 @@ function = '5.0'
 
         [../]
 
-#listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
+listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
         [./Apex]
         flag            = 464
