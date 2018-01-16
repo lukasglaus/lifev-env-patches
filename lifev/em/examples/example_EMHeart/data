@@ -156,11 +156,11 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
         [../Patch_1E]
-        type       = Natural
+        type       = Essential
         flag       = 900
         mode       = Component
         component  = '2'
-        function = '500'
+        function = '0.1'
 
         [../TricuspidRing]
         type       = Robin
