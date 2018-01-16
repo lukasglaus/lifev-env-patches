@@ -343,7 +343,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
             solvertype  =  Amesos_Umfpack #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
-            overlap 	= 4
+            overlap 	= 1
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
