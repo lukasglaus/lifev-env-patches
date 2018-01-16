@@ -206,7 +206,7 @@ monodomain_xml_file = ParamListE.xml
             flag    = 459
             index   = 1
 
-            [../]
+        [../]
 
     listEssentialPatchBC = 'Apex' #EssentialPatch1 EssentialPatch2'
 
@@ -218,7 +218,7 @@ monodomain_xml_file = ParamListE.xml
         direction       = '1.0 0.0 1.0'
         displacement    = 0.0
 
-        [./EssentialPatch1]
+        [../EssentialPatch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 1.5
@@ -256,8 +256,7 @@ monodomain_xml_file = ParamListE.xml
         direction       = '-1.0 0.0 0.0'
         force           = 10 #20 #10
 
-
-    [../]
+        [../]
 
     [../patches]
     testAtPreload       = false
