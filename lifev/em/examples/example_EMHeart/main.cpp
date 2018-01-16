@@ -303,7 +303,7 @@ int main (int argc, char** argv)
     
     for ( UInt i (0) ; i < nDispPatchBC ; ++i )
     {
-        std::string patchName = dataFile ( ( "solid/boundary_conditions/listPatchBC" ), " ", i );
+        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
         Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
         patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/displacement").c_str(), 1.0 ) );
