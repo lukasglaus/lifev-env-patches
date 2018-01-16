@@ -158,7 +158,7 @@ monodomain_xml_file = ParamListE.xml
         [../Patch_1E]
         type       = Essential
         flag       = 900
-        mode       = Full
+        mode       = Component
         component  = '2'
         function = '0.0001'
 
@@ -332,7 +332,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 1
+        overlap  	= 4
 
             [./fact]
             ilut_level-of-fill      = 1
