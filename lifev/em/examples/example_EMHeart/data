@@ -242,7 +242,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         [../EssentialPatch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
-        radius          = 1.5
+        radius          = 0.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
         displacement    = 0.1
@@ -250,7 +250,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         [../EssentialPatch2]
         flag            = 464
         center          = '4.5 -7.0 1.0'
-        radius          = 1.5
+        radius          = 0.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
         displacement    = 0.0
@@ -348,14 +348,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         [./ifpack]
         overlap  	= 1
 
-[./relaxation]
-type                   = Jacobi
-sweeps                 = 2
-damping_factor         = 1.
-min_diagonal_value     = 0
-zero_starting_solution = true
-
-            [../fact]
+            [./fact]
             ilut_level-of-fill      = 1
             drop_tolerance          = 1.e-5
             relax_value             = 0
