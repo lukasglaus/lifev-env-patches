@@ -155,6 +155,13 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
+[../Patch_1E]
+type       = Essential #Robin
+flag       = 900
+mode       = Component
+component  = '0 1 2'
+function = '0.0'
+
         [../TricuspidRing]
         type       = Robin
         flag       = 459
@@ -208,7 +215,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
+listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
         [./Apex]
         flag            = 464
@@ -259,7 +266,7 @@ monodomain_xml_file = ParamListE.xml
         [../]
 
     [../patches]
-    testAtPreload       = false
+    testAtPreload       = true
     tmax                = 150 #200 #150 # 250
     tduration           = 300
 
