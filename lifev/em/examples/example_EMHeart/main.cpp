@@ -299,7 +299,7 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchDispVecPtr;
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
-    const VectorEpetra dispPreload (disp);
+    VectorEpetra dispPreload (disp);
     
     for ( UInt i (0) ; i < nDispPatchBC ; ++i )
     {
