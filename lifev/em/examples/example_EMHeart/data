@@ -330,7 +330,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
     NonLinearLineSearch = 0
 
     [../solver]
-    solver          = cg #gmres
+    solver          = gmres
     scaling         = none
     output          = all 			# none
     conv            = rhs
@@ -357,7 +357,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
             solvertype  =  Amesos_Umfpack #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
-            overlap 	= 1
+            overlap 	= 4
 
             [../schwarz]
             reordering_type 	= none 			# metis, rcm, none
