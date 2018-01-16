@@ -291,7 +291,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_name           = humanHeart35
+    mesh_name           = humanHeart160
     mesh_scaling        = '1.15 1.15 1.15'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'
@@ -340,7 +340,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
             relax_value             = 0
 
             [../amesos]
-            solvertype  =  Amesos_Superludist #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
+            solvertype  =  Amesos_Umfpack #Amesos_Umfpack #Amesos_Superludist #Amesos_KLU
 
             [../partitioner]
             overlap 	= 4
