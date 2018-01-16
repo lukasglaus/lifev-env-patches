@@ -127,7 +127,7 @@ EMActiveStressMaterialType = SimpleActiveStress #SFAS
 
    [../boundary_conditions]
 #list = 'Top Bottom Front Back Left Right'
-    list = 'Front Back'
+    list = 'Top Back'
         [./Top]
         type       = Essential
         flag       = 400
