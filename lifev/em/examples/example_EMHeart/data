@@ -159,8 +159,8 @@ list = 'BaseSemilunar BaseAV Patch_1E' # AorticRing MitralRing TricuspidRing Epi
         type       = Essential
         flag       = 900
         mode       = Component
-        component  = '2'
-        function = '0.1'
+        component  = '0 2'
+        function = '[0.1 0.1]'
 
         [../TricuspidRing]
         type       = Robin
