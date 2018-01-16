@@ -329,7 +329,7 @@ int main (int argc, char** argv)
         }
         
         patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
-        *patchDispVecPtr[i] += dispPreload;
+        //*patchDispVecPtr[i] += dispPreload;
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
@@ -345,7 +345,7 @@ int main (int argc, char** argv)
             Real currentPatchDisp = heartSolver.sinSquared(time, patchDisplacement[i], tmax, tduration);
             
             patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
-            *patchDispVecPtr[i] += dispPreload;
+            //*patchDispVecPtr[i] += dispPreload;
             
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);

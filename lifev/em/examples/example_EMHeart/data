@@ -6,7 +6,7 @@
 [exporter]
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
-preload    = true
+preload    = false
 start      = 0
 save       = 1
 
@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing' # Epicardium'
+    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -208,7 +208,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listEssentialPatchBC = 'Apex' #EssentialPatch1 EssentialPatch2'
+    listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
 
         [./Apex]
         flag            = 464
@@ -224,7 +224,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.0001
+        displacement    = 0.0
 
         [../EssentialPatch2]
         flag            = 464
@@ -232,11 +232,11 @@ monodomain_xml_file = ParamListE.xml
         radius          = 1.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.0001
+        displacement    = 0.0
 
         [../]
 
-    listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
+#listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
 
         [./NaturalPatch1]
         mode            = Full
@@ -259,7 +259,7 @@ monodomain_xml_file = ParamListE.xml
         [../]
 
     [../patches]
-    testAtPreload       = true
+    testAtPreload       = false
     tmax                = 150 #200 #150 # 250
     tduration           = 300
 
