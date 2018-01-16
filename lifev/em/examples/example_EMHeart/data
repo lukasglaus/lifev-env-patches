@@ -6,7 +6,7 @@
 [exporter]
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
-preload    = false
+preload    = true
 start      = 0
 save       = 1
 
@@ -213,7 +213,7 @@ monodomain_xml_file = ParamListE.xml
         [./Apex]
         flag            = 464
         center          = '0.1 -11 -0.74'
-        radius          = 0.5
+        radius          = 1.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
         displacement    = 0.0
@@ -245,7 +245,7 @@ monodomain_xml_file = ParamListE.xml
         radius          =  2 #3.5
         component       = '0 2'
         direction       = '-1.0 0.0 0.0'
-        force           = 100 #20 #10
+        force           = 10 #20 #10
 
         [../NaturalPatch2]
         mode            = Full
@@ -254,12 +254,12 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2 #3.5
         component       = '0 2'
         direction       = '-1.0 0.0 0.0'
-        force           = 100 #20 #10
+        force           = 10 #20 #10
 
         [../]
 
     [../patches]
-    testAtPreload       = false
+    testAtPreload       = true
     tmax                = 150 #200 #150 # 250
     tduration           = 300
 
