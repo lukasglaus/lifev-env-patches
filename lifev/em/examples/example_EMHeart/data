@@ -316,7 +316,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
     NonLinearLineSearch = 0
 
     [../solver]
-    solver          = cg #gmres
+    solver          = gmres
     scaling         = none
     output          = all 			# none
     conv            = rhs
@@ -332,7 +332,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 4
+        overlap  	= 1
 
             [./fact]
             ilut_level-of-fill      = 1
