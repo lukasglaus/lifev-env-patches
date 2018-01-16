@@ -208,7 +208,15 @@ monodomain_xml_file = ParamListE.xml
 
             [../]
 
-#    listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
+    listEssentialPatchBC = 'Apex' #EssentialPatch1 EssentialPatch2'
+
+        [./Apex]
+        flag            = 464
+        center          = '0.1 -11 -0.74'
+        radius          = 0.5
+        component       = '0 2'
+        direction       = '1.0 0.0 1.0'
+        displacement    = 0.0
 
         [./EssentialPatch1]
         flag            = 464
