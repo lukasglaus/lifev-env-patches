@@ -156,7 +156,7 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
         [../Patch_1E]
-        type       = Essential
+        type       = EssentialVertices
         flag       = 900
         mode       = Component
         component  = '2'
