@@ -43,7 +43,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -4.0 # -7.0 # -7.3
+    ActiveForceCoefficient  = -0.0 # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-list = 'BaseSemilunar BaseAV Patch_1E Patch_2E' # AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
+list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -229,7 +229,7 @@ list = 'BaseSemilunar BaseAV Patch_1E Patch_2E' # AorticRing MitralRing Tricuspi
 
         [../]
 
-listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
+listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
         [./Apex]
         flag            = 464
@@ -245,7 +245,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         radius          = 1.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.1
+        displacement    = 0.01
 
         [../EssentialPatch2]
         flag            = 464
@@ -253,7 +253,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
         radius          = 1.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.0
+        displacement    = 0.01
 
         [../]
 
@@ -330,7 +330,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
     NonLinearLineSearch = 0
 
     [../solver]
-    solver          = cg
+    solver          = gmres
     scaling         = none
     output          = all 			# none
     conv            = rhs
