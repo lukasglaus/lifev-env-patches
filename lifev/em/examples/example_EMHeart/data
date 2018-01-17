@@ -330,7 +330,7 @@ listEssentialPatchBC = 'Apex EssentialPatch1 EssentialPatch2'
     NonLinearLineSearch = 0
 
     [../solver]
-    solver          = bcgstab
+    solver          = cg
     scaling         = none
     output          = all 			# none
     conv            = rhs

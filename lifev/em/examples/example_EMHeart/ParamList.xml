@@ -31,7 +31,7 @@
 
 		<!-- Trilinos parameters -->
 		<ParameterList name="Trilinos: AztecOO List">
-    		<Parameter name="solver" type="string" value="cg"/>
+    		<Parameter name="solver" type="string" value="gmres"/>
 	    	<Parameter name="conv" type="string" value="rhs"/>
     		<Parameter name="scaling" type="string" value="none"/>
 	    	<Parameter name="output" type="string" value="none"/>
