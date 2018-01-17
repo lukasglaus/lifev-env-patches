@@ -242,18 +242,19 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
         [../EssentialPatch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
-        radius          = 1.5
+        radius          = 2.0
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 10
+        displacement    = 1
+
 
         [../EssentialPatch2]
         flag            = 464
         center          = '4.5 -7.0 1.0'
-        radius          = 1.5
+        radius          = 2.0
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 10
+        displacement    = 1
 
         [../]
 
