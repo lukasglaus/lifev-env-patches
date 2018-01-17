@@ -193,7 +193,7 @@ list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # E
 
         [../]
 
-#listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
+listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
 
         [./EndocardiumLV]
             flag    = 454
@@ -281,7 +281,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
         [../]
 
     [../patches]
-    testAtPreload       = true
+    testAtPreload       = false
     tmax                = 150 #200 #150 # 250
     tduration           = 300
 
