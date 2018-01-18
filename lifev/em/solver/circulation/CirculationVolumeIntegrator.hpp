@@ -245,11 +245,11 @@ public:
         
         if (comm->MyPID() == 0)
         {
-            std::cout << "\n\n=============================================================\n";
+            std::cout << "\n=============================================================\n";
             std::cout << "Volume (boundary) in " << M_domain << ": \t" << volumeBoundary << std::endl;
             //std::cout << "Volume (open-end) in " << M_domain << ": \t" << volumeOpenEnd << std::endl;
             std::cout << "Volume (total) in " << M_domain << ": \t" << totalVolume << std::endl;
-            std::cout << "=============================================================\n\n";
+            std::cout << "=============================================================\n";
         }
         
         return totalVolume;

@@ -333,7 +333,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
     [../solver]
     solver          = gmres
     scaling         = none
-    output          = none 			# none
+    output          = none
     conv            = rhs
     max_iter        = 500
     reuse           = true

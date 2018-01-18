@@ -523,10 +523,10 @@ int main (int argc, char** argv)
         std::cout.precision(4);
         std::cout << "\n=============================================================";
         std::cout << "\nCoupling iteration " << iter << " at time " << t << " (" << label << ")";
-        std::cout << "\nPressure: \t\t\t" << bcValues[0] << "\t" << bcValues[1];
+        std::cout << "\nPressure: \t\t" << bcValues[0] << "\t" << bcValues[1];
         std::cout << "\nFE-Volume: \t\t" << VFeNew[0] << "\t" << VFeNew[1];
         std::cout << "\nCirculation-Vol: \t" << VCircNew[0] << "\t" << VCircNew[1];
-        std::cout << "\nResidual: \t\t\t" << std::abs(VFeNew[0] - VCircNew[0]) << "\t" << std::abs(VFeNew[1] - VCircNew[1]);
+        std::cout << "\nResidual: \t\t" << std::abs(VFeNew[0] - VCircNew[0]) << "\t" << std::abs(VFeNew[1] - VCircNew[1]);
         //std::cout << "\nJFe   = " << JFe;
         //std::cout << "\nJCirc = " << JCirc;
         //std::cout << "\nJR    = " << JR;
@@ -641,8 +641,13 @@ int main (int argc, char** argv)
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
         auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
         
-        if ( 0 == comm->MyPID() ) std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
-
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+            std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
+            std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+        }
+        
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n*****************************************************************";
