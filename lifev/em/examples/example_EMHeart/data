@@ -43,7 +43,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -3.0 # -7.0 # -7.3
+    ActiveForceCoefficient  = -7.0 # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
+    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -172,7 +172,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop'
 
         [./EndocardiumLV]
             flag    = 454
