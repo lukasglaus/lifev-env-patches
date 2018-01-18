@@ -1077,7 +1077,7 @@ void StructuralOperator<Mesh>::updateSourceTerm ( source_Type const& source )
 template <typename Mesh>
 void StructuralOperator<Mesh>::buildSystem ( const Real coefficient )
 {
-    M_Displayer->leaderPrint ("  S-  Computing constant matrices ...          ");
+    M_Displayer->leaderPrint ("\nS-  Computing constant matrices ...          ");
     LifeChrono chrono;
     chrono.start();
 
@@ -1086,7 +1086,6 @@ void StructuralOperator<Mesh>::buildSystem ( const Real coefficient )
 
     chrono.stop();
     M_Displayer->leaderPrintMax ( "done in ", chrono.diff() );
-
 }
 
 template <typename Mesh>

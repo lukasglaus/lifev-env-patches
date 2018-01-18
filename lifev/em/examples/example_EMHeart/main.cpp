@@ -274,7 +274,7 @@ int main (int argc, char** argv)
     solver.structuralOperatorPtr()->setNewtonParameters(dataFile);
     solver.buildSystem();
     
-    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() / 3 << " -> dof: " << disp.size() << std::endl;
+    if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() / 3 << " -> dof: " << disp.size() << "\n\n";
     
 
     //============================================
@@ -409,8 +409,7 @@ int main (int argc, char** argv)
         for ( UInt i (0) ; i < nForcePatchBC ; ++i )
         {
             Real currentPatchForce = - heartSolver.sinSquared(time, patchForce[i], tmax, tduration) mmHg;
-            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch force: " << currentPatchForce << std::endl;
-            patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
+            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch force: " << currentPatchForce;            patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
             //*patchForceVecPtr[i] = - currentPatchForce mmHg;
             
             patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
@@ -486,7 +485,7 @@ int main (int argc, char** argv)
     
     VolumeIntegrator LV (LVFlags, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
     VolumeIntegrator RV (RVFlags, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
-    std::cout << "\n\n";
+    std::cout << "\n";
     
     //============================================
     // Set variables and functions
@@ -710,8 +709,6 @@ int main (int argc, char** argv)
         auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
         auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
         
-        if ( 0 == comm->MyPID() ) std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
-        
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
 
@@ -743,7 +740,6 @@ int main (int argc, char** argv)
             {
                 std::cout << "\nLV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
                 std::cout << "\nRV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
-                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
             }
 
             // Load step mechanics
@@ -753,6 +749,8 @@ int main (int argc, char** argv)
             modifyNaturalPatchBC(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
+            
+            if ( 0 == comm->MyPID() ) std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
         }
         
         
@@ -777,11 +775,12 @@ int main (int argc, char** argv)
             
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n***************************************************************";
+                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 std::cout << "\nMinimal activation value = " << minActivationValue;
+                std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue <<;
                 std::cout << "\nLV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
                 std::cout << "\nRV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
-                std::cout << "\n***************************************************************\n\n";
+                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
             }
 
             
@@ -917,9 +916,9 @@ int main (int argc, char** argv)
  
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n*****************************************************************";
+                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
-                std::cout << "\n*****************************************************************\n\n";
+                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
             }
             
             //============================================
