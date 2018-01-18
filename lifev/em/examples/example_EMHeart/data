@@ -215,7 +215,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.7
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.8
+        displacement    = 0.7
 
 
         [../EssentialPatch2]
@@ -224,7 +224,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.7
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.8
+        displacement    = 0.7
 
         [../]
 
