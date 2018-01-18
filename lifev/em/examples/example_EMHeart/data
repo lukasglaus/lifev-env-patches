@@ -209,7 +209,7 @@ monodomain_xml_file = ParamListE.xml
 
     listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
-        [../EssentialPatch1]
+        [./EssentialPatch1]
         flag            = 464
         center          = '-0.7 -7.0 -4.7'
         radius          = 2.0
