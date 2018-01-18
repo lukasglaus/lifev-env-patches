@@ -28,7 +28,7 @@ monodomain_xml_file = ParamListE.xml
     
     [../discretization]
     LumpedMass = false
-    coupling = one-way
+    coupling = two-way
 
     [../flags]
     lvendo = 65 #50
