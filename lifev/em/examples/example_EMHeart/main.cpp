@@ -486,7 +486,7 @@ int main (int argc, char** argv)
     
     VolumeIntegrator LV (LVFlags, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
     VolumeIntegrator RV (RVFlags, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
-
+    std::cout << "\n\n";
     
     //============================================
     // Set variables and functions

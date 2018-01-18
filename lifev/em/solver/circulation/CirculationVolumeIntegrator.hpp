@@ -32,14 +32,14 @@ public:
     {
         if ( M_fullMesh.comm()->MyPID() == 0 )
         {
-            std::cout << "\nVolume integrator " << M_domain << " created." << std::endl;
+            std::cout << "\nVolume integrator " << M_domain << " created";
         }
        
         //initialize();
         
         if ( M_boundaryPoints.size() > 0 && M_fullMesh.comm()->MyPID() == 0 )
         {
-            std::cout << "Volume integrator " << M_domain << " closed by " << M_boundaryPoints.size() << " boundary points." << std::endl;
+            std::cout << "Volume integrator " << M_domain << " closed by " << M_boundaryPoints.size() << " boundary points" << std::endl;
         }
     }
     

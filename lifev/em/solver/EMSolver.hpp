@@ -319,7 +319,7 @@ public:
 //            vector_Type p1FibersRep = M_EMStructuralOperatorPtr -> dispFESpacePtr() -> feToFEInterpolate(p2FESpace, p2FibersRep);
 //            getMechanicsFibers().reset ( new vector_Type (p1FibersRep, Unique) );
 //        }
-        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalFiberVector - done"
+        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalFiberVector - done";
 
     }
 
