@@ -346,7 +346,7 @@ int main (int argc, char** argv)
 
             patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
             //*patchDispVecPtr[i] += dispPreload;
-            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm" << std::endl;
+            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
 
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
@@ -729,10 +729,9 @@ int main (int argc, char** argv)
         {
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n*****************************************************************";
+                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 std::cout << "\nLoad step at time = " << t;
                 std::cout << "\nMinimal activation value = " << minActivationValue;
-                std::cout << "\n*****************************************************************\n";
             }
 
             // Linear b.c. extrapolation
@@ -742,10 +741,9 @@ int main (int argc, char** argv)
 
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n***************************************************************";
                 std::cout << "\nLV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
                 std::cout << "\nRV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
-                std::cout << "\n***************************************************************\n\n";
+                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
             }
 
             // Load step mechanics
