@@ -764,30 +764,27 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
-            modifyEssentialPatchBC(t);
-            modifyNaturalPatchBC(t);
-            
             //============================================
             // 4th order Adam-Bashforth pressure extrapol.
             //============================================
-            
             heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, dpMax);
             
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nMinimal activation value = " << minActivationValue;
-                std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue <<;
                 std::cout << "\nLV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
                 std::cout << "\nRV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
-                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+                std::cout << "\nMinimal activation value = " << minActivationValue;
+                std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue;
             }
-
             
             //============================================
             // Solve mechanics
             //============================================
+            modifyEssentialPatchBC(t);
+            modifyNaturalPatchBC(t);
             modifyPressureBC(bcValues);
+            if ( 0 == comm->MyPID() ) std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
             
