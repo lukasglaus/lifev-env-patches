@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     [../boundary_conditions]
     numPreloadSteps  = 50
 
-list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
+    list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # Epicardium'
 
         [./BaseSemilunar]
         type       = Essential #Robin
@@ -170,30 +170,9 @@ list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium' # E
 
             [../]
 
-        [../Patch_1E]
-        type       = Essential
-        flag       = 901
-        mode       = Component
-        component  = '0 1 2'
-        function = '[0.01 0 0.01]'
-
-        [../Patch_2E]
-        type       = Essential
-        flag       = 902
-        mode       = Component
-        component  = '0 1 2'
-        function = '[-0.01 0 -0.01]'
-
-        [../Patch_3E]
-        type       = Essential
-        flag       = 900
-        mode       = Full
-        component  = '3'
-        function = '0.0'
-
         [../]
 
-listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
+    listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdgeTop' # AorticRing MitralRing TricuspidRing'
 
         [./EndocardiumLV]
             flag    = 454
@@ -229,15 +208,7 @@ listVariableBC = 'EndocardiumLV EndocardiumRV Septum SeptumEdgeBottom SeptumEdge
 
         [../]
 
-listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
-
-        [./Apex]
-        flag            = 464
-        center          = '0.1 -11 -0.74'
-        radius          = 1.5
-        component       = '0 2'
-        direction       = '1.0 0.0 1.0'
-        displacement    = 0.0
+    listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
         [../EssentialPatch1]
         flag            = 464
@@ -258,7 +229,7 @@ listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
         [../]
 
-#listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
+    #listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
 
         [./NaturalPatch1]
         mode            = Full
