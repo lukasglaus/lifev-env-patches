@@ -6,7 +6,6 @@
 [exporter]
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
-preload    = false
 start      = 0
 save       = 1
 
@@ -52,7 +51,7 @@ monodomain_xml_file = ParamListE.xml
     timestep        = 0.05
 
     [../pathology]
-    strength    = 0.2
+    strength    = 0.0
     infarctX    = 2.0
     infarctY    = -8.0
     infarctZ    = -3.0
