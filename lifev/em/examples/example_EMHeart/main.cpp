@@ -101,7 +101,7 @@ int main (int argc, char** argv)
     boost::shared_ptr<Epetra_Comm>  comm ( new Epetra_MpiComm (MPI_COMM_WORLD) );
     Displayer displayer ( comm );
     
-    displayer.leaderPrint("\n\nEMHeart running ...\n\n");
+    displayer.leaderPrint("\nEMHeart running ...\n");
     
     //============================================
     // Read data file and create output folder
