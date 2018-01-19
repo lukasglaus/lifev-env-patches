@@ -520,7 +520,7 @@ int main (int argc, char** argv)
     
     auto printCoupling = [&] ( std::string label ) { if ( 0 == comm->MyPID() )
     {
-        std::cout.precision(4);
+        std::cout.precision(5);
         std::cout << "\n=============================================================";
         std::cout << "\nCoupling iteration " << iter << " at time " << t << " (" << label << ")";
         std::cout << "\nPressure: \t\t" << bcValues[0] << " / " << bcValues[1];
