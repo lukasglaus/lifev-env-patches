@@ -734,8 +734,8 @@ int main (int argc, char** argv)
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 std::cout << "\nLoad step at time = " << t;
                 std::cout << "\nMinimal activation value = " << minActivationValue;
-                std::cout << "\nLV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
-                std::cout << "\nRV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
+                std::cout << "\nLin. LV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
+                std::cout << "\nLin. RV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
                 std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
             }
 
@@ -767,8 +767,8 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nLV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
-                std::cout << "\nRV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
+                std::cout << "\nA.B. LV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
+                std::cout << "\nA.B. RV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
                 std::cout << "\nMinimal activation value = " << minActivationValue;
                 std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue;
                 std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
