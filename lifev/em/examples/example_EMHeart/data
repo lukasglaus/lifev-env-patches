@@ -215,7 +215,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.3
+        displacement    = 0.35
 
 
         [../EssentialPatch2]
@@ -224,7 +224,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.3
+        displacement    = 0.35
 
         [../]
 
@@ -266,7 +266,7 @@ monodomain_xml_file = ParamListE.xml
     [../time_discretization]
     initialtime                 = 0.
     endtime                     = 10000.
-    timestep                    = 1.0
+    timestep                    = 0.5
     dt_loadstep                 = 0.1
     activation_limit_loadstep   = 0.1 #-0.07
     theta                       = 0.35
@@ -317,7 +317,7 @@ monodomain_xml_file = ParamListE.xml
     xmlName         = ParamList.xml #xmlParameters.xml
 
         [./ifpack]
-        overlap  	= 2
+        overlap  	= 1
 
             [./fact]
             ilut_level-of-fill      = 1
