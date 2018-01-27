@@ -7,7 +7,7 @@
 type       = hdf5 #ensight 			# hdf5 (if library compiled with hdf5 support) or ensight
 multimesh  = false
 start      = 0
-save       = 1
+save       = 5
 
 
 [electrophysiology]
@@ -252,7 +252,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../patches]
     testAtPreload       = false
-    tmax                = 250 #150 #200 #250
+    tmax                = 150 #150 #200 #250
     tduration           = 300
 
     [../coupling]
