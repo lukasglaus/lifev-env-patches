@@ -351,6 +351,8 @@ int main (int argc, char** argv)
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
             solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
         }
+        
+        if ( 0 == comm->MyPID() ) std::cout << std::endl;
     };
 
     
