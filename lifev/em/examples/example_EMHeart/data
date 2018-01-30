@@ -215,7 +215,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.35
+        displacement    = 0.4
 
 
         [../EssentialPatch2]
@@ -224,7 +224,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.35
+        displacement    = 0.4
 
         [../]
 
@@ -253,7 +253,7 @@ monodomain_xml_file = ParamListE.xml
     [../patches]
     testAtPreload       = false
     patch_disp_offset   = 1e-6
-    tmax                = 150 #150 #200 #250
+    tmax                = 200 #150 #200 #250
     tduration           = 300
 
     [../coupling]
@@ -306,7 +306,7 @@ monodomain_xml_file = ParamListE.xml
     scaling         = none
     output          = none
     conv            = rhs
-    max_iter        = 500
+    max_iter        = 400
     reuse           = true
     max_iter_reuse  = 250
     kspace          = 800
