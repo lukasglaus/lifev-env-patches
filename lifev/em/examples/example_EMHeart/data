@@ -253,7 +253,7 @@ monodomain_xml_file = ParamListE.xml
     [../patches]
     testAtPreload       = false
     patch_disp_offset   = 1e-6
-    tmax                = 200 #150 #200 #250
+    tmax                = 150 #150 #200 #250
     tduration           = 300
 
     [../coupling]
