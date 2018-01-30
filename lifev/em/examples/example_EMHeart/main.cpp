@@ -334,7 +334,7 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
     
-    
+    Real patchDispOffset = dataFile ( "solid/patches/patch_disp_offset", 0. );
     Real tmax = dataFile ( "solid/patches/tmax", 0. );
     Real tduration = dataFile ( "solid/patches/tduration", 0. );
     
@@ -343,7 +343,8 @@ int main (int argc, char** argv)
         for ( UInt i (0) ; i < nDispPatchBC ; ++i )
         {
             Real currentPatchDisp = heartSolver.sinSquared(time, patchDisplacement[i], tmax, tduration);
-
+            currentPatchDisp += patchDispOffset;
+            
             patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
             //*patchDispVecPtr[i] += dispPreload;
             if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
