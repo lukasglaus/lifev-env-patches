@@ -178,7 +178,6 @@ public:
     	M_I4fPtr = ptr;
     }
 
-
     void setI4f(vector_Type& i4f)
     {
     	*M_I4fPtr = i4f;
@@ -187,6 +186,16 @@ public:
     vectorPtr_Type I4fPtr()
     {
     	return M_I4fPtr;
+    }
+    
+    vectorPtr_Type fPtr()
+    {
+        return M_fPtr;
+    }
+    
+    VectorEpetra& f()
+    {
+        return *M_fPtr;
     }
 
 protected:
@@ -204,6 +213,8 @@ protected:
 
 
     vectorPtr_Type  M_I4fPtr;
+    vectorPtr_Type  M_fPtr;
+
 };
 
 //====================================
@@ -234,8 +245,15 @@ EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
     this->super::setup (data, dFESpace, dETFESpace, BCh, comm);
     M_EMMaterial = boost::dynamic_pointer_cast<material_Type> (this -> material() );
     M_boundaryVectorPtr.reset(new vector_Type ( this->M_disp->map(), Repeated ) );
+    
+    // Setup I4 vector
     M_I4fPtr.reset(new vector_Type ( M_EMMaterial->scalarETFESpacePtr()->map() ) );
     *M_I4fPtr += 1.0;
+    
+    // Setup deformed fiber vector
+    M_fPtr.reset(new vector_Type ( this->M_disp->map() ));
+    *M_fPtr *= 0.;
+
 
 }
 

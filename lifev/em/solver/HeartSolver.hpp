@@ -269,7 +269,8 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Fibers",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                     M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(),
+                                     M_emSolver.structuralOperatorPtr()->fPtr(),
+                                     // M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
@@ -314,9 +315,15 @@ public:
     
     void postProcess(const Real& time)
     {
+        // Compute Von Mises stress
         M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()->displacement() );
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
 
+        // Compute deformed fiber direction
+        M_emSolver.computeI4f (M_emSolver.structuralOperatorPtr()->f(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
+
+        
+        // Write on hdf5 output file
         m_exporter->postProcess(time);
     }
     
