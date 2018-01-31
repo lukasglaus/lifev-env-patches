@@ -488,7 +488,7 @@ int main (int argc, char** argv)
     
     VolumeIntegrator LV (LVFlags, "Left Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
     VolumeIntegrator RV (RVFlags, "Right Ventricle", solver.fullMeshPtr(), solver.localMeshPtr(), ETFESpace, FESpace);
-    if ( 0 == comm->MyPID() ) std::cout << "\n";
+    if ( 0 == comm->MyPID() ) std::cout << "\n\n";
     
     //============================================
     // Set variables and functions

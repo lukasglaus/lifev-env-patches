@@ -144,13 +144,16 @@ EMData::setupActivationParameters(GetPot& dataFile, const std::string& section)
     double timestep = dataFile ( ( section + "/time_discretization/timestep" ).data(), 0.1 );
     M_activationParametersList.set ("timestep", timestep);
     
-    double pathologyX = dataFile ( ( section + "/pathology/infarctX" ).data(), 0. );
+    //double pathologyX = dataFile ( ( section + "/pathology/infarctX" ).data(), 0. );
+    double pathologyX = dataFile ( ( section + "/pathology/infarctPos").c_str(), 0, 0 );
     M_activationParametersList.set ("PathologyX", pathologyX);
  
-    double pathologyY = dataFile ( ( section + "/pathology/infarctY" ).data(), 0. );
+    //double pathologyY = dataFile ( ( section + "/pathology/infarctY" ).data(), 0. );
+    double pathologyY = dataFile ( ( section + "/pathology/infarctPos").c_str(), 0, 1 );
     M_activationParametersList.set ("PathologyY", pathologyY);
 
-    double pathologyZ = dataFile ( ( section + "/pathology/infarctZ" ).data(), 0. );
+    //double pathologyZ = dataFile ( ( section + "/pathology/infarctZ" ).data(), 0. );
+    double pathologyZ = dataFile ( ( section + "/pathology/infarctPos").c_str(), 0, 2 );
     M_activationParametersList.set ("PathologyZ", pathologyZ);
 
     double pathologyR = dataFile ( ( section + "/pathology/radius" ).data(), 0. );
