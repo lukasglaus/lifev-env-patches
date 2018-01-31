@@ -284,6 +284,12 @@ public:
                                      M_emSolver.electroSolverPtr()->feSpacePtr(),
                                      M_emSolver.activationModelPtr()->fiberActivationPtr(),
                                      UInt (0) );
+            
+        m_exporter -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                    "Activation Time",
+                                    M_emSolver.electroSolverPtr() -> feSpacePtr(),
+                                    M_activationTimePtr,
+                                    UInt (0) );
         
         for (int i = 0; i < M_emSolver.electroSolverPtr()->ionicModelPtr()->Size(); ++i)
         {

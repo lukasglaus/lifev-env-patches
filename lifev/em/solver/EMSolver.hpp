@@ -386,10 +386,10 @@ public:
         return M_activationModelPtr;
     }
     
-//    vectorPtr_Type activationTimePtr()
-//    {
-//        return M_activationTimePtr;
-//    }
+    vectorPtr_Type activationTimePtr()
+    {
+        return M_activationTimePtr;
+    }
 
     void saveSolution (Real time, const bool& restart = 0);
     
@@ -502,7 +502,7 @@ public:
     meshPtr_Type                         M_localMeshPtr;
     meshPtr_Type                         M_fullMeshPtr;
     
-    //vectorPtr_Type                       M_activationTimePtr;
+    vectorPtr_Type                       M_activationTimePtr;
 
     bool                                 M_oneWayCoupling;
     
@@ -531,7 +531,7 @@ EMSolver<Mesh, ElectroSolver>::EMSolver(commPtr_Type comm) :
     M_mechanicsExporterPtr  ( ),
     M_localMeshPtr      ( ),
     M_fullMeshPtr      ( ),
-    //M_activationTimePtr     ( ),
+    M_activationTimePtr     ( ),
     M_oneWayCoupling     (true),
     M_wteTotal ( ),
 //    M_wtePassive ( ),
@@ -555,7 +555,7 @@ EMSolver<Mesh, ElectroSolver>::EMSolver (const EMSolver& solver) :
     M_mechanicsExporterPtr  ( solver.M_mechanicsExporterPtr),
     M_localMeshPtr      ( solver.M_localMeshPtr),
     M_fullMeshPtr      ( solver.M_fullMeshPtr),
-    //M_activationTimePtr     ( solver.M_activationTimePtr),
+    M_activationTimePtr     ( solver.M_activationTimePtr),
     M_oneWayCoupling     ( solver.M_oneWayCoupling),
     M_wteTotal                   (solver.M_wteTotal),
 //    M_wtePassive                   (solver.M_wtePassive),
@@ -629,6 +629,9 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
         }
         M_electroSolverPtr ->  setup (dataFile, ionicModelPtr->Size() );
 //    }
+    
+    M_activationTimePtr.reset (new vector_Type ( M_electroSolverPtr->potentialPtr() -> map() ));
+    *M_activationTimePtr = -1.0;
     
     if (M_commPtr -> MyPID() == 0)
     {
@@ -974,7 +977,7 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     
     M_electroSolverPtr -> solveOneICIStep();
     
-    //M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
+    M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << "\nEMSolver: solveElectrophysiology - done";
