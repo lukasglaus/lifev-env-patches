@@ -1057,7 +1057,7 @@ EMSolver<Mesh, ElectroSolver>::computeDeformedFiberDirection (VectorEpetra& f, V
     dUdy = GradientRecovery::ZZGradient (feSpacePtr, disp, 1);
     dUdz = GradientRecovery::ZZGradient (feSpacePtr, disp, 2);
     
-    int n = f.epetraVector().MyLength();
+    int n = f.epetraVector().MyLength() / 3;
     int i (0); int j (0); int k (0);
     MatrixSmall<3,3> F; VectorSmall<3> f0;
     
@@ -1083,7 +1083,10 @@ EMSolver<Mesh, ElectroSolver>::computeDeformedFiberDirection (VectorEpetra& f, V
         
         f0.normalize();
         
-        f[i] = F * f0;
+        auto f = F * f0;
+        f[i] = f(0);
+        f[j] = f(1);
+        f[k] = f(2);
     }
 }
 
