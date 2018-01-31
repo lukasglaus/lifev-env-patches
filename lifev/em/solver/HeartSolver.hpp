@@ -320,7 +320,7 @@ public:
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
 
         // Compute deformed fiber direction
-        M_emSolver.computeI4f (M_emSolver.structuralOperatorPtr()->f(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
+        M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->f(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
 
         
         // Write on hdf5 output file
