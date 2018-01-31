@@ -289,7 +289,7 @@ public:
         m_exporter -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                     "Activation Time",
                                     M_emSolver.electroSolverPtr() -> feSpacePtr(),
-                                    M_activationTimePtr,
+                                    M_emSolver.activationTimePtr(),
                                     UInt (0) );
         
         for (int i = 0; i < M_emSolver.electroSolverPtr()->ionicModelPtr()->Size(); ++i)
