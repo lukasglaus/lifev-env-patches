@@ -197,6 +197,16 @@ public:
     {
         return *M_fPtr;
     }
+    
+    vectorPtr_Type sPtr()
+    {
+        return M_sPtr;
+    }
+    
+    VectorEpetra& s()
+    {
+        return *M_sPtr;
+    }
 
 protected:
 
@@ -214,6 +224,7 @@ protected:
 
     vectorPtr_Type  M_I4fPtr;
     vectorPtr_Type  M_fPtr;
+    vectorPtr_Type  M_sPtr;
 
 };
 
@@ -250,9 +261,11 @@ EMStructuralOperator<Mesh>::setup (boost::shared_ptr<data_Type>          data,
     M_I4fPtr.reset(new vector_Type ( M_EMMaterial->scalarETFESpacePtr()->map() ) );
     *M_I4fPtr += 1.0;
     
-    // Setup deformed fiber vector
+    // Setup deformed fiber and sheet vectors
     M_fPtr.reset(new vector_Type ( this->M_disp->map() ));
     *M_fPtr *= 0.;
+    M_sPtr.reset(new vector_Type ( this->M_disp->map() ));
+    *M_sPtr *= 0.;
 
 
 }

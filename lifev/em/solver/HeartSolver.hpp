@@ -276,7 +276,8 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Sheets",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                     M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(),
+                                     M_emSolver.structuralOperatorPtr()->sPtr(),
+                                     //M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
@@ -328,6 +329,8 @@ public:
         // Compute deformed fiber direction
         M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->f(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
 
+        // Compute deformed sheet direction
+        M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->s(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
         
         // Write on hdf5 output file
         m_exporter->postProcess(time);

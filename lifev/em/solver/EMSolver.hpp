@@ -978,6 +978,7 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
     M_electroSolverPtr -> solveOneICIStep();
     
     M_electroSolverPtr -> registerActivationTime (*M_activationTimePtr, time, 0.9);
+    
     if (M_commPtr -> MyPID() == 0)
     {
         std::cout << "\nEMSolver: solveElectrophysiology - done";
