@@ -257,7 +257,7 @@ monodomain_xml_file = ParamListE.xml
     [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
-    dpMax                   = 0.25 #0.1 #0.3
+    dpMax                   = 0.3 #0.1 #0.3
     couplingError           = 1e-5 #1e-6
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 1
@@ -266,7 +266,7 @@ monodomain_xml_file = ParamListE.xml
     initialtime                 = 0.
     endtime                     = 10000.
     timestep                    = 1.0
-    dt_loadstep                 = 0.2
+    dt_loadstep                 = 0.5
     activation_limit_loadstep   = 0.1 #-0.07
     theta                       = 0.35
     zeta                        = 0.75
