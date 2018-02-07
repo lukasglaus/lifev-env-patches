@@ -163,13 +163,15 @@ int main (int argc, char** argv)
     for ( UInt j (0); j < 3; ++j )
     {
         scale[j] = dataFile ( "solid/space_discretization/mesh_scaling", 1, j );
+        std::cout << scale[j] << std::endl;
+
         rotate[j] = dataFile ( "solid/space_discretization/mesh_rotation", 0, j );
         translate[j] = dataFile ( "solid/space_discretization/mesh_translation", 0, j );
     }
     
     MeshUtility::MeshTransformer<mesh_Type> transformerFull (* (solver.fullMeshPtr() ) );
     MeshUtility::MeshTransformer<mesh_Type> transformerLocal (* (solver.localMeshPtr() ) );
-    
+
     transformerFull.transformMesh (scale, rotate, translate);
     transformerLocal.transformMesh (scale, rotate, translate);
     

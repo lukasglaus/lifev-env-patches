@@ -213,16 +213,16 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.4
+        displacement    = 0.5
 
 
         [../EssentialPatch2]
         flag            = 464
-        center          = '4.5 -7.0 1.0'
+        center          = '3.5 -7.0 1.0' #'4.5 -7.0 1.0'
         radius          = 2.0
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.4
+        displacement    = 0.5
 
         [../]
 
@@ -251,7 +251,7 @@ monodomain_xml_file = ParamListE.xml
     [../patches]
     testAtPreload       = false
     patch_disp_offset   = 1e-6
-    tmax                = 200 #150 #200 #250
+    tmax                = 250 #150 #200 #250
     tduration           = 300
 
     [../coupling]
@@ -267,7 +267,7 @@ monodomain_xml_file = ParamListE.xml
     endtime                     = 10000.
     timestep                    = 1.0
     dt_loadstep                 = 0.5
-    activation_limit_loadstep   = 0.1 #-0.07 
+    activation_limit_loadstep   = 0.1 #-0.07
     theta                       = 0.35
     zeta                        = 0.75
     BDF_order                   = 2
@@ -276,7 +276,7 @@ monodomain_xml_file = ParamListE.xml
     [../space_discretization]
     mesh_type           = .mesh
     mesh_name           = humanHeart160
-    mesh_scaling        = '1.15 1.15 1.15'
+    mesh_scaling        = '5.15 1.15 1.15'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'
     order               = P2
