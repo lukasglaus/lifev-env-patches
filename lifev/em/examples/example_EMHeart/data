@@ -209,7 +209,7 @@ monodomain_xml_file = ParamListE.xml
 
         [./EssentialPatch1]
         flag            = 464
-        center          = '-0.7 -7.0 -4.7'
+        center          = '-1.8 -7.0 -4.5'
         radius          = 2.0
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
@@ -218,7 +218,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../EssentialPatch2]
         flag            = 464
-        center          = '3.5 -7.0 1.0' #'4.5 -7.0 1.0'
+        center          = '3.5 -7.0 1.0'
         radius          = 2.0
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
@@ -231,7 +231,7 @@ monodomain_xml_file = ParamListE.xml
         [./NaturalPatch1]
         mode            = Full
         flag            = 464
-        center          = '-0.8 -7.0 -3.3' #'-0.7 -7.0 -4.7'
+        center          = '-2.3 -7.0 -3.3' #'-0.7 -7.0 -4.7'
         radius          =  2 #3.5
         component       = '0 2'
         direction       = '-1.0 0.0 0.0'
