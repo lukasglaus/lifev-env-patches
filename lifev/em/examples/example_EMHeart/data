@@ -53,7 +53,7 @@ monodomain_xml_file = ParamListE.xml
     [../pathology]
     strength    = 0.2
     infarctPos  = '2.0 -8.0 -3.0'
-    radius      = 3.5
+    radius      = 3.0
 
     [../]
 
@@ -213,7 +213,7 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.5
+        displacement    = 1.0
 
 
         [../EssentialPatch2]
@@ -222,31 +222,10 @@ monodomain_xml_file = ParamListE.xml
         radius          = 2.0
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.5
+        displacement    = 1.0
 
         [../]
 
-    #listNaturalPatchBC = 'NaturalPatch1 NaturalPatch2'
-
-        [./NaturalPatch1]
-        mode            = Full
-        flag            = 464
-        center          = '-2.3 -7.0 -3.3' #'-0.7 -7.0 -4.7'
-        radius          =  2 #3.5
-        component       = '0 2'
-        direction       = '-1.0 0.0 0.0'
-        force           = 10 #20 #10
-
-        [../NaturalPatch2]
-        mode            = Full
-        flag            = 464
-        center          = '2.0 -7.0 2.3' #'4.5 -7.0 1.0'
-        radius          = 2 #3.5
-        component       = '0 2'
-        direction       = '-1.0 0.0 0.0'
-        force           = 10 #20 #10
-
-        [../]
 
     [../patches]
     testAtPreload       = false
