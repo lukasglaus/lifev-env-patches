@@ -548,7 +548,7 @@ int main (int argc, char** argv)
     {
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
-        Real dtExport = 1.;
+        Real dtExport = 5.;
         
         // Set time variable
         const unsigned int restartInputStr = std::stoi(restartInput);
@@ -561,16 +561,25 @@ int main (int argc, char** argv)
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
 
-        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
-        for ( unsigned int i = 0; i < solver.electroSolverPtr()->globalSolution().size() ; ++i )
+        for (int t_(0); t < t_; t_ = t_ + dtExport)
         {
-            ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+
+            for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
+            {
+                ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            }
+
+            ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            
+            ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+
+
+            circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
+            
+            heartSolver.postProcess(t);
+            circulationSolver.exportSolution( circulationOutputFile );
         }
-
-        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-
-        circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
         
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
