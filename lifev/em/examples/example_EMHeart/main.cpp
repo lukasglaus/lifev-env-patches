@@ -555,7 +555,7 @@ int main (int argc, char** argv)
         const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
         t = nIter * dt_mechanics;
 
-        int resN(0);
+        int resN = 0;
         std::cout << ++resN << std::endl;
         
         // Set time exporter time index
