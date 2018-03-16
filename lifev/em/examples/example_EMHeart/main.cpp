@@ -555,28 +555,38 @@ int main (int argc, char** argv)
         const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
         t = nIter * dt_mechanics;
 
+        int resN(0);
+        std::cout << ++resN << std::endl;
+        
         // Set time exporter time index
         solver.setTimeIndex(restartInputStr + 1);
+        std::cout << ++resN << std::endl;
 
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
+        std::cout << ++resN << std::endl;
 
         for (int t_(0); t < t_; t_ = t_ + dtExport)
         {
             ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            std::cout << ++resN << std::endl;
 
             for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
             {
                 ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
             }
+            std::cout << ++resN << std::endl;
 
             ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
-            
+            std::cout << ++resN << std::endl;
+
             ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            std::cout << ++resN << std::endl;
 
 
             circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
-            
+            std::cout << ++resN << std::endl;
+
             heartSolver.postProcess(t);
             circulationSolver.exportSolution( circulationOutputFile );
         }
