@@ -559,7 +559,7 @@ int main (int argc, char** argv)
         std::cout << ++resN << std::endl;
         
         // Set time exporter time index
-        solver.setTimeIndex(restartInputStr); // + 1);
+        solver.setTimeIndex(restartInputStr + 1);
         std::cout << ++resN << std::endl;
 
         // Load restart solutions from output files
