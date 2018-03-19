@@ -573,19 +573,25 @@ int main (int argc, char** argv)
 
         for (int t_(0); t_ <= t; t_ = t_ + dtExport)
         {
-            ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            
+            std::string importNumber = "00000" + (t_ / dtExport);
+            importNumber = importNumber.substr(importNumber.length() - 5, importNumber.length());
+            std::cout << importNumber << std::endl;
+
+            
+            ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, importNumber );
             std::cout << ++resN << std::endl;
 
             for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
             {
-                ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+                ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, importNumber );
             }
             std::cout << ++resN << std::endl;
 
-            ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, importNumber );
             std::cout << ++resN << std::endl;
 
-            ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "humanHeartSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "humanHeartSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, importNumber );
             std::cout << ++resN << std::endl;
 
 
