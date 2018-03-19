@@ -597,7 +597,7 @@ int main (int argc, char** argv)
             std::cout << ++resN << std::endl;
 
 
-            circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
+            circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
             std::cout << ++resN << std::endl;
 
             heartSolver.postProcess(t_);
