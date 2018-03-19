@@ -587,7 +587,12 @@ int main (int argc, char** argv)
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
+        //modifyPressureBC(bcValues);
+        
+        modifyEssentialPatchBC(t);
         modifyPressureBC(bcValues);
+        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+        solver.solveMechanics();
     }
 
     
