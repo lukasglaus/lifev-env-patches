@@ -575,6 +575,8 @@ int main (int argc, char** argv)
         {
             
             std::string importNumber = "00000" + std::to_string(t_ / dtExport);
+            std::cout << importNumber << std::endl;
+
             importNumber = importNumber.substr(importNumber.length() - 5, importNumber.length());
             std::cout << importNumber << std::endl;
 
