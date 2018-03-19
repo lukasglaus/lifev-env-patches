@@ -562,6 +562,8 @@ int main (int argc, char** argv)
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
 
         // Import and save initial conditions
+        std::cout << "TIME = " << "-1" << ": import frame " << "00000" << std::endl;
+
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
         
         for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
