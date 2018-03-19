@@ -53,7 +53,7 @@ monodomain_xml_file = ParamListE.xml
     [../pathology]
     strength    = 0.2
     infarctPos  = '2.0 -8.0 -3.0'
-    radius      = 3.0
+    radius      = 0.0 #3.0
 
     [../]
 
@@ -73,7 +73,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 50
+    numPreloadSteps  = 0
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium'
 
@@ -205,7 +205,7 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
+    #listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
 
         [./EssentialPatch1]
         flag            = 464
@@ -243,7 +243,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../time_discretization]
     initialtime                 = 0.
-    endtime                     = 10000.
+    endtime                     = 1 #10000.
     timestep                    = 1.0
     dt_loadstep                 = 0.5
     activation_limit_loadstep   = 0.1 #-0.07

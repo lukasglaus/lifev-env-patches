@@ -555,11 +555,16 @@ int main (int argc, char** argv)
         const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
         t = nIter * dt_mechanics;
 
+        std::cout << restartInputStr << std::endl;
+        std::cout << nIter << std::endl;
+        std::cout << t << std::endl;
+
+        
         int resN = 0;
         std::cout << ++resN << std::endl;
         
         // Set time exporter time index
-        solver.setTimeIndex(restartInputStr + 1);
+        solver.setTimeIndex(restartInputStr); // + 1);
         std::cout << ++resN << std::endl;
 
         // Load restart solutions from output files
@@ -602,363 +607,363 @@ int main (int argc, char** argv)
     // Preload
     //============================================
     
-    if ( ! restart )
-    {
-        solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
-        
-        const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
-        const bool exportPreload = dataFile ( "exporter/preload", false );
-        const bool testPatchesAtPreload = dataFile ( "solid/patches/testAtPreload", false );
-
-        auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+        if ( ! restart )
         {
-            for (auto& i : p) {i *= double(step) / double(steps);}
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(0.0);
+            
+            const int preloadSteps = dataFile ( "solid/boundary_conditions/numPreloadSteps", 0);
+            const bool exportPreload = dataFile ( "exporter/preload", false );
+            const bool testPatchesAtPreload = dataFile ( "solid/patches/testAtPreload", false );
+
+            auto preloadPressure = [] (std::vector<double> p, const int& step, const int& steps)
+            {
+                for (auto& i : p) {i *= double(step) / double(steps);}
+                return p;
+            };
+            
+            LifeChrono chronoSave;
+            chronoSave.start();
+
+            //solver.saveSolution (-1.0);
+            heartSolver.postProcess( (exportPreload ? -preloadSteps : -1.0) );
+
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nData stored in " << chronoSave.diff() << " s";
+                std::cout << "\n*****************************************************************\n";
+            }
+            
+            LifeChrono chronoPreload;
+            chronoPreload.start();
+            
+            for (int i (1); i <= preloadSteps; i++)
+            {
+                if ( 0 == comm->MyPID() )
+                {
+                    std::cout << "\n*****************************************************************";
+                    std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+                    std::cout << "\n*****************************************************************\n";
+                }
+
+                // Update b.c.
+                if (!testPatchesAtPreload)
+                {
+                    modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
+                }
+                else
+                {
+                    modifyNaturalPatchBC(i);
+                    modifyEssentialPatchBC(i);
+                }
+
+                // Solve mechanics
+                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                solver.solveMechanics();
+                
+                if (testPatchesAtPreload) heartSolver.postProcess(i-1);
+            }
+
+            auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
+            auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
+            
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+                std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
+                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
+            }
+            
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nPreload done in: " << chronoPreload.diff();
+                std::cout << "\n*****************************************************************\n";
+            }
+
+        }
+
+        dispPreload = disp;
+        
+
+        //============================================
+        // Time loop
+        //============================================
+        
+        VFe[0] = LV.volume(disp, dETFESpace, - 1);
+        VFe[1] = RV.volume(disp, dETFESpace, 1);
+        VCirc = VFe;
+        
+        VectorEpetra dispCurrent ( disp );
+        ID bdPowerFlag  =  dataFile ( ("solid/boundary_conditions/LVEndo/flag") , 0 );
+        
+        printCoupling("Initial values");
+        
+        auto perturbedPressure = [] (std::vector<double> p, const double& dp)
+        {
+            for (auto& i : p) {i += dp;}
             return p;
         };
         
-        LifeChrono chronoSave;
-        chronoSave.start();
-
-        //solver.saveSolution (-1.0);
-        heartSolver.postProcess( (exportPreload ? -preloadSteps : -1.0) );
-
-        if ( 0 == comm->MyPID() )
+        auto perturbedPressureComp = [] (std::vector<double> p, const double& dp, int comp)
         {
-            std::cout << "\n*****************************************************************";
-            std::cout << "\nData stored in " << chronoSave.diff() << " s";
-            std::cout << "\n*****************************************************************\n";
+            p[comp] += dp;
+            return p;
+        };
+
+        if ( ! restart )
+        {
+            //solver.saveSolution(t);
+            heartSolver.postProcess(t);
+            circulationSolver.exportSolution( circulationOutputFile );
         }
-        
-        LifeChrono chronoPreload;
-        chronoPreload.start();
-        
-        for (int i (1); i <= preloadSteps; i++)
+
+        for (int k (1); k <= maxiter; k++)
         {
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n*****************************************************************";
-                std::cout << "\nPreload step: " << i << " / " << preloadSteps;
+                std::cout << "\nTIME = " << t+dt_activation;
                 std::cout << "\n*****************************************************************\n";
             }
 
-            // Update b.c.
-            if (!testPatchesAtPreload)
-            {
-                modifyPressureBC(preloadPressure(bcValues, i, preloadSteps));
-            }
-            else
-            {
-                modifyNaturalPatchBC(i);
-                modifyEssentialPatchBC(i);
-            }
+            t = t + dt_activation;
 
-            // Solve mechanics
-            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            solver.solveMechanics();
+            //============================================
+            // Solve electrophysiology and activation
+            //============================================
+
+            auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
+            auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
             
-            if (testPatchesAtPreload) heartSolver.postProcess(i-1);
-        }
+            solver.solveElectrophysiology (stim, t);
+            solver.solveActivation (dt_activation);
 
-        auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
-        auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
-        
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-            std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue << std::endl;
-            std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
-        }
-        
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\n*****************************************************************";
-            std::cout << "\nPreload done in: " << chronoPreload.diff();
-            std::cout << "\n*****************************************************************\n";
-        }
+            //============================================
+            // Load steps mechanics (activation & b.c.)
+            //============================================
 
-    }
+            auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
 
-    dispPreload = disp;
-    
+            const bool activationBelowLoadstepThreshold (minActivationValue < activationLimit_loadstep);
+            const bool makeLoadstep (k % mechanicsLoadstepIter == 0 && activationBelowLoadstepThreshold);
+            const bool makeMechanicsCirculationCoupling (k % mechanicsCouplingIter == 0);
 
-    //============================================
-    // Time loop
-    //============================================
-    
-    VFe[0] = LV.volume(disp, dETFESpace, - 1);
-    VFe[1] = RV.volume(disp, dETFESpace, 1);
-    VCirc = VFe;
-    
-    VectorEpetra dispCurrent ( disp );
-    ID bdPowerFlag  =  dataFile ( ("solid/boundary_conditions/LVEndo/flag") , 0 );
-    
-    printCoupling("Initial values");
-    
-    auto perturbedPressure = [] (std::vector<double> p, const double& dp)
-    {
-        for (auto& i : p) {i += dp;}
-        return p;
-    };
-    
-    auto perturbedPressureComp = [] (std::vector<double> p, const double& dp, int comp)
-    {
-        p[comp] += dp;
-        return p;
-    };
-
-    if ( ! restart )
-    {
-        //solver.saveSolution(t);
-        heartSolver.postProcess(t);
-        circulationSolver.exportSolution( circulationOutputFile );
-    }
-
-    for (int k (1); k <= maxiter; k++)
-    {
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\n*****************************************************************";
-            std::cout << "\nTIME = " << t+dt_activation;
-            std::cout << "\n*****************************************************************\n";
-        }
-
-        t = t + dt_activation;
-
-        //============================================
-        // Solve electrophysiology and activation
-        //============================================
-
-        auto maxI4fValue ( solver.activationModelPtr()->I4f().maxValue() );
-        auto minI4fValue ( solver.activationModelPtr()->I4f().minValue() );
-        
-        solver.solveElectrophysiology (stim, t);
-        solver.solveActivation (dt_activation);
-
-        //============================================
-        // Load steps mechanics (activation & b.c.)
-        //============================================
-
-        auto minActivationValue ( solver.activationModelPtr() -> fiberActivationPtr() -> minValue() );
-
-        const bool activationBelowLoadstepThreshold (minActivationValue < activationLimit_loadstep);
-        const bool makeLoadstep (k % mechanicsLoadstepIter == 0 && activationBelowLoadstepThreshold);
-        const bool makeMechanicsCirculationCoupling (k % mechanicsCouplingIter == 0);
-
-        if ( makeLoadstep && !makeMechanicsCirculationCoupling )
-        {
-            // Linear b.c. extrapolation
-            auto bcValuesLoadstep ( bcValues );
-            bcValuesLoadstep[0] = bcValues[0] + ( bcValues[0] - bcValuesPre[0] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
-            bcValuesLoadstep[1] = bcValues[1] + ( bcValues[1] - bcValuesPre[1] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
-
-            if ( 0 == comm->MyPID() )
+            if ( makeLoadstep && !makeMechanicsCirculationCoupling )
             {
-                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nLoad step at time = " << t;
-                std::cout << "\nMinimal activation value = " << minActivationValue;
-                std::cout << "\nLin. LV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
-                std::cout << "\nLin. RV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
-                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
-            }
+                // Linear b.c. extrapolation
+                auto bcValuesLoadstep ( bcValues );
+                bcValuesLoadstep[0] = bcValues[0] + ( bcValues[0] - bcValuesPre[0] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
+                bcValuesLoadstep[1] = bcValues[1] + ( bcValues[1] - bcValuesPre[1] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
 
-            // Load step mechanics
-            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-            modifyPressureBC(bcValuesLoadstep);
-            modifyEssentialPatchBC(t);
-            modifyNaturalPatchBC(t);
-            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            solver.solveMechanics();
-        }
-        
-        
-        //============================================
-        // Iterate mechanics / circulation
-        //============================================
-        
-        if ( makeMechanicsCirculationCoupling )
-        {
-            iter = 0;
-            const double dt_circulation ( dt_mechanics / 1000 );
-            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
-            
-            //============================================
-            // 4th order Adam-Bashforth pressure extrapol.
-            //============================================
-            heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, dpMax);
-            
-            if ( 0 == comm->MyPID() )
-            {
-                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nA.B. LV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
-                std::cout << "\nA.B. RV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
-                std::cout << "\nMinimal activation value = " << minActivationValue;
-                std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue;
-                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
-            }
-            
-            //============================================
-            // Solve mechanics
-            //============================================
-            modifyEssentialPatchBC(t);
-            modifyNaturalPatchBC(t);
-            modifyPressureBC(bcValues);
-            solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-            solver.solveMechanics();
-            
-            VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
-            VFeNew[1] = RV.volume(disp, dETFESpace, 1);
-
-            //============================================
-            // Solve circlation
-            //============================================
-            circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
-            VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-            VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
-
-            //============================================
-            // Residual computation
-            //============================================
-            R = VFeNew - VCircNew;
-            printCoupling("Residual Computation");
-
-            //============================================
-            // Newton iterations
-            //============================================
-            while ( R.norm() > couplingError )
-            {
-                ++iter;
-
-                //============================================
-                // Jacobian circulation
-                //============================================
-
-                // Left ventricle
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 0), iter);
-                VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-                VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
-
-                JCirc(0,0) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
-                JCirc(1,0) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
-
-                // Right ventricle
-                circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 1), iter);
-                VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
-                VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
-
-                JCirc(0,1) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
-                JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
-
-
-                //============================================
-                // Jacobian fe
-                //============================================
-
-                const bool jacobianFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
-                const bool jacobianFeEmpty ( JFe.norm() == 0 );
-
-                if ( jacobianFeSubIter || jacobianFeEmpty )
+                if ( 0 == comm->MyPID() )
                 {
-                    JFe *= 0.0;
-                    dispCurrent = disp;
-
-                    // Left ventricle
-                    modifyPressureBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
-                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                    solver.solveMechanicsLin();
-
-                    VFePert[0] = LV.volume(disp, dETFESpace, - 1);
-                    VFePert[1] = RV.volume(disp, dETFESpace, 1);
-
-                    JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                    JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-
-                    disp = dispCurrent;
-
-                    // Right ventricle
-                    modifyPressureBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
-                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                    solver.solveMechanicsLin();
-
-                    VFePert[0] = LV.volume(disp, dETFESpace, - 1);
-                    VFePert[1] = RV.volume(disp, dETFESpace, 1);
-
-                    JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
-                    JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
-
-                    disp = dispCurrent;
+                    std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+                    std::cout << "\nLoad step at time = " << t;
+                    std::cout << "\nMinimal activation value = " << minActivationValue;
+                    std::cout << "\nLin. LV-Pressure extrapolation from " <<  bcValues[0] << " to " <<  bcValuesLoadstep[0];
+                    std::cout << "\nLin. RV-Pressure extrapolation from " <<  bcValues[1] << " to " <<  bcValuesLoadstep[1];
+                    std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
                 }
 
+                // Load step mechanics
+                solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+                modifyPressureBC(bcValuesLoadstep);
+                modifyEssentialPatchBC(t);
+                modifyNaturalPatchBC(t);
+                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                solver.solveMechanics();
+            }
+            
+            
+            //============================================
+            // Iterate mechanics / circulation
+            //============================================
+            
+            if ( makeMechanicsCirculationCoupling )
+            {
+                iter = 0;
+                const double dt_circulation ( dt_mechanics / 1000 );
+                solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
+                
                 //============================================
-                // Update pressure b.c.
+                // 4th order Adam-Bashforth pressure extrapol.
                 //============================================
-                JR = JFe - JCirc;
-
-                if ( JR.determinant() != 0 )
+                heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, dpMax);
+                
+                if ( 0 == comm->MyPID() )
                 {
-                    dp = ( JR | R );
-                    if ( iter > 5 ) dp *= 0.7;
-                    if ( iter > 20 ) dp *= 0.5;
-                    bcValues[0] -= std::min( std::max( dp(0) , - dpMax ) , dpMax );
-                    bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
+                    std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+                    std::cout << "\nA.B. LV-Pressure extrapolation from " <<  bcValuesPre[0] << " to " <<  bcValues[0];
+                    std::cout << "\nA.B. RV-Pressure extrapolation from " <<  bcValuesPre[1] << " to " <<  bcValues[1];
+                    std::cout << "\nMinimal activation value = " << minActivationValue;
+                    std::cout << "\nI4fmax/I4fmin = " << maxI4fValue << "/" << minI4fValue;
+                    std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n";
                 }
-
-                printCoupling("Pressure Update");
+                
+                //============================================
+                // Solve mechanics
+                //============================================
+                modifyEssentialPatchBC(t);
+                modifyNaturalPatchBC(t);
+                modifyPressureBC(bcValues);
+                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                solver.solveMechanics();
+                
+                VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
+                VFeNew[1] = RV.volume(disp, dETFESpace, 1);
 
                 //============================================
-                // Solve circulation
+                // Solve circlation
                 //============================================
                 circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
                 VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
                 VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
 
                 //============================================
-                // Solve mechanics
-                //============================================
-                modifyPressureBC(bcValues);
-                solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
-                solver.solveMechanics();
-
-                VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
-                VFeNew[1] = RV.volume(disp, dETFESpace, 1);
-
-                //============================================
-                // Residual update
+                // Residual computation
                 //============================================
                 R = VFeNew - VCircNew;
-                printCoupling("Residual Update");
+                printCoupling("Residual Computation");
+
+                //============================================
+                // Newton iterations
+                //============================================
+                while ( R.norm() > couplingError )
+                {
+                    ++iter;
+
+                    //============================================
+                    // Jacobian circulation
+                    //============================================
+
+                    // Left ventricle
+                    circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 0), iter);
+                    VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+                    VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+
+                    JCirc(0,0) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
+                    JCirc(1,0) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
+
+                    // Right ventricle
+                    circulationSolver.iterate(dt_circulation, bcNames, perturbedPressureComp(bcValues, pPerturbationCirc, 1), iter);
+                    VCircPert[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+                    VCircPert[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+
+                    JCirc(0,1) = ( VCircPert[0] - VCircNew[0] ) / pPerturbationCirc;
+                    JCirc(1,1) = ( VCircPert[1] - VCircNew[1] ) / pPerturbationCirc;
+
+
+                    //============================================
+                    // Jacobian fe
+                    //============================================
+
+                    const bool jacobianFeSubIter ( ! ( (iter - couplingJFeSubStart) % couplingJFeSubIter) && iter >= couplingJFeSubStart );
+                    const bool jacobianFeEmpty ( JFe.norm() == 0 );
+
+                    if ( jacobianFeSubIter || jacobianFeEmpty )
+                    {
+                        JFe *= 0.0;
+                        dispCurrent = disp;
+
+                        // Left ventricle
+                        modifyPressureBC(perturbedPressureComp(bcValues, pPerturbationFe, 0));
+                        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                        solver.solveMechanicsLin();
+
+                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
+
+                        JFe(0,0) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                        JFe(1,0) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
+
+                        disp = dispCurrent;
+
+                        // Right ventricle
+                        modifyPressureBC(perturbedPressureComp(bcValues, pPerturbationFe, 1));
+                        solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                        solver.solveMechanicsLin();
+
+                        VFePert[0] = LV.volume(disp, dETFESpace, - 1);
+                        VFePert[1] = RV.volume(disp, dETFESpace, 1);
+
+                        JFe(0,1) = ( VFePert[0] - VFeNew[0] ) / pPerturbationFe;
+                        JFe(1,1) = ( VFePert[1] - VFeNew[1] ) / pPerturbationFe;
+
+                        disp = dispCurrent;
+                    }
+
+                    //============================================
+                    // Update pressure b.c.
+                    //============================================
+                    JR = JFe - JCirc;
+
+                    if ( JR.determinant() != 0 )
+                    {
+                        dp = ( JR | R );
+                        if ( iter > 5 ) dp *= 0.7;
+                        if ( iter > 20 ) dp *= 0.5;
+                        bcValues[0] -= std::min( std::max( dp(0) , - dpMax ) , dpMax );
+                        bcValues[1] -= std::min( std::max( dp(1) , - dpMax ) , dpMax );
+                    }
+
+                    printCoupling("Pressure Update");
+
+                    //============================================
+                    // Solve circulation
+                    //============================================
+                    circulationSolver.iterate(dt_circulation, bcNames, bcValues, iter);
+                    VCircNew[0] = VCirc[0] + dt_circulation * ( Q("la", "lv") - Q("lv", "sa") );
+                    VCircNew[1] = VCirc[1] + dt_circulation * ( Q("ra", "rv") - Q("rv", "pa") );
+
+                    //============================================
+                    // Solve mechanics
+                    //============================================
+                    modifyPressureBC(bcValues);
+                    solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
+                    solver.solveMechanics();
+
+                    VFeNew[0] = LV.volume(disp, dETFESpace, - 1);
+                    VFeNew[1] = RV.volume(disp, dETFESpace, 1);
+
+                    //============================================
+                    // Residual update
+                    //============================================
+                    R = VFeNew - VCircNew;
+                    printCoupling("Residual Update");
+                }
+     
+                if ( 0 == comm->MyPID() )
+                {
+                    std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+                    std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
+                    std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
+                }
+                
+                //============================================
+                // Update volume variables
+                //============================================
+                VCirc = VCircNew;
+                VFe = VFeNew;
+                
+                //============================================
+                // Export circulation solution
+                //============================================
+                if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
+                
             }
- 
-            if ( 0 == comm->MyPID() )
+            
+            //============================================
+            // Export FE-solution
+            //============================================
+            bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
+            if ( save )
             {
-                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
-                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
+                //solver.saveSolution(t);
+                heartSolver.postProcess(t);
             }
             
-            //============================================
-            // Update volume variables
-            //============================================
-            VCirc = VCircNew;
-            VFe = VFeNew;
-            
-            //============================================
-            // Export circulation solution
-            //============================================
-            if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
-            
         }
-        
-        //============================================
-        // Export FE-solution
-        //============================================
-        bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
-        if ( save )
-        {
-            //solver.saveSolution(t);
-            heartSolver.postProcess(t);
-        }
-        
-    }
 
     
     //============================================
