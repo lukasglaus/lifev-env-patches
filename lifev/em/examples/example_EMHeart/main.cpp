@@ -598,10 +598,23 @@ int main (int argc, char** argv)
 
             ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "humanHeartSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, importNumber );
 
-            circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
-
             heartSolver.postProcess(t_);
+
+            // Circulation
+            circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
             circulationSolver.exportSolution( circulationOutputFile );
+
+            if (t_ < t)
+            {
+                for (int nSub (1); nSub < dtExport/dt_mechanics; ++nSub)
+                {
+                    if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << t_ + nSub*dt_mechanics << ": import circulation sub steps" << std::endl;
+
+                    circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) + nSub );
+                    circulationSolver.exportSolution( circulationOutputFile );
+
+                }
+            }
         }
         
         // Set boundary mechanics conditions
