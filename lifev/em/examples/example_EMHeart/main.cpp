@@ -571,7 +571,7 @@ int main (int argc, char** argv)
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
         std::cout << ++resN << std::endl;
 
-        for (int t_(0); t < t_; t_ = t_ + dtExport)
+        for (int t_(0); t_ <= t; t_ = t_ + dtExport)
         {
             ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
             std::cout << ++resN << std::endl;
