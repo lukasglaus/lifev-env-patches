@@ -563,6 +563,8 @@ int main (int argc, char** argv)
 
         for (int t_(0); t_ <= t; t_ = t_ + dtExport)
         {
+            solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t_);
+
             std::string importNumber = "00000" + std::to_string(int(t_ / dtExport + 1.0));
             importNumber = importNumber.substr(importNumber.length() - 5, importNumber.length());
             std::cout << "TIME = " << t_ << ": import frame " << importNumber << std::endl;
