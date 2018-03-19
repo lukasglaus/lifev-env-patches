@@ -548,7 +548,7 @@ int main (int argc, char** argv)
     {
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
-        Real dtExport = 5.;
+        Real dtExport = dt_save; //5.;
         
         // Set time variable
         const unsigned int restartInputStr = std::stoi(restartInput);
