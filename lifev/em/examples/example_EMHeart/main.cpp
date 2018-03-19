@@ -585,7 +585,7 @@ int main (int argc, char** argv)
             ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
             std::cout << ++resN << std::endl;
 
-            ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "ActivationTimeSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
+            ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "humanHeartSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, restartInput );
             std::cout << ++resN << std::endl;
 
 
