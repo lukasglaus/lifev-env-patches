@@ -600,7 +600,7 @@ int main (int argc, char** argv)
             circulationSolver.restartFromFile ( restartDir + "solution.dat" , nIter );
             std::cout << ++resN << std::endl;
 
-            heartSolver.postProcess(t);
+            heartSolver.postProcess(t_);
             circulationSolver.exportSolution( circulationOutputFile );
         }
         
