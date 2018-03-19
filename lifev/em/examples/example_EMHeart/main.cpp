@@ -564,7 +564,7 @@ int main (int argc, char** argv)
         std::cout << ++resN << std::endl;
         
         // Set time exporter time index
-        solver.setTimeIndex(restartInputStr); // + 1);
+        heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
         std::cout << ++resN << std::endl;
 
         // Load restart solutions from output files
