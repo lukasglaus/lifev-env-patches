@@ -580,6 +580,12 @@ int main (int argc, char** argv)
 
         heartSolver.postProcess(-1.0);
         
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nRestart data at TIME = -1.0 imported in " << chronoRestart.diff() << " s";
+            std::cout << "\n*****************************************************************\n";
+        }
 
         // Import and save until desired restart frame
         for (int t_(0); t_ <= t; t_ = t_ + dtExport)
