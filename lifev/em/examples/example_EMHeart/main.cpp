@@ -546,6 +546,9 @@ int main (int argc, char** argv)
 
     if ( restart )
     {
+        LifeChrono chronoRestart;
+        chronoRestart.start();
+        
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         
         Real dtExport = dt_save; //5.;
@@ -615,6 +618,13 @@ int main (int argc, char** argv)
 
                 }
             }
+        }
+        
+        if ( 0 == comm->MyPID() )
+        {
+            std::cout << "\n*****************************************************************";
+            std::cout << "\nRestart data imported in " << chronoRestart.diff() << " s";
+            std::cout << "\n*****************************************************************\n";
         }
         
         // Set boundary mechanics conditions
