@@ -603,6 +603,13 @@ int main (int argc, char** argv)
 
             heartSolver.postProcess(t_);
 
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nRestart data at TIME = " << t_ << " imported in " << chronoRestart.diff() << " s";
+                std::cout << "\n*****************************************************************\n";
+            }
+  
             // Circulation
             circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
             circulationSolver.exportSolution( circulationOutputFile );
