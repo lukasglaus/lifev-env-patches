@@ -198,29 +198,7 @@ int main (int argc, char** argv)
         heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
     }
     
-    
-    //============================================
-    // Create patches for natural patch b.c.
-    //============================================
-    
-    UInt nForcePatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listNaturalPatchBC" ) );
-    
-    for ( UInt i (0) ; i < nForcePatchBC ; ++i )
-    {
-        std::string patchName = dataFile ( ( "solid/boundary_conditions/listNaturalPatchBC" ), " ", i );
-        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
-        
-        Vector3D patchCenter;
-        for ( UInt j (0); j < 3; ++j )
-        {
-            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
-        }
-        
-        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (800+i));
-    }
-    
-    
+
     //============================================
     // Setup solver (including fe-spaces & b.c.)
     //============================================
@@ -358,70 +336,6 @@ int main (int argc, char** argv)
 
     
     //============================================
-    // Create force patch b.c.
-    //============================================
-    std::vector<Real> patchForce;
-    std::vector<Vector3D> patchForceDirection;
-    
-    std::vector<vectorPtr_Type> patchForceVecPtr;
-    std::vector<bcVectorPtr_Type> patchForceBCVecPtr;
-    
-    for ( UInt i (0) ; i < nForcePatchBC ; ++i )
-    {
-        std::string patchName = dataFile ( ( "solid/boundary_conditions/listNaturalPatchBC" ), " ", i );
-        std::string patchMode = dataFile ( ("solid/boundary_conditions/" + patchName + "/mode").c_str(), "Full" );
-        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
-        patchForce.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/force").c_str(), 1.0 ) );
-        
-        Vector3D patchCenter;
-        for ( UInt j (0); j < 3; ++j )
-        {
-            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
-        }
-        
-        Vector3D pd;
-        for ( UInt j (0); j < 3; ++j )
-        {
-            pd[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
-        }
-        patchForceDirection.push_back(pd);
-        
-        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
-        std::vector<ID> patchComponent (componentSize);
-        for ( UInt j (0); j < componentSize; ++j )
-        {
-            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
-        }
-        
-        patchForceVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchForceDirection[i], 1e-10) );
-        patchForceBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchForceVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-
-        if ( patchMode == "Full" )
-        {
-            solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Full, *patchForceBCVecPtr[i], 3);
-        }
-        else if ( patchMode == "Component" )
-        {
-            solver.bcInterfacePtr() -> handler()->addBC (patchName, (800+i), Natural, Component, *patchForceBCVecPtr[i], patchComponent);
-        }
-    }
-    
-    auto modifyNaturalPatchBC = [&] (const Real& time)
-    {
-        for ( UInt i (0) ; i < nForcePatchBC ; ++i )
-        {
-            Real currentPatchForce = - heartSolver.sinSquared(time, patchForce[i], tmax, tduration) mmHg;
-            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch force: " << currentPatchForce;            patchForceVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchForceDirection[i], currentPatchForce);
-            //*patchForceVecPtr[i] = - currentPatchForce mmHg;
-            
-            patchForceBCVecPtr[i].reset( new bcVector_Type( *patchForceVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-            solver.bcInterfacePtr()->handler()->modifyBC((800+i), *patchForceBCVecPtr[i]);
-        }
-    };
-
-    
-    //============================================
     // Pressure b.c. on endocardia
     //============================================
     std::vector<vectorPtr_Type> pVecPtrs;
@@ -443,7 +357,6 @@ int main (int argc, char** argv)
         solver.bcInterfacePtr() -> handler() -> addBC(varBCSection, flagsBC[i], Natural, Full, *pBCVecPtrs[i], 3);
     }
     
-
     // Functions to modify b.c.
     auto modifyPressureBC = [&] (const std::vector<Real>& bcValues)
     {
@@ -702,7 +615,6 @@ int main (int argc, char** argv)
             }
             else
             {
-                modifyNaturalPatchBC(i);
                 modifyEssentialPatchBC(i);
             }
 
@@ -819,7 +731,6 @@ int main (int argc, char** argv)
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             modifyPressureBC(bcValuesLoadstep);
             modifyEssentialPatchBC(t);
-            modifyNaturalPatchBC(t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
         }
@@ -854,7 +765,6 @@ int main (int argc, char** argv)
             // Solve mechanics
             //============================================
             modifyEssentialPatchBC(t);
-            modifyNaturalPatchBC(t);
             modifyPressureBC(bcValues);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
