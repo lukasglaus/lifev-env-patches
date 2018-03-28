@@ -180,7 +180,6 @@ int main (int argc, char** argv)
     //============================================
     // Create patches for essential patch b.c.
     //============================================
-    
     UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     
     for ( UInt i (0) ; i < nDispPatchBC ; ++i )
