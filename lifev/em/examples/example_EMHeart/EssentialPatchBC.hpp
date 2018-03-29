@@ -22,7 +22,11 @@ namespace LifeV
 class EssentialPatchBCCircular
 {
 public:
-    EssentialPatchBCCircular(){}
+    
+    EssentialPatchBCCircular()
+    {
+        
+    }
     ~EssentialPatchBCCircular(){}
     
 
@@ -89,9 +93,9 @@ public:
 
 protected:
 
-    const std::string m_name;
-    const int m_prevFaceFlag;
-    const int m_currentPatchFlag;
+    std::string m_name;
+    unsigned int m_prevFaceFlag;
+    unsigned int m_currentPatchFlag;
     
     // BCFunctionBase m_bcFunctionBase;
     // BCFunctionDirectional m_bcFunctionDirectional;
