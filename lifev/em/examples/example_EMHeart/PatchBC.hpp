@@ -229,7 +229,7 @@ protected:
     Real m_radius { 0. };
 };
 
-    
+    /*
     class PatchBCEssentialCircular : public PatchBC
     {
     public:
@@ -300,7 +300,7 @@ protected:
         
         
     protected:
-    }
+    } */
     
   
                     
