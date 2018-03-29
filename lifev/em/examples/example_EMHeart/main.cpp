@@ -39,7 +39,7 @@
 #include <lifev/em/solver/HeartSolver.hpp>
 
 // PatchBC
-#include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
+//#include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
 
 // Track nan
 // #include <fenv.h>
