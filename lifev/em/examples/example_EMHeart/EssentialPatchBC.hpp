@@ -87,7 +87,11 @@ public:
     }
 
     
-    setupPatchBC();
+    setupPatchBC(const GetPot& datafile)
+    {
+        
+    }
+    
     modifyPatchBC();
 
 
