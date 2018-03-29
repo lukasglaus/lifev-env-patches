@@ -100,7 +100,8 @@ protected:
     
     Vector3D m_center { 0. , 0. , 0. };
     Real m_radius { 0. };
-}
+
+};
 
 
 #endif /* EssentialPatchBC_hpp */
