@@ -419,6 +419,7 @@ int main (int argc, char** argv)
     std::vector<std::vector<std::string> > bcNames { { "lv" , "p" } , { "rv" , "p" } };
     std::vector<double> bcValues { p ( "lv" ) , p ( "rv") };
     std::vector<double> bcValuesPre ( bcValues );
+    std::vector<double> bcValues4thOAB ( bcValues );
 
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
@@ -682,6 +683,7 @@ int main (int argc, char** argv)
 
         t = t + dt_activation;
 
+        
         //============================================
         // Solve electrophysiology and activation
         //============================================
@@ -691,7 +693,8 @@ int main (int argc, char** argv)
         
         solver.solveElectrophysiology (stim, t);
         solver.solveActivation (dt_activation);
-
+        
+        
         //============================================
         // Load steps mechanics (activation & b.c.)
         //============================================
@@ -706,8 +709,8 @@ int main (int argc, char** argv)
         {
             // Linear b.c. extrapolation
             auto bcValuesLoadstep ( bcValues );
-            bcValuesLoadstep[0] = bcValues[0] + ( bcValues[0] - bcValuesPre[0] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
-            bcValuesLoadstep[1] = bcValues[1] + ( bcValues[1] - bcValuesPre[1] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
+            bcValuesLoadstep[0] = bcValues[0] + ( bcValues4thOAB[0] - bcValues[0] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
+            bcValuesLoadstep[1] = bcValues[1] + ( bcValues4thOAB[1] - bcValues[1] ) * ( k % mechanicsCouplingIter ) / mechanicsCouplingIter;
 
             if ( 0 == comm->MyPID() )
             {
@@ -741,7 +744,7 @@ int main (int argc, char** argv)
             //============================================
             // 4th order Adam-Bashforth pressure extrapol.
             //============================================
-            heartSolver.extrapolate4thOrderAdamBashforth(bcValues, bcValuesPre, dpMax);
+            bcValues = bcValues4thOAB;
             
             if ( 0 == comm->MyPID() )
             {
@@ -896,6 +899,12 @@ int main (int argc, char** argv)
             //============================================
             VCirc = VCircNew;
             VFe = VFeNew;
+            
+            //============================================
+            // 4th order Adam-Bashforth pressure extrapol.
+            //============================================
+            bcValues4thOAB = bcValues;
+            heartSolver.extrapolate4thOrderAdamBashforth(bcValues4thOAB, bcValuesPre, dpMax);
             
             //============================================
             // Export circulation solution
