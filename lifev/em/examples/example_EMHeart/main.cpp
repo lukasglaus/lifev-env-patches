@@ -518,7 +518,7 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n*****************************************************************";
-                std::cout << "\nRestart data at TIME = " << t_ << " imported in " << chronoRestart.diff() << " s";
+                std::cout << "\nRestart data at TIME = " << t_ << " imported after " << chronoRestart.diff() << " s";
                 std::cout << "\n*****************************************************************\n";
             }
   
@@ -740,6 +740,9 @@ int main (int argc, char** argv)
             const double dt_circulation ( dt_mechanics / 1000 );
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
+            LifeChrono chronoCoupling;
+            chronoSave.start();
+            
             //============================================
             // 4th order Adam-Bashforth pressure extrapol.
             //============================================
@@ -888,8 +891,16 @@ int main (int argc, char** argv)
  
             if ( 0 == comm->MyPID() )
             {
+                std::cout << "\n*****************************************************************";
+                std::cout << "\nData stored in " << chronoSave.diff() << " s";
+                std::cout << "\n*****************************************************************\n";
+            }
+            
+            if ( 0 == comm->MyPID() )
+            {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
+                std::cout << "\nTime required: " << chronoCoupling.diff() << " s";
                 std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
             }
             
