@@ -667,7 +667,6 @@ int main (int argc, char** argv)
 
     if ( ! restart )
     {
-        //solver.saveSolution(t);
         heartSolver.postProcess(t);
         circulationSolver.exportSolution( circulationOutputFile );
     }
