@@ -741,7 +741,7 @@ int main (int argc, char** argv)
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             
             LifeChrono chronoCoupling;
-            chronoSave.start();
+            chronoCoupling.start();
             
             //============================================
             // 4th order Adam-Bashforth pressure extrapol.
