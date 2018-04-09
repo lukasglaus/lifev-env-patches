@@ -891,13 +891,6 @@ int main (int argc, char** argv)
  
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n*****************************************************************";
-                std::cout << "\nData stored in " << chronoSave.diff() << " s";
-                std::cout << "\n*****************************************************************\n";
-            }
-            
-            if ( 0 == comm->MyPID() )
-            {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 std::cout << "\nCoupling converged after " << iter << " iteration" << ( iter > 1 ? "s" : "" );
                 std::cout << "\nTime required: " << chronoCoupling.diff() << " s";
