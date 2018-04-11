@@ -49,6 +49,7 @@
 using namespace LifeV;
 
 #define mmHg * 1333.224
+#define Pa * 10.0
 
 int main (int argc, char** argv)
 {
@@ -671,6 +672,9 @@ int main (int argc, char** argv)
         circulationSolver.exportSolution( circulationOutputFile );
     }
 
+    LifeChrono chronoExport;
+    chronoExport.start();
+    
     for (int k (1); k <= maxiter; k++)
     {
         if ( 0 == comm->MyPID() )
@@ -922,8 +926,13 @@ int main (int argc, char** argv)
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
         if ( save )
         {
-            //solver.saveSolution(t);
             heartSolver.postProcess(t);
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+                std::cout << "\nPrevious " << dt_save << " ms computed in " << chronoExport.diff() << " s";
+                std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
+            }
         }
         
     }
