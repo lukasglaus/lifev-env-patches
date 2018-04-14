@@ -42,7 +42,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -5.0 # -7.0 # -7.3
+    ActiveForceCoefficient  = -5.5 # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -115,7 +115,7 @@ monodomain_xml_file = ParamListE.xml
         function = '0.0'
 
             [./RobinAlpha]
-            function = '5000' #' 5.00 * 1000' # D
+            function = '1000' #' 5.00 * 1000' # D
 
             [../RobinBeta]
             function = '1' #' 5.00 * 1000' # D
