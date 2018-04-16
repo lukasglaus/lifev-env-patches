@@ -476,7 +476,7 @@ public:
         FAinv -= scalarTimesMatrix(gammaf/(gammaf+1), tensorProduct(fiber, fiber));
         FAinv -= scalarTimesMatrix(gammas/(gammas+1), tensorProduct(sheet, sheet));
         FAinv -= scalarTimesMatrix(gamman/(gamman+1), tensorProduct(normal, normal));
-        auto FE = tensorF * FAinv;
+        auto FE = matrixTimeMatrix(tensorF, FAinv);
         
         
         // Pvol
