@@ -471,7 +471,7 @@ public:
         auto s_f0 = tensorProduct(s, fiber);
 
         
-        auto FAinv = scalarTimesMatrix(gammaf/(gammaf+1), tensorProduct(fiber, fiber)) - scalarTimesMatrix(gammas/(gammas+1), tensorProduct(sheet, sheet)) - scalarTimesMatrix(gamman/(gamman+1) * tensorProduct(normal, normal));
+        auto FAinv = scalarTimesMatrix(gammaf/(gammaf+1), tensorProduct(fiber, fiber)) - scalarTimesMatrix(gammas/(gammas+1), tensorProduct(sheet, sheet)) - scalarTimesMatrix(gamman/(gamman+1), tensorProduct(normal, normal));
         auto FE = tensorF * FAinv;
         
         
