@@ -361,10 +361,27 @@ public:
         {
             for (UInt j (0); j < 3; ++j)
             {
-                y(i) = A(i,j) * x(j);
+                y(i) += A(i,j) * x(j);
             }
         }
         return y;
+    }
+    
+    
+    Epetra_SerialDenseMatrix matrixTimesVector( const Epetra_SerialDenseMatrix& A, const Epetra_SerialDenseMatrix& X ) const
+    {
+        Epetra_SerialDenseMatrix Y (3,3);
+        for (UInt i (0); i < 3; ++i)
+        {
+            for (UInt j (0); j < 3; ++j)
+            {
+                for (UInt k (0); k < 3; ++k)
+                {
+                    Y(i,j) = A(i,k) * X(k,j);
+                }
+            }
+        }
+        return Y;
     }
     
     
@@ -384,7 +401,7 @@ public:
     
     Epetra_SerialDenseVector crossProduct( const Epetra_SerialDenseVector& v, const Epetra_SerialDenseVector& w ) const
     {
-        Epetra_SerialDenseMatrix y (3);
+        Epetra_SerialDenseVector y (3);
         y(0) = v(1)*w(2) - v(2)*w(1);
         y(1) = v(2)*w(0) - v(0)*w(2);
         y(1) = v(0)*w(1) - v(2)*w(0);
