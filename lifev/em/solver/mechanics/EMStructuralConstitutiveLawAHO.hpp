@@ -471,12 +471,12 @@ public:
         auto s_f0 = tensorProduct(s, fiber);
 
         
-        Epetra_SerialDenseMatrix FAinv (3,3);
-        FAinv += I;
-        FAinv += scalarTimesMatrix(- gammaf/(gammaf+1), tensorProduct(fiber, fiber));
-        FAinv += scalarTimesMatrix(- gammas/(gammas+1), tensorProduct(sheet, sheet));
-        FAinv += scalarTimesMatrix(- gamman/(gamman+1), tensorProduct(normal, normal));
-        auto FE = matrixTimeMatrix(tensorF, FAinv);
+//        Epetra_SerialDenseMatrix FAinv (3,3);
+//        FAinv += I;
+//        FAinv += scalarTimesMatrix(- gammaf/(gammaf+1), tensorProduct(fiber, fiber));
+//        FAinv += scalarTimesMatrix(- gammas/(gammas+1), tensorProduct(sheet, sheet));
+//        FAinv += scalarTimesMatrix(- gamman/(gamman+1), tensorProduct(normal, normal));
+//        auto FE = matrixTimeMatrix(tensorF, FAinv);
         
         
         // Pvol
