@@ -1647,7 +1647,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         
         // Pvol
         //auto dWvol = ( 3500000 * ( J + J * log(J) - 1. ) ) / ( 2 * J );
-        auto dWvol = 3500000 * ( J*(J-1) + std::log(J) ) / ( 2 * J );
+        auto dWvol = 3500000 * ( J*(J-1) + log(J) ) / ( 2 * J );
         auto dJ = det(F) * minusT(F);
         auto Pvol = dWvol * dJ;
         
