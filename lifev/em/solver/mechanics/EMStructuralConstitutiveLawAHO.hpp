@@ -378,7 +378,7 @@ public:
                 Y(i,j) = s * A(i,j);
             }
         }
-        return y;
+        return Y;
     }
     
     
