@@ -368,7 +368,7 @@ public:
     }
     
     
-    Epetra_SerialDenseMatrix matrixTimesVector( const Epetra_SerialDenseMatrix& A, const Epetra_SerialDenseMatrix& X ) const
+    Epetra_SerialDenseMatrix matrixTimeMatrix( const Epetra_SerialDenseMatrix& A, const Epetra_SerialDenseMatrix& X ) const
     {
         Epetra_SerialDenseMatrix Y (3,3);
         for (UInt i (0); i < 3; ++i)
@@ -405,7 +405,7 @@ public:
         y(0) = v(1)*w(2) - v(2)*w(1);
         y(1) = v(2)*w(0) - v(0)*w(2);
         y(1) = v(0)*w(1) - v(2)*w(0);
-        return m;
+        return y;
     }
     
     
@@ -458,7 +458,7 @@ public:
 
         
         auto FAinv = gammaf/(gammaf+1) * tensorProduct(fiber, fiber) - gammas/(gammas+1) * tensorProduct(sheet, sheet) - gamman/(gamman+1) * tensorProduct(normal, normal);
-        auto FE = F * FAinv
+        auto FE = tensorF * FAinv
         
         
         // Pvol
