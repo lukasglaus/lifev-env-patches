@@ -458,7 +458,7 @@ public:
 
         
         auto FAinv = gammaf/(gammaf+1) * tensorProduct(fiber, fiber) - gammas/(gammas+1) * tensorProduct(sheet, sheet) - gamman/(gamman+1) * tensorProduct(normal, normal);
-        auto FE = tensorF * FAinv
+        auto FE = tensorF * FAinv;
         
         
         // Pvol
