@@ -471,7 +471,11 @@ public:
         auto s_f0 = tensorProduct(s, fiber);
 
         
-        auto FAinv = scalarTimesMatrix(gammaf/(gammaf+1), tensorProduct(fiber, fiber)) - scalarTimesMatrix(gammas/(gammas+1), tensorProduct(sheet, sheet)) - scalarTimesMatrix(gamman/(gamman+1), tensorProduct(normal, normal));
+        Epetra_SerialDenseMatrix FAinv (3,3);
+        FAinv += I;
+        FAinv -= scalarTimesMatrix(gammaf/(gammaf+1), tensorProduct(fiber, fiber));
+        FAinv -= scalarTimesMatrix(gammas/(gammas+1), tensorProduct(sheet, sheet));
+        FAinv -= scalarTimesMatrix(gamman/(gamman+1), tensorProduct(normal, normal));
         auto FE = tensorF * FAinv;
         
         
@@ -1713,7 +1717,7 @@ void EMStructuralConstitutiveLaw<MeshType>::computeStiffness ( const vector_Type
         // P4fE
         auto I4fE = dot (f,f) / pow (gf + 1, 2.0);
         auto I4m1fE = I4fE - 1.0;
-        auto dW4fE = 185350 * I4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
+        auto dW4fE = 185350 * Epetra_SerialDenseMatrixI4m1fE * exp (15.972 * I4m1fE * I4m1fE ) * eval(heaviside, I4m1fE);
         auto dI4fE = pow(gf + 1, -2.0);
         auto dI4f = value(2.0) * outerProduct( f, f0 );
         auto P4fE = dW4fE * dI4fE * dI4f;
