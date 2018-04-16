@@ -382,6 +382,16 @@ public:
     }
     
     
+    Epetra_SerialDenseVector crossProduct( const Epetra_SerialDenseVector& v, const Epetra_SerialDenseVector& w ) const
+    {
+        Epetra_SerialDenseMatrix y (3);
+        y(0) = v(1)*w(2) - v(2)*w(1);
+        y(1) = v(2)*w(0) - v(0)*w(2);
+        y(1) = v(0)*w(1) - v(2)*w(0);
+        return m;
+    }
+    
+    
     inline virtual void computeLocalFirstPiolaKirchhoffTensor_ ( Epetra_SerialDenseMatrix& firstPiola,
                                                                const Epetra_SerialDenseMatrix& tensorF,
                                                                const Epetra_SerialDenseMatrix& cofactorF,
@@ -421,6 +431,7 @@ public:
         auto W4sE = 25640 * (I4sE - 1) * std::exp (10.446 * std::pow(I4sE - 1, 2.0) ) * (I4sE > 1.0);
         auto W8fsE = 4170 * I8fsE * std::exp ( 11.602 * I8fsE * I8fsE );
 
+        auto normal = crossProduct(fiber, sheet);
         auto f = matrixTimesVector(tensorF, fiber);
         auto s = matrixTimesVector(tensorF, sheet);
         auto f_f0 = tensorProduct(f, fiber);
@@ -429,7 +440,9 @@ public:
         auto s_f0 = tensorProduct(s, fiber);
 
         
-        //auto FA = gammaf/(gammaf+1) * tensorProduct(fiber, fiber) - gammas/(gammas+1) * tensorProduct(sheet, sheet) - gamman/(gamman+1) * tensorProduct(normal, normal);
+        auto FAinv = gammaf/(gammaf+1) * tensorProduct(fiber, fiber) - gammas/(gammas+1) * tensorProduct(sheet, sheet) - gamman/(gamman+1) * tensorProduct(normal, normal);
+        auto FE = F * FAinv
+        
         
         // Pvol
         Epetra_SerialDenseMatrix Pvol (3,3);
