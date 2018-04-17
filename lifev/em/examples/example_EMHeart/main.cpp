@@ -177,7 +177,7 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
-    MeshUtility::p2MeshFromP1Data(solver.localMeshPtr());
+    MeshUtility::p2MeshFromP1Data(*solver.localMeshPtr());
     
     //============================================
     // Create patches for essential patch b.c.
