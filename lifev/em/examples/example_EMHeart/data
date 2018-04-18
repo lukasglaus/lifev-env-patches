@@ -78,7 +78,7 @@ monodomain_xml_file = ParamListE.xml
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium'
 
         [./BaseSemilunar]
-        type       = Essential #Robin
+        type       = Robin
         flag       = 462
         mode       = Component
         component  = '0 1 2'
@@ -93,7 +93,7 @@ monodomain_xml_file = ParamListE.xml
             [../]
 
         [../BaseAV]
-        type       = Essential #Robin
+        type       = Robin
         flag       = 463
         mode       = Component
         component  = '0 1 2'
