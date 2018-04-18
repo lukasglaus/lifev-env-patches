@@ -177,9 +177,6 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
-//    RegionMesh<QuadraticTetra> p2Mesh; // = *solver.localMeshPtr();
-//    MeshUtility::p2MeshFromP1Data(p2Mesh);
-    
     
     //============================================
     // Create patches for essential patch b.c.
