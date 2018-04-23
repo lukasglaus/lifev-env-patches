@@ -448,7 +448,6 @@ int main (int argc, char** argv)
     // Load restart file
     //============================================
     std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
-    std::string restartSaveAll = command_line.follow ("no", 2, "-rsa", "--restartSaveAll");
     const bool restart ( restartInput != "noRestart" );
 
     if ( restart )
@@ -457,7 +456,8 @@ int main (int argc, char** argv)
         chronoRestart.start();
         
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
-        
+        std::string restartSaveAll = command_line.follow ("no", 2, "-rsa", "--restartSaveAll");
+
         Real dtExport = dt_save; //5.;
         
         // Set time variable
@@ -466,7 +466,7 @@ int main (int argc, char** argv)
         t = nIter * dt_mechanics;
         
         // Set time exporter time index
-        //heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
+        if ( restartSaveAll == "no" ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
 
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
@@ -500,7 +500,7 @@ int main (int argc, char** argv)
         }
         
         // Import and save until desired restart frame
-        int t_ = ( restartSaveAll != "no" ? 0 : t );
+        Real t_ = ( restartSaveAll != "no" ? 0. : t );
 
         for (t_ ; t_ <= t; t_ = t_ + dtExport)
         {
@@ -527,7 +527,7 @@ int main (int argc, char** argv)
             {
                 //std::cout << "\n*****************************************************************";
                 std::cout << "  Restart data at TIME = " << t_ << " imported after " << chronoRestart.diff() << " s";
-                std::cout << "\n*****************************************************************\n\n";
+                std::cout << "\n\n*****************************************************************\n";
             }
   
         }
