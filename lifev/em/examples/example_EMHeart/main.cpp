@@ -530,21 +530,26 @@ int main (int argc, char** argv)
                 std::cout << "\n*****************************************************************\n\n";
             }
   
-            // Circulation
+        }
+        
+        // Circulation export and/or restart
+        for (t_ = 0 ; t_ <= t; t_ = t_ + dtExport)
+        {
             circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
             circulationSolver.exportSolution( circulationOutputFile );
-
+            
             if (t_ < t)
             {
                 for (int nSub (1); nSub < dtExport/dt_mechanics; ++nSub)
                 {
                     if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << t_ + nSub*dt_mechanics << ": import circulation sub steps" << std::endl;
-
+                    
                     circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) + nSub );
                     circulationSolver.exportSolution( circulationOutputFile );
-
+                    
                 }
             }
+
         }
         
         if ( 0 == comm->MyPID() )
