@@ -472,7 +472,8 @@ int main (int argc, char** argv)
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
 
         // Import and save initial conditions
-        if ( 0 == comm->MyPID() ) std::cout << "TIME = " << "-1" << ": import frame " << "00000" << std::endl;
+        if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << std::endl;
+        if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << "-1" << ": import frame " << "00000" << std::endl;
 
         ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
         
@@ -489,8 +490,8 @@ int main (int argc, char** argv)
         
         if ( 0 == comm->MyPID() )
         {
-            std::cout << "\n*****************************************************************";
-            std::cout << "\nRestart data at TIME = -1.0 imported in " << chronoRestart.diff() << " s";
+            //std::cout << "\n*****************************************************************";
+            std::cout << "Restart data at TIME = -1.0 imported in " << chronoRestart.diff() << " s";
             std::cout << "\n*****************************************************************\n";
         }
 
@@ -518,9 +519,9 @@ int main (int argc, char** argv)
 
             if ( 0 == comm->MyPID() )
             {
-                std::cout << "\n*****************************************************************";
-                std::cout << "\nRestart data at TIME = " << t_ << " imported after " << chronoRestart.diff() << " s";
-                std::cout << "\n*****************************************************************\n";
+                //std::cout << "\n*****************************************************************";
+                std::cout << "Restart data at TIME = " << t_ << " imported after " << chronoRestart.diff() << " s";
+                std::cout << "\n*****************************************************************\n\n";
             }
   
             // Circulation
