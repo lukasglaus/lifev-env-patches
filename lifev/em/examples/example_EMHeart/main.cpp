@@ -550,6 +550,7 @@ int main (int argc, char** argv)
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
+        bcValues4thOAB = { p ( "lv" ) , p ( "rv" ) };
         //modifyPressureBC(bcValues);
         
         modifyEssentialPatchBC(t);

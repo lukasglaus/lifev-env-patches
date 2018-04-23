@@ -42,7 +42,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -6.2  # -7.0 # -7.3
+    ActiveForceCoefficient  = -6.3  # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -236,7 +236,7 @@ monodomain_xml_file = ParamListE.xml
     [../coupling]
     pPerturbationFe         = 1e-3
     pPerturbationCirc       = 1e-3
-    dpMax                   = 1.0 #0.5 #0.1 #0.3
+    dpMax                   = 0.6 #0.5 #0.1 #0.3
     couplingError           = 1e-5 #1e-6
     couplingJFeSubStart     = 2
     couplingJFeSubIter      = 1
