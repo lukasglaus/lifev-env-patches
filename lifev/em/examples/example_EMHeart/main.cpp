@@ -447,8 +447,8 @@ int main (int argc, char** argv)
     //============================================
     // Load restart file
     //============================================
-    
     std::string restartInput = command_line.follow ("noRestart", 2, "-r", "--restart");
+    std::string restartSaveAll = command_line.follow ("no", 2, "-rsa", "--restartSaveAll");
     const bool restart ( restartInput != "noRestart" );
 
     if ( restart )
@@ -473,30 +473,36 @@ int main (int argc, char** argv)
 
         // Import and save initial conditions
         if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << std::endl;
-        if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << "-1" << ": import frame " << "00000" << std::endl;
-
-        ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
         
-        for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
+        if ( restartSaveAll != "no" )
         {
-            ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
+            if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << "-1" << ": import frame " << "00000" << std::endl;
+
+            ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
+            
+            for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
+            {
+                ElectrophysiologyUtility::importScalarField (solver.electroSolverPtr()->globalSolution().at(i), "humanHeartSolution" , ("Ionic Variable " + std::to_string(i)), solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
+            }
+            
+            ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
+            
+            ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "humanHeartSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
+
+            heartSolver.postProcess(-1.0);
+            
+            if ( 0 == comm->MyPID() )
+            {
+                //std::cout << "\n*****************************************************************";
+                std::cout << "  Restart data at TIME = -1.0 imported in " << chronoRestart.diff() << " s";
+                std::cout << "\n*****************************************************************\n";
+            }
         }
         
-        ElectrophysiologyUtility::importScalarField (solver.activationModelPtr() -> fiberActivationPtr(), "humanHeartSolution" , "Activation", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
-        
-        ElectrophysiologyUtility::importScalarField (solver.activationTimePtr(), "humanHeartSolution" , "Activation Time", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
-
-        heartSolver.postProcess(-1.0);
-        
-        if ( 0 == comm->MyPID() )
-        {
-            //std::cout << "\n*****************************************************************";
-            std::cout << "Restart data at TIME = -1.0 imported in " << chronoRestart.diff() << " s";
-            std::cout << "\n*****************************************************************\n";
-        }
-
         // Import and save until desired restart frame
-        for (int t_(t); t_ <= t; t_ = t_ + dtExport)
+        int t_ = ( restartSaveAll != "no" ? 0 : t );
+
+        for (t_ ; t_ <= t; t_ = t_ + dtExport)
         {
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t_);
 
@@ -520,7 +526,7 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 //std::cout << "\n*****************************************************************";
-                std::cout << "Restart data at TIME = " << t_ << " imported after " << chronoRestart.diff() << " s";
+                std::cout << "  Restart data at TIME = " << t_ << " imported after " << chronoRestart.diff() << " s";
                 std::cout << "\n*****************************************************************\n\n";
             }
   
