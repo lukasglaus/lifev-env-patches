@@ -496,7 +496,7 @@ int main (int argc, char** argv)
         }
 
         // Import and save until desired restart frame
-        for (int t_(0); t_ <= t; t_ = t_ + dtExport)
+        for (int t_(t); t_ <= t; t_ = t_ + dtExport)
         {
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t_);
 
