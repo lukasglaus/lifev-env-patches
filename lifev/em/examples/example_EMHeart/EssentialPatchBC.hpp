@@ -59,7 +59,7 @@ public:
     
 protected:
     
-    virtual const bool determineWhetherInPatch(const Vector3D& coord){};
+    virtual bool determineWhetherInPatch(Vector3D& coord){};
     
     std::string m_Name;
     unsigned int m_PrevFlag;
@@ -106,7 +106,7 @@ public:
         return ( inPeriod ? sinusSquared : 0 );
     }
 
-    virtual const bool determineWhetherInPatch(const Vector3D& coord)
+    virtual bool determineWhetherInPatch(Vector3D& coord)
     {
         return true;
     }
