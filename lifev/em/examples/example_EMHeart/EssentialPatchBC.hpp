@@ -59,7 +59,7 @@ public:
     
 protected:
     
-    virtual const bool determineWhetherInPatch(const Vector3D& coord) (){};
+    virtual const bool determineWhetherInPatch(const Vector3D& coord){};
     
     std::string m_Name;
     unsigned int m_PrevFlag;
