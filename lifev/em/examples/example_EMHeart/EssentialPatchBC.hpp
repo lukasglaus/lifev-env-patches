@@ -45,6 +45,8 @@ public:
                         
                         if (pointInPatch)
                         {
+                            std::cout << "P";
+
                             ++numPointsInsidePatch;
                         }
                     }
@@ -91,6 +93,12 @@ protected:
     
     std::string m_Name;
     unsigned int m_PrevFlag;
+    
+    Real patchDisplacement;
+    Vector3D patchDirection;
+    
+    boost::shared_ptr<VectorEpetra> patchDispVecPtr;
+    boost::shared_ptr<BCVector> patchDispBCVecPtr;
     
 };
 

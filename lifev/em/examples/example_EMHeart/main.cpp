@@ -210,6 +210,8 @@ int main (int argc, char** argv)
         auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         circPatches[i]->setup(dataFile, patchName);
         circPatches[i]->createPatchArea(solver, (900+i));
+        std::cout << "i";
+
     }
 
     
@@ -291,13 +293,11 @@ int main (int argc, char** argv)
     std::vector<vectorPtr_Type> patchDispVecPtr;
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
-    VectorEpetra dispPreload (disp);
     
     UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nDispPatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
         patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/displacement").c_str(), 1.0 ) );
 
         Vector3D pd;
@@ -315,7 +315,6 @@ int main (int argc, char** argv)
         }
 
         patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
-        //*patchDispVecPtr[i] += dispPreload;
         patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
         solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
     }
@@ -332,7 +331,6 @@ int main (int argc, char** argv)
             currentPatchDisp += patchDispOffset;
             
             patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
-            //*patchDispVecPtr[i] += dispPreload;
             if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
 
             patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
@@ -665,8 +663,6 @@ int main (int argc, char** argv)
         }
 
     }
-
-    dispPreload = disp;
     
 
     //============================================
