@@ -51,6 +51,7 @@ public:
                     
                     if (numPointsInsidePatch > 2)
                     {
+                        std::cout << "O";
                         face.setMarkerID(newFlag);
                     }
                     
@@ -61,22 +62,20 @@ public:
     
 //    void applyBC()
 //    {
-//        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-//        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-//        patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/displacement").c_str(), 1.0 ) );
+//        patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 ) );
 //
 //        Vector3D pd;
 //        for ( UInt j (0); j < 3; ++j )
 //        {
-//            pd[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
+//            pd[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
 //        }
 //        patchDirection.push_back(pd);
 //
-//        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
+//        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
 //        std::vector<ID> patchComponent (componentSize);
 //        for ( UInt j (0); j < componentSize; ++j )
 //        {
-//            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
+//            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
 //        }
 //
 //        patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
