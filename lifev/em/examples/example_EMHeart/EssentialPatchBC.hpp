@@ -20,6 +20,13 @@ class EssentialPatchBC
 {
 public:
     
+    typedef VectorEpetra                                    vector_Type;
+    typedef boost::shared_ptr<vector_Type>                  vectorPtr_Type;
+    
+    typedef BCVector                                        bcVector_Type;
+    typedef boost::shared_ptr<bcVector_Type>                bcVectorPtr_Type;
+
+    
     EssentialPatchBC(){}
     ~EssentialPatchBC(){}
     
@@ -41,8 +48,9 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
+                        std::cout << coord;
                         auto pointInPatch = determineWhetherInPatch(coord);
-                        
+                        std::cout << pointInPatch;
                         if (pointInPatch)
                         {
                             std::cout << "P";
@@ -66,12 +74,10 @@ public:
 //    {
 //        patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 ) );
 //
-//        Vector3D pd;
 //        for ( UInt j (0); j < 3; ++j )
 //        {
-//            pd[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
+//            patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
 //        }
-//        patchDirection.push_back(pd);
 //
 //        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
 //        std::vector<ID> patchComponent (componentSize);
@@ -80,14 +86,16 @@ public:
 //            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
 //        }
 //
-//        patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
-//        //*patchDispVecPtr[i] += dispPreload;
-//        patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+//        patchDispPtr = heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10);
+//
+//        patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
 //        solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
 //    }
     
     
 protected:
+    
+    //heartSolver.directionalVectorField
     
     virtual const bool determineWhetherInPatch(Vector3D& coord) const = 0;
     
@@ -97,8 +105,8 @@ protected:
     Real patchDisplacement;
     Vector3D patchDirection;
     
-    boost::shared_ptr<VectorEpetra> patchDispVecPtr;
-    boost::shared_ptr<BCVector> patchDispBCVecPtr;
+    vectorPtr_Type patchDispPtr;
+    bcVectorPtr_Type patchDispBCPtr;
     
 };
 
