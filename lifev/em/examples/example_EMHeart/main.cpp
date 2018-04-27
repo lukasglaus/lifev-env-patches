@@ -208,7 +208,7 @@ int main (int argc, char** argv)
     {
         circPatches.push_back(EssentialPatchBC());
         circPatches[i].setup(dataFile, i);
-        circPatches[i].createPatchArea(solver);
+        circPatches[i].createPatchArea(solver, (900+i));
     }
 
     

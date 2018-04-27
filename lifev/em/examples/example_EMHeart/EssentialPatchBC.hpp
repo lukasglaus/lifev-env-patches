@@ -38,8 +38,8 @@ public:
                     
                     for (int k(0); k < 3; ++k)
                     {
-                        auto coord = face.point(k).coordinates();
-                        auto pointInPatch = determineWhetherInPatch(coord);
+                        Vector3D coord = face.point(k).coordinates();
+                        bool pointInPatch = determineWhetherInPatch(coord);
                         
                         if (pointInPatch)
                         {
@@ -106,11 +106,6 @@ public:
         return ( inPeriod ? sinusSquared : 0 );
     }
 
-    virtual bool determineWhetherInPatch(Vector3D& coord)
-    {
-        return true;
-    }
-
     setup(const GetPot& dataFile, const unsigned int& i)
     {
         m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
@@ -128,6 +123,11 @@ public:
 
 protected:
     
+    virtual bool determineWhetherInPatch(Vector3D& coord)
+    {
+        return true;
+    }
+
     Vector3D m_Center;;
     Real m_Radius;;
 
