@@ -23,7 +23,7 @@ public:
     EssentialPatchBC(){}
     ~EssentialPatchBC(){}
     
-    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) 
+    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
         for (auto& mesh : solver.mesh())
         {
@@ -38,8 +38,8 @@ public:
                     
                     for (int k(0); k < 3; ++k)
                     {
-                        Vector3D coord = face.point(k).coordinates();
-                        bool pointInPatch = determineWhetherInPatch(coord);
+                        auto coord = face.point(k).coordinates();
+                        auto pointInPatch = determineWhetherInPatch(coord);
                         
                         if (pointInPatch)
                         {
@@ -59,7 +59,7 @@ public:
     
 protected:
     
-    virtual bool determineWhetherInPatch(Vector3D& coord){return true;};
+    virtual const bool determineWhetherInPatch(Vector3D& coord) const = 0;
     
     std::string m_Name;
     unsigned int m_PrevFlag;
@@ -123,7 +123,7 @@ public:
 
 protected:
     
-    virtual bool determineWhetherInPatch(Vector3D& coord)
+    virtual const bool determineWhetherInPatch(Vector3D& coord) const
     {
         return true;
     }
