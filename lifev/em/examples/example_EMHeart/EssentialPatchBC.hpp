@@ -39,7 +39,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
-                        bool pointInPatch = this.determineWhetherInPatch(coord);
+                        bool pointInPatch = this->determineWhetherInPatch(coord);
                         
                         if (pointInPatch)
                         {
