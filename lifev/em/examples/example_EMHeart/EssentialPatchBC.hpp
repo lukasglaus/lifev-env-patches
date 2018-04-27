@@ -135,6 +135,7 @@ protected:
     Real m_Radius;;
 
 };
+REGISTER(EssentialPatchBC, EssentialPatchBCCircular);
 
 }
 
