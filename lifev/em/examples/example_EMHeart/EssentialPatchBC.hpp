@@ -23,7 +23,7 @@ public:
     EssentialPatchBC(){}
     ~EssentialPatchBC(){}
     
-    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) const
+    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) 
     {
         for (auto& mesh : solver.mesh())
         {
