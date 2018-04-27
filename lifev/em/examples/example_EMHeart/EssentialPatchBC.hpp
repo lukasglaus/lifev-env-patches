@@ -61,6 +61,8 @@ public:
     
     virtual const bool determineWhetherInPatch(const Vector3D& coord) = 0;
     
+    std::string m_Name;
+    unsigned int m_PrevFlag;
     
 };
 
@@ -125,9 +127,6 @@ public:
 
 
 protected:
-
-    std::string m_Name;
-    unsigned int m_PrevFlag;
     
     Vector3D m_Center;;
     Real m_Radius;;
