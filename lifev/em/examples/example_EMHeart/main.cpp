@@ -202,7 +202,7 @@ int main (int argc, char** argv)
     //============================================
     // Create circular patches
     //============================================
-    std::vector<std::shared_ptr<EsssentialPatchBC> > circPatches;
+    std::vector<std::shared_ptr<EssentialPatchBC> > circPatches;
     UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nEssPatchBC ; ++i )
     {
