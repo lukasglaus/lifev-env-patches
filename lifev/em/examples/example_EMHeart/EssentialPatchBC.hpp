@@ -86,16 +86,36 @@ public:
 //            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
 //        }
 //
-//        patchDispPtr = heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10);
+//        patchDispPtr = directionalVectorField(FESpace, patchDirection[i], 1e-10);
 //
 //        patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-//        solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
+//        solver.bcInterfacePtr() -> handler()->addBC (m_Name, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
 //    }
     
     
 protected:
     
-    //heartSolver.directionalVectorField
+//    vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp)
+//    {
+//        vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
+//        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+//
+//        direction.normalize();
+//        direction *= disp;
+//
+//        for (int j (0); j < nCompLocalDof; ++j)
+//        {
+//            UInt iGID = vectorField->blockMap().GID (j);
+//            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+//            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+//
+//            (*vectorField)[iGID] = direction[0];
+//            (*vectorField)[jGID] = direction[1];
+//            (*vectorField)[kGID] = direction[2];
+//        }
+//
+//        return vectorField;
+//    }
     
     virtual const bool determineWhetherInPatch(Vector3D& coord) const = 0;
     
@@ -155,7 +175,7 @@ public:
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
-        
+        std::cout << name << std::endl;
         for ( UInt j (0); j < 3; ++j )
         {
             m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
