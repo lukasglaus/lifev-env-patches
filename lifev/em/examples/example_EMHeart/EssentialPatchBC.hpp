@@ -59,7 +59,7 @@ public:
     
 protected:
     
-    virtual bool determineWhetherInPatch(Vector3D& coord){};
+    virtual bool determineWhetherInPatch(Vector3D& coord){return true;};
     
     std::string m_Name;
     unsigned int m_PrevFlag;
@@ -111,7 +111,7 @@ public:
         return true;
     }
 
-    setup(const GetPot& datafile, const unsigned int& i)
+    setup(const GetPot& dataFile, const unsigned int& i)
     {
         m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
