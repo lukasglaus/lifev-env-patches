@@ -207,8 +207,8 @@ int main (int argc, char** argv)
     for ( UInt i (0) ; i < nEssPatchBC ; ++i )
     {
         circPatches.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
-        circPatches[i].setup(dataFile, i);
-        circPatches[i].createPatchArea(solver, (900+i));
+        circPatches[i]->setup(dataFile, i);
+        circPatches[i]->createPatchArea(solver, (900+i));
     }
 
     
