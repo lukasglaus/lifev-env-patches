@@ -206,7 +206,7 @@ int main (int argc, char** argv)
     UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nEssPatchBC ; ++i )
     {
-        circPatches.push_back(EssentialPatchBC());
+        circPatches.push_back(EssentialPatchBCCircular());
         circPatches[i].setup(dataFile, i);
         circPatches[i].createPatchArea(solver, (900+i));
     }

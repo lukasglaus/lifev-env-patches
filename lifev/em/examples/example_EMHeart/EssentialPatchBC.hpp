@@ -109,12 +109,12 @@ public:
     setup(const GetPot& dataFile, const unsigned int& i)
     {
         m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-        m_Radius= dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
+        m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
+        m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
         for ( UInt j (0); j < 3; ++j )
         {
-            m_Center[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
+            m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
         }
     }
     
