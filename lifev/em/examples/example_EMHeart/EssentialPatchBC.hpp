@@ -33,19 +33,14 @@ public:
     virtual void setup(const GetPot& dataFile, const std::string& name) = 0;
 
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) const
-    {        std::cout << m_Name << std::endl;
-
+    {
         for (auto& mesh : solver.mesh())
         {
-            std::cout << "2" << std::endl;
-
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
-                std::cout << "3" << std::endl;
-
                 auto& face = mesh->boundaryFacet(j);
                 auto faceFlag = face.markerID();
-                
+                std::cout << (faceFlag == m_PrevFlag) << std::endl;
                 if (faceFlag == m_PrevFlag)
                 {
                     int numPointsInsidePatch (0);

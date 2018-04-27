@@ -210,7 +210,6 @@ int main (int argc, char** argv)
         auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         circPatches[i]->setup(dataFile, patchName);
         circPatches[i]->createPatchArea(solver, (900+i));
-        std::cout << i << " " << patchName << std::endl;
     }
 
     
