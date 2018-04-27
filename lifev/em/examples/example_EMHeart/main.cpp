@@ -200,14 +200,15 @@ int main (int argc, char** argv)
     
 
     //============================================
-    // Create EssentialPatchBC's
+    // Create circular patches
     //============================================
-    std::vector<EssentialPatchBC> essPatchBCs;
+    std::vector<EssentialPatchBC> circPatches;
     UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nEssPatchBC ; ++i )
     {
-        essPatchBCs.push_back(EssentialPatchBC());
-        essPatchBCs[i].setup(dataFile, i);
+        circPatches.push_back(EssentialPatchBC());
+        circPatches[i].setup(dataFile, i);
+        circPatches[i].createPatchArea(solver);
     }
 
     

@@ -23,7 +23,7 @@ public:
     EssentialPatchBC(){}
     ~EssentialPatchBC(){}
     
-    void createPatch (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag) const
+    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) const
     {
         for (auto& mesh : solver.mesh())
         {
@@ -32,7 +32,7 @@ public:
                 auto& face = mesh->boundaryFacet(j);
                 auto faceFlag = face.markerID();
                 
-                if (faceFlag == currentFlag || faceFlag == 470 || faceFlag == 471)
+                if (faceFlag == m_PrevFlag)
                 {
                     int numPointsInsidePatch (0);
                     
@@ -104,11 +104,15 @@ public:
         return ( inPeriod ? sinusSquared : 0 );
     }
 
-    
+    virtual const bool determineWhetherInPatch(const Vector3D& coord)
+    {
+        return true;
+    }
+
     setup(const GetPot& datafile, const unsigned int& i)
     {
         m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        m_CurrentFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
+        m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
         
         for ( UInt j (0); j < 3; ++j )
@@ -123,8 +127,7 @@ public:
 protected:
 
     std::string m_Name;
-    unsigned int m_PrevFaceFlag;
-    unsigned int m_CurrentFlag;
+    unsigned int m_PrevFlag;
     
     Vector3D m_Center;;
     Real m_Radius;;
