@@ -40,7 +40,7 @@ public:
             {
                 auto& face = mesh->boundaryFacet(j);
                 auto faceFlag = face.markerID();
-                std::cout << (faceFlag == m_PrevFlag) << std::endl;
+                std::cout << faceFlag << " / " << m_PrevFlag << std::endl;
                 if (faceFlag == m_PrevFlag)
                 {
                     int numPointsInsidePatch (0);
@@ -48,20 +48,16 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
-                        std::cout << coord;
                         auto pointInPatch = determineWhetherInPatch(coord);
-                        std::cout << pointInPatch;
+
                         if (pointInPatch)
                         {
-                            std::cout << "P";
-
                             ++numPointsInsidePatch;
                         }
                     }
                     
                     if (numPointsInsidePatch > 2)
                     {
-                        std::cout << "O";
                         face.setMarkerID(newFlag);
                     }
                     
