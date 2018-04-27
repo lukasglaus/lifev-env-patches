@@ -39,7 +39,7 @@
 #include <lifev/em/solver/HeartSolver.hpp>
 
 // PatchBC
-//#include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
+#include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
 
 // Track nan
 // #include <fenv.h>
@@ -199,6 +199,18 @@ int main (int argc, char** argv)
     }
     
 
+    //============================================
+    // Create EssentialPatchBC's
+    //============================================
+    std::vector<EssentialPatchBC> essPatchBCs;
+    UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+    for ( UInt i (0) ; i < nEssPatchBC ; ++i )
+    {
+        essPatchBCs.push_back(EssentialPatchBC());
+        essPatchBCs[i].setup(dataFile, i);
+    }
+
+    
     //============================================
     // Setup solver (including fe-spaces & b.c.)
     //============================================

@@ -16,20 +16,13 @@
 namespace LifeV
 {
 
-
-
-
-class EssentialPatchBCCircular
+class EssentialPatchBC
 {
 public:
     
-    EssentialPatchBCCircular()
-    {
-        
-    }
-    ~EssentialPatchBCCircular(){}
+    EssentialPatchBC(){}
+    ~EssentialPatchBC(){}
     
-
     void createPatch (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Vector3D& center, const Real& radius, const int& currentFlag, const int& newFlag) const
     {
         for (auto& mesh : solver.mesh())
@@ -46,7 +39,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
-                        bool pointInPatch = (coord - center).norm() < radius;
+                        bool pointInPatch = determineWhetherInPatch(coord);
                         
                         if (pointInPatch)
                         {
@@ -64,6 +57,22 @@ public:
         }
     }
     
+public:
+    
+    virtual const bool determineWhetherInPatch(const Vector3D& coord) = 0;
+    
+    
+};
+
+
+class EssentialPatchBCCircular : public EssentialPatchBC
+{
+public:
+    
+    EssentialPatchBCCircular(){}
+    ~EssentialPatchBCCircular(){}
+    
+
     boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp) const
     {
         boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
@@ -87,44 +96,41 @@ public:
     }
 
     
-    setupPatchBC(const GetPot& datafile)
+    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
-        UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+        Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
+        bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
+        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
+        return ( inPeriod ? sinusSquared : 0 );
+    }
+
+    
+    setup(const GetPot& datafile, const unsigned int& i)
+    {
+        m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+        m_CurrentFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
+        m_Radius= dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
         
-        for ( UInt i (0) ; i < nDispPatchBC ; ++i )
+        for ( UInt j (0); j < 3; ++j )
         {
-            std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-            Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-            
-            Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
-            Vector3D patchCenter;
-            for ( UInt j (0); j < 3; ++j )
-            {
-                patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
-            }
-            
-            createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
+            m_Center[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
         }
     }
     
-    modifyPatchBC();
+    modifyPatchBC(){};
 
 
 protected:
 
-    std::string m_name;
-    unsigned int m_prevFaceFlag;
-    unsigned int m_currentPatchFlag;
+    std::string m_Name;
+    unsigned int m_PrevFaceFlag;
+    unsigned int m_CurrentFlag;
     
-    // BCFunctionBase m_bcFunctionBase;
-    // BCFunctionDirectional m_bcFunctionDirectional;
-    
-    // PatchBCFunctionBaseCreator m_patchBCFunctionBaseCreator;
-    
-    Vector3D m_center { 0. , 0. , 0. };
-    Real m_radius { 0. };
+    Vector3D m_Center;;
+    Real m_Radius;;
 
 };
 
+}
 
 #endif /* EssentialPatchBC_hpp */
