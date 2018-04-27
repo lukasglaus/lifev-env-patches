@@ -39,7 +39,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
-                        auto pointInPatch = this->determineWhetherInPatch(coord);
+                        auto pointInPatch = determineWhetherInPatch(coord);
                         
                         if (pointInPatch)
                         {
@@ -57,9 +57,9 @@ public:
         }
     }
     
-public:
+protected:
     
-    virtual const bool determineWhetherInPatch(const Vector3D& coord) = 0;
+    virtual const bool determineWhetherInPatch(const Vector3D& coord) (){};
     
     std::string m_Name;
     unsigned int m_PrevFlag;
