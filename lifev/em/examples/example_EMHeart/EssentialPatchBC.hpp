@@ -64,6 +64,9 @@ protected:
     
     virtual const bool determineWhetherInPatch(Vector3D& coord) const = 0;
     
+    std::string m_Name;
+    unsigned int m_PrevFlag;
+    
 };
 
 
