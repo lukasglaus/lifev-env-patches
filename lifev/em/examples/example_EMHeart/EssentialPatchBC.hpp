@@ -57,7 +57,7 @@ public:
         }
     }
     
-    virtual void setup(const GetPot& dataFile, const unsigned int& i) = 0;
+    virtual void setup(const GetPot& dataFile, const std::string& name) = 0;
 
     
 protected:
@@ -109,9 +109,9 @@ public:
         return ( inPeriod ? sinusSquared : 0 );
     }
 
-    virtual void setup(const GetPot& dataFile, const unsigned int& i)
+    virtual void setup(const GetPot& dataFile, const std::string& name)
     {
-        m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+        m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         

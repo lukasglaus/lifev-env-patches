@@ -207,7 +207,8 @@ int main (int argc, char** argv)
     for ( UInt i (0) ; i < nEssPatchBC ; ++i )
     {
         circPatches.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
-        circPatches[i]->setup(dataFile, i);
+        auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+        circPatches[i]->setup(dataFile, patchName);
         circPatches[i]->createPatchArea(solver, (900+i));
     }
 
@@ -292,6 +293,7 @@ int main (int argc, char** argv)
     
     VectorEpetra dispPreload (disp);
     
+    UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nDispPatchBC ; ++i )
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
