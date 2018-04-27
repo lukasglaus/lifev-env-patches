@@ -23,7 +23,7 @@ public:
     EssentialPatchBC(){}
     ~EssentialPatchBC(){}
     
-    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
+    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) const
     {
         for (auto& mesh : solver.mesh())
         {
@@ -57,12 +57,12 @@ public:
         }
     }
     
+    virtual void setup(const GetPot& dataFile, const unsigned int& i) = 0;
+
+    
 protected:
     
     virtual const bool determineWhetherInPatch(Vector3D& coord) const = 0;
-    
-    std::string m_Name;
-    unsigned int m_PrevFlag;
     
 };
 
@@ -106,7 +106,7 @@ public:
         return ( inPeriod ? sinusSquared : 0 );
     }
 
-    setup(const GetPot& dataFile, const unsigned int& i)
+    virtual void setup(const GetPot& dataFile, const unsigned int& i)
     {
         m_Name = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
@@ -128,6 +128,9 @@ protected:
         return true;
     }
 
+    std::string m_Name;
+    unsigned int m_PrevFlag;
+    
     Vector3D m_Center;;
     Real m_Radius;;
 
