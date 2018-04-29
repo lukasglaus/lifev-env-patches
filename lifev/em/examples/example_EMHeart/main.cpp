@@ -39,7 +39,7 @@
 #include <lifev/em/solver/HeartSolver.hpp>
 
 // PatchBC
-#include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
+// #include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
 
 // Track nan
 // #include <fenv.h>
@@ -202,15 +202,15 @@ int main (int argc, char** argv)
     //============================================
     // Create circular patches
     //============================================
-    std::vector<EssentialPatchBC*> circPatches;
-    UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
-    for ( UInt i (0) ; i < nEssPatchBC ; ++i )
-    {
-        circPatches.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
-        auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        circPatches[i]->setup(dataFile, patchName);
-        circPatches[i]->createPatchArea(solver, (900+i));
-    }
+//    std::vector<EssentialPatchBC*> circPatches;
+//    UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+//    for ( UInt i (0) ; i < nEssPatchBC ; ++i )
+//    {
+//        circPatches.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
+//        auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+//        circPatches[i]->setup(dataFile, patchName);
+//        circPatches[i]->createPatchArea(solver, (900+i));
+//    }
 
     
     //============================================
