@@ -47,6 +47,7 @@ protected:
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
         Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
+        std::cout << inPeriod << " " << sinusSquared << std::cout;
         return ( inPeriod ? sinusSquared : 0 );
     }
     
