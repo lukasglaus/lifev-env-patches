@@ -72,8 +72,6 @@ public:
     {
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         
-        m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
-
         for ( UInt j (0); j < 3; ++j )
         {
             m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
@@ -92,11 +90,11 @@ public:
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
     }
     
-    void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time, const Real& tmax, const Real& tduration)
+    void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         
-        Real currentPatchDisp = activationFunction(time, m_patchDisplacement, tmax, tduration);
+        Real currentPatchDisp = activationFunction(time) + 1e-6;
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp);
         if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent patch-" << m_Name << " displacement: " << currentPatchDisp << " cm";
@@ -132,14 +130,13 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
     
-    virtual Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const = 0;
+    virtual Real activationFunction (const Real& time) const = 0;
 
     
     std::string m_Name;
     unsigned int m_PrevFlag;
     unsigned int m_patchFlag;
     
-    Real m_patchDisplacement;
     Vector3D m_patchDirection;
     
     vectorPtr_Type m_patchDispPtr;

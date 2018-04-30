@@ -269,14 +269,11 @@ int main (int argc, char** argv)
         patch->applyBC(solver, dataFile);
     }
     
-    Real tmax = dataFile ( "solid/patches/tmax", 0. );
-    Real tduration = dataFile ( "solid/patches/tduration", 0. );
-    
     auto modifyEssentialPatchBC = [&] (const Real& time)
     {
         for (auto& patch : patchBC)
         {
-            patch->modifyPatchBC(solver, time, tmax, tduration);
+            patch->modifyPatchBC(solver, time);
         }
     };
 

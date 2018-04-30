@@ -28,12 +28,16 @@ public:
     {
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
+        m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
         for ( UInt j (0); j < 3; ++j )
         {
             m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
         }
+        
+        Real m_tmax = dataFile ( "solid/patches/tmax", 0. );
+        Real m_tduration = dataFile ( "solid/patches/tduration", 0. );
     }
     
 protected:
@@ -44,17 +48,21 @@ protected:
         return pointInCircle;
     }
     
-    virtual Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
+    virtual Real activationFunction (const Real& time) const
     {
-        Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
-        bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
-        std::cout << inPeriod << " " << sinusSquared << std::endl;
+        Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
+        bool inPeriod ( timeInPeriod < m_tduration && timeInPeriod > 0);
+        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / m_tduration) , 2 ) * m_patchDisplacement;
         return ( inPeriod ? sinusSquared : 0 );
     }
     
-    Vector3D m_Center;;
-    Real m_Radius;;
+    Real m_patchDisplacement;
+
+    Vector3D m_Center;
+    Real m_Radius;
+    
+    Real m_tmax;
+    Real m_tduration;
     
 };
 
