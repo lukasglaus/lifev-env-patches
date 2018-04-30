@@ -156,28 +156,17 @@ public:
     EssentialPatchBCCircular(){}
     ~EssentialPatchBCCircular(){}
     
-    
-    virtual Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
-    {
-        Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
-        bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
-        return ( inPeriod ? sinusSquared : 0 );
-    }
-
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
-        std::cout << name << " / " << m_PrevFlag << std::endl;
 
         for ( UInt j (0); j < 3; ++j )
         {
             m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
         }
     }
-    
     
 
 protected:
@@ -186,6 +175,14 @@ protected:
     {
         bool pointInCircle = (coord - m_Center).norm() < m_Radius;
         return pointInCircle;
+    }
+    
+    virtual Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
+    {
+        Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
+        bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
+        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / tduration) , 2 ) * Tmax;
+        return ( inPeriod ? sinusSquared : 0 );
     }
     
     Vector3D m_Center;;
