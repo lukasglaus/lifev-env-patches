@@ -40,7 +40,7 @@ public:
             {
                 auto& face = mesh->boundaryFacet(j);
                 auto faceFlag = face.markerID();
-                std::cout << faceFlag << " / " << m_PrevFlag << std::endl;
+
                 if (faceFlag == m_PrevFlag)
                 {
                     int numPointsInsidePatch (0);
@@ -171,7 +171,7 @@ public:
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
-        std::cout << " / " << m_PrevFlag << std::endl;
+        std::cout << name << " / " << m_PrevFlag << std::endl;
 
         for ( UInt j (0); j < 3; ++j )
         {
