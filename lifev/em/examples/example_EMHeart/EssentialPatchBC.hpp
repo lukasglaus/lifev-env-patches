@@ -133,7 +133,7 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
     
-    Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const = 0;
+    virtual Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const = 0;
 
     
     std::string m_Name;
@@ -157,7 +157,7 @@ public:
     ~EssentialPatchBCCircular(){}
     
     
-    Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
+    virtual Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);

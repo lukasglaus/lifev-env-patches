@@ -303,19 +303,7 @@ int main (int argc, char** argv)
     Real tduration = dataFile ( "solid/patches/tduration", 0. );
     
     auto modifyEssentialPatchBC = [&] (const Real& time)
-    {
-//        for ( UInt i (0) ; i < nDispPatchBC ; ++i )
-//        {
-//            Real currentPatchDisp = heartSolver.sinSquared(time, patchDisplacement[i], tmax, tduration);
-//            currentPatchDisp += patchDispOffset;
-//
-//            patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
-//            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
-//
-//            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-//            solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
-//        }
-        
+    {        
         for (auto& patch : patchBC)
         {
             patch.modifyPatchBC(solver, time, tmax, tduration);
