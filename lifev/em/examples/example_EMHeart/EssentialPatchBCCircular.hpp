@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
 
+#define PI 3.14159265359
+
 namespace LifeV
 {
     
