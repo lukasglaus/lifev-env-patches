@@ -190,9 +190,6 @@ protected:
         bool pointInCircle = (coord - m_Center).norm() < m_Radius;
         return pointInCircle;
     }
-
-    std::string m_Name;
-    unsigned int m_PrevFlag;
     
     Vector3D m_Center;;
     Real m_Radius;;
