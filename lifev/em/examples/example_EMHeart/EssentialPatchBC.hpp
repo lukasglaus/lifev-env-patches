@@ -147,4 +147,6 @@ protected:
     
 };
 
+}
+
 #endif /* EssentialPatchBC_hpp */

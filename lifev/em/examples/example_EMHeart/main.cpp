@@ -278,8 +278,6 @@ int main (int argc, char** argv)
         {
             patch->modifyPatchBC(solver, time, tmax, tduration);
         }
-
-        if ( 0 == comm->MyPID() ) std::cout << std::endl;
     };
 
     
