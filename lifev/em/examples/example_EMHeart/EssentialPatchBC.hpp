@@ -32,8 +32,10 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name) = 0;
 
-    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag) const
+    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
+        m_patchFlag = newFlag;
+        
         for (auto& mesh : solver.mesh())
         {
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
@@ -48,7 +50,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         auto coord = face.point(k).coordinates();
-                        auto pointInPatch = determineWhetherInPatch(coord);
+                        auto pointInPatch = nodeOnPatch(coord);
 
                         if (pointInPatch)
                         {
@@ -58,7 +60,7 @@ public:
                     
                     if (numPointsInsidePatch > 2)
                     {
-                        face.setMarkerID(newFlag);
+                        face.setMarkerID(m_patchFlag);
                     }
                     
                 }
@@ -66,63 +68,82 @@ public:
         }
     }
     
-//    void applyBC()
-//    {
-//        patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 ) );
-//
-//        for ( UInt j (0); j < 3; ++j )
-//        {
-//            patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
-//        }
-//
-//        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
-//        std::vector<ID> patchComponent (componentSize);
-//        for ( UInt j (0); j < componentSize; ++j )
-//        {
-//            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
-//        }
-//
-//        patchDispPtr = directionalVectorField(FESpace, patchDirection[i], 1e-10);
-//
-//        patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-//        solver.bcInterfacePtr() -> handler()->addBC (m_Name, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
-//    }
+    void applyBC(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const GetPot& dataFile)
+    {
+        m_patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 ) );
+
+        for ( UInt j (0); j < 3; ++j )
+        {
+            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
+        }
+
+        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
+        std::vector<ID> patchComponent (componentSize);
+        for ( UInt j (0); j < componentSize; ++j )
+        {
+            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
+        }
+
+        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10);
+
+        m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) ) );
+        solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
+    }
+    
+    modifyPatchBC()
+    {
+        //        for ( UInt i (0) ; i < nDispPatchBC ; ++i )
+        //        {
+        //            Real currentPatchDisp = heartSolver.sinSquared(time, m_patchDisplacement[i], tmax, tduration);
+        //            currentPatchDisp += patchDispOffset;
+        //
+        //            patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, m_patchDirection[i], currentPatchDisp);
+        //            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
+        //
+        //            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
+        //            solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
+        //        }
+        //
+        //        if ( 0 == comm->MyPID() ) std::cout << std::endl;
+    }
     
     
 protected:
     
-//    vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp)
-//    {
-//        vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
-//        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
-//
-//        direction.normalize();
-//        direction *= disp;
-//
-//        for (int j (0); j < nCompLocalDof; ++j)
-//        {
-//            UInt iGID = vectorField->blockMap().GID (j);
-//            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-//            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-//
-//            (*vectorField)[iGID] = direction[0];
-//            (*vectorField)[jGID] = direction[1];
-//            (*vectorField)[kGID] = direction[2];
-//        }
-//
-//        return vectorField;
-//    }
     
-    virtual const bool determineWhetherInPatch(Vector3D& coord) const = 0;
+    vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp) const
+    {
+        vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
+        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+
+        direction.normalize();
+        direction *= disp;
+
+        for (int j (0); j < nCompLocalDof; ++j)
+        {
+            UInt iGID = vectorField->blockMap().GID (j);
+            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+
+            (*vectorField)[iGID] = direction[0];
+            (*vectorField)[jGID] = direction[1];
+            (*vectorField)[kGID] = direction[2];
+        }
+
+        return vectorField;
+    }
+    
+    virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
     
     std::string m_Name;
     unsigned int m_PrevFlag;
+    unsigned int m_patchFlag;
     
-    Real patchDisplacement;
-    Vector3D patchDirection;
+    Real m_patchDisplacement;
+    Vector3D m_patchDirection;
     
-    vectorPtr_Type patchDispPtr;
-    bcVectorPtr_Type patchDispBCPtr;
+    vectorPtr_Type m_patchDispPtr;
+    bcVectorPtr_Type m_patchDispBCPtr;
     
 };
 
@@ -134,29 +155,6 @@ public:
     EssentialPatchBCCircular(){}
     ~EssentialPatchBCCircular(){}
     
-
-    boost::shared_ptr<VectorEpetra> directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp) const
-    {
-        boost::shared_ptr<VectorEpetra> vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
-        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
-        
-        direction.normalize();
-        direction *= disp;
-        
-        for (int j (0); j < nCompLocalDof; ++j)
-        {
-            UInt iGID = vectorField->blockMap().GID (j);
-            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-            
-            (*vectorField)[iGID] = direction[0];
-            (*vectorField)[jGID] = direction[1];
-            (*vectorField)[kGID] = direction[2];
-        }
-        
-        return vectorField;
-    }
-
     
     Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
@@ -180,27 +178,10 @@ public:
     }
     
     
-    modifyPatchBC()
-    {
-//        for ( UInt i (0) ; i < nDispPatchBC ; ++i )
-//        {
-//            Real currentPatchDisp = heartSolver.sinSquared(time, patchDisplacement[i], tmax, tduration);
-//            currentPatchDisp += patchDispOffset;
-//            
-//            patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, patchDirection[i], currentPatchDisp);
-//            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
-//            
-//            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-//            solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
-//        }
-//        
-//        if ( 0 == comm->MyPID() ) std::cout << std::endl;
-    };
-
 
 protected:
     
-    virtual const bool determineWhetherInPatch(Vector3D& coord) const
+    virtual const bool nodeOnPatch(Vector3D& coord) const
     {
         bool pointInCircle = (coord - m_Center).norm() < m_Radius;
         return pointInCircle;

@@ -202,14 +202,14 @@ int main (int argc, char** argv)
     //============================================
     // Create circular patches
     //============================================
-    std::vector<EssentialPatchBC*> circPatches;
-    UInt nEssPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
-    for ( UInt i (0) ; i < nEssPatchBC ; ++i )
+    std::vector<EssentialPatchBC*> patchBC;
+    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+    for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
-        circPatches.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
+        patchBC.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
         auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        circPatches[i]->setup(dataFile, patchName);
-        circPatches[i]->createPatchArea(solver, (900+i));
+        patchBC[i]->setup(dataFile, patchName);
+        patchBC[i]->createPatchArea(solver, 900 + i);
     }
 
     
@@ -292,30 +292,35 @@ int main (int argc, char** argv)
     std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
     
     
-    UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
-    for ( UInt i (0) ; i < nDispPatchBC ; ++i )
+    for (auto& patch : patchBC)
     {
-        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/displacement").c_str(), 1.0 ) );
-
-        Vector3D pd;
-        for ( UInt j (0); j < 3; ++j )
-        {
-            pd[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
-        }
-        patchDirection.push_back(pd);
-
-        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
-        std::vector<ID> patchComponent (componentSize);
-        for ( UInt j (0); j < componentSize; ++j )
-        {
-            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
-        }
-
-        patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
-        patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
-        solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
+        patch.applyBC(FESpace, dataFile);
     }
+    
+//    UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+//    for ( UInt i (0) ; i < nDispPatchBC ; ++i )
+//    {
+//        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+//        patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + patchName + "/displacement").c_str(), 1.0 ) );
+//
+//        Vector3D pd;
+//        for ( UInt j (0); j < 3; ++j )
+//        {
+//            pd[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/direction").c_str(), 0, j );
+//        }
+//        patchDirection.push_back(pd);
+//
+//        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + patchName + "/component").c_str() );
+//        std::vector<ID> patchComponent (componentSize);
+//        for ( UInt j (0); j < componentSize; ++j )
+//        {
+//            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/component").c_str(), 0, j );
+//        }
+//
+//        patchDispVecPtr.push_back ( heartSolver.directionalVectorField(FESpace, patchDirection[i], 1e-10) );
+//        patchDispBCVecPtr.push_back ( bcVectorPtr_Type( new bcVector_Type( *patchDispVecPtr[i], solver.structuralOperatorPtr() -> dispFESpacePtr() -> dof().numTotalDof(), 1 ) ) );
+//        solver.bcInterfacePtr() -> handler()->addBC (patchName, (900+i),  Essential, Component, *patchDispBCVecPtr[i], patchComponent);
+//    }
     
     Real patchDispOffset = dataFile ( "solid/patches/patch_disp_offset", 0. );
     Real tmax = dataFile ( "solid/patches/tmax", 0. );
