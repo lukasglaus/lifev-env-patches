@@ -285,28 +285,19 @@ int main (int argc, char** argv)
     //============================================
     // Create displacement patch b.c.
     //============================================
-    std::vector<Real> patchDisplacement;
-    std::vector<Vector3D> patchDirection;
-    
-    std::vector<vectorPtr_Type> patchDispVecPtr;
-    std::vector<bcVectorPtr_Type> patchDispBCVecPtr;
-    
-    
     for (auto& patch : patchBC)
     {
-        patch.applyBC(solver, dataFile);
+        patch->applyBC(solver, dataFile);
     }
     
-    
-    Real patchDispOffset = dataFile ( "solid/patches/patch_disp_offset", 0. );
     Real tmax = dataFile ( "solid/patches/tmax", 0. );
     Real tduration = dataFile ( "solid/patches/tduration", 0. );
     
     auto modifyEssentialPatchBC = [&] (const Real& time)
-    {        
+    {
         for (auto& patch : patchBC)
         {
-            patch.modifyPatchBC(solver, time, tmax, tduration);
+            patch->modifyPatchBC(solver, time, tmax, tduration);
         }
 
         if ( 0 == comm->MyPID() ) std::cout << std::endl;
