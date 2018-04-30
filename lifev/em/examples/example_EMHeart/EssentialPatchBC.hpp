@@ -70,7 +70,7 @@ public:
     
     void applyBC(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const GetPot& dataFile)
     {
-        m_patchDisplacement.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 ) );
+        m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
 
         for ( UInt j (0); j < 3; ++j )
         {
