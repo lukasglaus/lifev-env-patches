@@ -68,8 +68,10 @@ public:
         }
     }
     
-    void applyBC(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, const GetPot& dataFile)
+    void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
+        auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
+        
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
 
         for ( UInt j (0); j < 3; ++j )
@@ -90,21 +92,17 @@ public:
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
     }
     
-    modifyPatchBC()
+    modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        //        for ( UInt i (0) ; i < nDispPatchBC ; ++i )
-        //        {
-        //            Real currentPatchDisp = heartSolver.sinSquared(time, m_patchDisplacement[i], tmax, tduration);
-        //            currentPatchDisp += patchDispOffset;
-        //
-        //            patchDispVecPtr[i] = heartSolver.directionalVectorField(FESpace, m_patchDirection[i], currentPatchDisp);
-        //            if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << i << " displacement: " << currentPatchDisp << " cm";
-        //
-        //            patchDispBCVecPtr[i].reset( new bcVector_Type( *patchDispVecPtr[i], FESpace->dof().numTotalDof(), 1 ) );
-        //            solver.bcInterfacePtr()->handler()->modifyBC((900+i), *patchDispBCVecPtr[i]);
-        //        }
-        //
-        //        if ( 0 == comm->MyPID() ) std::cout << std::endl;
+        auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
+        
+        Real currentPatchDisp = activationFunction(time, m_patchDisplacement[i], tmax, tduration);
+
+        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp);
+        if ( 0 == comm->MyPID() ) std::cout << "\nCurrent patch-" << m_Name << " displacement: " << currentPatchDisp << " cm";
+
+        m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
+        solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
     }
     
     
@@ -135,6 +133,9 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
     
+    Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const = 0;
+
+    
     std::string m_Name;
     unsigned int m_PrevFlag;
     unsigned int m_patchFlag;
@@ -156,7 +157,7 @@ public:
     ~EssentialPatchBCCircular(){}
     
     
-    Real sinSquared (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
+    Real activationFunction (const Real& time, const Real& Tmax, const Real& tmax, const Real& tduration) const
     {
         Real timeInPeriod = fmod(time-tmax+0.5*tduration, 800.);
         bool inPeriod ( timeInPeriod < tduration && timeInPeriod > 0);
