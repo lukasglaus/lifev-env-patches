@@ -39,7 +39,7 @@
 #include <lifev/em/solver/HeartSolver.hpp>
 
 // PatchBC
- #include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
+ #include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircular.hpp>
 
 // Track nan
 // #include <fenv.h>
@@ -177,30 +177,9 @@ int main (int argc, char** argv)
     if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
-    
-//    //============================================
-//    // Create patches for essential patch b.c.
-//    //============================================
-//    UInt nDispPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
-//
-//    for ( UInt i (0) ; i < nDispPatchBC ; ++i )
-//    {
-//        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-//        Real patchFlag = dataFile ( ("solid/boundary_conditions/" + patchName + "/flag").c_str(), 0 );
-//
-//        Real patchRadius = dataFile ( ("solid/boundary_conditions/" + patchName + "/radius").c_str(), 1.0 );
-//        Vector3D patchCenter;
-//        for ( UInt j (0); j < 3; ++j )
-//        {
-//            patchCenter[j] = dataFile ( ("solid/boundary_conditions/" + patchName + "/center").c_str(), 0, j );
-//        }
-//
-//        heartSolver.createPatch(solver, patchCenter, patchRadius, patchFlag, (900+i));
-//    }
-    
 
     //============================================
-    // Create circular patches
+    // Create essential circular patch b.c.
     //============================================
     std::vector<EssentialPatchBC*> patchBC;
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
