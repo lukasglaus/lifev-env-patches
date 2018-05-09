@@ -17,7 +17,7 @@ TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
   biVentCoarsePatches.mesh biVentMediumPatches.mesh biVentMedium.mesh
   biVentFine.mesh singleVentConv.mesh siVent.mesh heartVCoa.mesh
   heartVVCoa.mesh heartVVVCoa.mesh heartMed.mesh heartVVCoaPatch.mesh
-  heartVCoaPatch.mesh heartCoaTr.mesh heartMedTr.mesh
+  heartVCoaPatch.mesh heartCoaTr.mesh heartMedTr.mesh heart80k.mesh
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
