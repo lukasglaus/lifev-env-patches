@@ -13,12 +13,11 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 )
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
-  SOURCE_FILES dataSingleVentricle dataXVentSingle dataSingleVentConv
-  singleVentricle.mesh xVentSingle.mesh biVentCoarse.mesh
-  biVentCoarsePatches.mesh biVentMediumPatches.mesh biVentMedium.mesh
-  biVentFine.mesh singleVentConv.mesh siVent.mesh heartVCoa.mesh
-  heartVVCoa.mesh heartVVVCoa.mesh heartMed.mesh heartVVCoaPatch.mesh
-  heartVCoaPatch.mesh heartCoaTr.mesh heartMedTr.mesh heart80kTr.mesh
+  SOURCE_FILES heartVCoa.mesh
+heartVVCoa.mesh heartVVVCoa.mesh heartMed.mesh heartVVCoaPatch.mesh heartVCoaPatch.mesh heartCoaTr.mesh heartMedTr.mesh heart50kTr.mesh heart60kTr.mesh heart80kTr.mesh heart120kTr.mesh
+
+
+
   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
