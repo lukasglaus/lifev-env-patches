@@ -112,7 +112,7 @@ hdf5_sheets_name       = sheets
 
     [../space_discretization]
     mesh_dir  	= ./
-    mesh_file 	= heartCoaTr.mesh
+    mesh_file 	= heart80k.mesh
     elem_type   = P2
 
     [../mesh_transformation]

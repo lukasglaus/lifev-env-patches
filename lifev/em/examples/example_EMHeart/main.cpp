@@ -450,7 +450,7 @@ int main (int argc, char** argv)
         }
         
         // Import and save until desired restart frame
-        Real t_ = ( restartSaveAll != "no" ? 0. : t-dtExport );
+        Real t_ = ( restartSaveAll != "no" ? 0. : t );
 
         for (t_ ; t_ <= t; t_ = t_ + dtExport)
         {
