@@ -144,6 +144,33 @@ protected:
     
 };
 
+
+//class EssentialPatchBCHandler
+//{
+//public:
+//
+//    EssentialPatchBCHandler(){}
+//    ~EssentialPatchBCHandler(){}
+//
+//    addPatch(EssentialPatchBCHandler* patch)
+//    {
+//        m_patchBCVec.push_back(patch);
+//    }
+//
+//    setup(){}
+//
+//    applyBC(){}
+//
+//    modifyPatch(){}
+//
+//
+//private:
+//
+//    std::vector<EssentialPatchBC*> m_patchBCVec
+//
+//};
+    
+    
 }
 
 #endif /* EssentialPatchBC_hpp */
