@@ -20,7 +20,7 @@
 centerline_x           = 0
 centerline_y           = 1
 centerline_z           = 0
-epi_angle              =-60.0
+epi_angle              =-30.0
 endo_angle             = 60.0
 output_fiber_filename  = FiberDirection
 hdf5_fiber_name        = fibers
