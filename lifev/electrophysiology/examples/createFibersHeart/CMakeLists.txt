@@ -14,7 +14,7 @@ TRIBITS_ADD_EXECUTABLE_AND_TEST(
 
 TRIBITS_COPY_FILES_TO_BINARY_DIR(data_heart_test_fibers_data
   SOURCE_FILES heartVCoa.mesh
-heartVVCoa.mesh heartVVVCoa.mesh heartMed.mesh heartVVCoaPatch.mesh heartVCoaPatch.mesh heartCoaTr.mesh heartMedTr.mesh heart50kTr.mesh heart60kTr.mesh heart80kTr.mesh heart120kTr.mesh
+heartVVCoa.mesh heartVVVCoa.mesh heartMed.mesh heartVVCoaPatch.mesh heartVCoaPatch.mesh heartCoaTr.mesh heartMedTr.mesh heart60kTr.mesh
 
 
 
