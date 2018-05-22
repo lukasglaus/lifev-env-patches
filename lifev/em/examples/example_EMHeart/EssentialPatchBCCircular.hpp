@@ -53,7 +53,8 @@ protected:
         Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
         bool inPeriod ( timeInPeriod < m_tduration && timeInPeriod > 0);
         Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / m_tduration) , 2 ) * m_patchDisplacement;
-        std::cout << time << " " << timeInPeriod << " " << inPeriod << " " << sinusSquared << std::endl;
+        std::cout << timeInPeriod << " " << m_patchDisplacement << " " << m_tduration << std::endl;
+        std::cout << timeInPeriod << " " << inPeriod << " " << sinusSquared << std::endl;
         return ( inPeriod ? sinusSquared : 0 );
     }
     
