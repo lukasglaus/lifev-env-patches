@@ -36,8 +36,8 @@ public:
             m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
         }
         
-        Real m_tmax = dataFile ( "solid/patches/tmax", 0. );
-        Real m_tduration = dataFile ( "solid/patches/tduration", 0. );
+        m_tmax = dataFile ( "solid/patches/tmax", 0. );
+        m_tduration = dataFile ( "solid/patches/tduration", 0. );
     }
     
 protected:
