@@ -407,7 +407,7 @@ int main (int argc, char** argv)
         
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
         const std::string restoreAllPreviousTimesteps = command_line.follow ("no", 2, "-rsa", "--restoreAllPreviousTimesteps");
-        const bool ( restoreAllPreviousTimesteps != "no" );
+        const bool = ( restoreAllPreviousTimesteps != "no" );
         
         Real dtExport = dt_save; //5.;
         
