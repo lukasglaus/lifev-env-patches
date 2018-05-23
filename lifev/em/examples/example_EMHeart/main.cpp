@@ -406,8 +406,8 @@ int main (int argc, char** argv)
         chronoRestart.start();
         
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
-        const std::string restoreAllPreviousTimesteps = command_line.follow ("no", 2, "-rsa", "--restoreAllPreviousTimesteps");
-        bool ( ! restoreAllPreviousTimesteps.compare("no") );
+        const std::string restoreAllPreviousTimestepsStr = command_line.follow ("no", 2, "-rsa", "--restoreAllPreviousTimesteps");
+        const bool restoreAllPreviousTimesteps = ( restoreAllPreviousTimestepsStr != "no" );
         
         Real dtExport = dt_save; //5.;
         
