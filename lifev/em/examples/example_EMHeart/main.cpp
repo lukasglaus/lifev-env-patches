@@ -485,7 +485,7 @@ int main (int argc, char** argv)
         }
         
         // Circulation export and/or restart
-        for (t_ = 0 ; t_ <= t; t_ = t_ + dtExport)
+        for (t_ = 0 ;  std::abs(std::remainder(t_, t)) > 0.01; t_ += dtExport)
         {
             circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
             circulationSolver.exportSolution( circulationOutputFile );
