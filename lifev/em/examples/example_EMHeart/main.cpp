@@ -452,8 +452,9 @@ int main (int argc, char** argv)
         
         // Import and save until desired restart frame
         Real t_ = ( restoreAllPreviousTimesteps ? 0. : t );
+        bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
 
-        for (t_ ; t_ <= t; t_ = t_ + dtExport)
+        for (t_ ; std::abs(std::remainder(t_, t)) > 0.01 ; t_ += dtExport)
         {
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t_);
 
