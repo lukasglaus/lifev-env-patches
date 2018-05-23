@@ -454,7 +454,7 @@ int main (int argc, char** argv)
         Real t_ = ( restoreAllPreviousTimesteps ? 0. : t );
         bool save ( std::abs(std::remainder(t, dt_save)) < 0.01 );
 
-        for (t_ ; t_ <= (t + 1e-3) ; t_ +=+ dtExport)
+        for (t_ ; t_ <= t ; t_ += dtExport)
         {
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t_);
 
@@ -485,10 +485,12 @@ int main (int argc, char** argv)
         }
         
         // Circulation export and/or restart
-        for (t_ = 0 ; t_ <= (t + 1e-3) ; t_ += dtExport)
+        for (t_ = 0 ; t_ <= t ; t_ += dtExport)
         {
             circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) );
             circulationSolver.exportSolution( circulationOutputFile );
+            
+            if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << t_ << ": import circulation sub steps" << std::endl;
             
             if (t_ < t)
             {
