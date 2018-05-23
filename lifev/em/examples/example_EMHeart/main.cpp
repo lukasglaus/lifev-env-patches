@@ -406,8 +406,9 @@ int main (int argc, char** argv)
         chronoRestart.start();
         
         const std::string restartDir = command_line.follow (problemFolder.c_str(), 2, "-rd", "--restartDir");
-        std::string restartSaveAll = command_line.follow ("no", 2, "-rsa", "--restartSaveAll");
-
+        const std::string restoreAllPreviousTimesteps = command_line.follow ("no", 2, "-rsa", "--restoreAllPreviousTimesteps");
+        const bool ( restoreAllPreviousTimesteps != "no" );
+        
         Real dtExport = dt_save; //5.;
         
         // Set time variable
@@ -416,15 +417,15 @@ int main (int argc, char** argv)
         t = nIter * dt_mechanics;
         
         // Set time exporter time index
-        if ( restartSaveAll == "no" ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
+        if ( restoreAllPreviousTimesteps ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
 
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
 
         // Import and save initial conditions
-        if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << std::endl;
+        if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << " ; restart input = " << restartInput << " ; time index = " << restartInputStr << std::endl;
         
-        if ( restartSaveAll != "no" )
+        if ( restoreAllPreviousTimesteps )
         {
             if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << "-1" << ": import frame " << "00000" << std::endl;
 
@@ -450,7 +451,7 @@ int main (int argc, char** argv)
         }
         
         // Import and save until desired restart frame
-        Real t_ = ( restartSaveAll != "no" ? 0. : t );
+        Real t_ = ( restoreAllPreviousTimesteps ? 0. : t );
 
         for (t_ ; t_ <= t; t_ = t_ + dtExport)
         {
@@ -514,6 +515,8 @@ int main (int argc, char** argv)
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
         bcValues4thOAB = { p ( "lv" ) , p ( "rv" ) };
         //modifyPressureBC(bcValues);
+        
+        if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << " done ; restart input = " << restartInput << " ; time index = " << restartInputStr << std::endl;
         
         modifyEssentialPatchBC(t);
         modifyPressureBC(bcValues);
