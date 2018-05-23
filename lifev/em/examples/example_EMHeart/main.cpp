@@ -417,7 +417,7 @@ int main (int argc, char** argv)
         t = nIter * dt_mechanics;
         
         // Set time exporter time index
-        if ( restoreAllPreviousTimesteps ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
+        // if ( restoreAllPreviousTimesteps ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
 
         // Load restart solutions from output files
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
@@ -428,7 +428,9 @@ int main (int argc, char** argv)
         if ( restoreAllPreviousTimesteps )
         {
             if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << "-1" << ": import frame " << "00000" << std::endl;
-
+            
+            heartSolver.exporter()->setTimeIndex(0);
+            
             ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, "00000" );
             
             for ( unsigned int i = 0; i < solver.electroSolverPtr()->ionicModelPtr()->Size() ; ++i )
@@ -449,6 +451,10 @@ int main (int argc, char** argv)
                 std::cout << "\n*****************************************************************\n";
             }
         }
+        else
+        {
+            heartSolver.exporter()->setTimeIndex(restartInputStr);
+        }
         
         // Import and save until desired restart frame
         Real t_ = ( restoreAllPreviousTimesteps ? 0. : t );
@@ -457,7 +463,7 @@ int main (int argc, char** argv)
         for (t_ ; t_ <= t ; t_ += dtExport)
         {
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t_);
-
+            
             std::string importNumber = "00000" + std::to_string(int(t_ / dtExport + 1.0));
             importNumber = importNumber.substr(importNumber.length() - 5, importNumber.length());
             if ( 0 == comm->MyPID() ) std::cout << "TIME = " << t_ << ": import frame " << importNumber << std::endl;
