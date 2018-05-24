@@ -415,7 +415,6 @@ int main (int argc, char** argv)
         const unsigned int restartInputStr = std::stoi(restartInput);
         const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
         t = nIter * dt_mechanics;
-        if ( 0 == comm->MyPID() ) std::cout << " t = " << t << " nIter = " << nIter << std::endl;
 
         // Set time exporter time index
         // if ( restoreAllPreviousTimesteps ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
@@ -424,8 +423,6 @@ int main (int argc, char** argv)
         std::string polynomialDegree = dataFile ( "solid/space_discretization/order", "P2");
 
         // Import and save initial conditions
-        if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << " ; restart input = " << restartInput << " ; time index = " << restartInputStr << std::endl;
-        
         if ( restoreAllPreviousTimesteps )
         {
             if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << "-1" << ": import frame " << "00000" << std::endl;
@@ -523,10 +520,7 @@ int main (int argc, char** argv)
         // Set boundary mechanics conditions
         bcValues = { p ( "lv" ) , p ( "rv" ) };
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
-        bcValues4thOAB = { p ( "lv" ) , p ( "rv" ) };
-        //modifyPressureBC(bcValues);
-        
-        if ( 0 == comm->MyPID() ) std::cout << "Restart from time " << t << " done ; restart input = " << restartInput << " ; time index = " << restartInputStr << std::endl;
+        bcValues4thOAB = { p ( "lv" ) , p ( "rv" ) };        
         
         modifyEssentialPatchBC(t);
         modifyPressureBC(bcValues);

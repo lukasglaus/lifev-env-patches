@@ -387,9 +387,7 @@ solveLin ()
     
     if (! this->M_jacobian->filled())
     {
-        this->M_Displayer->leaderPrint ("\n jacobian not filled \n");
-        this->M_Displayer->leaderPrint ("\n jacobian not filled \n");
-        this->M_Displayer->leaderPrint ("\n jacobian not filled \n");
+        this->M_Displayer->leaderPrint ("\n jacobian empty \n");
 
         *this->M_jacobian *= 0.0;
         updateJacobian ( *this->M_disp, this->M_jacobian );
@@ -397,8 +395,6 @@ solveLin ()
     }
     else
     {
-        this->M_Displayer->leaderPrint ("\n jacobian filled \n");
-        this->M_Displayer->leaderPrint ("\n jacobian filled \n");
         this->M_Displayer->leaderPrint ("\n jacobian filled \n");
     }
     
