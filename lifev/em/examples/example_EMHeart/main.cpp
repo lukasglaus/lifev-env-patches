@@ -410,12 +410,13 @@ int main (int argc, char** argv)
         const bool restoreAllPreviousTimesteps = ( restoreAllPreviousTimestepsStr != "no" );
         
         Real dtExport = dt_save; //5.;
-        
+
         // Set time variable
         const unsigned int restartInputStr = std::stoi(restartInput);
         const unsigned int nIter = (restartInputStr - 1) * dtExport / dt_mechanics;
         t = nIter * dt_mechanics;
-        
+        if ( 0 == comm->MyPID() ) std::cout << " t = " << t << " nIter = " << nIter << std::endl;
+
         // Set time exporter time index
         // if ( restoreAllPreviousTimesteps ) heartSolver.exporter()->setTimeIndex(restartInputStr); // + 1);
 
