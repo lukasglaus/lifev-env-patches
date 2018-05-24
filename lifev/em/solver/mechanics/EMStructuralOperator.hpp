@@ -385,6 +385,23 @@ solveLin ()
     this->evalResidual ( residual, *this->M_disp, 0 );
     const vector_Type& res = residual;
     
+    if (! this->M_jacobian->filled())
+    {
+        this->M_Displayer->leaderPrint ("\n jacobian not filled \n");
+        this->M_Displayer->leaderPrint ("\n jacobian not filled \n");
+        this->M_Displayer->leaderPrint ("\n jacobian not filled \n");
+
+        *this->M_jacobian *= 0.0;
+        updateJacobian ( *this->M_disp, this->M_jacobian );
+        this->M_jacobian -> globalAssemble();
+    }
+    else
+    {
+        this->M_Displayer->leaderPrint ("\n jacobian filled \n");
+        this->M_Displayer->leaderPrint ("\n jacobian filled \n");
+        this->M_Displayer->leaderPrint ("\n jacobian filled \n");
+    }
+    
     Real eta_max  = std::fabs( this->M_nonlinearParameters.M_etamax );
     this->solveJacobian (step,  res, eta_max, this->M_BCh);
     
