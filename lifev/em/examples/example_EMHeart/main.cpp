@@ -463,7 +463,7 @@ int main (int argc, char** argv)
             
             std::string importNumber = "00000" + std::to_string(int(t_ / dtExport + 1.0));
             importNumber = importNumber.substr(importNumber.length() - 5, importNumber.length());
-            if ( 0 == comm->MyPID() ) std::cout << "TIME = " << t_ << ": import frame " << importNumber << nIter << restartInputStr << restartInput << std::endl;
+            if ( 0 == comm->MyPID() ) std::cout << "TIME = " << t_ << ": import frame " << importNumber << std::endl;
             
             ElectrophysiologyUtility::importVectorField ( solver.structuralOperatorPtr() -> displacementPtr(), "humanHeartSolution" , "Displacement", solver.localMeshPtr(), restartDir, polynomialDegree, importNumber );
 
