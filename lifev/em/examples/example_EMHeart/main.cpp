@@ -640,7 +640,6 @@ int main (int argc, char** argv)
     }
 
     LifeChrono chronoExport;
-    chronoExport.start();
     
     for (int k (1); k <= maxiter; k++)
     {
@@ -652,6 +651,7 @@ int main (int argc, char** argv)
         }
 
         t = t + dt_activation;
+        chronoExport.start();
 
         
         //============================================
@@ -894,6 +894,7 @@ int main (int argc, char** argv)
         if ( save )
         {
             heartSolver.postProcess(t);
+            chronoExport.stop();
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
