@@ -354,6 +354,7 @@ int main (int argc, char** argv)
     const Real activationLimit_loadstep =  dataFile ( "solid/time_discretization/activation_limit_loadstep", 0.0 );
     const Real dt_mechanics = solver.data().solidParameter<Real>("timestep");
     const Real dt_save = dataFile ( "exporter/save", 10. );
+    Real exportTime (0.);
     const Real endtime = solver.data().electroParameter<Real>("endtime");
     const UInt mechanicsLoadstepIter = static_cast<UInt>( dt_loadstep / dt_activation );
     const UInt mechanicsCouplingIter = static_cast<UInt>( dt_mechanics / dt_activation );
@@ -640,7 +641,8 @@ int main (int argc, char** argv)
     }
 
     LifeChrono chronoExport;
-    
+    chronoExport.start();
+
     for (int k (1); k <= maxiter; k++)
     {
         if ( 0 == comm->MyPID() )
@@ -651,8 +653,6 @@ int main (int argc, char** argv)
         }
 
         t = t + dt_activation;
-        chronoExport.start();
-
         
         //============================================
         // Solve electrophysiology and activation
@@ -894,11 +894,16 @@ int main (int argc, char** argv)
         if ( save )
         {
             heartSolver.postProcess(t);
-            chronoExport.stop();
+            
+            Real chronoTimeNow = chronoExport.diff()
+            Real chronoDiffToLastSave = chronoTimeNow - exportTime;
+            exportTime = chronoTimeNow;
+            
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nPrevious " << dt_save << " ms computed in " << chronoExport.diff() << " s";
+                std::cout << "\nTotal simulation time: " << chronoTimeNow << " s";
+                std::cout << "\nPrevious " << dt_save << " ms computed in " << chronoDiffToLastSave << " s";
                 std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
             }
         }
