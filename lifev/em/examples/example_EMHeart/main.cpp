@@ -895,7 +895,7 @@ int main (int argc, char** argv)
         {
             heartSolver.postProcess(t);
             
-            Real chronoTimeNow = chronoExport.diff()
+            Real chronoTimeNow = chronoExport.diff();
             Real chronoDiffToLastSave = chronoTimeNow - exportTime;
             exportTime = chronoTimeNow;
             
