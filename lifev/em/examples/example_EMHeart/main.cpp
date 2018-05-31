@@ -902,7 +902,7 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-                std::cout << "\nTotal simulation time: " << chronoTimeNow << " s";
+                std::cout << "\nTotal simulation time at t = " << t << " ms is " << chronoTimeNow << " s";
                 std::cout << "\nPrevious " << dt_save << " ms computed in " << chronoDiffToLastSave << " s";
                 std::cout << "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n\n";
             }
