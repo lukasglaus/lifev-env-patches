@@ -496,17 +496,17 @@ int main (int argc, char** argv)
             
             if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << t_ << ": import circulation sub steps" << std::endl;
             
-//            if (t_ < t)
-//            {
-//                for (int nSub (1); nSub < dtExport/dt_mechanics; ++nSub)
-//                {
-//                    if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << t_ + nSub*dt_mechanics << ": import circulation sub steps" << std::endl;
-//
-//                    circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) + nSub );
-//                    circulationSolver.exportSolution( circulationOutputFile );
-//
-//                }
-//            }
+            if (t_ < t)
+            {
+                for (int nSub (1); nSub < dtExport/dt_mechanics; ++nSub)
+                {
+                    if ( 0 == comm->MyPID() ) std::cout << "  TIME = " << t_ + nSub*dt_mechanics << ": import circulation sub steps" << std::endl;
+                    
+                    circulationSolver.restartFromFile ( restartDir + "solution.dat" , int(t_/dt_mechanics) + nSub );
+                    circulationSolver.exportSolution( circulationOutputFile );
+                    
+                }
+            }
 
         }
         
