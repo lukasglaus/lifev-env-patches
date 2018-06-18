@@ -707,14 +707,17 @@ void EMMonodomainSolver<Mesh>::setupStiffnessMatrix()
 
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
     {
-//        std::cout << "=========================\n";
-//        std::cout << "Using mechanical feedback\n";
-//        std::cout << "=========================\n";
+        std::cout << "=========================\n";
+        std::cout << "Using mechanical feedback\n";
+        std::cout << "=========================\n";
         //        setupStiffnessMatrix (M_displacementPtr);
         setupStiffnessMatrixWithMehcanicalFeedback ();
     }
     else
     {
+        std::cout << "=========================\n";
+        std::cout << "Using no mechanical feedback\n";
+        std::cout << "=========================\n";
         super::setupStiffnessMatrix();
     }
 }
@@ -725,8 +728,7 @@ void EMMonodomainSolver<Mesh>::setupStiffnessMatrixWithMehcanicalFeedback ()
 {
     if (this->M_verbose && this->M_localMeshPtr->comm()->MyPID() == 0)
     {
-        std::cout
-                << "\nETA Monodomain Solver: Setting up stiffness matrix  coupling with mechanics";
+        std::cout << "\nETA Monodomain Solver: Setting up stiffness matrix  coupling with mechanics";
     }
 
     *this->M_stiffnessMatrixPtr *= 0.0;
