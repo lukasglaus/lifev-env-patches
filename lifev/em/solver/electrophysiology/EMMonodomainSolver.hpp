@@ -778,15 +778,8 @@ void EMMonodomainSolver<Mesh>::setupMatrices()
 template<typename Mesh>
 void EMMonodomainSolver<Mesh>::updateMatrices()
 {
-            std::cout << "=========================\n";
-            std::cout << "Using mechanical feedback\n";
-            std::cout << "=========================\n";
     if (M_displacementPtr && !M_oneWayCoupling && M_mechanicsModifiesConductivity)
     {
-        std::cout << "=========================\n";
-        std::cout << "Using 2 feedback\n";
-        std::cout << "=========================\n";
-        
         setupMassMatrixWithMehcanicalFeedback();
         setupStiffnessMatrixWithMehcanicalFeedback();
         super::setupGlobalMatrix();
