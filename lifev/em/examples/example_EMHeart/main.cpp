@@ -900,8 +900,8 @@ int main (int argc, char** argv)
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n******************************************";
-            std::cout << "\nLeft ventricular power is " << leftVentPower;
-            std::cout << "\nRight ventricular power is " << rightVentPower;
+            std::cout << "\nLeft ventricular power is " << leftVentPower << " " << p("lv");
+            std::cout << "\nRight ventricular power is " << disp.normInf();
             std::cout << "\n******************************************\n\n";
         }
 
