@@ -898,7 +898,7 @@ int main (int argc, char** argv)
         Real patchPower2 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
 
         Real dispNormInf;
-        disp.normInfo(dispNormInf);
+        disp.normInf(dispNormInf);
         
         if ( 0 == comm->MyPID() )
         {
