@@ -901,7 +901,7 @@ int main (int argc, char** argv)
         {
             std::cout << "\n******************************************";
             std::cout << "\nLeft ventricular power is " << leftVentPower;// << " " << p("lv");
-            std::cout << "\nRight ventricular power is " << disp.normInf();
+            //std::cout << "\nRight ventricular power is " << disp.normInf();
             std::cout << "\n******************************************\n\n";
         }
 
