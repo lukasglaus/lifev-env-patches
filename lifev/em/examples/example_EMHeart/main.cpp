@@ -897,11 +897,14 @@ int main (int argc, char** argv)
         Real patchPower1 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
         Real patchPower2 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
 
+        Real dispNormInf;
+        disp.normInfo(dispNormInf);
+        
         if ( 0 == comm->MyPID() )
         {
             std::cout << "\n******************************************";
             std::cout << "\nLeft ventricular power is " << leftVentPower;// << " " << p("lv");
-            //std::cout << "\nRight ventricular power is " << disp.normInf();
+            std::cout << "\nRight ventricular power is " << dispNormInf;
             std::cout << "\n******************************************\n\n";
         }
 
