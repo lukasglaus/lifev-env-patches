@@ -1007,7 +1007,6 @@ WallTensionEstimator<Mesh >::analyzeTensionsRecoveryVonMisesStress ()
     *M_sigmaVonMises += stressComponent1 * stressComponent1
                         +  stressComponent2 * stressComponent2
                         +  stressComponent3 * stressComponent3;
-    *M_sigmaVonMises *= 6.;
 
     //Diagonal elements
     exportStressXX ( stressComponent1 );

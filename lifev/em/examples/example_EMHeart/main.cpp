@@ -887,29 +887,30 @@ int main (int argc, char** argv)
             //============================================
             if ( 0 == comm->MyPID() ) circulationSolver.exportSolution( circulationOutputFile );
             
+            
+            //============================================
+            // Power computations
+            //============================================
+            Real leftVentPower = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
+            Real rightVentPower = heartSolver.externalPower(disp, dispPre, dETFESpace, p("rv"), dt_mechanics, 455);
+            Real patchPower1 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
+            Real patchPower2 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
+            
+            Real dispNormInf;
+            disp.normInf(dispNormInf);
+            
+            if ( 0 == comm->MyPID() )
+            {
+                std::cout << "\n******************************************";
+                std::cout << "\nLeft ventricular power is " << leftVentPower;// << " " << p("lv");
+                std::cout << "\nRight ventricular power is " << dispNormInf;
+                std::cout << "\n******************************************\n\n";
+            }
+            
+            dispPre = disp;
+            
         }
         
-        //============================================
-        // Power computations
-        //============================================
-        Real leftVentPower = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
-        Real rightVentPower = heartSolver.externalPower(disp, dispPre, dETFESpace, p("rv"), dt_mechanics, 455);
-        Real patchPower1 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
-        Real patchPower2 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
-
-        Real dispNormInf;
-        disp.normInf(dispNormInf);
-        
-        if ( 0 == comm->MyPID() )
-        {
-            std::cout << "\n******************************************";
-            std::cout << "\nLeft ventricular power is " << leftVentPower;// << " " << p("lv");
-            std::cout << "\nRight ventricular power is " << dispNormInf;
-            std::cout << "\n******************************************\n\n";
-        }
-
-        dispPre = disp;
-
         
         //============================================
         // Export FE-solution
