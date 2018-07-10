@@ -269,7 +269,7 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                      "Principal Stress",
                                      M_emSolver.electroSolverPtr()->feSpacePtr(),
-                                     M_emSolver.tensionEstimator().principal stresses(),
+                                     M_emSolver.tensionEstimator().principalStresses(),
                                      UInt (0) );
         
         
