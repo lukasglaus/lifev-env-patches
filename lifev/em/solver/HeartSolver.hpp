@@ -266,29 +266,29 @@ public:
                                      M_emSolver.tensionEstimator().vonMisesStressPtr(),
                                      UInt (0) );
         
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "Principal Stress",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     M_emSolver.tensionEstimator().principalStressesPtr(),
-//                                     UInt (0) );
-//
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "X Stress Total",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     M_emSolver.tensionEstimator().sigmaXPtr(),
-//                                     UInt (0) );
-//
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "Y Stress Total",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     M_emSolver.tensionEstimator().sigmaYPtr(),
-//                                     UInt (0) );
-//
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "Z Stress Total",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     M_emSolver.tensionEstimator().sigmaZPtr(),
-//                                     UInt (0) );
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Principal Stress",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().principalStressesPtr(),
+                                     UInt (0) );
+        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "X Stress Total",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().sigmaXPtr(),
+                                     UInt (0) );
+    
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Y Stress Total",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().sigmaYPtr(),
+                                     UInt (0) );
+    
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Z Stress Total",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().sigmaZPtr(),
+                                     UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Fibers",
@@ -348,9 +348,9 @@ public:
     {
         // Compute Von Mises stress, principal stresses and Cauchy stresses
         M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()->displacement() );
-        M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
+        //M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryCauchyStresses();
-        M_emSolver.tensionEstimator().analyzeTensionsRecoveryEigenvalues();
+        //M_emSolver.tensionEstimator().analyzeTensionsRecoveryEigenvalues();
 
         // Compute deformed fiber direction
         M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->f(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
