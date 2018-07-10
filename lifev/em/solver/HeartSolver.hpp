@@ -269,7 +269,7 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Principal Stress",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                     M_emSolver.tensionEstimator().principalStresses(),
+                                     *M_emSolver.tensionEstimator().principalStresses(),
                                      UInt (0) );
         
         
