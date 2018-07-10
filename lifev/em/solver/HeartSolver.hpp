@@ -272,7 +272,24 @@ public:
                                      M_emSolver.tensionEstimator().principalStressesPtr(),
                                      UInt (0) );
         
-        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "X Stress Total",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().sigmaXPtr(),
+                                     UInt (0) );
+    
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Y Stress Total",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().sigmaYPtr(),
+                                     UInt (0) );
+    
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Z Stress Total",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.tensionEstimator().sigmaZPtr(),
+                                     UInt (0) );
+
         // export stresses
         // export global eigenvalue vector
         
