@@ -348,8 +348,8 @@ public:
     {
         // Compute Von Mises stress, principal stresses and Cauchy stresses
         M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()->displacement() );
-        //M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryCauchyStresses();
+        M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
         //M_emSolver.tensionEstimator().analyzeTensionsRecoveryEigenvalues();
 
         // Compute deformed fiber direction
