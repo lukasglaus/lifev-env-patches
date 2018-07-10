@@ -266,9 +266,9 @@ public:
                                      M_emSolver.tensionEstimator().vonMisesStressPtr(),
                                      UInt (0) );
         
-        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Principal Stress",
-                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.tensionEstimator().principalStresses(),
                                      UInt (0) );
         
