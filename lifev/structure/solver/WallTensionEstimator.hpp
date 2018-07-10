@@ -419,7 +419,11 @@ public:
          return M_sigmaVonMises;
     }
     
-    
+    solutionVectPtr_Type principalStressesPtr() const
+    {
+        return M_globalEigenvalues;
+    }
+
     //! Get the global vector for the eigenvalues
     solutionVect_Type principalStresses() const
     {
