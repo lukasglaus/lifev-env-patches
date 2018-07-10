@@ -332,9 +332,11 @@ public:
     
     void postProcess(const Real& time)
     {
-        // Compute Von Mises stress
+        // Compute Von Mises stress, principal stresses and Cauchy stresses
         M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()->displacement() );
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryVonMisesStress();
+        M_emSolver.tensionEstimator().analyzeTensionsRecoveryEigenvalues();
+        M_emSolver.tensionEstimator().analyzeTensionsRecoveryCauchyStresses();
 
         // Compute deformed fiber direction
         M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->f(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->fiberVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
