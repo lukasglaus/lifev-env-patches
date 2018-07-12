@@ -376,6 +376,8 @@ int main (int argc, char** argv)
     VectorSmall<2> VCirc, VCircNew, VCircPert, VFe, VFeNew, VFePert, R, dp;
     MatrixSmall<2,2> JFe, JCirc, JR;
 
+    VectorSmall<2> AvgWorkVent;
+    
     UInt iter (0);
     Real t (0);
     
@@ -893,17 +895,17 @@ int main (int argc, char** argv)
             //============================================
             Real leftVentPower = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
             Real rightVentPower = heartSolver.externalPower(disp, dispPre, dETFESpace, p("rv"), dt_mechanics, 455);
-            Real patchPower1 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
-            Real patchPower2 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 454);
+            //Real patchPower1 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("lv"), dt_mechanics, 900);
+            //Real patchPower2 = heartSolver.externalPower(disp, dispPre, dETFESpace, p("rv"), dt_mechanics, 901);
             
-            Real dispNormInf;
-            disp.normInf(dispNormInf);
-            
+            AvgWorkVent(0) += leftVentPower * dt_mechanics;
+            AvgWorkVent(1) += rightVentPower * dt_mechanics;
+
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n******************************************";
-                std::cout << "\nLeft ventricular power is " << leftVentPower;// << " " << p("lv");
-                std::cout << "\nRight ventricular power is " << dispNormInf;
+                std::cout << "\nInstantaneous left and right ventricular power is " << leftVentPower << " / " << rightVentPower;
+                std::cout << "\nAveraged left and right ventricular power is " << AvgWorkVent(0) / t << " / " << AvgWorkVent(1) / t;
                 std::cout << "\n******************************************\n\n";
             }
             

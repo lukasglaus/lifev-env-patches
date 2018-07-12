@@ -399,7 +399,7 @@ public:
             integrate ( boundary ( dispETFESpace->mesh(), bdFlag),
                        myBDQR,
                        dispETFESpace,
-                       p * J * dot( FmT * Nface,  phi_i)
+                       value(-1.0) * p * J * dot( FmT * Nface,  phi_i)
                        //p * J * dot( FmT * Nface,  phi_i)
                        //value(-1.0) * J * dot (vE1, FmT * Nface) * phi_i) >> intergral
                        ) >> traction;
