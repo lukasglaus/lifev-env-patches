@@ -84,7 +84,7 @@ public:
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
         }
 
-        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10);
+        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10, 0.0);
 
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
@@ -96,7 +96,7 @@ public:
         
         Real currentPatchDisp = activationFunction(time) + 1e-6;
 
-        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp);
+        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
         if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent patch-" << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
