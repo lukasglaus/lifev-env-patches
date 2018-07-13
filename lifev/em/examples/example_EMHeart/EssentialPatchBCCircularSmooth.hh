@@ -42,7 +42,7 @@ public:
     
 protected:
     
-    virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp) const
+    virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
     {
         vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
@@ -52,14 +52,62 @@ protected:
         
         for (int j (0); j < nCompLocalDof; ++j)
         {
+            // Get coordiantes
             UInt iGID = vectorField->blockMap().GID (j);
             UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
             UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+            
+            Vector3D coord;
+            
+            coord(0) = dFeSpace->mesh().point(iGID).x() + disp(iGID);
+            coord(1) = dFeSpace->mesh().point(iGID).y() + disp(jGID);
+            coord(2) = dFeSpace->mesh().point(iGID).z() + disp(kGID);
+
+            // Radial and axial distance to center line
+            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
+            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
+            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction
+            
+            
+            // If coordiantes inside or outside of a certain radius
+            // If patch inside or outside the structureFE
+            
+            // Scale the direction vector
+            
             
             (*vectorField)[iGID] = direction[0];
             (*vectorField)[jGID] = direction[1];
             (*vectorField)[kGID] = direction[2];
         }
+        
+        
+//        // New P1 Space
+//        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( M_localMeshPtr, "P1", 3, M_fullMesh.comm() );
+//
+//        // Create P1 VectorEpetra
+//        VectorEpetra p1PositionVector (p1FESpace.map());
+//
+//        // Fill P1 vector with mesh values
+//        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+//        for (int j (0); j < p1nCompLocalDof; j++)
+//        {
+//            UInt iGID = p1PositionVector.blockMap().GID (j);
+//            UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+//            UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+//
+//            p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
+//            p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
+//            p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
+//        }
+//
+//        // Interpolate position vector from P1-space to current space
+//        VectorEpetra positionVector ( disp.map() );
+//        positionVector = M_FESpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
+//
+//        // Add displacement to position vector
+//        positionVector += disp;
+
+        
         
         return vectorField;
     }
