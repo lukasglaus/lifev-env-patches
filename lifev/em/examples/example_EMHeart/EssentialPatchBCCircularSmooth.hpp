@@ -72,7 +72,7 @@ protected:
             auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
             
             
-            // If patch inside or outside the structure aaa
+            // If patch inside or outside the structure 
             
             // Scale the direction vector
             
