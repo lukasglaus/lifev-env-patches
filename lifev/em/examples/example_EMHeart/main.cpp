@@ -196,7 +196,7 @@ int main (int argc, char** argv)
     {
         std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         
-        std::string fiberFileName  =  dataFile ( "solid/space_discretization/fiber_name", "FiberDirection");
+        std::string fiberFileName  =  dataFile ( "solid/boundary_conditions/" + patchName + "/type", "FiberDirection");
 
         std::string patchType = dataFile ( "solid/boundary_conditions/" + patchName + "/type", "EssentialPatchBCCircular" );
         patchBC.push_back(CREATE(EssentialPatchBC, patchType));
