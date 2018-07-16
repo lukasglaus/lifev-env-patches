@@ -47,7 +47,8 @@
 #include <lifev/em/solver/HeartSolver.hpp>
 
 // PatchBC
- #include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircularSmooth.hpp>
+#include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircular.hpp>
+#include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircularSmooth.hpp>
 
 // Track nan
 // #include <fenv.h>
@@ -193,7 +194,7 @@ int main (int argc, char** argv)
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
-        patchBC.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircularSmooth"));
+        patchBC.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircular"));
         auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
         patchBC[i]->setup(dataFile, patchName);
         patchBC[i]->createPatchArea(solver, 900 + i);
