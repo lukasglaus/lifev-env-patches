@@ -49,7 +49,7 @@ protected:
         
         direction.normalize();
         
-        if ( vectorField->comm()->MyPID() == 0 ) std::cout << "directionalVectorField" << std::endl;
+        if ( vectorField->comm().MyPID() == 0 ) std::cout << "directionalVectorField" << std::endl;
 
         
         for (int j (0); j < nCompLocalDof; ++j)
@@ -83,7 +83,7 @@ protected:
             (*vectorField)[jGID] = displacementVec[1];
             (*vectorField)[kGID] = displacementVec[2];
         }
-        if ( vectorField->comm()->MyPID() == 0 ) std::cout << "directionalVectorField done" << std::endl;
+        if ( vectorField->comm().MyPID() == 0 ) std::cout << "directionalVectorField done" << std::endl;
 
         return vectorField;
     }
