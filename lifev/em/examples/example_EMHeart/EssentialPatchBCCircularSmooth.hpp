@@ -71,45 +71,15 @@ protected:
             Real radiusDispFactor (0.5);
             auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
             
-            
             // If patch inside or outside the structure 
             
-            // Scale the direction vector
             
+            // Scale the direction vector
             auto displacementVec = displacement * direction;
             (*vectorField)[iGID] = displacementVec[0];
             (*vectorField)[jGID] = displacementVec[1];
             (*vectorField)[kGID] = displacementVec[2];
         }
-        
-        
-//        // New P1 Space
-//        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( M_localMeshPtr, "P1", 3, M_fullMesh.comm() );
-//
-//        // Create P1 VectorEpetra
-//        VectorEpetra p1PositionVector (p1FESpace.map());
-//
-//        // Fill P1 vector with mesh values
-//        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
-//        for (int j (0); j < p1nCompLocalDof; j++)
-//        {
-//            UInt iGID = p1PositionVector.blockMap().GID (j);
-//            UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
-//            UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
-//
-//            p1PositionVector[iGID] = M_fullMesh.point (iGID).x();
-//            p1PositionVector[jGID] = M_fullMesh.point (iGID).y();
-//            p1PositionVector[kGID] = M_fullMesh.point (iGID).z();
-//        }
-//
-//        // Interpolate position vector from P1-space to current space
-//        VectorEpetra positionVector ( disp.map() );
-//        positionVector = M_FESpace -> feToFEInterpolate(p1FESpace, p1PositionVector);
-//
-//        // Add displacement to position vector
-//        positionVector += disp;
-
-        
         
         return vectorField;
     }
