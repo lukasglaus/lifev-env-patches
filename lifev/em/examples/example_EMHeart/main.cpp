@@ -198,7 +198,7 @@ int main (int argc, char** argv)
         if ( 0 == comm->MyPID() ) std::cout << "patch name: " << patchName << std::endl;
         const std::string patchType = "EssentialPatchBCCircularSmooth"; //dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
         if ( 0 == comm->MyPID() ) std::cout << "patch type: " << patchType << std::endl;
-        patchBC.push_back(CREATE(EssentialPatchBC, patchType));
+        patchBC.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircularSmooth"));
         patchBC[i]->setup(dataFile, patchName);
         patchBC[i]->createPatchArea(solver, 900 + i);
     }
