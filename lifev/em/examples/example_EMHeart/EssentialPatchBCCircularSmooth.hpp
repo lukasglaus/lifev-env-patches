@@ -6,8 +6,8 @@
 //  Copyright © 2018 Thomas Kummer. All rights reserved.
 //
 
-#ifndef EssentialPatchBCCircular_hpp
-#define EssentialPatchBCCircular_hpp
+#ifndef EssentialPatchBCCircularSmooth_hpp
+#define EssentialPatchBCCircularSmooth_hpp
 
 #include <stdio.h>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
