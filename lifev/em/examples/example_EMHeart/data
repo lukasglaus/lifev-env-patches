@@ -42,7 +42,7 @@ monodomain_xml_file = ParamListE.xml
     [./physics]
     ActivationModel         = ActiveStrainRossi14
     CalciumIndex            = 3
-    ActiveForceCoefficient  = -6.25  # -7.0 # -7.3
+    ActiveForceCoefficient  = -0.0  # -6.25  # -7.0 # -7.3
     InverseViscosity        = 0.0002
     ChemicalThreshold       = 0.21
 
@@ -210,19 +210,19 @@ monodomain_xml_file = ParamListE.xml
         [./EssentialPatch1]
         flag            = 464
         center          = '-1.8 -7.0 -4.5'
-        radius          = 2.0
+        radius          = 2.5
         component       = '0 2'
         direction       = '1.0 0.0 1.0'
-        displacement    = 0.9
+        displacement    = 1.5
 
 
         [../EssentialPatch2]
         flag            = 464
         center          = '3.5 -7.0 1.0'
-        radius          = 2.0
+        radius          = 2.5
         component       = '0 2'
         direction       = '-1.0 0.0 -1.0'
-        displacement    = 0.9
+        displacement    = 1.5
 
         [../]
 
@@ -230,7 +230,7 @@ monodomain_xml_file = ParamListE.xml
     [../patches]
     testAtPreload       = false
     tmax                = 250 #150 #200 #250
-    tduration           = 300
+    tduration           = 350 #300
 
     [../coupling]
     pPerturbationFe         = 1e-3
