@@ -71,7 +71,7 @@ public:
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "applyBC" << std::cout;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "Apply patch b.c. " << m_Name << " ... " <<;
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
@@ -93,7 +93,7 @@ public:
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
       
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "applyBC done" << std::cout;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "done" << std::endl;
 
     }
     

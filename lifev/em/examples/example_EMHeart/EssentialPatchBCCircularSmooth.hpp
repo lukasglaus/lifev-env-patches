@@ -49,41 +49,42 @@ protected:
         
         direction.normalize();
         
-        if ( vectorField->comm().MyPID() == 0 ) std::cout << "directionalVectorField" << std::endl;
+        if ( vectorField->comm().MyPID() == 0 ) std::cout << "Create directional " << m_Name << " vector field ... ";
 
         
         for (int j (0); j < nCompLocalDof; ++j)
         {
-            // Get coordiantes
-            UInt iGID = vectorField->blockMap().GID (j);
-            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-            
-            Vector3D coord;
-            
-            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
-            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
-            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
-
-            // Radial and axial distance to center line
-            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
-            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-            
-            // If coordiantes inside or outside of a certain radius
-            Real radiusDispFactor (0.5);
-            auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
-            
-            // If patch inside or outside the structure 
-            
-            
-            // Scale the direction vector
-            auto displacementVec = displacement * direction;
-            (*vectorField)[iGID] = displacementVec[0];
-            (*vectorField)[jGID] = displacementVec[1];
-            (*vectorField)[kGID] = displacementVec[2];
+//            // Get coordiantes
+//            UInt iGID = vectorField->blockMap().GID (j);
+//            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+//            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+//
+//            Vector3D coord;
+//
+//            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
+//            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
+//            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
+//
+//            // Radial and axial distance to center line
+//            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
+//            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
+//            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
+//
+//            // If coordiantes inside or outside of a certain radius
+//            Real radiusDispFactor (0.5);
+//            auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
+//
+//            // If patch inside or outside the structure
+//
+//
+//            // Scale the direction vector
+//            auto displacementVec = displacement * direction;
+            (*vectorField)[iGID] = direction[0];
+            (*vectorField)[jGID] = direction[1];
+            (*vectorField)[kGID] = direction[2];
         }
-        if ( vectorField->comm().MyPID() == 0 ) std::cout << "directionalVectorField done" << std::endl;
+        
+        if ( vectorField->comm().MyPID() == 0 ) std::cout << "done" << std::endl;
 
         return vectorField;
     }
