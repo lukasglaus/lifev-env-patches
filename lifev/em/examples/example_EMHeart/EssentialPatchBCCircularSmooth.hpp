@@ -65,7 +65,7 @@ protected:
             // Radial and axial distance to center line
             auto currentPatchCenter = m_Center + activationFunction(time) * direction;
             auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction
+            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
             
             // If coordiantes inside or outside of a certain radius
             Real radiusDispFactor (0.5);
