@@ -51,7 +51,7 @@ protected:
         
         for (int j (0); j < nCompLocalDof; ++j)
         {
-            std::cout << "directionalVectorField" std::cout;
+            std::cout << "directionalVectorField" << std::cout;
             
             // Get coordiantes
             UInt iGID = vectorField->blockMap().GID (j);
@@ -82,7 +82,7 @@ protected:
             (*vectorField)[jGID] = displacementVec[1];
             (*vectorField)[kGID] = displacementVec[2];
         }
-        std::cout << "directionalVectorField done" std::cout;
+        std::cout << "directionalVectorField done" << std::cout;
 
         return vectorField;
     }
