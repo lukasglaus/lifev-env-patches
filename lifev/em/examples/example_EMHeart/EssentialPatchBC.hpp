@@ -71,6 +71,7 @@ public:
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
+        m_disp = solver.structuralOperatorPtr()->displacement();
         
         for ( UInt j (0); j < 3; ++j )
         {
@@ -138,6 +139,8 @@ protected:
     unsigned int m_patchFlag;
     
     Vector3D m_patchDirection;
+    
+    VectorEpetra& m_disp;
     
     vectorPtr_Type m_patchDispPtr;
     bcVectorPtr_Type m_patchDispBCPtr;
