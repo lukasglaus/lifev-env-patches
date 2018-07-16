@@ -58,9 +58,9 @@ protected:
             
             Vector3D coord;
             
-            coord(0) = dFeSpace->mesh()->point(iGID).x() + m_disp(iGID);
-            coord(1) = dFeSpace->mesh()->point(iGID).y() + m_disp(jGID);
-            coord(2) = dFeSpace->mesh()->point(iGID).z() + m_disp(kGID);
+            coord(0) = dFeSpace->mesh()->point(iGID).x() + m_dispPtr(iGID);
+            coord(1) = dFeSpace->mesh()->point(iGID).y() + m_dispPtr(jGID);
+            coord(2) = dFeSpace->mesh()->point(iGID).z() + m_dispPtr(kGID);
 
             // Radial and axial distance to center line
             auto currentPatchCenter = m_Center + activationFunction(time) * direction;
