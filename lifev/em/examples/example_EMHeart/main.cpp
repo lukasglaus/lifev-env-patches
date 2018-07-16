@@ -194,8 +194,9 @@ int main (int argc, char** argv)
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
-        patchBC.push_back(CREATE(EssentialPatchBC, "EssentialPatchBCCircularSmooth"));
-        auto patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+        std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+        std::string patchType = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC/" + patchName + "/type" ), " ");
+        patchBC.push_back(CREATE(EssentialPatchBC, patchType));
         patchBC[i]->setup(dataFile, patchName);
         patchBC[i]->createPatchArea(solver, 900 + i);
     }
