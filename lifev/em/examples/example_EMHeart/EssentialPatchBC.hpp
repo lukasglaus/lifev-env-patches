@@ -68,10 +68,11 @@ public:
         }
     }
     
+    
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "Apply patch b.c. " << m_Name << " ... ";
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "Apply " << m_Name << " b.c" << std::endl;
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
@@ -92,15 +93,11 @@ public:
 
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
-      
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "done" << std::endl;
-
     }
+    
     
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        std::cout << "modifyPatchBC" << std::cout;
-
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-6;
@@ -110,8 +107,6 @@ public:
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
-        std::cout << "modifyPatchBC done" << std::cout;
-
     }
     
     

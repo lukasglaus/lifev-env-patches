@@ -48,9 +48,12 @@ protected:
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
         
         direction.normalize();
+        direction *= disp;
         
-        if ( vectorField->comm().MyPID() == 0 ) std::cout << "Create directional " << m_Name << " vector field ... ";
-
+        if ( vectorField->comm().MyPID() == 0 )
+        {
+            std::cout << "Create directional " << m_Name << " directional vector field ... ";
+        }
         
         for (int j (0); j < nCompLocalDof; ++j)
         {
@@ -84,8 +87,6 @@ protected:
             (*vectorField)[kGID] = direction[2];
         }
         
-        if ( vectorField->comm().MyPID() == 0 ) std::cout << "done" << std::endl;
-
         return vectorField;
     }
     
