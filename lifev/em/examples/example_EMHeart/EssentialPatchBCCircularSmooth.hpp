@@ -1,5 +1,5 @@
 //
-//  EssentialPatchBCSmooth
+//  EssentialPatchBCCircularSmooth
 //  lifev-heart
 //
 //  Created by Thomas Kummer on 30.06.18.
@@ -17,12 +17,12 @@
 namespace LifeV
 {
     
-class EssentialPatchBCSmooth : public EssentialPatchBC
+class EssentialPatchBCCircularSmooth : public EssentialPatchBC
 {
 public:
     
-    EssentialPatchBCSmooth(){}
-    ~EssentialPatchBCSmooth(){}
+    EssentialPatchBCCircularSmooth(){}
+    ~EssentialPatchBCCircularSmooth(){}
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
@@ -31,7 +31,7 @@ public:
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
-        for ( UInt j (0); j < 3; ++j )s
+        for ( UInt j (0); j < 3; ++j )
         {
             m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
         }
@@ -114,8 +114,8 @@ protected:
     
 };
 
-REGISTER(EssentialPatchBC, EssentialPatchBCSmooth);
+REGISTER(EssentialPatchBC, EssentialPatchBCCircularSmooth);
 
 }
 
-#endif /* EssentialPatchBCSmooth_hpp */
+#endif /* EssentialPatchBCCircularSmooth_hpp */
