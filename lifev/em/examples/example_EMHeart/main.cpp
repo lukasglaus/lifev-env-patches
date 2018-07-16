@@ -192,6 +192,9 @@ int main (int argc, char** argv)
     //============================================
     std::vector<EssentialPatchBC*> patchBC;
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+    
+    PRINT_FACTORY(EssentialPatchBC);
+    
     for ( UInt i (0) ; i < nPatchBC ; ++i )
     {
         const std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
