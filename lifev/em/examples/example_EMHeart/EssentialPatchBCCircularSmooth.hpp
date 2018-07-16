@@ -25,9 +25,7 @@ public:
     ~EssentialPatchBCCircularSmooth(){}
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
-    {
-        //if ( m_dispPtr->comm().MyPID() == 0 ) std::cout << "Setting up " << name << std::endl;
-        
+    {        
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
@@ -64,26 +62,26 @@ protected:
             UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
             UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
 
-//            Vector3D coord;
-//
-//            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
-//            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
-//            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
-//
-//            // Radial and axial distance to center line
-//            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
-//            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-//            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-//
-//            // If coordiantes inside or outside of a certain radius
-//            Real radiusDispFactor (0.5);
-//            auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
-//
-//            // If patch inside or outside the structure
-//
-//
-//            // Scale the direction vector
-//            auto displacementVec = displacement * direction;
+            Vector3D coord;
+
+            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
+            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
+            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
+
+            // Radial and axial distance to center line
+            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
+            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
+            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
+
+            // If coordiantes inside or outside of a certain radius
+            Real radiusDispFactor (0.5);
+            auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
+
+            // If patch inside or outside the structure
+
+
+            // Scale the direction vector
+            auto displacementVec = displacement * direction;
             (*vectorField)[iGID] = direction[0];
             (*vectorField)[jGID] = direction[1];
             (*vectorField)[kGID] = direction[2];
