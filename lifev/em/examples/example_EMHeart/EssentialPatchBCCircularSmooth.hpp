@@ -26,7 +26,7 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
-        if ( m_dispPtr->comm().MyPID() == 0 ) std::cout << "Setting up " << name << std::endl;
+        //if ( m_dispPtr->comm().MyPID() == 0 ) std::cout << "Setting up " << name << std::endl;
         
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
@@ -52,10 +52,10 @@ protected:
         direction.normalize();
         direction *= disp;
 
-        if ( vectorField->comm().MyPID() == 0 )
-        {
-            std::cout << "Create directional " << m_Name << " directional vector field ... ";
-        }
+//        if ( vectorField->comm().MyPID() == 0 )
+//        {
+//            std::cout << "Create directional " << m_Name << " directional vector field ... ";
+//        }
 
         for (int j (0); j < nCompLocalDof; ++j)
         {

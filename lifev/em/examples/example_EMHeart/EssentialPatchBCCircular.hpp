@@ -26,7 +26,7 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
-        if ( m_dispPtr->comm().MyPID() == 0 ) std::cout << "Setting up " << name << std::endl;
+        //if ( m_dispPtr->comm().MyPID() == 0 ) std::cout << "Setting up " << name << std::endl;
 
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
