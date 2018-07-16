@@ -54,11 +54,11 @@ protected:
         
         for (int j (0); j < nCompLocalDof; ++j)
         {
-//            // Get coordiantes
-//            UInt iGID = vectorField->blockMap().GID (j);
-//            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-//            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-//
+            // Get coordiantes
+            UInt iGID = vectorField->blockMap().GID (j);
+            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+
 //            Vector3D coord;
 //
 //            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
