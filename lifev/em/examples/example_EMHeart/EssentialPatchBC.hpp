@@ -81,6 +81,7 @@ public:
         {
             m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
         }
+        m_patchDirection.normalize();
 
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
         std::vector<ID> patchComponent (componentSize);

@@ -89,7 +89,7 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
-        auto axis0 = m_patchDirection.normalized();
+        auto axis0 = m_patchDirection;
         auto axis1 = (Vector3D( 1.0 , 0.0 , (1.0 - axis0(0)) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis0)).normalized();    
         
@@ -103,7 +103,7 @@ protected:
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
-        auto axis0 = m_patchDirection.normalized();
+        auto axis0 = m_patchDirection;
         auto axis1 = (Vector3D( 1.0 , 0.0 , (1.0 - axis0(0)) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis0)).normalized();
         
