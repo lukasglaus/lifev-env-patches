@@ -94,7 +94,7 @@ protected:
         auto axis2 = (axis0.cross(axis0)).normalized();    
         
         auto localCoord = coord - m_Center;
-        auto ellipseCoord = Vector3D( axis0.dot(localCoord(0)) , axis1.dot(localCoord(1)) , axis2.dot(localCoord(2)) )
+        auto ellipseCoord = Vector3D( axis0.dot(localCoord) , axis1.dot(localCoord) , axis2.dot(localCoord) )
         
         bool pointInEllipse = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0) < 1.0;
 
