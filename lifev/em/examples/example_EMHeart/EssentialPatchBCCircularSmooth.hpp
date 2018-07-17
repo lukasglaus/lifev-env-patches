@@ -30,7 +30,8 @@ public:
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
-        
+        m_RadiusDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/radiusDispFactor").c_str(), 0 );
+
         for ( UInt j (0); j < 3; ++j )
         {
             m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
@@ -108,6 +109,7 @@ protected:
 
     Vector3D m_Center;
     Real m_Radius;
+    Real m_RadiusDispFactor;
     
     Real m_tmax;
     Real m_tduration;
