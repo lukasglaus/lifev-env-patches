@@ -67,7 +67,7 @@ protected:
             coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
 
             // Radial and axial distance to center line
-            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
+            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
             auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
 
