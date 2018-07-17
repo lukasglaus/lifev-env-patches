@@ -72,7 +72,7 @@ protected:
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
 
             // If coordiantes inside or outside of a certain radius
-            auto displacement = (m_EdgeDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
+            auto displacement = (m_EdgeDispFactor * disp - disp) * dispDistributionWeight(coord) + disp;
 
             // If patch inside or outside the structure
 
@@ -91,17 +91,29 @@ protected:
     {
         auto axis0 = m_patchDirection.normalized();
         auto axis1 = (Vector3D( 1.0 , 0.0 , (1.0 - axis0(0)) / axis0(2))).normalized();
-        auto axis2 = (axis0.cross(axis0)).normalized();
+        auto axis2 = (axis0.cross(axis0)).normalized();    
         
         auto localCoord = coord - m_Center;
         auto ellipseCoord = Vector3D( axis0.dot(localCoord(0)) , axis1.dot(localCoord(1)) , axis2.dot(localCoord(2)) )
         
         bool pointInEllipse = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0) < 1.0;
 
-        return pointInCircle;
+        return pointInEllipse;
     }
     
-    virtual Real activationFunction (const Real& time) const
+    virtual const Real dispDistributionWeight(Vector3D& coord) const
+    {
+        auto axis0 = m_patchDirection.normalized();
+        auto axis1 = (Vector3D( 1.0 , 0.0 , (1.0 - axis0(0)) / axis0(2))).normalized();
+        auto axis2 = (axis0.cross(axis0)).normalized();
+        
+        auto localCoord = coord - m_Center;
+        auto ellipseCoord = Vector3D( axis0.dot(localCoord(0)) , axis1.dot(localCoord(1)) , axis2.dot(localCoord(2)) );
+        Real pointInEllipse = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0);
+        return pointInEllipse;
+    }
+    
+    virtual const Real activationFunction (const Real& time) const
     {
         Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
         bool inPeriod ( timeInPeriod < m_tduration && timeInPeriod > 0);
