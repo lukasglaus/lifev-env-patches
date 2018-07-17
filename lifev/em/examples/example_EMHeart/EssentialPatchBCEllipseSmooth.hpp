@@ -113,7 +113,7 @@ protected:
         return pointInEllipse;
     }
     
-    virtual const Real activationFunction (const Real& time) const
+    virtual Real activationFunction (const Real& time) const
     {
         Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
         bool inPeriod ( timeInPeriod < m_tduration && timeInPeriod > 0);
