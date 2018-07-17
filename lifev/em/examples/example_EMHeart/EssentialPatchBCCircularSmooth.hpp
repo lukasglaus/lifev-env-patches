@@ -74,7 +74,7 @@ protected:
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
 
             // If coordiantes inside or outside of a certain radius
-            Real radiusDispFactor (0.5);
+            Real radiusDispFactor (0.1);
             auto displacement = (radiusDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
 
             // If patch inside or outside the structure
