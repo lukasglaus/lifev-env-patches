@@ -1,13 +1,13 @@
 //
-//  EssentialPatchBCCircularSmooth.hpp
+//  EssentialPatchBCEllipseSmooth.hpp
 //  lifev-heart
 //
 //  Created by Thomas Kummer on 30.06.18.
 //  Copyright © 2018 Thomas Kummer. All rights reserved.
 //
 
-#ifndef EssentialPatchBCCircularSmooth_hpp
-#define EssentialPatchBCCircularSmooth_hpp
+#ifndef EssentialPatchBCEllipseSmooth_hpp
+#define EssentialPatchBCEllipseSmooth_hpp
 
 #include <stdio.h>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBC.hpp>
@@ -17,19 +17,21 @@
 namespace LifeV
 {
     
-class EssentialPatchBCCircularSmooth : public EssentialPatchBC
+class EssentialPatchBCEllipseSmooth : public EssentialPatchBC
 {
 public:
     
-    EssentialPatchBCCircularSmooth(){}
-    ~EssentialPatchBCCircularSmooth(){}
+    EssentialPatchBCEllipseSmooth(){}
+    ~EssentialPatchBCEllipseSmooth(){}
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {        
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
-        m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
+        m_AxisA= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisA").c_str(), 1.0 );
+        m_AxisB= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisB").c_str(), 1.0 );
+        m_AxisC= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisC").c_str(), 1.0 );
         m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/EdgeDispFactor").c_str(), 0 );
 
         for ( UInt j (0); j < 3; ++j )
@@ -87,7 +89,15 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
-        bool pointInCircle = (coord - m_Center).norm() < m_Radius;
+        auto axis0 = m_patchDirection.normalized();
+        auto axis1 = (Vector3D( 1.0 , 0.0 , (1.0 - axis0(0)) / axis0(2))).normalized();
+        auto axis2 = (axis0.cross(axis0)).normalized();
+        
+        auto localCoord = coord - m_Center;
+        auto ellipseCoord = Vector3D( axis0.dot(localCoord(0)) , axis1.dot(localCoord(1)) , axis2.dot(localCoord(2)) )
+        
+        bool pointInEllipse = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0) < 1.0;
+
         return pointInCircle;
     }
     
@@ -102,7 +112,9 @@ protected:
     Real m_patchDisplacement;
 
     Vector3D m_Center;
-    Real m_Radius;
+    Real m_AxisA;
+    Real m_AxisB;
+    Real m_AxisC;
     Real m_EdgeDispFactor;
     
     Real m_tmax;
@@ -110,8 +122,8 @@ protected:
     
 };
 
-REGISTER(EssentialPatchBC, EssentialPatchBCCircularSmooth);
+REGISTER(EssentialPatchBC, EssentialPatchBCEllipseSmooth);
 
 }
 
-#endif /* EssentialPatchBCCircularSmooth_hpp */
+#endif /* EssentialPatchBCEllipseSmooth_hpp */

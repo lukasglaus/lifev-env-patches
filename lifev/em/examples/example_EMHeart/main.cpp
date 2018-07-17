@@ -49,6 +49,7 @@
 // PatchBC
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircular.hpp>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircularSmooth.hpp>
+#include <lifev/em/examples/example_EMHeart/EssentialPatchBCEllipseSmooth.hpp>
 
 // Track nan
 // #include <fenv.h>
