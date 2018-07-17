@@ -218,7 +218,7 @@ monodomain_xml_file = ParamListE.xml
         AxisA               = 1.5
         AxisB               = 3.5
         AxisC               = 1.5
-        displacement        = 1.3
+        displacement        = 1.2
 
 
         [../EssentialPatch2]
@@ -228,11 +228,11 @@ monodomain_xml_file = ParamListE.xml
         radius              = 2.5
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
+        radiusDispFactor    = 0.1
         AxisA               = 1.5
         AxisB               = 3.5
         AxisC               = 1.5
-        radiusDispFactor    = 0.1
-        displacement        = 1.3
+        displacement        = 1.2
 
         [../]
 
