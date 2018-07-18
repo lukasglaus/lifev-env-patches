@@ -60,25 +60,25 @@ protected:
             UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
             UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
 
-            Vector3D coord;
-
-            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
-            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
-            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
-
-            // Radial and axial distance to center line
-            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
-            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-
-            // If coordiantes inside or outside of a certain radius
-            auto displacement = (m_EdgeDispFactor * disp - disp) * dispDistributionWeight(coord) + disp;
-
-            // If patch inside or outside the structure
+//            Vector3D coord;
+//
+//            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
+//            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
+//            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
+//
+//            // Radial and axial distance to center line
+//            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
+//            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
+//            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
+//
+//            // If coordiantes inside or outside of a certain radius
+//            auto displacement = (m_EdgeDispFactor * disp - disp) * dispDistributionWeight(coord) + disp;
+//
+//            // If patch inside or outside the structure
 
 
             // Scale the direction vector
-            auto displacementVec = displacement * direction;
+//            auto displacementVec = displacement * direction;
             (*vectorField)[iGID] = direction[0];
             (*vectorField)[jGID] = direction[1];
             (*vectorField)[kGID] = direction[2];
