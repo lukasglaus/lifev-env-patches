@@ -92,11 +92,11 @@ protected:
     {
         auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
-        auto ellipseCoord = Vector3D( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
+        auto ellipsoidCoord = Vector3D( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
         std::cout << localCoord << std::endl;
         
-        return nodeInsideEllipsoid(ellipseCoorrd);
+        return nodeInsideEllipsoid(ellipsoidCoord);
     }
     
     virtual const std::vector<Vector3D> ellipsoidCoordinateSystem(Vector3D patchDirection) const
