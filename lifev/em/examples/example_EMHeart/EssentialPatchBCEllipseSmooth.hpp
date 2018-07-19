@@ -41,7 +41,7 @@ public:
             m_ellipsoidPrincSemiAxesLen[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/princSemiAxesLength").c_str(), 0, j );
         }
         
-        m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/EdgeDispFactor").c_str(), 0 );
+        m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/edgeDispFactor").c_str(), 0 );
 
         for ( UInt j (0); j < 3; ++j )
         {
@@ -69,25 +69,25 @@ protected:
             UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
             UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
 
-//            Vector3D coord;
-//
-//            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
-//            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
-//            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
-//
-//            // Radial and axial distance to center line
-//            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
-//            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-//            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-//
-//            // If coordiantes inside or outside of a certain radius
-//            auto displacement = (m_EdgeDispFactor * disp - disp) * dispDistributionWeight(coord) + disp;
-//
-//            // If patch inside or outside the structure
+            Vector3D coord;
+
+            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
+            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
+            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
+
+            // Radial and axial distance to center line
+            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
+            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
+            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
+
+            // If coordiantes inside or outside of a certain radius
+            auto displacement = (m_EdgeDispFactor * disp - disp) * dispDistributionWeight(coord) + disp;
+
+            // If patch inside or outside the structure
 
 
-            // Scale the direction vector
-//            auto displacementVec = displacement * direction;
+             Scale the direction vector
+            auto displacementVec = displacement * direction;
             (*vectorField)[iGID] = direction[0];
             (*vectorField)[jGID] = direction[1];
             (*vectorField)[kGID] = direction[2];
@@ -122,12 +122,10 @@ protected:
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
-        auto axis0 = m_patchDirection;
-        auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
-        auto axis2 = (axis0.cross(axis1)).normalized();
-        
+        auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
-        auto ellipseCoord = Vector3D( axis0.dot(localCoord) , axis1.dot(localCoord) , axis2.dot(localCoord) );
+        Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
+        
         Real dispWeight = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0);
         return dispWeight;
     }

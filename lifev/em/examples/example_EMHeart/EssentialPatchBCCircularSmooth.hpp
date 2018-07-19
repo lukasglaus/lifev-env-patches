@@ -37,7 +37,7 @@ public:
         m_patchDirection.normalize();
         
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
-        m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/EdgeDispFactor").c_str(), 0 );
+        m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/edgeDispFactor").c_str(), 0 );
 
         for ( UInt j (0); j < 3; ++j )
         {
