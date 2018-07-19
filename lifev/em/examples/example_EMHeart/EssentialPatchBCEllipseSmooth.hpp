@@ -97,7 +97,7 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
-        auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
+        auto ellipsoidCS = ellipsoidCoordinateSystem(assistDirection());
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
@@ -143,7 +143,7 @@ protected:
     
     virtual Vector3D assistDirection()
     {
-        return m_patchDirections;
+        return m_patchDirection;
     }
     
     Real m_patchDisplacement;
