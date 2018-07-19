@@ -215,9 +215,9 @@ monodomain_xml_file = ParamListE.xml
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         radiusDispFactor    = 0.1
-        AxisA               = 1.5
-        AxisB               = 3.5
-        AxisC               = 1.5
+        AxisA               = 1.0
+        AxisB               = 2.0
+        AxisC               = 1.0
         displacement        = 1.2
 
 
@@ -229,17 +229,17 @@ monodomain_xml_file = ParamListE.xml
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         radiusDispFactor    = 0.1
-        AxisA               = 1.5
-        AxisB               = 3.5
-        AxisC               = 1.5
+        AxisA               = 1.0
+        AxisB               = 2.0
+        AxisC               = 1.0
         displacement        = 1.2
 
         [../]
 
 
     [../patches]
-    testAtPreload       = false
-    tmax                = 250 #150 #200 #250
+    testAtPreload       = true
+    tmax                = 175 #250 #150 #200 #250
     tduration           = 350 #300
 
     [../coupling]
@@ -263,7 +263,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_name           = humanHeart160
+    mesh_name           = humanHeart250
     mesh_scaling        = '1.2 1.2 1.2'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'

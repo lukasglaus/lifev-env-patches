@@ -203,7 +203,7 @@ int main (int argc, char** argv)
         patchBC[i]->createPatchArea(solver, 900 + i);
     }
     
-    PRINT_FACTORY(EssentialPatchBC);
+    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
 
     
     //============================================
