@@ -113,7 +113,7 @@ protected:
         auto localCoord = coord - m_Center;
         auto ellipseCoord = Vector3D( axis0.dot(localCoord) , axis1.dot(localCoord) , axis2.dot(localCoord) );
         Real dispWeight = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0);
-        return dispWeigh;
+        return dispWeight;
     }
     
     virtual Real activationFunction (const Real& time) const
