@@ -71,7 +71,6 @@ public:
     
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
-        
         if ( solver.comm()->MyPID() == 0 ) std::cout << "Applying " << m_Name << " b.c" << std::endl;
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
