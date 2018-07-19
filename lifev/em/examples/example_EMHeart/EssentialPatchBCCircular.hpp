@@ -29,6 +29,13 @@ public:
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
+        
+        for ( UInt j (0); j < 3; ++j )
+        {
+            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
+        }
+        m_patchDirection.normalize();
+        
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
         for ( UInt j (0); j < 3; ++j )
@@ -57,6 +64,7 @@ protected:
     }
     
     Real m_patchDisplacement;
+    Vector3D m_patchDirection;
 
     Vector3D m_Center;
     Real m_Radius;

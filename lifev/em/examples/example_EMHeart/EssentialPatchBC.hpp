@@ -75,12 +75,6 @@ public:
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
-        
-        for ( UInt j (0); j < 3; ++j )
-        {
-            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
-        }
-        m_patchDirection.normalize();
 
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
         std::vector<ID> patchComponent (componentSize);
@@ -142,9 +136,7 @@ protected:
     std::string m_Name;
     unsigned int m_PrevFlag;
     unsigned int m_patchFlag;
-    
-    Vector3D m_patchDirection;
-    
+        
     vectorPtr_Type m_dispPtr;
     
     vectorPtr_Type m_patchDispPtr;

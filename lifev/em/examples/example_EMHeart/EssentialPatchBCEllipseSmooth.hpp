@@ -28,7 +28,14 @@ public:
     {        
         m_Name = name;
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
+        
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
+        for ( UInt j (0); j < 3; ++j )
+        {
+            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
+        }
+        m_patchDirection.normalize();
+        
         m_AxisA= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisA").c_str(), 1.0 );
         m_AxisB= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisB").c_str(), 1.0 );
         m_AxisC= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisC").c_str(), 1.0 );
@@ -94,7 +101,7 @@ protected:
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-//        std::cout << localCoord << ellipsoidCoord << ellipsoidCS[0] <<std::endl;
+        std::cout << localCoord << ellipsoidCoord << ellipsoidCS[0] <<std::endl;
         
         return nodeInsideEllipsoid(ellipsoidCoord);
     }
@@ -104,8 +111,6 @@ protected:
         auto axis0 = patchDirection.normalized();
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
-
-        std::cout << patchDirection << m_patchDirection << axis2 <<std::endl;
 
         return std::vector<Vector3D> { axis0 , axis1 , axis2 };
     }
@@ -137,6 +142,7 @@ protected:
     }
     
     Real m_patchDisplacement;
+    Vector3D m_patchDirection;
 
     Vector3D m_Center;
     Real m_AxisA;
