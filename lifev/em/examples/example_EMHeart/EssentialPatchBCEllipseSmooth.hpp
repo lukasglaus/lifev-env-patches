@@ -32,6 +32,9 @@ public:
         m_AxisA= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisA").c_str(), 1.0 );
         m_AxisB= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisB").c_str(), 1.0 );
         m_AxisC= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisC").c_str(), 1.0 );
+        
+        std::cout << "\nEllipsoid: " << m_AxisA << " " << m_AxisB << " " << m_AxisC << std::endl;
+        
         m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/EdgeDispFactor").c_str(), 0 );
 
         for ( UInt j (0); j < 3; ++j )
@@ -90,7 +93,7 @@ protected:
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
         auto axis0 = m_patchDirection;
-        auto axis1 = (Vector3D( 1.0 , 0.0 , axis0(0) / axis0(2))).normalized();
+        auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
         
         auto localCoord = coord - m_Center;

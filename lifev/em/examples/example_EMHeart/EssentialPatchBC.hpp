@@ -103,7 +103,7 @@ public:
         Real currentPatchDisp = activationFunction(time) + 1e-6;
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
-        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent patch-" << m_Name << " displacement: " << currentPatchDisp << " cm";
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
