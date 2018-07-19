@@ -140,7 +140,9 @@ protected:
     std::string m_Name;
     unsigned int m_PrevFlag;
     unsigned int m_patchFlag;
-        
+    
+    Vector3D m_patchDirection;
+
     vectorPtr_Type m_dispPtr;
     
     vectorPtr_Type m_patchDispPtr;

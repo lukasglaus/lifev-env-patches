@@ -112,7 +112,6 @@ protected:
     }
     
     Real m_patchDisplacement;
-    Vector3D m_patchDirection;
 
     Vector3D m_Center;
     Real m_Radius;
