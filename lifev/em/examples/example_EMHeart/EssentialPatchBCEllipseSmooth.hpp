@@ -32,9 +32,7 @@ public:
         m_AxisA= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisA").c_str(), 1.0 );
         m_AxisB= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisB").c_str(), 1.0 );
         m_AxisC= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisC").c_str(), 1.0 );
-        
-        std::cout << "\nEllipsoid: " << m_AxisA << " " << m_AxisB << " " << m_AxisC << std::endl;
-        
+                
         m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/EdgeDispFactor").c_str(), 0 );
 
         for ( UInt j (0); j < 3; ++j )
