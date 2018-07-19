@@ -123,7 +123,7 @@ protected:
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
-        auto axis0 = assistDirection();
+        auto axis0 = m_patchDirection;
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
         
