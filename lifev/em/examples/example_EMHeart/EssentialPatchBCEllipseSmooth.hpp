@@ -116,17 +116,23 @@ protected:
     
     virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord) const
     {
-        bool pointInsideEllipsoid = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0) < 1.0;
+        bool pointInsideEllipsoid (ellipsoidFuncEval(ellipseCoord) < 1.0 );
         return pointInsideEllipsoid;
     }
     
-    virtual const Real dispDistributionWeight(Vector3D& ellipseCoord) const
+    virtual const Real ellipsoidFuncEval(const Vector3D& ellipseCoord) const
+    {
+        Real ellipsoidFuncValue = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0);
+        return ellipsoidFuncValue;
+    }
+    
+    virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
         auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        Real dispWeight = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0);
+        Real dispWeight = ellipsoidFuncEval(ellipsoidCoord);
         return dispWeight;
     }
     
