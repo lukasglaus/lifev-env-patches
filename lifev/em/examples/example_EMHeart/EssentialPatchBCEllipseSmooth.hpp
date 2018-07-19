@@ -106,7 +106,12 @@ protected:
         auto axis0 = patchDirection.normalized();
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
-        return std::vector { axis0 , axis1 , axis2 };
+        return std::vector<Vector3D> { axis0 , axis1 , axis2 };
+    }
+    
+    virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord, const Vector3D& principalSemiAxesLength) const
+    {
+        return true;
     }
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
