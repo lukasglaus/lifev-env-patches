@@ -60,7 +60,7 @@ protected:
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
 
         direction.normalize();
-        direction *= disp;
+        // direction *= disp;
 
         for (int j (0); j < nCompLocalDof; ++j)
         {
