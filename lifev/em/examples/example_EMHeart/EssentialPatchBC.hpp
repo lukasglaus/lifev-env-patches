@@ -133,8 +133,6 @@ protected:
     
     virtual Real activationFunction (const Real& time) const = 0;
 
-    virtual Vector3D assistDirection () const = 0;
-
     
     std::string m_Name;
     unsigned int m_PrevFlag;
