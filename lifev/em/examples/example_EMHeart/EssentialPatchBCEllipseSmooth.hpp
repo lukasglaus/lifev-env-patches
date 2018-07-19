@@ -97,7 +97,7 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
-        auto ellipsoidCS = ellipsoidCoordinateSystem(assistDirection());
+        auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
@@ -123,7 +123,7 @@ protected:
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
-        auto axis0 = m_patchDirection;
+        auto axis0 = assistDirection();
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
         
