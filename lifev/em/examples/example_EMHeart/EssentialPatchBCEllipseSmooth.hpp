@@ -143,7 +143,7 @@ protected:
     
     virtual Vector3D assistDirection()
     {
-        return m_patchDirections
+        return m_patchDirections;
     }
     
     Real m_patchDisplacement;
