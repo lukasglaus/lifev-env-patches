@@ -86,7 +86,7 @@ protected:
             // If patch inside or outside the structure
 
 
-             Scale the direction vector
+            // Scale the direction vector
             auto displacementVec = displacement * direction;
             (*vectorField)[iGID] = direction[0];
             (*vectorField)[jGID] = direction[1];
