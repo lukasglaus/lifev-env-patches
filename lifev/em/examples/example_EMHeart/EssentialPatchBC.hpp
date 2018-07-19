@@ -83,7 +83,8 @@ public:
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
         }
 
-        m_patchDispPtr = directionalVectorField(dFeSpace, Vector3D(1,0,0), 1e-10, 0.0);
+        Vector3D currentPatchDirection = assistDirection();
+        m_patchDispPtr = directionalVectorField(dFeSpace, currentPatchDirection, 1e-10, 0.0);
 
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
