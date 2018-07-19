@@ -94,7 +94,7 @@ protected:
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        std::cout << localCoord << ellipsoidCoord << ellipsoidCS[0] <<std::endl;
+//        std::cout << localCoord << ellipsoidCoord << ellipsoidCS[0] <<std::endl;
         
         return nodeInsideEllipsoid(ellipsoidCoord);
     }
@@ -104,6 +104,9 @@ protected:
         auto axis0 = patchDirection.normalized();
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
+
+        std::cout << axis0 << axis1 << axis2 <<std::endl;
+
         return std::vector<Vector3D> { axis0 , axis1 , axis2 };
     }
     
