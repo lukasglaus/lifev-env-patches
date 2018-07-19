@@ -35,10 +35,11 @@ public:
             m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
         }
         m_patchDirection.normalize();
-        
-        m_AxisA= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisA").c_str(), 1.0 );
-        m_AxisB= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisB").c_str(), 1.0 );
-        m_AxisC= dataFile ( ("solid/boundary_conditions/" + m_Name + "/AxisC").c_str(), 1.0 );
+
+        for ( UInt j (0); j < 3; ++j )
+        {
+            m_ellipsoidPrincSemiAxesLen[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/princSemiAxesLength").c_str(), 0, j );
+        }
         
         m_EdgeDispFactor = dataFile ( ("solid/boundary_conditions/" + m_Name + "/EdgeDispFactor").c_str(), 0 );
 
@@ -101,8 +102,6 @@ protected:
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        std::cout << localCoord << ellipsoidCoord << ellipsoidCS[0] <<std::endl;
-        
         return nodeInsideEllipsoid(ellipsoidCoord);
     }
     
@@ -117,7 +116,7 @@ protected:
     
     virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord) const
     {
-        bool pointInsideEllipsoid = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0) < 1.0;
+        bool pointInsideEllipsoid = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0) < 1.0;
         return pointInsideEllipsoid;
     }
     
@@ -129,7 +128,7 @@ protected:
         
         auto localCoord = coord - m_Center;
         auto ellipseCoord = Vector3D( axis0.dot(localCoord) , axis1.dot(localCoord) , axis2.dot(localCoord) );
-        Real dispWeight = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0);
+        Real dispWeight = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0);
         return dispWeight;
     }
     
@@ -144,9 +143,7 @@ protected:
     Real m_patchDisplacement;
 
     Vector3D m_Center;
-    Real m_AxisA;
-    Real m_AxisB;
-    Real m_AxisC;
+    Vector3D m_ellipsoidPrincSemiAxesLen;
     Real m_EdgeDispFactor;
     
     Real m_tmax;
