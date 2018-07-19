@@ -94,7 +94,7 @@ protected:
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        std::cout << localCoord << ellipsoidCoord << std::endl;
+        std::cout << localCoord << ellipsoidCoord << ellipsoidCS[0] <<std::endl;
         
         return nodeInsideEllipsoid(ellipsoidCoord);
     }
