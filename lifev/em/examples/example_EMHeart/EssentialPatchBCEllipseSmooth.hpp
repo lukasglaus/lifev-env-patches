@@ -105,7 +105,7 @@ protected:
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
 
-        std::cout << axis0 << axis1 << axis2 <<std::endl;
+        std::cout << patchDirection << m_patchDirection << axis2 <<std::endl;
 
         return std::vector<Vector3D> { axis0 , axis1 , axis2 };
     }
