@@ -94,11 +94,9 @@ protected:
         auto localCoord = coord - m_Center;
         auto ellipseCoord = Vector3D( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        std::cout << ellipseCoord << std::endl;
+        std::cout << localCoord << std::endl;
         
-        bool pointInEllipse = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0) < 1.0;
-
-        return pointInEllipse;
+        return nodeInsideEllipsoid(ellipseCoorrd);
     }
     
     virtual const std::vector<Vector3D> ellipsoidCoordinateSystem(Vector3D patchDirection) const
@@ -109,9 +107,10 @@ protected:
         return std::vector<Vector3D> { axis0 , axis1 , axis2 };
     }
     
-    virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord, const Vector3D& principalSemiAxesLength) const
+    virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord) const
     {
-        return true;
+        bool pointInsideEllipsoid = std::pow(ellipseCoord(0) / m_AxisA, 2.0) + std::pow(ellipseCoord(1) / m_AxisB, 2.0) + std::pow(ellipseCoord(2) / m_AxisC, 2.0) < 1.0;
+        return pointInsideEllipsoid;
     }
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
