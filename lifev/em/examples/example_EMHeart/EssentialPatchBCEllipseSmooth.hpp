@@ -60,7 +60,7 @@ protected:
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
 
         direction.normalize();
-        // direction *= disp;
+        direction *= disp;
 
         for (int j (0); j < nCompLocalDof; ++j)
         {
@@ -87,7 +87,7 @@ protected:
 
 
             // Scale the direction vector
-            auto displacementVec = displacement * direction;
+            auto displacementVec = direction // * displacement;
             (*vectorField)[iGID] = displacementVec[0];
             (*vectorField)[jGID] = displacementVec[1];
             (*vectorField)[kGID] = displacementVec[2];
