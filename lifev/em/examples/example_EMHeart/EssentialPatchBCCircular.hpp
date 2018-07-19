@@ -63,6 +63,11 @@ protected:
         return ( inPeriod ? sinusSquared : 0 );
     }
     
+    virtual Vector3D assistDirection()
+    {
+        return m_patchDirection;
+    }
+    
     Real m_patchDisplacement;
     Vector3D m_patchDirection;
 

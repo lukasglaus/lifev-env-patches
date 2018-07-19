@@ -83,7 +83,7 @@ public:
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
         }
 
-        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10, 0.0);
+        m_patchDispPtr = directionalVectorField(dFeSpace, Vector3D(1,0,0), 1e-10, 0.0);
 
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);
@@ -95,8 +95,9 @@ public:
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-6;
+        Vector3D currentPatchDirection = assistDirection
 
-        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
+        m_patchDispPtr = directionalVectorField(dFeSpace, currentPatchDirection, currentPatchDisp, time);
         if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
@@ -131,6 +132,8 @@ protected:
     virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
     
     virtual Real activationFunction (const Real& time) const = 0;
+
+    virtual Vector3D assistDirection () const = 0;
 
     
     std::string m_Name;
