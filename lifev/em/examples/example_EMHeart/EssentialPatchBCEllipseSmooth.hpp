@@ -120,7 +120,7 @@ protected:
         return pointInsideEllipsoid;
     }
     
-    virtual const Real dispDistributionWeight(Vector3D& coord) const
+    virtual const Real dispDistributionWeight(Vector3D& ellipseCoord) const
     {
         auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
