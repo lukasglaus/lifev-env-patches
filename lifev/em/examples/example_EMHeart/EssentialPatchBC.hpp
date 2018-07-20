@@ -84,7 +84,7 @@ public:
         }
 
         Vector3D currentPatchDirection (1,0,0);
-        m_patchDispPtr = directionalVectorField(dFeSpace, currentPatchDirection, 1e-10, 0.0);
+        m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10, 0.0);
 
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr() -> handler()->addBC (m_Name, m_patchFlag,  Essential, Component, *m_patchDispBCPtr, patchComponent);

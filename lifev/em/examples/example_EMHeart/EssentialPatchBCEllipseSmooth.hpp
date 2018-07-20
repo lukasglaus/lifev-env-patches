@@ -116,7 +116,7 @@ protected:
     
     virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord) const
     {
-        bool pointInsideEllipsoid (ellipsoidFuncEval(ellipseCoord) < 1.0 );
+        bool pointInsideEllipsoid (ellipsoidFuncEval(ellipseCoord) < 1.0);
         return pointInsideEllipsoid;
     }
     
