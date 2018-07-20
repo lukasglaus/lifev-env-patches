@@ -210,24 +210,24 @@ monodomain_xml_file = ParamListE.xml
         [./EssentialPatch1]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
-        center              = '-1.8 -7.0 -4.5'
+        center              = '-1.8 -8.5 -4.5' #'-1.8 -7.0 -4.5'
         radius              = 2.5
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         edgeDispFactor      = 0.5
-        princSemiAxesLength = '1.0 1.0 2.0'
+        princSemiAxesLength = '2.0 1.0 4.0'
         displacement        = 1.2
 
 
         [../EssentialPatch2]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
-        center              = '3.5 -7.0 1.0'
+        center              = '3.5 -8.5 1.0' #'3.5 -7.0 1.0'
         radius              = 2.5
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
-        princSemiAxesLength = '1.0 1.0 2.0'
+        princSemiAxesLength = '2.0 1.0 4.0'
         displacement        = 1.2
 
         [../]
