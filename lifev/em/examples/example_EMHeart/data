@@ -215,7 +215,7 @@ monodomain_xml_file = ParamListE.xml
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         edgeDispFactor      = 0.5
-        princSemiAxesLength = '1.0 0.5 1.0'
+        princSemiAxesLength = '1.0 1.0 2.0'
         displacement        = 1.2
 
 
@@ -227,7 +227,7 @@ monodomain_xml_file = ParamListE.xml
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
-        princSemiAxesLength = '1.0 0.5 1.0'
+        princSemiAxesLength = '1.0 1.0 2.0'
         displacement        = 1.2
 
         [../]
