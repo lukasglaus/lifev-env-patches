@@ -514,7 +514,7 @@ public:
 
         // Assemble first piola kirchhoff tensor
         firstPiola.Scale(0.0);
-        //firstPiola += Pvol;
+        firstPiola += Pvol;
         firstPiola += P1;
         firstPiola += P4f;
         firstPiola += P4s;
