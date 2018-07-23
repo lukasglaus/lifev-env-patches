@@ -83,7 +83,12 @@ public:
             patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
         }
 
-        Vector3D currentPatchDirection (1,0,0);
+        for ( UInt j (0); j < 3; ++j )
+        {
+            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
+        }
+        m_patchDirection.normalize();
+
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10, 0.0);
 
         m_patchDispBCPtr = bcVectorPtr_Type( new bcVector_Type( *m_patchDispPtr, dFeSpace -> dof().numTotalDof(), 1 ) );

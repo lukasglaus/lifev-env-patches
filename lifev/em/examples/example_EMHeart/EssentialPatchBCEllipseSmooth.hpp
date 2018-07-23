@@ -30,11 +30,6 @@ public:
         m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
         
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
-        for ( UInt j (0); j < 3; ++j )
-        {
-            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
-        }
-        m_patchDirection.normalize();
 
         for ( UInt j (0); j < 3; ++j )
         {
