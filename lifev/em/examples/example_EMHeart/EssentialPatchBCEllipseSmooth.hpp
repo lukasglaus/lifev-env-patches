@@ -99,9 +99,6 @@ protected:
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
         auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
-
-        for (auto& i : ellipsoidCS) std::cout << i; std::cout << std::endl;
-
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
