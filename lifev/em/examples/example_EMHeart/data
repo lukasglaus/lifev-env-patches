@@ -205,8 +205,8 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listEssentialPatchBCCircular = 'EssentialPatchCircular1 EssentialPatchCircular2'
-#listEssentialPatchBCEllipsoid = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
+    listEssentialPatchBC = 'EssentialPatchCircular1 EssentialPatchCircular2'
+    #listEssentialPatchBC = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
 
         [./EssentialPatchCircular1]
         flag                = 464
