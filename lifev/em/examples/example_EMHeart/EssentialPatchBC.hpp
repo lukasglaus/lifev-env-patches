@@ -186,23 +186,23 @@ class EssentialPatchBCHandler
 {
 public:
 
-    EssentialPatchBCHandler(const std::string patchList) :
-        m_patchList (patchList)
-        //m_patchNumber (dataFile.vector_variable_size(patchList))
-)
+    EssentialPatchBCHandler(const std::string& patchList, const GetPot& dataFile) EMSolver<RegionMesh<LinearTetra>) :
+        m_patchList (patchList),
+        m_dataFile (dataFile),
+        m_patchNumber (dataFile.vector_variable_size(patchList))
     {}
     
     ~EssentialPatchBCHandler(){}
 
-    addPatches(const GetPot& dataFile, EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    addPatches(EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
-            const std::string patchName = dataFile ( patchList, " ", i );
-            const std::string patchType = dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
+            const std::string patchName = m_dataFile ( patchList, " ", i );
+            const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
-            patchBC[i]->setup(dataFile, patchName);
-            patchBC[i]->createPatchArea(solver, 900 + i);
+            m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
+            m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
             
             m_patchBCVec.push_back(patch);
         }
@@ -218,7 +218,9 @@ public:
 private:
 
     const std::string m_patchList;
+    const GetPot& m_dataFile;
     const int m_patchNumber;
+    
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
 
 };
