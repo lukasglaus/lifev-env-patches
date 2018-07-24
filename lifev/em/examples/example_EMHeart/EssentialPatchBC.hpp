@@ -189,7 +189,7 @@ public:
     EssentialPatchBCHandler(const std::string& patchList, const GetPot& dataFile) :
         m_patchList ("solid/boundary_conditions/" + patchList),
         m_dataFile (dataFile),
-        m_patchNumber (dataFile.vector_variable_size(m_patchList))
+        m_patchNumber (( dataFile.vector_variable_size(m_patchList) ))
     {}
     
     ~EssentialPatchBCHandler(){}
