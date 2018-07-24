@@ -225,8 +225,8 @@ public:
 
 private:
 
-    const std::string m_patchList;
-    const GetPot& m_dataFile;
+    std::string m_patchList;
+    GetPot& m_dataFile;
     const int m_patchNumber;
     
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
