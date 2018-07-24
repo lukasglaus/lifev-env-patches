@@ -187,8 +187,8 @@ class EssentialPatchBCHandler
 public:
 
     EssentialPatchBCHandler(const std::string patchList) :
-        m_patchList (patchList),
-        m_patchNumber (dataFile.vector_variable_size(patchList))
+        m_patchList (patchList)
+        //m_patchNumber (dataFile.vector_variable_size(patchList))
 )
     {}
     
