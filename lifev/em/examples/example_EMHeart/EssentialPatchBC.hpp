@@ -30,8 +30,6 @@ public:
     EssentialPatchBC(){}
     ~EssentialPatchBC(){}
     
-    virtual void setup(const GetPot& dataFile, const std::string& name) = 0;
-
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
         // Patch name
