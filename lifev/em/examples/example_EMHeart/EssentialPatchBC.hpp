@@ -186,10 +186,10 @@ class EssentialPatchBCHandler
 {
 public:
 
-    EssentialPatchBCHandler(const std::string& patchList, const GetPot& dataFile) :
-        m_patchList ("solid/boundary_conditions/" + patchList),
+    EssentialPatchBCHandler(const std::string& patchListName, const GetPot& dataFile) :
+        m_patchListName ("solid/boundary_conditions/" + patchListName),
         m_dataFile (dataFile),
-        m_patchNumber (( m_dataFile.vector_variable_size(m_patchList.c_str()) ))
+        m_patchNumber (( m_dataFile.vector_variable_size(m_patchListName.c_str()) ))
     {}
     
     ~EssentialPatchBCHandler(){}
@@ -198,7 +198,7 @@ public:
     {
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
-            const std::string patchName = m_dataFile ( m_patchList.c_str(), " ", i );
+            const std::string patchName = m_dataFile ( m_patchListName.c_str(), " ", i );
             const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
             m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
@@ -225,7 +225,7 @@ public:
 
 private:
 
-    const std::string m_patchList;
+    const std::string m_patchListName;
     const GetPot& m_dataFile;
     const int m_patchNumber;
     
