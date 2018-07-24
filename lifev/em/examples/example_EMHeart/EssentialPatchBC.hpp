@@ -226,7 +226,7 @@ public:
 private:
 
     std::string m_patchList;
-    GetPot& m_dataFile;
+    const GetPot& m_dataFile;
     const int m_patchNumber;
     
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
