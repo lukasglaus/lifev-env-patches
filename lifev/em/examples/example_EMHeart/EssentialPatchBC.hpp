@@ -194,7 +194,7 @@ public:
     
     ~EssentialPatchBCHandler(){}
 
-    addPatchesBC(EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    addPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
@@ -206,11 +206,25 @@ public:
         }
     }
 
-    setup(){}
+    applyBC()
+    {
+        for (auto& patch : patchBC)
+        {
+            patch->applyBC(solver, dataFile);
+        }
 
-    applyBC(){}
+    }
 
-    modifyPatch(){}
+    modifyPatch()
+    {
+        auto modifyEssentialPatchBC = [&] (const Real& time)
+        {
+            for (auto& patch : patchBC)
+            {
+                patch->modifyPatchBC(solver, time);
+            }
+        };
+    }
 
 
 private:
