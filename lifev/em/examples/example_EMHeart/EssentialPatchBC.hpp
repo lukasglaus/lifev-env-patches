@@ -198,7 +198,7 @@ public:
     {
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
-            const std::string patchName = m_dataFile ( m_patchList, " ", i );
+            const std::string patchName = m_dataFile ( m_patchList.c_str(), " ", i );
             const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
             m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
@@ -225,7 +225,7 @@ public:
 
 private:
 
-    std::string m_patchList;
+    const std::string m_patchList;
     const GetPot& m_dataFile;
     const int m_patchNumber;
     
