@@ -32,6 +32,37 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name) = 0;
 
+    virtual void setup(const GetPot& dataFile, const std::string& name)
+    {
+        // Patch name
+        m_Name = name;
+        
+        // Epicardium flag
+        m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
+        
+        // Patch motion direction
+        for ( UInt j (0); j < 3; ++j )
+        {
+            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
+        }
+        m_patchDirection.normalize();
+        
+        // Boundary condition components
+        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
+        std::vector<ID> patchComponent (componentSize);
+        for ( UInt j (0); j < componentSize; ++j )
+        {
+            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
+        }
+        
+        // Patch peak displacement
+        m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
+        
+        // Temporal activation parameter
+        m_tmax = dataFile ( "solid/patches/tmax", 0. );
+        m_tduration = dataFile ( "solid/patches/tduration", 0. );
+    }
+    
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
         m_patchFlag = newFlag;
@@ -75,19 +106,6 @@ public:
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
-
-        UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
-        std::vector<ID> patchComponent (componentSize);
-        for ( UInt j (0); j < componentSize; ++j )
-        {
-            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
-        }
-
-        for ( UInt j (0); j < 3; ++j )
-        {
-            m_patchDirection[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/direction").c_str(), 0, j );
-        }
-        m_patchDirection.normalize();
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10, 0.0);
 
@@ -134,9 +152,15 @@ protected:
         return vectorField;
     }
     
-    virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
+    virtual Real activationFunction (const Real& time) const
+    {
+        Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
+        bool inPeriod ( timeInPeriod < m_tduration && timeInPeriod > 0);
+        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / m_tduration) , 2 ) * m_patchDisplacement;
+        return ( inPeriod ? sinusSquared : 0 );
+    }
     
-    virtual Real activationFunction (const Real& time) const = 0;
+    virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
 
     
     std::string m_Name;
@@ -144,6 +168,7 @@ protected:
     unsigned int m_patchFlag;
     
     Vector3D m_patchDirection;
+    Real m_patchDisplacement;
 
     vectorPtr_Type m_dispPtr;
     

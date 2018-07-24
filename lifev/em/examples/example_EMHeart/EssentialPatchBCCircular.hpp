@@ -26,10 +26,8 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
-        m_Name = name;
-        m_PrevFlag = dataFile ( ("solid/boundary_conditions/" + m_Name + "/flag").c_str(), 0 );
-        m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
-        
+        super::setup(dataFile, name);
+
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
         for ( UInt j (0); j < 3; ++j )
@@ -49,17 +47,7 @@ protected:
         return pointInCircle;
     }
     
-    virtual Real activationFunction (const Real& time) const
-    {
-        Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
-        bool inPeriod ( timeInPeriod < m_tduration && timeInPeriod > 0);
-        Real sinusSquared = std::pow( std::sin(timeInPeriod * PI / m_tduration) , 2 ) * m_patchDisplacement;
-        return ( inPeriod ? sinusSquared : 0 );
-    }
     
-    
-    Real m_patchDisplacement;
-
     Vector3D m_Center;
     Real m_Radius;
     
