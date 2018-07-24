@@ -209,33 +209,33 @@ monodomain_xml_file = ParamListE.xml
 
         [./EssentialPatch1]
         flag                = 464
-        type                = EssentialPatchBCCircularSmooth #EllipseSmooth
-        center              = '-1.8 -7 -4.5' #'-1.8 -7.0 -4.5'
+        type                = EssentialPatchBCEllipseSmooth
+        center              = '-1.8 -9 -4.5' #'-1.8 -7.0 -4.5'
         radius              = 2.5
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         edgeDispFactor      = 0.5
-        princSemiAxesLength = '2.0 1.0 4.0'
-        displacement        = 1.2
+        princSemiAxesLength = '2.0 1.0 3.0'
+        displacement        = 1.0
 
 
         [../EssentialPatch2]
         flag                = 464
-        type                = EssentialPatchBCCircularSmooth #EllipseSmooth
-        center              = '3.5 -7 1.0' #'3.5 -7.0 1.0'
+        type                = EssentialPatchBCEllipseSmooth
+        center              = '3.5 -9 1.0' #'3.5 -7.0 1.0'
         radius              = 2.5
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
-        princSemiAxesLength = '2.0 1.0 4.0'
-        displacement        = 1.2
+        princSemiAxesLength = '2.0 1.0 3.0'
+        displacement        = 1.0
 
         [../]
 
 
     [../patches]
     testAtPreload       = false
-    tmax                = 175 #250 #150 #200 #250
+    tmax                = 180 #250 #150 #200 #250
     tduration           = 350 #300
 
     [../coupling]
@@ -248,7 +248,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../time_discretization]
     initialtime                 = 0.
-    endtime                     = 0.1 #10000.
+    endtime                     = 10000.
     timestep                    = 1.0
     dt_loadstep                 = 0.5
     activation_limit_loadstep   = 0.1 #-0.07
