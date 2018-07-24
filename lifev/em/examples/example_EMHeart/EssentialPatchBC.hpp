@@ -49,10 +49,9 @@ public:
         
         // Boundary condition components
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
-        std::vector<ID> patchComponent (componentSize);
         for ( UInt j (0); j < componentSize; ++j )
         {
-            patchComponent[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j );
+            m_patchComponent.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j ) );
         }
         
         // Patch peak displacement
@@ -169,6 +168,8 @@ protected:
     
     Vector3D m_patchDirection;
     Real m_patchDisplacement;
+    
+    std::vector<ID> m_patchComponent;
 
     vectorPtr_Type m_dispPtr;
     
