@@ -205,13 +205,34 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listEssentialPatchBC = 'EssentialPatch1 EssentialPatch2'
+    listEssentialPatchBCCircular = 'EssentialPatchCircular1 EssentialPatchCircular2'
+#listEssentialPatchBCEllipsoid = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
 
-        [./EssentialPatch1]
+        [./EssentialPatchCircular1]
+        flag                = 464
+        type                = EssentialPatchBCCircular
+        center              = '-1.8 -7.0 -4.5'
+        radius              = 2.5
+        component           = '0 2'
+        direction           = '1.0 0.0 1.0'
+        edgeDispFactor      = 0.5
+        displacement        = 1.0
+
+
+        [../EssentialPatchCircular2]
+        flag                = 464
+        type                = EssentialPatchBCCircular
+        center              = '3.5 -7.0 1.0'
+        radius              = 2.5
+        component           = '0 2'
+        direction           = '-1.0 0.0 -1.0'
+        edgeDispFactor      = 0.5
+        displacement        = 1.0
+
+        [../EssentialPatchEllipsoid1]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
-        center              = '-1.8 -9 -4.5' #'-1.8 -7.0 -4.5'
-        radius              = 2.5
+        center              = '-1.8 -9 -4.5'
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         edgeDispFactor      = 0.5
@@ -219,11 +240,10 @@ monodomain_xml_file = ParamListE.xml
         displacement        = 1.0
 
 
-        [../EssentialPatch2]
+        [../EssentialPatchEllipsoid2]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
-        center              = '3.5 -9 1.0' #'3.5 -7.0 1.0'
-        radius              = 2.5
+        center              = '3.5 -9 1.0'
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
