@@ -190,19 +190,19 @@ int main (int argc, char** argv)
     // Create essential circular patch b.c.
     //============================================
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-//    patchHandler.addPatchBC(dataFile, solver);
+    patchHandler.addPatchBC(dataFile, solver);
     
-    std::vector<EssentialPatchBC*> patchBC;
-    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
-    
-    for ( UInt i (0) ; i < nPatchBC ; ++i )
-    {
-        const std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
-        const std::string patchType = dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
-        patchBC.push_back(CREATE(EssentialPatchBC, patchType));
-        patchBC[i]->setup(dataFile, patchName);
-        patchBC[i]->createPatchArea(solver, 900 + i);
-    }
+//    std::vector<EssentialPatchBC*> patchBC;
+//    UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
+//
+//    for ( UInt i (0) ; i < nPatchBC ; ++i )
+//    {
+//        const std::string patchName = dataFile ( ( "solid/boundary_conditions/listEssentialPatchBC" ), " ", i );
+//        const std::string patchType = dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
+//        patchBC.push_back(CREATE(EssentialPatchBC, patchType));
+//        patchBC[i]->setup(dataFile, patchName);
+//        patchBC[i]->createPatchArea(solver, 900 + i);
+//    }
     
     if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
 
@@ -279,19 +279,20 @@ int main (int argc, char** argv)
     //============================================
     // Create displacement patch b.c.
     //============================================
-    for (auto& patch : patchBC)
-    {
-        patch->applyBC(solver, dataFile);
-    }
-    
-    auto modifyEssentialPatchBC = [&] (const Real& time)
-    {
-        for (auto& patch : patchBC)
-        {
-            patch->modifyPatchBC(solver, time);
-        }
-    };
+//    for (auto& patch : patchBC)
+//    {
+//        patch->applyBC(solver, dataFile);
+//    }
+//
+//    auto modifyEssentialPatchBC = [&] (const Real& time)
+//    {
+//        for (auto& patch : patchBC)
+//        {
+//            patch->modifyPatchBC(solver, time);
+//        }
+//    };
 
+    patchHandler.applyPatchBC(solver);
     
     //============================================
     // Pressure b.c. on endocardia
@@ -539,7 +540,8 @@ int main (int argc, char** argv)
         bcValuesPre = { p ( "lv" ) , p ( "rv" ) };
         bcValues4thOAB = { p ( "lv" ) , p ( "rv" ) };
         
-        modifyEssentialPatchBC(t);
+        //modifyEssentialPatchBC(t);
+        patchHandler.modifyPatchBC(solver, t);
         modifyPressureBC(bcValues);
         solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
         solver.solveMechanics();
@@ -596,7 +598,8 @@ int main (int argc, char** argv)
             }
             else
             {
-                modifyEssentialPatchBC(i);
+                //modifyEssentialPatchBC(t);
+                patchHandler.modifyPatchBC(solver, i);
             }
 
             // Solve mechanics
@@ -714,7 +717,8 @@ int main (int argc, char** argv)
             // Load step mechanics
             solver.structuralOperatorPtr() -> data() -> dataTime() -> setTime(t);
             modifyPressureBC(bcValuesLoadstep);
-            modifyEssentialPatchBC(t);
+            //modifyEssentialPatchBC(t);
+            patchHandler.modifyPatchBC(solver, t);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
         }
@@ -751,7 +755,8 @@ int main (int argc, char** argv)
             //============================================
             // Solve mechanics
             //============================================
-            modifyEssentialPatchBC(t);
+            //modifyEssentialPatchBC(t);
+            patchHandler.modifyPatchBC(solver, t);
             modifyPressureBC(bcValues);
             solver.bcInterfacePtr() -> updatePhysicalSolverVariables();
             solver.solveMechanics();
