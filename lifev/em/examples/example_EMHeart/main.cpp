@@ -168,8 +168,6 @@ int main (int argc, char** argv)
     //============================================
     // Resize mesh
     //============================================
-    if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh ... " << '\r' << std::flush;
-
     Vector3D scale, rotate, translate;
     for ( UInt j (0); j < 3; ++j )
     {
@@ -184,7 +182,7 @@ int main (int argc, char** argv)
     transformerFull.transformMesh (scale, rotate, translate);
     transformerLocal.transformMesh (scale, rotate, translate);
     
-    if ( 0 == comm->MyPID() ) std::cout << "Resizing mesh done" << '\r' << std::flush;
+    if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh done" << std::endl;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
 
 

@@ -134,7 +134,7 @@ public:
     {
 //        if (M_commPtr -> MyPID() == 0)
 //        {
-//            std::cout << "\n\nEMSolver: loadMesh ... " << '\r' << std::flush;
+//            std::cout << "\n\nEMSolver: loadMesh ... " << std::endl;
 //        }
 
         M_fullMeshPtr.reset( new Mesh() );
@@ -220,7 +220,7 @@ public:
     {
 //        if (M_commPtr -> MyPID() == 0)
 //        {
-//            std::cout << "\nEMSolver: setupActivation ... " << '\r' << std::flush;
+//            std::cout << "\nEMSolver: setupActivation ... " << std::endl;
 //        }
         
         M_activationModelPtr.reset ( Activation::EMActivationFactory::instance().createObject ( M_data.activationParameter<std::string>( "ActivationModel" ) ) );
@@ -244,7 +244,7 @@ public:
     
     void buildMechanicalSystem()
     {
-//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: buildMechanicalSystem ... " << '\r' << std::flush;
+//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: buildMechanicalSystem ... " << std::endl;
         
     	//Here we call the buildSystem Of the Structural operator
     	// the coefficient is the density in front of the mass matrix
@@ -255,7 +255,7 @@ public:
 
     void buildElectroSystem()
     {
-//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: buildElectroSystem ... " << '\r' << std::flush;
+//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: buildElectroSystem ... " << std::endl;
 
         M_electroSolverPtr -> setupMatrices();
         
@@ -270,7 +270,7 @@ public:
 
     void initializeElectroVariables()
     {
-//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: initializeElectroVariables ... " << '\r' << std::flush;
+//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: initializeElectroVariables ... " << std::endl;
 
         M_electroSolverPtr -> setInitialConditions();
         
@@ -294,7 +294,7 @@ public:
 						   const std::string& postDir = "./",
 						   const std::string& polynomialDegree = "P1"  )
     {
-//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupFiberVector ... " << '\r' << std::flush;
+//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupFiberVector ... " << std::endl;
 
     	setupMechanicalFiberVector(fileName, fieldName, postDir, polynomialDegree);
     	M_electroSolverPtr->setFiberPtr(getMechanicsFibers());
@@ -308,7 +308,7 @@ public:
 									 const std::string& postDir = "./",
                                      const std::string& polynomialDegree = "P1"  )
     {
-//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalFiberVector ... " << '\r' << std::flush;
+//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalFiberVector ... " << std::endl;
         
         ElectrophysiologyUtility::importVectorField (getMechanicsFibers(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
         
@@ -328,7 +328,7 @@ public:
 									 const std::string& postDir = "./",
                                      const std::string& polynomialDegree = "P1"  )
     {
-//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalSheetVector ... " << '\r' << std::flush;
+//        if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalSheetVector ... " << std::endl;
 
         ElectrophysiologyUtility::importVectorField (getMechanicsSheets(),  fileName,  fieldName, M_localMeshPtr, postDir, polynomialDegree );
         if (M_commPtr -> MyPID() == 0) std::cout << "\nEMSolver: setupMechanicalSheetVector - done";
@@ -604,7 +604,7 @@ EMSolver<Mesh, ElectroSolver>::setupElectroSolver ( GetPot& dataFile )
 {
 //    if (M_commPtr -> MyPID() == 0)
 //    {
-//        std::cout << "\nEMSolver: setupElectroSolver ... " << '\r' << std::flush;
+//        std::cout << "\nEMSolver: setupElectroSolver ... " << std::endl;
 //    }
 	ionicModelPtr_Type ionicModelPtr;
 	std::string ionicModelName = M_data.electroParameter<std::string>("IonicModel");
@@ -649,7 +649,7 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalSolver ( GetPot& dataFile)
 {
 //    if (M_commPtr -> MyPID() == 0)
 //    {
-//        std::cout << "\nEMSolver: setupMechanicalSolver ... " << '\r' << std::flush;
+//        std::cout << "\nEMSolver: setupMechanicalSolver ... " << std::endl;
 //    }
     
     boost::shared_ptr<StructuralConstitutiveLawData> dataStructure (new StructuralConstitutiveLawData( ) );
@@ -698,7 +698,7 @@ EMSolver<Mesh, ElectroSolver>::setupMechanicalBC (std::string data_file_name,
 {
 //    if (M_commPtr -> MyPID() == 0)
 //    {
-//        std::cout << "\nEMSolver: setupMechanicalBC ... " << '\r' << std::flush;
+//        std::cout << "\nEMSolver: setupMechanicalBC ... " << std::endl;
 //    }
 
     M_bcInterfacePtr.reset (new bcInterface_Type() );
@@ -742,7 +742,7 @@ EMSolver<Mesh, ElectroSolver>::setupExporters ( std::string problemFolder,
 {
 //    if (M_commPtr -> MyPID() == 0)
 //    {
-//        std::cout << "\nEMSolver: setupExporters ... " << '\r' << std::flush;
+//        std::cout << "\nEMSolver: setupExporters ... " << std::endl;
 //    }
     
     // Electrophysiology
@@ -967,7 +967,7 @@ EMSolver<Mesh, ElectroSolver>::solveElectrophysiology (function_Type& stimulus, 
 {
 //    if (M_commPtr -> MyPID() == 0)
 //    {
-//        std::cout << "\nEMSolver: solveElectrophysiology ... " << '\r' << std::flush;
+//        std::cout << "\nEMSolver: solveElectrophysiology ... " << std::endl;
 //    }
     
     setAppliedCurrent ( stimulus, time );
@@ -992,7 +992,7 @@ EMSolver<Mesh, ElectroSolver>::solveActivation (Real dt)
 {
 //    if (M_commPtr -> MyPID() == 0)
 //    {
-//        std::cout << "\nEMSolver: solveActivation ... " << '\r' << std::flush;
+//        std::cout << "\nEMSolver: solveActivation ... " << std::endl;
 //    }
     
     computeI4f (M_activationModelPtr->I4f(), *M_EMStructuralOperatorPtr->EMMaterial()->fiberVectorPtr(), *M_EMStructuralOperatorPtr->displacementPtr(), M_EMStructuralOperatorPtr->dispFESpacePtr());

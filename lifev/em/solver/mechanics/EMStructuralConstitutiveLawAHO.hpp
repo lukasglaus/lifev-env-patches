@@ -1487,11 +1487,6 @@ EMStructuralConstitutiveLaw<MeshType>::setup ( const FESpacePtr_Type&           
                                                const dataPtr_Type&                         dataMaterial,
                                                const displayerPtr_Type&                    displayer)
 {
-    if (displayer->isLeader())
-    {
-        std::cout << "\nEMStructuralConstitutiveLaw: setup ... " << '\r' << std::flush;
-    }
-    
     this->M_displayer = displayer;
     this->M_dataMaterial  = dataMaterial;
 

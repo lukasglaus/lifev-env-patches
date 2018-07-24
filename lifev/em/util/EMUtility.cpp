@@ -59,11 +59,6 @@ std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
     std::string problemFolder = command_line.follow ("Output", 2, "-o", "--output"); //) command_line.follow ( "Output", 2, "-o", "--output" );
     // Create the problem folder
     
-    if (comm.MyPID() == 0)
-    {
-        std::cout << "\nEMUtility: createOutputFolder (" << problemFolder << ") ... " << '\r' << std::flush;
-    }
-    
     if ( problemFolder.compare ("./") )
     {
         problemFolder += "/";
@@ -76,7 +71,7 @@ std::string createOutputFolder (GetPot& command_line, Epetra_Comm& comm)
     
     if (comm.MyPID() == 0)
     {
-        std::cout << "EMUtility: createOutputFolder (" << problemFolder << ") - done " << '\r' << std::flush;
+        std::cout << "EMUtility: createOutputFolder (" << problemFolder << ") - done " << std::endl;
     }
     
     return problemFolder;
