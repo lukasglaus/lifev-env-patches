@@ -206,24 +206,20 @@ public:
         }
     }
 
-    applyBC()
+    applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        for (auto& patch : patchBC)
+        for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, dataFile);
         }
-
     }
 
-    modifyPatch()
+    modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        auto modifyEssentialPatchBC = [&] (const Real& time)
+        for (auto& patch : m_patchBCPtrVec)
         {
-            for (auto& patch : patchBC)
-            {
-                patch->modifyPatchBC(solver, time);
-            }
-        };
+            patch->modifyPatchBC(solver, time);
+        }
     }
 
 
