@@ -189,6 +189,9 @@ int main (int argc, char** argv)
     //============================================
     // Create essential circular patch b.c.
     //============================================
+//    EssentialPatchBCHandler patchHandler ("solid/boundary_conditions/listEssentialPatchBC");
+//    patchHandler.addPatches(dataFile, solver);
+    
     std::vector<EssentialPatchBC*> patchBC;
     UInt nPatchBC = dataFile.vector_variable_size ( ( "solid/boundary_conditions/listEssentialPatchBC" ) );
     
