@@ -117,9 +117,9 @@ public:
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-6;
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
-        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
@@ -172,6 +172,9 @@ protected:
     
     vectorPtr_Type m_patchDispPtr;
     bcVectorPtr_Type m_patchDispBCPtr;
+    
+    Real m_tmax;
+    Real m_tduration;
     
 };
 

@@ -51,9 +51,6 @@ protected:
     Vector3D m_Center;
     Real m_Radius;
     
-    Real m_tmax;
-    Real m_tduration;
-    
 };
 
 REGISTER(EssentialPatchBC, EssentialPatchBCCircular);

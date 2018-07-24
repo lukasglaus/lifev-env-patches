@@ -130,9 +130,6 @@ protected:
     Vector3D m_ellipsoidPrincSemiAxesLen;
     Real m_EdgeDispFactor;
     
-    Real m_tmax;
-    Real m_tduration;
-    
 };
 
 REGISTER(EssentialPatchBC, EssentialPatchBCEllipseSmooth);
