@@ -192,6 +192,8 @@ int main (int argc, char** argv)
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
     patchHandler.addPatchBC(solver);
     
+    heartSolver.setPatchDisplacement(patchHandler.patchDisplacement());
+    
     
     //============================================
     // Setup solver (including fe-spaces & b.c.)

@@ -205,33 +205,39 @@ public:
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                     "Von Mises Stress",
+                                     "Von Mises stress",
                                      M_emSolver.electroSolverPtr()->feSpacePtr(),
                                      M_emSolver.tensionEstimator().vonMisesStressPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "Principal Stress",
+                                     "Principal stress",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.tensionEstimator().principalStressesPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "X Stress Total",
+                                     "X stress",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.tensionEstimator().sigmaXPtr(),
                                      UInt (0) );
     
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "Y Stress Total",
+                                     "Y stress",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.tensionEstimator().sigmaYPtr(),
                                      UInt (0) );
     
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-                                     "Z Stress Total",
+                                     "Z stress",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
                                      M_emSolver.tensionEstimator().sigmaZPtr(),
+                                     UInt (0) );
+        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Patch displacement",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.structuralOperatorPtr()->displacementPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
@@ -254,11 +260,11 @@ public:
                                      M_emSolver.activationModelPtr()->fiberActivationPtr(),
                                      UInt (0) );
             
-        m_exporter -> addVariable ( ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-                                    "Activation Time",
-                                    M_emSolver.electroSolverPtr() -> feSpacePtr(),
-                                    M_emSolver.activationTimePtr(),
-                                    UInt (0) );
+        m_exporter -> addVariable (  ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                     "Activation time",
+                                     M_emSolver.electroSolverPtr() -> feSpacePtr(),
+                                     M_emSolver.activationTimePtr(),
+                                     UInt (0) );
         
         for (int i = 0; i < M_emSolver.electroSolverPtr()->ionicModelPtr()->Size(); ++i)
         {
@@ -353,7 +359,12 @@ public:
         
         return traction.dot(velocity);
     }
-
+    
+    void setPatchDisplacement(boost::shared_ptr<VectorEpetra>& patchDisplacement)
+    {
+        m_patchDisplacement = patchDisplacement;
+    }
+    
     
 protected:
     
@@ -369,6 +380,7 @@ protected:
 
     VectorSmall<4> m_ABdplv, m_ABdprv;
 
+    boost::shared_ptr<VectorEpetra> m_patchDisplacement;
     
     
     

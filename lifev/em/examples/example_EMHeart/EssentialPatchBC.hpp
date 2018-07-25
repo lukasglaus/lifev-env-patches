@@ -126,6 +126,11 @@ public:
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
     }
     
+    vectorPtr_Type patchDisplacement()
+    {
+        return m_patchDispPtr;
+    }
+    
     
 protected:
     
@@ -194,7 +199,7 @@ public:
     
     ~EssentialPatchBCHandler(){}
 
-    addPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    void addPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
@@ -206,7 +211,7 @@ public:
         }
     }
 
-    applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         for (auto& patch : m_patchBCPtrVec)
         {
@@ -214,20 +219,40 @@ public:
         }
     }
 
-    modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
+    void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->modifyPatchBC(solver, time);
         }
+        
+        updatePatchDisplacementSum();
+    }
+
+    vectorPtr_Type patchDisplacement()
+    {
+        return m_patchDisplacementSum;
     }
 
 
 private:
 
+    
+    void updatePatchDisplacementSum()
+    {
+        m_patchDisplacementSum *= 0.0;
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            m_patchDisplacementSum += patch->patchDisplacement();
+        }
+    }
+    
+    
     const std::string m_patchListName;
     const GetPot& m_dataFile;
     const int m_patchNumber;
+    
+    vectorPtr_Type m_patchDisplacementSum;
     
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
 
