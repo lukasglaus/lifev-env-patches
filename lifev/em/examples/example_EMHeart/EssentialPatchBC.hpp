@@ -244,7 +244,7 @@ private:
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            (*m_patchDisplacementSum) += patch->patchDisplacement();
+            (*m_patchDisplacementSum) += (*patch->patchDisplacement());
         }
     }
     
