@@ -239,7 +239,7 @@ private:
     
     void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        m_patchDisplacementSum.reset(new VectorEpetra( solver.structuralOperatorPtr()->dFeSpace()->map(), Repeated ));
+        m_patchDisplacementSum.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
         m_patchDisplacementSum *= 0.0;
 
         for (auto& patch : m_patchBCPtrVec)
