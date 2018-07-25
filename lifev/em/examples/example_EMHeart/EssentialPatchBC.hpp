@@ -194,8 +194,7 @@ public:
     EssentialPatchBCHandler(const std::string& patchListName, const GetPot& dataFile) :
         m_patchListName ("solid/boundary_conditions/" + patchListName),
         m_dataFile (dataFile),
-        m_patchNumber (( m_dataFile.vector_variable_size(m_patchListName.c_str()) )),
-        m_patchDisplacementSum (new VectorEpetra( dFeSpace->map(), Repeated ))
+        m_patchNumber (( m_dataFile.vector_variable_size(m_patchListName.c_str()) ))
     {}
     
     ~EssentialPatchBCHandler(){}
@@ -227,7 +226,7 @@ public:
             patch->modifyPatchBC(solver, time);
         }
         
-        updatePatchDisplacementSum();
+        updatePatchDisplacementSum(solver);
     }
 
     vectorPtr_Type patchDisplacement()
@@ -238,9 +237,11 @@ public:
 
 private:
     
-    void updatePatchDisplacementSum()
+    void updatePatchDisplacementSum(EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
+        m_patchDisplacementSum.reset(new VectorEpetra( solver.structuralOperatorPtr()->dFeSpace()->map(), Repeated ));
         m_patchDisplacementSum *= 0.0;
+
         for (auto& patch : m_patchBCPtrVec)
         {
             m_patchDisplacementSum += patch->patchDisplacement();
