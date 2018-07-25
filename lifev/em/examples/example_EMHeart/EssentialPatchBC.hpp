@@ -194,7 +194,8 @@ public:
     EssentialPatchBCHandler(const std::string& patchListName, const GetPot& dataFile) :
         m_patchListName ("solid/boundary_conditions/" + patchListName),
         m_dataFile (dataFile),
-        m_patchNumber (( m_dataFile.vector_variable_size(m_patchListName.c_str()) ))
+        m_patchNumber (( m_dataFile.vector_variable_size(m_patchListName.c_str()) )),
+        m_patchDisplacementSum (new VectorEpetra( dFeSpace->map(), Repeated ))
     {}
     
     ~EssentialPatchBCHandler(){}
@@ -236,7 +237,6 @@ public:
 
 
 private:
-
     
     void updatePatchDisplacementSum()
     {
