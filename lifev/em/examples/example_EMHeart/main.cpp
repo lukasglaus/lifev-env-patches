@@ -187,13 +187,11 @@ int main (int argc, char** argv)
 
 
     //============================================
-    // Create essential circular patch b.c.
+    // Create essential patch b.c.
     //============================================
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
     patchHandler.addPatchBC(solver);
     
-    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
-
     
     //============================================
     // Setup solver (including fe-spaces & b.c.)
@@ -267,20 +265,8 @@ int main (int argc, char** argv)
     //============================================
     // Create displacement patch b.c.
     //============================================
-//    for (auto& patch : patchBC)
-//    {
-//        patch->applyBC(solver, dataFile);
-//    }
-//
-//    auto modifyEssentialPatchBC = [&] (const Real& time)
-//    {
-//        for (auto& patch : patchBC)
-//        {
-//            patch->modifyPatchBC(solver, time);
-//        }
-//    };
-
     patchHandler.applyPatchBC(solver);
+    
     
     //============================================
     // Pressure b.c. on endocardia

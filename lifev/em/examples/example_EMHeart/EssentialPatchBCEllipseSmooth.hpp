@@ -121,7 +121,12 @@ protected:
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        Real dispWeight = ellipsoidFuncEval(ellipsoidCoord);
+        Real dispWeight (0);
+        if ( nodeInsideEllipsoid(ellipsoidCoord) )
+        {
+            dispWeight =  = ellipsoidFuncEval(ellipsoidCoord);
+        }
+        
         return dispWeight;
     }
         

@@ -205,8 +205,8 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    listEssentialPatchBC = 'EssentialPatchCircular1 EssentialPatchCircular2'
-    #listEssentialPatchBC = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
+    #listEssentialPatchBC = 'EssentialPatchCircular1 EssentialPatchCircular2'
+    listEssentialPatchBC = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
 
         [./EssentialPatchCircular1]
         flag                = 464
@@ -216,7 +216,7 @@ monodomain_xml_file = ParamListE.xml
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         edgeDispFactor      = 0.5
-        displacement        = 1.0
+        displacement        = 1.2
 
 
         [../EssentialPatchCircular2]
@@ -227,28 +227,28 @@ monodomain_xml_file = ParamListE.xml
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
-        displacement        = 1.0
+        displacement        = 1.2
 
         [../EssentialPatchEllipsoid1]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
-        center              = '-1.8 -9 -4.5'
+        center              = '-1.8 -9.5 -4.5'
         component           = '0 2'
         direction           = '1.0 0.0 1.0'
         edgeDispFactor      = 0.5
         princSemiAxesLength = '2.0 1.0 3.0'
-        displacement        = 1.0
+        displacement        = 1.2
 
 
         [../EssentialPatchEllipsoid2]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
-        center              = '3.5 -9 1.0'
+        center              = '3.5 -9.5 1.0'
         component           = '0 2'
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
         princSemiAxesLength = '2.0 1.0 3.0'
-        displacement        = 1.0
+        displacement        = 1.2
 
         [../]
 
@@ -279,7 +279,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../space_discretization]
     mesh_type           = .mesh
-    mesh_name           = humanHeart250
+    mesh_name           = humanHeart160
     mesh_scaling        = '1.2 1.2 1.2'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'
