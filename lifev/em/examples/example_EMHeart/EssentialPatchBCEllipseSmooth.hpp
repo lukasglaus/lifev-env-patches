@@ -108,9 +108,9 @@ protected:
         return ellipsoidFuncValue;
     }
 
-    virtual const std::vector<Vector3D> ellipsoidCoordinateSystem(const Vector3D& patchDirection) const
+    virtual const std::vector<Vector3D> ellipsoidCoordinateSystem(const Vector3D patchDirection) const
     {
-        Vector3D axis0 = patchDirection.normalized();
+        auto axis0 = patchDirection.normalized();
         auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
         auto axis2 = (axis0.cross(axis1)).normalized();
         
