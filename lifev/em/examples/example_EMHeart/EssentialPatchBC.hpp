@@ -190,6 +190,8 @@ protected:
 class EssentialPatchBCHandler
 {
 public:
+    typedef VectorEpetra                                    vector_Type;
+    typedef boost::shared_ptr<vector_Type>                  vectorPtr_Type;
 
     EssentialPatchBCHandler(const std::string& patchListName, const GetPot& dataFile) :
         m_patchListName ("solid/boundary_conditions/" + patchListName),
