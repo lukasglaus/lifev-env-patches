@@ -237,7 +237,7 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Patch displacement",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                     M_emSolver.structuralOperatorPtr()->displacementPtr(),
+                                     m_patchDisplacementSumPtr,
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
@@ -360,9 +360,9 @@ public:
         return traction.dot(velocity);
     }
     
-    void setPatchDisplacement(vectorPtr_Type& patchDisplacement)
+    void setPatchDisplacementSum(vectorPtr_Type& patchDisplacementSum)
     {
-        m_patchDisplacement = patchDisplacement;
+        m_patchDisplacementSumPtr = patchDisplacementSum;
     }
     
     
@@ -380,7 +380,7 @@ protected:
 
     VectorSmall<4> m_ABdplv, m_ABdprv;
 
-    boost::shared_ptr<VectorEpetra> m_patchDisplacement;
+    boost::shared_ptr<VectorEpetra> m_patchDisplacementSumPtr;
     
     
     

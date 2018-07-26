@@ -87,7 +87,7 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
-        auto ellipseCoord = transformToLocalEllipsoidCoordinates(coord);
+        auto ellipsoidCoord = transformToLocalEllipsoidCoordinates(coord);
         return nodeInsideEllipsoid(ellipsoidCoord);
     }
     
