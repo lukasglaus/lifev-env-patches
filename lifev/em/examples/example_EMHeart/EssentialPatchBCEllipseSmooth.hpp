@@ -98,7 +98,7 @@ protected:
     
     virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
-        auto ellipseCoord = transformToLocalEllipsoidCoordinates(coord);
+        auto ellipsoidCoord = transformToLocalEllipsoidCoordinates(coord);
         
         std::cout << ( nodeInsideEllipsoid(ellipsoidCoord) ? 999 : std::pow(1 - m_EdgeDispFactor, -1.0) ) std::endl;
 
