@@ -126,6 +126,11 @@ public:
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
     }
     
+    vector_Type& patchDisplacement()
+    {
+        return *m_patchDispPtr;
+    }
+    
     vectorPtr_Type patchDisplacementPtr()
     {
         return m_patchDispPtr;
@@ -231,6 +236,11 @@ public:
         updatePatchDisplacementSumPtr(solver);
     }
 
+    vector_Type& patchDisplacementSum()
+    {
+        return *m_patchDisplacementSumPtr;
+    }
+    
     vectorPtr_Type patchDisplacementSumPtr()
     {
         return m_patchDisplacementSumPtr;
@@ -245,7 +255,7 @@ private:
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            (*m_patchDisplacementSumPtr) += (*patch->patchDisplacementPtr());
+            (*m_patchDisplacementSumPtr) += patch->patchDisplacement();
         }
     }
     

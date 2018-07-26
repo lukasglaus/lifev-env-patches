@@ -192,7 +192,7 @@ int main (int argc, char** argv)
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
     patchHandler.addPatchBC(solver);
     
-    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
+    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSum());
     
     
     //============================================

@@ -360,9 +360,9 @@ public:
         return traction.dot(velocity);
     }
     
-    void setPatchDisplacementSumPtr(vectorPtr_Type patchDisplacementSumPtr)
+    void setPatchDisplacementSumPtr(vector_Type& patchDisplacementSum)
     {
-        m_patchDisplacementSumPtr = patchDisplacementSumPtr;
+        *m_patchDisplacementSumPtr = patchDisplacementSum;
     }
     
     boost::shared_ptr<VectorEpetra> patchDisplacementSumPtr()
