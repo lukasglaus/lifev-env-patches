@@ -231,7 +231,7 @@ public:
 
     vectorPtr_Type patchDisplacementSumPtr()
     {
-        return m_patchDisplacementSum;
+        return m_patchDisplacementSumPtr;
     }
 
 
