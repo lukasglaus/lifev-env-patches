@@ -99,9 +99,6 @@ protected:
     virtual const Real dispDistributionWeight(Vector3D& coord) const
     {
         auto ellipsoidCoord = transformToLocalEllipsoidCoordinates(coord);
-        
-        std::cout << ( nodeInsideEllipsoid(ellipsoidCoord) ? 999 : std::pow(1 - m_EdgeDispFactor, -1.0) ) std::endl;
-
         return ( nodeInsideEllipsoid(ellipsoidCoord) ? ellipsoidFuncEval(ellipsoidCoord) : std::pow(1 - m_EdgeDispFactor, -1.0) );
     }
     
@@ -120,7 +117,7 @@ protected:
         return std::vector<Vector3D> { axis0 , axis1 , axis2 };
     }
     
-    virtual const Vector3D transformToLocalEllipsoidCoordinates(Vector3D& coord)
+    virtual const Vector3D transformToLocalEllipsoidCoordinates(const Vector3D& coord) const
     {
         auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
