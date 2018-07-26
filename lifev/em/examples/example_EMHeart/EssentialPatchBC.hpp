@@ -164,7 +164,7 @@ protected:
         return ( inPeriod ? sinusSquared : 0 );
     }
     
-    virtual const bool nodeOnPatch(Vector3D& coord) const = 0;
+    virtual const bool nodeOnPatch(const Vector3D& coord) const = 0;
 
     
     std::string m_Name;

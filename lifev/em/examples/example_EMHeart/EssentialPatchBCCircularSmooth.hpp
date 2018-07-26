@@ -85,7 +85,7 @@ protected:
         return vectorField;
     }
     
-    virtual const bool nodeOnPatch(Vector3D& coord) const
+    virtual const bool nodeOnPatch(const Vector3D& coord) const
     {
         bool pointInCircle = (coord - m_Center).norm() < m_Radius;
         return pointInCircle;
