@@ -229,7 +229,7 @@ public:
         updatePatchDisplacementSum(solver);
     }
 
-    vectorPtr_Type patchDisplacementSum()
+    vectorPtr_Type& patchDisplacementSum()
     {
         return m_patchDisplacementSum;
     }
