@@ -360,7 +360,7 @@ public:
         return traction.dot(velocity);
     }
     
-    void setPatchDisplacement(boost::shared_ptr<VectorEpetra>& patchDisplacement)
+    void setPatchDisplacement(vectorPtr_Type& patchDisplacement)
     {
         m_patchDisplacement = patchDisplacement;
     }
