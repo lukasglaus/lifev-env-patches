@@ -49,7 +49,7 @@ protected:
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
 
         direction.normalize();
-        direction *= disp;
+        // direction *= disp;
 
         for (int j (0); j < nCompLocalDof; ++j)
         {
@@ -70,7 +70,7 @@ protected:
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
 
             // If coordiantes inside or outside of a certain radius
-            auto displacement = (m_EdgeDispFactor * disp - disp) * dispDistributionWeight(coord) + disp;
+            auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
 
             // If patch inside or outside the structure
 
@@ -105,8 +105,7 @@ protected:
     
     virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord) const
     {
-        bool pointInsideEllipsoid (ellipsoidFuncEval(ellipseCoord) < 1.0);
-        return pointInsideEllipsoid;
+        return (ellipsoidFuncEval(ellipseCoord) < 1.0);
     }
     
     virtual const Real ellipsoidFuncEval(const Vector3D& ellipseCoord) const
@@ -121,13 +120,7 @@ protected:
         auto localCoord = coord - m_Center;
         Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
         
-        Real dispWeight (0);
-        if ( nodeInsideEllipsoid(ellipsoidCoord) )
-        {
-            dispWeight = ellipsoidFuncEval(ellipsoidCoord);
-        }
-        
-        return dispWeight;
+        return ( nodeInsideEllipsoid(ellipsoidCoord) ? ellipsoidFuncEval(ellipsoidCoord) : std::pow(1 - m_EdgeDispFactor, -1.0) );
     }
         
 
