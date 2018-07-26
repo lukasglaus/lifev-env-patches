@@ -237,7 +237,7 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Patch displacement",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                     this->patchDisplacementSumPtr(),
+                                     *this->patchDisplacementSumPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
