@@ -206,8 +206,6 @@ public:
 
     void addPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        //m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
-
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
             const std::string patchName = m_dataFile ( m_patchListName.c_str(), " ", i );
@@ -220,6 +218,8 @@ public:
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
+        m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
+        
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
