@@ -131,11 +131,6 @@ public:
         return *m_patchDispPtr;
     }
     
-    vectorPtr_Type patchDisplacementPtr()
-    {
-        return m_patchDispPtr;
-    }
-    
     
 protected:
     
@@ -234,7 +229,7 @@ public:
             patch->modifyPatchBC(solver, time);
         }
         
-        updatePatchDisplacementSumPtr();
+        updatePatchDisplacementSum();
     }
 
     vector_Type& patchDisplacementSum()
@@ -250,13 +245,13 @@ public:
 
 private:
     
-    void updatePatchDisplacementSumPtr()
+    void updatePatchDisplacementSum()
     {
-        (*m_patchDisplacementSumPtr) *= 0.0;
+        m_patchDisplacementSumPtr *= 0.0;
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            (*m_patchDisplacementSumPtr) += patch->patchDisplacement();
+            m_patchDisplacementSum += patch->patchDisplacement();
         }
     }
     
