@@ -218,8 +218,9 @@ public:
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
-        
+        //m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
+        m_patchDisplacementSum = VectorEpetra(solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated);
+
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
@@ -238,12 +239,12 @@ public:
 
     vector_Type& patchDisplacementSum()
     {
-        return *m_patchDisplacementSumPtr;
+        return m_patchDisplacementSum;
     }
     
-    vectorPtr_Type patchDisplacementSumPtr()
+    vectorPtr_Type patchDisplacementSum()
     {
-        return m_patchDisplacementSumPtr;
+        return *m_patchDisplacementSum;
     }
 
 
@@ -265,7 +266,8 @@ private:
     const int m_patchNumber;
     
     vectorPtr_Type m_patchDisplacementSumPtr;
-    
+    vector_Type m_patchDisplacementSum;
+
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
 
 };
