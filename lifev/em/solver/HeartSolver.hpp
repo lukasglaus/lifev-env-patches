@@ -360,7 +360,7 @@ public:
         return traction.dot(velocity);
     }
     
-    void setPatchDisplacementSumPtr(vector_Type& patchDisplacementSum)
+    void setPatchDisplacementSum(vector_Type& patchDisplacementSum)
     {
         *m_patchDisplacementSumPtr = patchDisplacementSum;
     }
