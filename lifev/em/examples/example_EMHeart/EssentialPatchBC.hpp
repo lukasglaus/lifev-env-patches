@@ -242,10 +242,10 @@ public:
         return m_patchDisplacementSum;
     }
     
-    vectorPtr_Type patchDisplacementSumPtr()
-    {
-        return *m_patchDisplacementSum;
-    }
+//    vectorPtr_Type patchDisplacementSumPtr()
+//    {
+//        return *m_patchDisplacementSum;
+//    }
 
 
 private:
@@ -265,7 +265,7 @@ private:
     const GetPot& m_dataFile;
     const int m_patchNumber;
     
-    vectorPtr_Type m_patchDisplacementSumPtr;
+//    vectorPtr_Type m_patchDisplacementSumPtr;
     vector_Type m_patchDisplacementSum;
 
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
