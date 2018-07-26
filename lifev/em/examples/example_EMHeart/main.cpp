@@ -900,8 +900,8 @@ int main (int argc, char** argv)
             if ( 0 == comm->MyPID() )
             {
                 std::cout << "\n******************************************";
-                std::cout << "\nInstantaneous left and right ventricular power is " << leftVentPower << " / " << rightVentPower;
-                std::cout << "\nAveraged left and right ventricular power is " << AvgWorkVent(0) / t << " / " << AvgWorkVent(1) / t;
+                std::cout << "\nInstantaneous vent. power: \t" << leftVentPower << " / " << rightVentPower;
+                std::cout << "\nAveraged vent. power: \t" << AvgWorkVent(0) / t << " / " << AvgWorkVent(1) / t;
                 std::cout << "\n******************************************\n\n";
             }
             

@@ -87,20 +87,8 @@ protected:
     
     virtual const bool nodeOnPatch(Vector3D& coord) const
     {
-        auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
-        auto localCoord = coord - m_Center;
-        Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
-        
+        auto ellipseCoord = transformToLocalEllipsoidCoordinates(coord);
         return nodeInsideEllipsoid(ellipsoidCoord);
-    }
-    
-    virtual const std::vector<Vector3D> ellipsoidCoordinateSystem(Vector3D patchDirection) const
-    {
-        auto axis0 = patchDirection.normalized();
-        auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
-        auto axis2 = (axis0.cross(axis1)).normalized();
-
-        return std::vector<Vector3D> { axis0 , axis1 , axis2 };
     }
     
     virtual const bool nodeInsideEllipsoid(const Vector3D& ellipseCoord) const
@@ -108,19 +96,36 @@ protected:
         return (ellipsoidFuncEval(ellipseCoord) < 1.0);
     }
     
+    virtual const Real dispDistributionWeight(Vector3D& coord) const
+    {
+        auto ellipseCoord = transformToLocalEllipsoidCoordinates(coord);
+        
+        std::cout << ( nodeInsideEllipsoid(ellipsoidCoord) ? 999 : std::pow(1 - m_EdgeDispFactor, -1.0) ) std::endl;
+
+        return ( nodeInsideEllipsoid(ellipsoidCoord) ? ellipsoidFuncEval(ellipsoidCoord) : std::pow(1 - m_EdgeDispFactor, -1.0) );
+    }
+    
     virtual const Real ellipsoidFuncEval(const Vector3D& ellipseCoord) const
     {
         Real ellipsoidFuncValue = std::pow(ellipseCoord(0) / m_ellipsoidPrincSemiAxesLen(0), 2.0) + std::pow(ellipseCoord(1) / m_ellipsoidPrincSemiAxesLen(1), 2.0) + std::pow(ellipseCoord(2) / m_ellipsoidPrincSemiAxesLen(2), 2.0);
         return ellipsoidFuncValue;
     }
+
+    virtual const std::vector<Vector3D> ellipsoidCoordinateSystem(Vector3D patchDirection) const
+    {
+        auto axis0 = patchDirection.normalized();
+        auto axis1 = (Vector3D( 1.0 , 0.0 , - axis0(0) / axis0(2))).normalized();
+        auto axis2 = (axis0.cross(axis1)).normalized();
+        
+        return std::vector<Vector3D> { axis0 , axis1 , axis2 };
+    }
     
-    virtual const Real dispDistributionWeight(Vector3D& coord) const
+    virtual const Vector3D transformToLocalEllipsoidCoordinates(Vector3D& coord)
     {
         auto ellipsoidCS = ellipsoidCoordinateSystem(m_patchDirection);
         auto localCoord = coord - m_Center;
-        Vector3D ellipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
-        
-        return ( nodeInsideEllipsoid(ellipsoidCoord) ? ellipsoidFuncEval(ellipsoidCoord) : std::pow(1 - m_EdgeDispFactor, -1.0) );
+        Vector3D localEllipsoidCoord( ellipsoidCS[0].dot(localCoord) , ellipsoidCS[1].dot(localCoord) , ellipsoidCS[2].dot(localCoord) );
+        return localEllipsoidCoord;
     }
         
 
