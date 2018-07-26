@@ -206,7 +206,7 @@ public:
 
     void addPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
+        //m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
         for ( UInt i (0) ; i < m_patchNumber ; ++i )
         {
@@ -233,7 +233,7 @@ public:
             patch->modifyPatchBC(solver, time);
         }
         
-        updatePatchDisplacementSumPtr(solver);
+        updatePatchDisplacementSumPtr();
     }
 
     vector_Type& patchDisplacementSum()
@@ -249,7 +249,7 @@ public:
 
 private:
     
-    void updatePatchDisplacementSumPtr(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    void updatePatchDisplacementSumPtr()
     {
         (*m_patchDisplacementSumPtr) *= 0.0;
 
