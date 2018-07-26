@@ -115,7 +115,7 @@ public:
     
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
+        auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-3;
         if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " displacement: " << currentPatchDisp << " cm";
