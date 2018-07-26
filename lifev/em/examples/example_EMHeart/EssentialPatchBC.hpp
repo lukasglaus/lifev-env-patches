@@ -118,7 +118,7 @@ public:
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-4;
-        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nCurrent " << m_Name << " displacement: " << currentPatchDisp << " cm";
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
 
