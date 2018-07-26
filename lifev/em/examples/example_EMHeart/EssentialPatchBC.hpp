@@ -241,7 +241,7 @@ public:
         return *m_patchDisplacementSumPtr;
     }
     
-    vectorPtr_Type patchDisplacementSumPtr()
+    vectorPtr_Type& patchDisplacementSumPtr()
     {
         return m_patchDisplacementSumPtr;
     }
