@@ -46,7 +46,7 @@ protected:
     virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
     {
         // New P1 Space
-        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->mesh().comm() );
+        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->mesh()->comm() );
         
         // Create P1 VectorEpetra
         VectorEpetra p1PositionVector (p1FESpace.map());
