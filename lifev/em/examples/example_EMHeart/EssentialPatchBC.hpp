@@ -235,13 +235,13 @@ public:
 
     vector_Type& patchDisplacementSum()
     {
-        std::cout << "\nPatch pointer given to main " << std::endl;
-
         return *m_patchDisplacementSumPtr;
     }
     
     vectorPtr_Type patchDisplacementSumPtr()
     {
+        std::cout << "\nPatch pointer given to main " << std::endl;
+
         return m_patchDisplacementSumPtr;
     }
 
