@@ -308,7 +308,7 @@ public:
         // Compute deformed sheet direction
         M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->s(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
         
-        m_patchDisplacementSumPtr.reset( *M_emSolver.structuralOperatorPtr()->displacementPtr() );
+        //m_patchDisplacementSumPtr.reset( *M_emSolver.structuralOperatorPtr()->displacementPtr() );
         
         // Write on hdf5 output file
         m_exporter->postProcess(time);
@@ -362,9 +362,9 @@ public:
         return traction.dot(velocity);
     }
     
-    void setPatchDisplacementSumPtr(vectorPtr_Type patchDisplacementSumPtr)
+    void setPatchDisplacementSumPtr(vector_Type& patchDisplacementSum)
     {
-        m_patchDisplacementSumPtr = patchDisplacementSumPtr;
+        m_patchDisplacementSumPtr = patchDisplacementSum;
     }
     
     boost::shared_ptr<VectorEpetra> patchDisplacementSumPtr()
