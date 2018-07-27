@@ -45,44 +45,104 @@ protected:
     
     virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
     {
+        // New P1 Space
+        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1FESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->mesh().comm() );
+        
+        // Create P1 VectorEpetra
+        VectorEpetra p1PositionVector (p1FESpace.map());
+        
+        // Fill P1 vector with mesh values
+        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+        for (int j (0); j < p1nCompLocalDof; j++)
+        {
+            UInt iGID = p1PositionVector.blockMap().GID (j);
+            
+            p1PositionVector[iGID] = dFeSpace->mesh().point (iGID).x();
+            p1PositionVector[jGID] = dFeSpace->mesh().point (iGID).y();
+            p1PositionVector[kGID] = dFeSpace->mesh().point (iGID).z();
+        }
+        
+        // Interpolate position vector from P1-space to current space
+        VectorEpetra positionVector ( disp.map() );
+        positionVector = dFeSpace->feToFEInterpolate(p1FESpace, p1PositionVector);
+        positionVector += disp;
+        
         vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
-
+        
         direction.normalize();
-        // direction *= disp;
 
-        for (int j (0); j < nCompLocalDof; ++j)
+        // Fill P1 vector with mesh values
+        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+        for (int j (0); j < nCompLocalDof; j++)
         {
-            // Get coordiantes
-            UInt iGID = vectorField->blockMap().GID (j);
-            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
-
+            UInt iGID = positionVector->blockMap().GID (j);
+            UInt jGID = positionVector->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = positionVector->blockMap().GID (j + 2 * nCompLocalDof);
+            
             Vector3D coord;
-
-            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
-            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
-            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
-
+            
+            coord(0) = (*positionVector)[iGID];
+            coord(1) = (*positionVector)[jGID];
+            coord(2) = (*positionVector)[kGID];
+            
             // Radial and axial distance to center line
             Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
             auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-
+            
             // If coordiantes inside or outside of a certain radius
             auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
-
+            
             // If patch inside or outside the structure
-
-
+            
+            
             // Scale the direction vector
             auto displacementVec = direction * displacement;
             (*vectorField)[iGID] = displacementVec[0];
             (*vectorField)[jGID] = displacementVec[1];
             (*vectorField)[kGID] = displacementVec[2];
         }
-
+        
         return vectorField;
+
+//        vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
+//        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+//
+//        direction.normalize();
+//        // direction *= disp;
+//
+//        for (int j (0); j < nCompLocalDof; ++j)
+//        {
+//            // Get coordiantes
+//            UInt iGID = vectorField->blockMap().GID (j);
+//            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+//            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+//
+//            Vector3D coord;
+//
+//            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
+//            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
+//            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
+//
+//            // Radial and axial distance to center line
+//            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
+//            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
+//            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
+//
+//            // If coordiantes inside or outside of a certain radius
+//            auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
+//
+//            // If patch inside or outside the structure
+//
+//
+//            // Scale the direction vector
+//            auto displacementVec = direction * displacement;
+//            (*vectorField)[iGID] = displacementVec[0];
+//            (*vectorField)[jGID] = displacementVec[1];
+//            (*vectorField)[kGID] = displacementVec[2];
+//        }
+
     }
     
     virtual const bool nodeOnPatch(const Vector3D& coord) const
