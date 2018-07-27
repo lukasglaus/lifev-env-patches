@@ -295,11 +295,7 @@ public:
     
     
     void postProcess(const Real& time)
-    {
-        std::cout << "size: " << patchDisplacementSumPtr()->size() << std::endl;
-        patchDisplacementSumPtr()->showMe();
-
-        
+    {        
         // Compute Von Mises stress, principal stresses and Cauchy stresses
         M_emSolver.tensionEstimator().setDisplacement ( M_emSolver.structuralOperatorPtr()->displacement() );
         M_emSolver.tensionEstimator().analyzeTensionsRecoveryCauchyStresses();
