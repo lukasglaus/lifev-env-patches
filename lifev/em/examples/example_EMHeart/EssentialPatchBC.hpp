@@ -250,7 +250,7 @@ private:
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            std::cout << "\npaches " << patch->patchDisplacement().size()  std::endl;
+            std::cout << "\npaches " << patch->patchDisplacement().size() << std::endl;
 
             *m_patchDisplacementSumPtr += patch->patchDisplacement();
         }
