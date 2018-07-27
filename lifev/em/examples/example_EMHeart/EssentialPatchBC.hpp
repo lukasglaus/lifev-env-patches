@@ -258,7 +258,7 @@ private:
         {
             std::cout << "\npaches " << patch->patchDisplacement().size() << std::endl;
 
-            m_patchDisplacementSumPtr += patch->patchDisplacement();
+            m_patchDisplacementSum += patch->patchDisplacement();
         }
     }
     
