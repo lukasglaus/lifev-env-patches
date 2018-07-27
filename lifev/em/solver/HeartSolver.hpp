@@ -362,7 +362,7 @@ public:
     
     void setPatchDisplacementSum(vector_Type patchDisplacementSum)
     {
-        m_patchDisplacementSumPtr (patchDisplacementSum);
+        m_patchDisplacementSumPtr = patchDisplacementSum;
     }
     
     boost::shared_ptr<VectorEpetra> patchDisplacementSumPtr()
