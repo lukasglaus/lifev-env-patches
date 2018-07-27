@@ -65,9 +65,9 @@ protected:
         }
         
         // Interpolate position vector from P1-space to current space
-        VectorEpetra positionVector ( disp.map() );
+        VectorEpetra positionVector ( m_dispPtr->map() );
         positionVector = dFeSpace->feToFEInterpolate(p1FESpace, p1PositionVector);
-        positionVector += disp;
+        positionVector += (*m_dispPtr);
         
         vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
