@@ -308,7 +308,7 @@ public:
         // Compute deformed sheet direction
         M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->s(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
         
-        m_patchDisplacementSumPtr.reset(new VectorEpetra( M_emSolver.structuralOperatorPtr()-   >dispFESpacePtr()->map(), Repeated ));
+        m_patchDisplacementSumPtr.reset(new VectorEpetra( M_emSolver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
         
         // Write on hdf5 output file
         m_exporter->postProcess(time);
