@@ -215,6 +215,8 @@ public:
     {
         m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch pointer reset done " << std::endl;
+
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
@@ -233,6 +235,8 @@ public:
 
     vector_Type& patchDisplacementSum()
     {
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch pointer given to main " << std::endl;
+
         return *m_patchDisplacementSumPtr;
     }
     
