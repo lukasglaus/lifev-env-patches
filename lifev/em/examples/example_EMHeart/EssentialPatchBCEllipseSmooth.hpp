@@ -82,9 +82,9 @@ protected:
             
             Vector3D coord;
             
-            coord(0) = (*positionVector)[iGID];
-            coord(1) = (*positionVector)[jGID];
-            coord(2) = (*positionVector)[kGID];
+            coord(0) = positionVector[iGID];
+            coord(1) = positionVector[jGID];
+            coord(2) = positionVector[kGID];
             
             // Radial and axial distance to center line
             Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
