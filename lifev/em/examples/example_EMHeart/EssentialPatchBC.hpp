@@ -235,7 +235,7 @@ public:
 
     vector_Type& patchDisplacementSum()
     {
-        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch pointer given to main " << std::endl;
+        std::cout << "\nPatch pointer given to main " << std::endl;
 
         return *m_patchDisplacementSumPtr;
     }
