@@ -296,7 +296,8 @@ public:
     
     void postProcess(const Real& time)
     {
-        std::cout << patchDisplacementSumPtr()->size();
+        std::cout << "size: " << patchDisplacementSumPtr()->size() << std::endl;
+        std::cout << patchDisplacementSumPtr()->showMe() << std::endl
 
         
         // Compute Von Mises stress, principal stresses and Cauchy stresses
