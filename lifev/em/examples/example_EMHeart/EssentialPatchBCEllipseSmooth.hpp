@@ -76,9 +76,9 @@ protected:
 
         for (int j (0); j < nCompLocalDof; j++)
         {
-            UInt iGID = positionVector->blockMap().GID (j);
-            UInt jGID = positionVector->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = positionVector->blockMap().GID (j + 2 * nCompLocalDof);
+            UInt iGID = vectorField->blockMap().GID (j);
+            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
             
             Vector3D coord;
             
