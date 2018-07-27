@@ -56,6 +56,8 @@ protected:
         for (int j (0); j < p1nCompLocalDof; j++)
         {
             UInt iGID = p1PositionVector.blockMap().GID (j);
+            UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+            UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
             
             p1PositionVector[iGID] = dFeSpace->mesh()->point (iGID).x();
             p1PositionVector[jGID] = dFeSpace->mesh()->point (iGID).y();
@@ -72,8 +74,6 @@ protected:
         
         direction.normalize();
 
-        // Fill P1 vector with mesh values
-        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
         for (int j (0); j < nCompLocalDof; j++)
         {
             UInt iGID = positionVector->blockMap().GID (j);
