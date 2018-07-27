@@ -57,9 +57,9 @@ protected:
         {
             UInt iGID = p1PositionVector.blockMap().GID (j);
             
-            p1PositionVector[iGID] = dFeSpace->mesh().point (iGID).x();
-            p1PositionVector[jGID] = dFeSpace->mesh().point (iGID).y();
-            p1PositionVector[kGID] = dFeSpace->mesh().point (iGID).z();
+            p1PositionVector[iGID] = dFeSpace->mesh()->point (iGID).x();
+            p1PositionVector[jGID] = dFeSpace->mesh()->point (iGID).y();
+            p1PositionVector[kGID] = dFeSpace->mesh()->point (iGID).z();
         }
         
         // Interpolate position vector from P1-space to current space
