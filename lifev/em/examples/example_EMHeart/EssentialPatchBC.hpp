@@ -216,10 +216,10 @@ public:
     {
         m_patchDisplacementSumPtr.reset(new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
-        for (auto& patch : m_patchBCPtrVec)
-        {
-            patch->applyBC(solver, m_dataFile);
-        }
+//        for (auto& patch : m_patchBCPtrVec)
+//        {
+//            patch->applyBC(solver, m_dataFile);
+//        }
     }
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
