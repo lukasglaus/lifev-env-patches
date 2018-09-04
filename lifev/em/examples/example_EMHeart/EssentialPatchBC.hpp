@@ -216,7 +216,7 @@ public:
     {
         m_patchDisplacementSum = VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated );
 
-        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
+        std::cout << "sum pointer: " << m_patchDisplacementSum.size() << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
