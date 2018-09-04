@@ -234,7 +234,7 @@ public:
         }
         std::cout << "\npaches modified" << std::endl;
 
-        updatePatchDisplacementSum();
+        //updatePatchDisplacementSum();
     }
 
     vector_Type& patchDisplacementSum()
