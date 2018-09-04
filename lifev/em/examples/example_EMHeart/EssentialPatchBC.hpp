@@ -214,7 +214,7 @@ public:
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        m_patchDisplacementSum = new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated );
+        m_patchDisplacementSum = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
         std::cout << "sum pointer: " << m_patchDisplacementSum->size() << std::endl;
         

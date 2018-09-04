@@ -267,7 +267,7 @@ int main (int argc, char** argv)
     //============================================
     patchHandler.applyPatchBC(solver);
 
-    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSum());
+    //heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSum());
     
     
     //============================================
