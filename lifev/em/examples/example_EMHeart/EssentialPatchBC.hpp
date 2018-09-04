@@ -237,10 +237,10 @@ public:
         //updatePatchDisplacementSum();
     }
 
-    vector_Type& patchDisplacementSum()
-    {
-        return m_patchDisplacementSum;
-    }
+//    vector_Type& patchDisplacementSum()
+//    {
+//        return m_patchDisplacementSum;
+//    }
     
 //    vectorPtr_Type patchDisplacementSumPtr()
 //    {
