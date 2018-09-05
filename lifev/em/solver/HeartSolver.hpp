@@ -369,7 +369,7 @@ public:
         std::cout << "end" << std::endl;
     }
     
-    boost::shared_ptr<VectorEpetra> patchDisplacementSumPtr()
+    vectorPtr_Type patchDisplacementSumPtr()
     {
         return m_patchDisplacementSumPtr;
     }
