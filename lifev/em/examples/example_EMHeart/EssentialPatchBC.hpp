@@ -234,7 +234,7 @@ public:
         }
         std::cout << "\npaches modified" << std::endl;
 
-        //updatePatchDisplacementSum();
+        updatePatchDisplacementSum();
     }
 
 //    vector_Type& patchDisplacementSum()
@@ -250,17 +250,17 @@ public:
 
 private:
     
-//    void updatePatchDisplacementSum()
-//    {
-//        m_patchDisplacementSum *= 0.0;
-//
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            std::cout << "\npaches " << patch->patchDisplacement().size() << std::endl;
-//
-//            m_patchDisplacementSum += patch->patchDisplacement();
-//        }
-//    }
+    void updatePatchDisplacementSum()
+    {
+        m_patchDisplacementSum *= 0.0;
+
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            std::cout << "\npaches " << patch->patchDisplacement().size() << std::endl;
+
+            m_patchDisplacementSum += patch->patchDisplacement();
+        }
+    }
     
     
     const std::string m_patchListName;
