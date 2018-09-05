@@ -252,7 +252,7 @@ private:
     
     void updatePatchDisplacementSum()
     {
-        m_patchDisplacementSum *= 0.0;
+        *m_patchDisplacementSum *= 0.0;
 
         for (auto& patch : m_patchBCPtrVec)
         {
