@@ -234,11 +234,11 @@ public:
                                      M_emSolver.tensionEstimator().sigmaZPtr(),
                                      UInt (0) );
         
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "Patch displacement",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     patchDisplacementSumPtr(),
-//                                     UInt (0) );
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Patch displacement",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     patchDisplacementSumPtr(),
+                                     UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Fibers",
@@ -362,9 +362,9 @@ public:
         return traction.dot(velocity);
     }
     
-    void setPatchDisplacementSumPtr(vector_Type& patchDisplacementSum)
+    void setPatchDisplacementSumPtr(vectorPtr_Type& patchDisplacementSumPtr)
     {
-        *m_patchDisplacementSumPtr = patchDisplacementSum;
+        *m_patchDisplacementSumPtr = *patchDisplacementSumPtr;
     }
     
     boost::shared_ptr<VectorEpetra> patchDisplacementSumPtr()
