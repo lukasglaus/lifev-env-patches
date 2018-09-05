@@ -365,7 +365,7 @@ public:
     void setPatchDisplacementSumPtr(vectorPtr_Type patchDisplacementSumPtr)
     {
         std::cout << "start" << std::endl;
-        *m_patchDisplacementSumPtr = *patchDisplacementSumPtr;
+        m_patchDisplacementSumPtr = patchDisplacementSumPtr;
         std::cout << "end" << std::endl;
     }
     
