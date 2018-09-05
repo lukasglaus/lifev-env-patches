@@ -214,9 +214,9 @@ public:
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        m_patchDisplacementSum = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
+        m_patchDisplacementSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
-        std::cout << "sum pointer: " << m_patchDisplacementSum->size() << std::endl;
+        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
@@ -226,39 +226,39 @@ public:
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        std::cout << "\npaches being modified" << std::endl;
+        std::cout << "\npatches being modified" << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->modifyPatchBC(solver, time);
         }
-        std::cout << "\npaches modified" << std::endl;
+        std::cout << "\npatches modified" << std::endl;
 
         updatePatchDisplacementSum();
     }
 
-//    vector_Type& patchDisplacementSum()
-//    {
-//        return m_patchDisplacementSum;
-//    }
+    vector_Type& patchDisplacementSum()
+    {
+        return *m_patchDisplacementSumPtr;
+    }
     
-//    vectorPtr_Type patchDisplacementSumPtr()
-//    {
-//        return m_patchDisplacementSum;
-//    }
+    vectorPtr_Type patchDisplacementSumPtr()
+    {
+        return m_patchDisplacementSumPtr;
+    }
 
 
 private:
     
     void updatePatchDisplacementSum()
     {
-        *m_patchDisplacementSum *= 0.0;
+        *m_patchDisplacementSumPtr *= 0.0;
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            std::cout << "\npaches " << patch->patchDisplacement().size() << std::endl;
+            std::cout << "\npatches " << patch->patchDisplacement().size() << std::endl;
 
-            *m_patchDisplacementSum += patch->patchDisplacement();
+            *m_patchDisplacementSumPtr += patch->patchDisplacement();
         }
     }
     
@@ -267,7 +267,7 @@ private:
     const GetPot& m_dataFile;
     const int m_patchNumber;
     
-    vectorPtr_Type m_patchDisplacementSum;
+    vectorPtr_Type m_patchDisplacementSumPtr;
 
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
 
