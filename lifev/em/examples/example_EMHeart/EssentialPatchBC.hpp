@@ -127,7 +127,7 @@ public:
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
     }
     
-    vector_Type& patchDisplacement()
+    vector_Type& patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         return *m_patchDispPtr;
     }
@@ -226,16 +226,12 @@ public:
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        std::cout << "\npatches being modified" << std::endl;
-
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->modifyPatchBC(solver, time);
         }
-        std::cout << "\npatches modified" << std::endl;
-        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
 
-        updatePatchDisplacementSum();
+        updatePatchDisplacementSum(solver);
     }
 
     vector_Type& patchDisplacementSum()
@@ -251,16 +247,13 @@ public:
 
 private:
     
-    void updatePatchDisplacementSum()
+    void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         *m_patchDisplacementSumPtr *= 0.0;
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            std::cout << "\npatches " << patch->patchDisplacement().size() << std::endl;
-            std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
-
-            *m_patchDisplacementSumPtr += patch->patchDisplacement();
+            *m_patchDisplacementSumPtr += patch->patchDisplacement(solver);
         }
     }
     
