@@ -237,7 +237,7 @@ public:
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Patch displacement",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-                                     patchDisplacementSumPtr(),
+                                     patchDispSumPtr(),
                                      UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
@@ -365,12 +365,19 @@ public:
     void setPatchDisplacementSumPtr(vectorPtr_Type patchDisplacementSumPtr)
     {
         std::cout << "start" << std::endl;
+        std::cout << "sum pointer: " << patchDisplacementSumPtr->size() << std::endl;
+
         m_patchDisplacementSumPtr = patchDisplacementSumPtr;
+        
         std::cout << "end" << std::endl;
+        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
+
     }
     
-    vectorPtr_Type patchDisplacementSumPtr()
+    vectorPtr_Type patchDispSumPtr()
     {
+        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
+
         return m_patchDisplacementSumPtr;
     }
     

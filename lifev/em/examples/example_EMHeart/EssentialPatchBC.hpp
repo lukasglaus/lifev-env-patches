@@ -233,6 +233,7 @@ public:
             patch->modifyPatchBC(solver, time);
         }
         std::cout << "\npatches modified" << std::endl;
+        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
 
         updatePatchDisplacementSum();
     }
@@ -257,6 +258,7 @@ private:
         for (auto& patch : m_patchBCPtrVec)
         {
             std::cout << "\npatches " << patch->patchDisplacement().size() << std::endl;
+            std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
 
             *m_patchDisplacementSumPtr += patch->patchDisplacement();
         }
