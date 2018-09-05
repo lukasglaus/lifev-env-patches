@@ -253,7 +253,7 @@ int main (int argc, char** argv)
     // Setup exporters for EMSolver
     //============================================
     //solver.setupExporters(problemFolder);
-    heartSolver.setupExporter(problemFolder);
+    //heartSolver.setupExporter(problemFolder);
     
     
     //============================================
@@ -268,6 +268,8 @@ int main (int argc, char** argv)
     patchHandler.applyPatchBC(solver);
 
     heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
+    
+    heartSolver.setupExporter(problemFolder);
     
     
     //============================================
