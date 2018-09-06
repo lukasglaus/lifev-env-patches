@@ -64,8 +64,8 @@ public:
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
-//        m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr() -> map() ));
-//        *m_patchLocationPtr *= 0.0;
+        m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr() -> map() ));
+        *m_patchLocationPtr *= 0.0;
         
         m_patchFlag = newFlag;
         
@@ -107,7 +107,7 @@ public:
         if ( solver.comm()->MyPID() == 0 ) std::cout << "Applying " << m_Name << " b.c" << std::endl;
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
-        //m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
+        m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, 1e-10, 0.0);
 
@@ -181,9 +181,9 @@ protected:
     
     std::vector<ID> m_patchComponent;
 
-    //vectorPtr_Type m_dispPtr;
+    vectorPtr_Type m_dispPtr;
 
-//    vectorPtr_Type m_patchLocationPtr;
+    vectorPtr_Type m_patchLocationPtr;
 
     vectorPtr_Type m_patchDispPtr;
     bcVectorPtr_Type m_patchDispBCPtr;
