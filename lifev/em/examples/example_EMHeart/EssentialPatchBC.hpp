@@ -67,7 +67,7 @@ public:
         std::cout << "\n a field done" << std::endl;
 
 //        m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ));
-        *m_patchLocationPtr = vector_Type ( solver.activationTimePtr() );
+        *m_patchLocationPtr = vector_Type ( *solver.activationTimePtr() );
         std::cout << "\n b field done" << std::endl;
 
         *m_patchLocationPtr *= 0.0;
