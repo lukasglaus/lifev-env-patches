@@ -77,9 +77,9 @@ protected:
 
             // Scale the direction vector
             auto displacementVec = displacement * direction;
-            (*vectorField)[iGID] = directionVec[0];
-            (*vectorField)[jGID] = directionVec[1];
-            (*vectorField)[kGID] = directionVec[2];
+            (*vectorField)[iGID] = displacementVec[0];
+            (*vectorField)[jGID] = displacementVec[1];
+            (*vectorField)[kGID] = displacementVec[2];
         }
 
         return vectorField;
