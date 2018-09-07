@@ -371,7 +371,7 @@ public:
     {
         std::cout << "patchDispSumPtr: " << m_patchDisplacementSumPtr->size() << std::endl;
 
-        m_patchDisplacementSumPtr = this->structuralOperatorPtr()->displacementPtr();
+        m_patchDisplacementSumPtr = M_emSolver.structuralOperatorPtr()->displacementPtr();
         
         std::cout << "patchDispSumPtr: " << m_patchDisplacementSumPtr->size() << std::endl;
 
