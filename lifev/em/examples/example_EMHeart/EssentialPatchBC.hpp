@@ -128,7 +128,6 @@ public:
         if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
-        std::cout << "directional field done" << std::endl;
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
@@ -152,7 +151,7 @@ public:
             localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
         }
         
-        std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
+        //std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
 
         return localPatchDisplacement;
     }
@@ -243,8 +242,8 @@ public:
     {
         m_patchDisplacementSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
-        std::cout << "sum pointer: " << m_patchDisplacementSumPtr->size() << std::endl;
-        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
@@ -253,8 +252,7 @@ public:
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        std::cout << "EssentialPatchBCHandler::modifyPatchBC " << std::endl;
-        std::cout << __FUNCTION__ << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
@@ -271,8 +269,6 @@ public:
     
     vectorPtr_Type patchDisplacementSumPtr()
     {
-        std::cout << "m_patchDisplacementSumPtr size: " << m_patchDisplacementSumPtr->size() << std::endl;
-
         return m_patchDisplacementSumPtr;
     }
 
@@ -283,7 +279,7 @@ private:
     {
         *m_patchDisplacementSumPtr *= 0.0;
 
-        std::cout << "EssentialPatchBCHandler::updatePatchDisplacementSum " << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
