@@ -254,7 +254,7 @@ public:
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
         std::cout << "EssentialPatchBCHandler::modifyPatchBC " << std::endl;
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
+        std::cout << __FUNCTION__ << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
