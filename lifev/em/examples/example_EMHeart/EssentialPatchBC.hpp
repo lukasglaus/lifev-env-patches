@@ -137,6 +137,19 @@ public:
     vector_Type& patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
 
+        auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
+        
+        for (int j (0); j < nCompLocalDof; ++j)
+        {
+            UInt iGID = m_patchDispPtr->blockMap().GID (j);
+            UInt jGID = m_patchDispPtr->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = m_patchDispPtr->blockMap().GID (j + 2 * nCompLocalDof);
+            
+            (*m_patchDispPtr)[iGID] *= m_patchLocationPtr[iGID];
+            (*m_patchDispPtr)[jGID] *= m_patchLocationPtr[iGID];
+            (*m_patchDispPtr)[kGID] *= m_patchLocationPtr[iGID];
+        }
+        
         return *m_patchDispPtr;
     }
     
