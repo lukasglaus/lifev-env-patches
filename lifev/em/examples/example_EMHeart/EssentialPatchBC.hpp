@@ -128,7 +128,7 @@ public:
         if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " displacement: " << currentPatchDisp << " cm";
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
-        std::cout << "\ndirectional field done" << std::endl;
+        std::cout << "directional field done" << std::endl;
 
         m_patchDispBCPtr.reset( new bcVector_Type( *m_patchDispPtr, dFeSpace->dof().numTotalDof(), 1 ) );
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
@@ -152,7 +152,7 @@ public:
             localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
         }
         
-        return *m_patchDispPtr;
+        return localPatchDisplacement;
     }
     
     
@@ -251,6 +251,8 @@ public:
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
+        std::cout << "Modify patch bc " << std::endl;
+
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->modifyPatchBC(solver, time);
@@ -275,6 +277,8 @@ private:
     void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         *m_patchDisplacementSumPtr *= 0.0;
+
+        std::cout << "Update patch disp sum " << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
