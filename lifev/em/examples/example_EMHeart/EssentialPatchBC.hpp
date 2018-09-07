@@ -64,15 +64,10 @@ public:
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
-        std::cout << "\n a field done" << std::endl;
+        //std::cout << "\n a field done" << std::endl;
 
         m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ));
-        //*m_patchLocationPtr = a; //vector_Type ( *solver.activationTimePtr() );
-        std::cout << "\n b field done" << std::endl;
-
-        //*m_patchLocationPtr *= 0.0;
-        std::cout << "\n c field done" << std::endl;
-
+        *m_patchLocationPtr *= 0.0;
         
         m_patchFlag = newFlag;
         
@@ -95,6 +90,8 @@ public:
                         if (pointInPatch)
                         {
                             ++numPointsInsidePatch;
+                            (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+
                         }
                     }
                     
