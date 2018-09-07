@@ -152,7 +152,7 @@ public:
             localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
         }
         
-        std::cout << "patchDisplacement name size : " << m_name << " " << localPatchDisplacement.size() << std::endl;
+        std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
 
         return localPatchDisplacement;
     }
