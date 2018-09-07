@@ -145,9 +145,9 @@ public:
             UInt jGID = m_patchDispPtr->blockMap().GID (j + nCompLocalDof);
             UInt kGID = m_patchDispPtr->blockMap().GID (j + 2 * nCompLocalDof);
             
-            (*m_patchDispPtr)[iGID] = (*m_patchDispPtr)[iGID] * m_patchLocationPtr[iGID];
-            (*m_patchDispPtr)[jGID] = (*m_patchDispPtr)[jGID] * m_patchLocationPtr[iGID];
-            (*m_patchDispPtr)[kGID] = (*m_patchDispPtr)[kGID] * m_patchLocationPtr[iGID];
+            (*m_patchDispPtr)[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
+            (*m_patchDispPtr)[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
+            (*m_patchDispPtr)[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
         }
         
         return *m_patchDispPtr;
