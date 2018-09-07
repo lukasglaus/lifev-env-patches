@@ -157,6 +157,11 @@ public:
         return localPatchDisplacement;
     }
     
+    vector_Type patchLocation()
+    {
+        return *m_patchLocationPtr;
+    }
+
     
 protected:
     
@@ -243,8 +248,8 @@ public:
     {
         m_patchDisplacementSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
+ 
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
-
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
@@ -288,11 +293,23 @@ private:
         }
     }
     
+    void updatePatchLocationSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    {
+        *m_patchLocationSumPtr *= 0.0;
+        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+        
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            *m_patchLocationSumPtr += patch->patchLocation();
+        }
+    }
     
     const std::string m_patchListName;
     const GetPot& m_dataFile;
     const int m_patchNumber;
-    
+
+    vectorPtr_Type m_patchLocationSumPtr;
     vectorPtr_Type m_patchDisplacementSumPtr;
 
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
