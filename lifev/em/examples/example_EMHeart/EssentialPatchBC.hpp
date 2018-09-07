@@ -137,6 +137,7 @@ public:
     {
         auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
         vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
+        localPatchDisplacement *= 0.0;
         
         auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
         

@@ -369,7 +369,7 @@ public:
     
     vectorPtr_Type patchDispSumPtr()
     {
-        std::cout << "patchDispSumPtr: " << m_patchDisplacementSumPtr->size() << std::endl;
+        //std::cout << "patchDispSumPtr: " << m_patchDisplacementSumPtr->size() << std::endl;
 
         return m_patchDisplacementSumPtr;
     }
