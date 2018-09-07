@@ -134,9 +134,11 @@ public:
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
     }
     
-    vector_Type& patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    vector_Type patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-
+        auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
+        vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
+        
         auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
         
         for (int j (0); j < nCompLocalDof; ++j)
@@ -145,9 +147,9 @@ public:
             UInt jGID = m_patchDispPtr->blockMap().GID (j + nCompLocalDof);
             UInt kGID = m_patchDispPtr->blockMap().GID (j + 2 * nCompLocalDof);
             
-            (*m_patchDispPtr)[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
-            (*m_patchDispPtr)[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
-            (*m_patchDispPtr)[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
         }
         
         return *m_patchDispPtr;
