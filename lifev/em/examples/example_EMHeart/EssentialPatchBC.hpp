@@ -253,8 +253,9 @@ public:
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        std::cout << "Modify patch bc " << std::endl;
-
+        std::cout << "EssentialPatchBCHandler::modifyPatchBC " << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+        
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->modifyPatchBC(solver, time);
@@ -282,7 +283,7 @@ private:
     {
         *m_patchDisplacementSumPtr *= 0.0;
 
-        std::cout << "Update patch disp sum " << std::endl;
+        std::cout << "EssentialPatchBCHandler::updatePatchDisplacementSum " << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
