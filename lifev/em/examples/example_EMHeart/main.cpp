@@ -248,13 +248,6 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) std::cout << "\n\nNode number: " << disp.size() / 3 << " -> dof: " << disp.size() << "\n\n";
     
-
-    //============================================
-    // Setup exporters for EMSolver
-    //============================================
-    //solver.setupExporters(problemFolder);
-    //heartSolver.setupExporter(problemFolder);
-    
     
     //============================================
     // Electric stimulus function
@@ -266,9 +259,13 @@ int main (int argc, char** argv)
     // Create displacement patch b.c.
     //============================================
     patchHandler.applyPatchBC(solver);
-
     heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
+    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
 
+    
+    //============================================
+    // Setup exporters for EMSolver
+    //============================================
     heartSolver.setupExporter(problemFolder);
     
     

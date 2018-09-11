@@ -281,6 +281,16 @@ public:
         return m_patchDisplacementVecSumPtr;
     }
 
+    vector_Type& patchLocationSum()
+    {
+        return *m_patchLocationScalarSumPtr;
+    }
+
+    vectorPtr_Type patchLocationSumPtr()
+    {
+        return m_patchLocationScalarSumPtr;
+    }
+
 
 private:
     
