@@ -242,7 +242,7 @@ public:
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
                                      "Patch location",
-                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
                                      this->patchLocSumPtr(),
                                      UInt (0) );
         
@@ -313,9 +313,7 @@ public:
 
         // Compute deformed sheet direction
         M_emSolver.computeDeformedFiberDirection (M_emSolver.structuralOperatorPtr()->s(), *M_emSolver.structuralOperatorPtr()->EMMaterial()->sheetVectorPtr(), *M_emSolver.structuralOperatorPtr()->displacementPtr(), M_emSolver.structuralOperatorPtr()->dispFESpacePtr());
-        
-        //m_patchDisplacementSumPtr.reset( *M_emSolver.structuralOperatorPtr()->displacementPtr() );
-        
+                
         // Write on hdf5 output file
         m_exporter->postProcess(time);
     }

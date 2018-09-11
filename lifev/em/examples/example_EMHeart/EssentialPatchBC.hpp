@@ -155,8 +155,6 @@ public:
             
         }
         
-        //std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
-
         return localPatchDisplacement;
     }
 
