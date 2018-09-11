@@ -311,7 +311,7 @@ private:
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            *m_patchDisplacementVecSumPtr += patch->patchDisplacement();
+            *m_patchDisplacementVecSumPtr += patch->patchDisplacement(solver);
         }
     }
     
@@ -323,7 +323,7 @@ private:
         
         for (auto& patch : m_patchBCPtrVec)
         {
-            *m_patchLocationScalarSumPtr += patch->patchLocation();
+            *m_patchLocationScalarSumPtr += patch->patchLocation(solver);
         }
     }
     
