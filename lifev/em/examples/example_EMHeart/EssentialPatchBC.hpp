@@ -159,25 +159,6 @@ public:
 
         return localPatchDisplacement;
     }
-    
-    vector_Type patchLocation(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
-    {
-        auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
-        vector_Type localPatchLocation ( dFeSpace->map(), Repeated );
-        localPatchLocation *= 0.0;
-        
-        auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
-        
-        for (int j (0); j < nCompLocalDof; ++j)
-        {
-            UInt iGID = m_patchDispPtr->blockMap().GID (j);
-            localPatchLocation[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
-        }
-        
-        //std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
-        
-        return localPatchLocation;
-    }
 
     vector_Type patchLocation()
     {
@@ -323,7 +304,7 @@ private:
         
         for (auto& patch : m_patchBCPtrVec)
         {
-            *m_patchLocationScalarSumPtr += patch->patchLocation(solver);
+            *m_patchLocationScalarSumPtr += patch->patchLocation();
         }
     }
     
