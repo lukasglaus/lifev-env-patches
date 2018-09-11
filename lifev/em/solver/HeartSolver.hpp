@@ -240,6 +240,12 @@ public:
                                      this->patchDispSumPtr(),
                                      UInt (0) );
         
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                     "Patch location",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     this->patchLocSumPtr(),
+                                     UInt (0) );
+        
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Fibers",
                                      M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
@@ -369,9 +375,17 @@ public:
     
     vectorPtr_Type patchDispSumPtr()
     {
-        //std::cout << "patchDispSumPtr: " << m_patchDisplacementSumPtr->size() << std::endl;
-
         return m_patchDisplacementSumPtr;
+    }
+    
+    void setPatchLocationSumPtr(vectorPtr_Type patchLocationSumPtr)
+    {
+        m_patchLocationSumPtr = patchLocationSumPtr;
+    }
+    
+    vectorPtr_Type patchLocSumPtr()
+    {
+        return m_patchLocationSumPtr;
     }
     
     
@@ -390,7 +404,7 @@ protected:
     VectorSmall<4> m_ABdplv, m_ABdprv;
 
     boost::shared_ptr<VectorEpetra> m_patchDisplacementSumPtr;
-    
+    boost::shared_ptr<VectorEpetra> m_patchLocationSumPtr;
     
     
     
