@@ -137,7 +137,7 @@ public:
     vector_Type patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
-        vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
+        vector_Type localPatchDisplacement ( dFeSpace->map(), unique );
         localPatchDisplacement *= 0.0;
         
         auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
@@ -151,6 +151,8 @@ public:
             localPatchDisplacement[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
             localPatchDisplacement[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
             localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
+            
+            
         }
         
         //std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
@@ -158,6 +160,25 @@ public:
         return localPatchDisplacement;
     }
     
+    vector_Type patchLocation(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    {
+        auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
+        vector_Type localPatch ( dFeSpace->map(), Repeated );
+        localPatchDisplacement *= 0.0;
+        
+        auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
+        
+        for (int j (0); j < nCompLocalDof; ++j)
+        {
+            UInt iGID = m_patchDispPtr->blockMap().GID (j);
+            localPatch[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
+        }
+        
+        //std::cout << "patchDisplacement name size : " << m_Name << " " << localPatchDisplacement.size() << std::endl;
+        
+        return localPatch;
+    }
+
     vector_Type patchLocation()
     {
         return *m_patchLocationPtr;
@@ -249,8 +270,8 @@ public:
     {
         m_patchDisplacementSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 
- 
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+        
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
@@ -271,12 +292,12 @@ public:
 
     vector_Type& patchDisplacementSum()
     {
-        return *m_patchDisplacementSumPtr;
+        return *m_patchDisplacementVecSumPtr;
     }
     
     vectorPtr_Type patchDisplacementSumPtr()
     {
-        return m_patchDisplacementSumPtr;
+        return m_patchDisplacementVecSumPtr;
     }
 
 
@@ -284,25 +305,25 @@ private:
     
     void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        *m_patchDisplacementSumPtr *= 0.0;
+        *m_patchDisplacementVecSumPtr *= 0.0;
 
-        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
-            *m_patchDisplacementSumPtr += patch->patchDisplacement(solver);
+            *m_patchDisplacementVecSumPtr += patch->patchDisplacement();
         }
     }
     
     void updatePatchLocationSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        *m_patchLocationSumPtr *= 0.0;
+        *m_patchLocationScalarSumPtr *= 0.0;
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
-            *m_patchLocationSumPtr += patch->patchLocation();
+            *m_patchLocationScalarSumPtr += patch->patchLocation();
         }
     }
     
@@ -310,8 +331,8 @@ private:
     const GetPot& m_dataFile;
     const int m_patchNumber;
 
-    vectorPtr_Type m_patchLocationSumPtr;
-    vectorPtr_Type m_patchDisplacementSumPtr;
+    vectorPtr_Type m_patchLocationScalarSumPtr;
+    vectorPtr_Type m_patchDisplacementVecSumPtr;
 
     std::vector<EssentialPatchBC*> m_patchBCPtrVec;
 

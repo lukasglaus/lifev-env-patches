@@ -268,7 +268,7 @@ int main (int argc, char** argv)
     patchHandler.applyPatchBC(solver);
 
     heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
-    
+
     heartSolver.setupExporter(problemFolder);
     
     
