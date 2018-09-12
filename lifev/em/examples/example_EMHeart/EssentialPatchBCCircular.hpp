@@ -26,11 +26,7 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
-        std::cout << "a" << std::endl;
-
         super::setup(dataFile, name);
-
-        std::cout << "b" << std::endl;
 
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
@@ -41,9 +37,6 @@ public:
         
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
-        
-        std::cout << "c" << std::endl;
-
     }
     
 protected:
