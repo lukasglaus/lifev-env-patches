@@ -64,47 +64,46 @@ public:
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
-        //std::cout << "\n a field done" << std::endl;
-
         m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() , Repeated ));
         *m_patchLocationPtr *= 0.0;
         
         m_patchFlag = newFlag;
         
         const auto& mesh = solver.localMeshPtr();
-        //{
-            for (int j(0); j < mesh->numBoundaryFacets(); j++)
-            {
-                auto& face = mesh->boundaryFacet(j);
-                auto faceFlag = face.markerID();
 
-                if (faceFlag == m_PrevFlag)
+        for (int j(0); j < mesh->numBoundaryFacets(); j++)
+        {
+            auto& face = mesh->boundaryFacet(j);
+            auto faceFlag = face.markerID();
+
+            if (faceFlag == m_PrevFlag)
+            {
+                int numPointsInsidePatch (0);
+                
+                for (int k(0); k < 3; ++k)
                 {
-                    int numPointsInsidePatch (0);
-                    
+                    auto& point = face.point(k);
+                    auto coord = point.coordinates();
+                    auto id = point.id();
+
+                    if ( nodeOnPatch(coord) )
+                    {
+                        ++numPointsInsidePatch;
+                    }
+                }
+                
+                if (numPointsInsidePatch > 2)
+                {
+                    face.setMarkerID(m_patchFlag);
+    
                     for (int k(0); k < 3; ++k)
                     {
-                        auto& point = face.point(k);
-                        auto coord = point.coordinates();
-                        auto id = point.id();
-
-                        if ( nodeOnPatch(coord) )
-                        {
-                            ++numPointsInsidePatch;
-                            //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
-
-                        }
-                    }
-                    
-                    if (numPointsInsidePatch > 2)
+                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     {
-                        face.setMarkerID(m_patchFlag);
-                        for (int k(0); k < 3; ++k) (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
-                    }
-                    
+                
                 }
             }
-        //}
+        }
     }
     
     
