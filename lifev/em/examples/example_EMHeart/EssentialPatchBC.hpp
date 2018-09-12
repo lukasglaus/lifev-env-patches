@@ -34,6 +34,8 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
+        for (int i(0); i < 10; ++i) std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxabcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+
         // Patch name
         m_Name = name;
         
@@ -60,6 +62,9 @@ public:
         // Temporal activation parameter
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
+        
+        for (int i(0); i < 10; ++i) std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
+
     }
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
