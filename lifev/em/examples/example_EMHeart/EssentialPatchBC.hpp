@@ -134,6 +134,7 @@ public:
         solver.bcInterfacePtr()->handler()->modifyBC(m_patchFlag, *m_patchDispBCPtr);
     }
     
+    
     vector_Type patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
         auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
@@ -151,13 +152,12 @@ public:
             localPatchDisplacement[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
             localPatchDisplacement[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
             localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
-            
-            
         }
         
         return localPatchDisplacement;
     }
 
+    
     vector_Type patchLocation()
     {
         return *m_patchLocationPtr;
