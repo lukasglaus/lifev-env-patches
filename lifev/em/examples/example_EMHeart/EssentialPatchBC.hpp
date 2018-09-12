@@ -71,7 +71,7 @@ public:
         
         m_patchFlag = newFlag;
         
-        auto& mesh = solver.localMeshPtr())
+        auto& mesh = solver.localMeshPtr();
         //{
             for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
