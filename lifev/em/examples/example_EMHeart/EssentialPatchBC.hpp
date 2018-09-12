@@ -86,10 +86,9 @@ public:
                     {
                         auto& point = face.point(k);
                         auto coord = point.coordinates();
-                        auto pointInPatch = nodeOnPatch(coord);
                         auto id = point.id();
 
-                        if (pointInPatch)
+                        if ( nodeOnPatch(coord) )
                         {
                             ++numPointsInsidePatch;
                             //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
