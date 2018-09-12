@@ -256,6 +256,9 @@ public:
         {
             patch->applyBC(solver, m_dataFile);
         }
+        
+        updatePatchDisplacementSum(solver);
+        updatePatchLocationSum(solver);
     }
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
