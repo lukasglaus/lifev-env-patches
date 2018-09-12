@@ -250,7 +250,7 @@ public:
         m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
         m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
 
-        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+        //if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
@@ -263,7 +263,7 @@ public:
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
     {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+        // if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
@@ -301,7 +301,7 @@ private:
     {
         *m_patchDisplacementVecSumPtr *= 0.0;
 
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+        // if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
@@ -313,7 +313,7 @@ private:
     {
         *m_patchLocationScalarSumPtr *= 0.0;
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
+        // if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
         for (auto& patch : m_patchBCPtrVec)
         {
