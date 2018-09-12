@@ -234,17 +234,17 @@ public:
                                      M_emSolver.tensionEstimator().sigmaZPtr(),
                                      UInt (0) );
         
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "Patch displacement",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     this->patchDispSumPtr(),
-//                                     UInt (0) );
-//        
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-//                                     "Patch location",
-//                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
-//                                     this->patchLocSumPtr(),
-//                                     UInt (0) );
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Patch displacement",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     this->patchDispSumPtr(),
+                                     UInt (0) );
+        
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                     "Patch location",
+                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                     this->patchLocSumPtr(),
+                                     UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Fibers",
