@@ -221,11 +221,7 @@ int main (int argc, char** argv)
         std::string elementOrder   =  dataFile ( "solid/space_discretization/order", "P1");
 
         solver.setupFiberVector ( fiberFileName, fiberFieldName, fiberDir, elementOrder );
-        if ( 0 == comm->MyPID() ) for (int i(0); i < 10; ++i) std::cout << i << std::endl;
-
         solver.setupMechanicalSheetVector ( sheetFileName, sheetFieldName, sheetDir, elementOrder );
-        if ( 0 == comm->MyPID() ) for (int i(0); i < 10; ++i) std::cout << i+10 << std::endl;
-
     }
     else
     {
