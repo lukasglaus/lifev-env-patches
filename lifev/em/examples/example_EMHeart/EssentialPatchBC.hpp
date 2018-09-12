@@ -84,8 +84,10 @@ public:
                     
                     for (int k(0); k < 3; ++k)
                     {
-                        auto coord = face.point(k).coordinates();
+                        auto& point = face.point(k);
+                        auto coord = point.coordinates();
                         auto pointInPatch = nodeOnPatch(coord);
+                        auto id = point.id();
 
                         if (pointInPatch)
                         {
