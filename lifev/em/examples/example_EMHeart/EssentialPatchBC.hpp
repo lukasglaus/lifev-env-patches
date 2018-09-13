@@ -219,7 +219,7 @@ protected:
     }
 
     
-    virtual vector_Type p2PositionVector(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> p2dFeSpace) const
+    virtual vector_Type p2PositionVectorInitial(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> p2dFeSpace) const
     {
         // New P1 Space
         FESpace<RegionMesh<LinearTetra> , MapEpetra > p1dFESpace ( p2dFeSpace->mesh(), "P1", 3, p2dFeSpace->mesh()->comm() );
