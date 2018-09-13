@@ -70,9 +70,7 @@ protected:
             
             // Determine the patch displacement as a function of patch coordinates
             auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
-            
-            // If patch inside or outside the structure
-            
+
             
             // Scale the direction vector
             auto displacementVec = direction * displacement;

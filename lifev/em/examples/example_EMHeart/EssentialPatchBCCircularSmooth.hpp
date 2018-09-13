@@ -73,9 +73,6 @@ protected:
             // If coordiantes inside or outside of a certain radius
             auto displacement = (m_EdgeDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
 
-            // If patch inside or outside the structure
-
-
             // Scale the direction vector
             auto displacementVec =  direction * displacement;
             (*p2PatchDisplacement)[iGID] = displacementVec[0];
