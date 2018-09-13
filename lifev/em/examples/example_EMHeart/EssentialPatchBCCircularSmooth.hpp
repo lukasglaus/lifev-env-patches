@@ -56,15 +56,14 @@ protected:
         for (int j (0); j < nCompLocalDof; ++j)
         {
             // Get coordiantes
-            UInt iGID = vectorField->blockMap().GID (j);
-            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+            UInt iGID = p2PatchDisplacement->blockMap().GID (j);
+            UInt jGID = p2PatchDisplacement->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = p2PatchDisplacement->blockMap().GID (j + 2 * nCompLocalDof);
 
             Vector3D coord;
-
-            coord(0) = dFeSpace->mesh()->point(iGID).x() + (*m_dispPtr)[iGID];
-            coord(1) = dFeSpace->mesh()->point(iGID).y() + (*m_dispPtr)[jGID];
-            coord(2) = dFeSpace->mesh()->point(iGID).z() + (*m_dispPtr)[kGID];
+            coord(0) = p2PositionVector[iGID];
+            coord(1) = p2PositionVector[jGID];
+            coord(2) = p2PositionVector[kGID];
 
             // Radial and axial distance to center line
             auto currentPatchCenter = m_Center + activationFunction(time) * direction;
@@ -78,13 +77,13 @@ protected:
 
 
             // Scale the direction vector
-            auto displacementVec = displacement * direction;
-            (*vectorField)[iGID] = displacementVec[0];
-            (*vectorField)[jGID] = displacementVec[1];
-            (*vectorField)[kGID] = displacementVec[2];
+            auto displacementVec =  direction * displacement;
+            (*p2PatchDisplacement)[iGID] = displacementVec[0];
+            (*p2PatchDisplacement)[jGID] = displacementVec[1];
+            (*p2PatchDisplacement)[kGID] = displacementVec[2];
         }
 
-        return vectorField;
+        return p2PatchDisplacement;
     }
         
     

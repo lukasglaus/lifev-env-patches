@@ -64,7 +64,7 @@ protected:
             coord(2) = p2PositionVector[kGID];
             
             // Radial and axial distance to current patch center and center line
-            Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
+            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
             auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
             
