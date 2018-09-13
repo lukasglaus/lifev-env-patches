@@ -47,16 +47,16 @@ protected:
     {
         auto p2PositionVector = p2PositionVectorDisplaced(dFeSpace);
         
-        vectorPtr_Type patchDisplacement (new VectorEpetra( dFeSpace->map(), Repeated ));
-        auto nCompLocalDof = patchDisplacement->epetraVector().MyLength() / 3;
+        vectorPtr_Type p2PatchDisplacement (new VectorEpetra( dFeSpace->map(), Repeated ));
+        auto nCompLocalDof = p2PatchDisplacement->epetraVector().MyLength() / 3;
         
         direction.normalize();
 
         for (int j (0); j < nCompLocalDof; j++)
         {
-            UInt iGID = patchDisplacement->blockMap().GID (j);
-            UInt jGID = patchDisplacement->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = patchDisplacement->blockMap().GID (j + 2 * nCompLocalDof);
+            UInt iGID = p2PatchDisplacement->blockMap().GID (j);
+            UInt jGID = p2PatchDisplacement->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = p2PatchDisplacement->blockMap().GID (j + 2 * nCompLocalDof);
             
             Vector3D coord;
             coord(0) = p2PositionVector[iGID];
@@ -76,19 +76,20 @@ protected:
             
             // Scale the direction vector
             auto displacementVec = direction * displacement;
-            (*patchDisplacement)[iGID] = displacementVec[0];
-            (*patchDisplacement)[jGID] = displacementVec[1];
-            (*patchDisplacement)[kGID] = displacementVec[2];
+            (*p2PatchDisplacement)[iGID] = displacementVec[0];
+            (*p2PatchDisplacement)[jGID] = displacementVec[1];
+            (*p2PatchDisplacement)[kGID] = displacementVec[2];
         }
         
-        return patchDisplacement;
+        return p2PatchDisplacement;
 
     }
+    
     
     virtual vector_Type p2PositionVectorDisplaced(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> p2dFeSpace) const
     {
         // New P1 Space
-        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1dFESpace ( dFeSpace->mesh(), "P1", 3, dFeSpace->mesh()->comm() );
+        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1dFESpace ( p2dFeSpace->mesh(), "P1", 3, dFeSpace->mesh()->comm() );
         
         // Create P1 VectorEpetra
         VectorEpetra p1PositionVector (p1dFESpace.map());
