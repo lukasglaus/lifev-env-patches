@@ -46,11 +46,12 @@ protected:
     
     virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
     {
-        vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
-        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+        auto p2PositionVector = p2PositionVectorDisplaced(dFeSpace);
+        
+        vectorPtr_Type p2PatchDisplacement (new VectorEpetra( dFeSpace->map(), Repeated ));
+        auto nCompLocalDof = p2PatchDisplacement->epetraVector().MyLength() / 3;
 
         direction.normalize();
-        // direction *= disp;
 
         for (int j (0); j < nCompLocalDof; ++j)
         {
