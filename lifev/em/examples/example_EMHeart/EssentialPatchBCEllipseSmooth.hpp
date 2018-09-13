@@ -65,33 +65,32 @@ protected:
         }
         
         // Interpolate position vector from P1-space to current space
-        VectorEpetra positionVector ( m_dispPtr->map() );
-        positionVector = dFeSpace->feToFEInterpolate(p1FESpace, p1PositionVector);
-        positionVector += (*m_dispPtr);
+        VectorEpetra p2PositionVector ( m_dispPtr->map() );
+        p2PositionVector = dFeSpace->feToFEInterpolate(p1FESpace, p1PositionVector);
+        p2PositionVector += (*m_dispPtr);
         
-        vectorPtr_Type vectorField (new VectorEpetra( dFeSpace->map(), Repeated ));
-        auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
+        vectorPtr_Type patchDisplacement (new VectorEpetra( dFeSpace->map(), Repeated ));
+        auto nCompLocalDof = patchDisplacement->epetraVector().MyLength() / 3;
         
         direction.normalize();
 
         for (int j (0); j < nCompLocalDof; j++)
         {
-            UInt iGID = vectorField->blockMap().GID (j);
-            UInt jGID = vectorField->blockMap().GID (j + nCompLocalDof);
-            UInt kGID = vectorField->blockMap().GID (j + 2 * nCompLocalDof);
+            UInt iGID = patchDisplacement->blockMap().GID (j);
+            UInt jGID = patchDisplacement->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = patchDisplacement->blockMap().GID (j + 2 * nCompLocalDof);
             
             Vector3D coord;
+            coord(0) = p2PositionVector[iGID];
+            coord(1) = p2PositionVector[jGID];
+            coord(2) = p2PositionVector[kGID];
             
-            coord(0) = positionVector[iGID];
-            coord(1) = positionVector[jGID];
-            coord(2) = positionVector[kGID];
-            
-            // Radial and axial distance to center line
+            // Radial and axial distance to current patch center and center line
             Vector3D currentPatchCenter = m_Center + activationFunction(time) * direction;
             auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
             
-            // If coordiantes inside or outside of a certain radius
+            // Determine the patch displacement as a function of patch coordinates
             auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
             
             // If patch inside or outside the structure
@@ -99,12 +98,12 @@ protected:
             
             // Scale the direction vector
             auto displacementVec = direction * displacement;
-            (*vectorField)[iGID] = displacementVec[0];
-            (*vectorField)[jGID] = displacementVec[1];
-            (*vectorField)[kGID] = displacementVec[2];
+            (*patchDisplacement)[iGID] = displacementVec[0];
+            (*patchDisplacement)[jGID] = displacementVec[1];
+            (*patchDisplacement)[kGID] = displacementVec[2];
         }
         
-        return vectorField;
+        return patchDisplacement;
 
     }
     

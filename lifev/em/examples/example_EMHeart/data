@@ -205,8 +205,8 @@ monodomain_xml_file = ParamListE.xml
 
         [../]
 
-    #listEssentialPatchBC = 'EssentialPatchCircular1 EssentialPatchCircular2'
-    listEssentialPatchBC = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
+    listEssentialPatchBC = 'EssentialPatchCircular1 EssentialPatchCircular2'
+    #listEssentialPatchBC = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
 
         [./EssentialPatchCircular1]
         flag                = 464
@@ -255,7 +255,7 @@ monodomain_xml_file = ParamListE.xml
 
     [../patches]
     testAtPreload       = false
-    tmax                = 175 #250 #150 #200 #250
+    tmax                = 190 #175 #250 #150 #200 #250
     tduration           = 350 #300
 
     [../coupling]
