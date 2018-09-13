@@ -45,8 +45,9 @@ protected:
     
     virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
     {
-        auto p2PositionVector = p2PositionVectorDisplaced(dFeSpace);
-        
+        // auto p2PositionVector = p2PositionVectorDisplaced(dFeSpace);
+        auto p2PositionVector = p2PositionVector(dFeSpace);
+
         vectorPtr_Type p2PatchDisplacement (new VectorEpetra( dFeSpace->map(), Repeated ));
         auto nCompLocalDof = p2PatchDisplacement->epetraVector().MyLength() / 3;
         
@@ -70,7 +71,6 @@ protected:
             
             // Determine the patch displacement as a function of patch coordinates
             auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
-
             
             // Scale the direction vector
             auto displacementVec = direction * displacement;
