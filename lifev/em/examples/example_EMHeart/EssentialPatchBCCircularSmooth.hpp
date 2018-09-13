@@ -41,6 +41,7 @@ public:
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
     }
     
+    
 protected:
     
     virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
@@ -84,6 +85,7 @@ protected:
 
         return vectorField;
     }
+        
     
     virtual const bool nodeOnPatch(const Vector3D& coord) const
     {

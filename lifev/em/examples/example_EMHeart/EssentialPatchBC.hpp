@@ -188,6 +188,37 @@ protected:
         return vectorField;
     }
     
+    
+    virtual vector_Type p2PositionVectorDisplaced(const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> p2dFeSpace) const
+    {
+        // New P1 Space
+        FESpace<RegionMesh<LinearTetra> , MapEpetra > p1dFESpace ( p2dFeSpace->mesh(), "P1", 3, p2dFeSpace->mesh()->comm() );
+        
+        // Create P1 VectorEpetra
+        VectorEpetra p1PositionVector (p1dFESpace.map());
+        
+        // Fill P1 vector with mesh values
+        Int p1nCompLocalDof = p1PositionVector.epetraVector().MyLength() / 3;
+        for (int j (0); j < p1nCompLocalDof; j++)
+        {
+            UInt iGID = p1PositionVector.blockMap().GID (j);
+            UInt jGID = p1PositionVector.blockMap().GID (j + p1nCompLocalDof);
+            UInt kGID = p1PositionVector.blockMap().GID (j + 2 * p1nCompLocalDof);
+            
+            p1PositionVector[iGID] = p2dFeSpace->mesh()->point (iGID).x();
+            p1PositionVector[jGID] = p2dFeSpace->mesh()->point (iGID).y();
+            p1PositionVector[kGID] = p2dFeSpace->mesh()->point (iGID).z();
+        }
+        
+        // Interpolate position vector from P1-space to current space
+        VectorEpetra p2PositionVector ( m_dispPtr->map() );
+        p2PositionVector = p2dFeSpace->feToFEInterpolate(p1dFESpace, p1PositionVector);
+        p2PositionVector += (*m_dispPtr);
+        
+        return p2PositionVector;
+    }
+    
+    
     virtual Real activationFunction (const Real& time) const
     {
         Real timeInPeriod = fmod(time - m_tmax + 0.5*m_tduration, 800.);
