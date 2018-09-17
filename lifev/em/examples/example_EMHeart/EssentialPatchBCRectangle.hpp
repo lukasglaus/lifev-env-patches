@@ -17,12 +17,12 @@
 namespace LifeV
 {
     
-class EssentialPatchBCCircular : public EssentialPatchBC
+class EssentialPatchBCRectangle : public EssentialPatchBC
 {
 public:
     
-    EssentialPatchBCCircular(){}
-    ~EssentialPatchBCCircular(){}
+    EssentialPatchBCRectangle(){}
+    ~EssentialPatchBCRectangle(){}
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
