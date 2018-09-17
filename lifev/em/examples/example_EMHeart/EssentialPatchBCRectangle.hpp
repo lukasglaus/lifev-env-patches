@@ -48,6 +48,7 @@ protected:
         direction(2) = std::sin(m_angle * PI /180);
         direction.normalize()
         
+        
         normalDistance = (coord - center).cross(coord - direction);
         
         return (normalDistance < 1.5);
