@@ -72,7 +72,7 @@ protected:
             auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
 
             // If coordiantes inside or outside of a certain radius
-            auto displacement = (m_EdgeDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
+            auto displacement = (m_EdgeDispFactor * disp - disp);// * std::pow(radialDistance / m_Radius, 2.0) + disp;
 
             // Scale the direction vector
             auto displacementVec =  direction * displacement;
