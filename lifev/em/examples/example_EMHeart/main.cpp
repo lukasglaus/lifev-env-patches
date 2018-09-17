@@ -47,6 +47,7 @@
 #include <lifev/em/solver/HeartSolver.hpp>
 
 // PatchBC
+#include <lifev/em/examples/example_EMHeart/EssentialPatchBCRectangle.hpp>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircular.hpp>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBCCircularSmooth.hpp>
 #include <lifev/em/examples/example_EMHeart/EssentialPatchBCEllipseSmooth.hpp>
