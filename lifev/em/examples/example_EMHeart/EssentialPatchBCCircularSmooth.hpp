@@ -54,8 +54,6 @@ protected:
 
         direction.normalize();
         
-        std::cout << direction << std::endl;
-        
         for (int j (0); j < nCompLocalDof; ++j)
         {
             // Get coordiantes
@@ -68,13 +66,9 @@ protected:
             coord(1) = p2PositionVector[jGID];
             coord(2) = p2PositionVector[kGID];
             
-            std::cout << "a" << std::endl;
-
             // Radial and axial distance to center line
             auto patchAxis = m_Center + 1.0 * direction;
             auto radialDistance = ( (coord - m_Center).cross(coord - patchAxis) ).norm() / (m_Center - patchAxis).norm();
-            std::cout << radialDistance << std::endl;
-
             auto axialDistanceToCenter = (coord - m_Center).dot(direction); // * direction;
             
             // If coordiantes inside or outside of a certain radius

@@ -63,12 +63,7 @@ protected:
             coord(0) = p2PositionVector[iGID];
             coord(1) = p2PositionVector[jGID];
             coord(2) = p2PositionVector[kGID];
-            
-            // Radial and axial distance to current patch center and center line
-            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
-            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-            
+
             // Determine the patch displacement as a function of patch coordinates
             auto displacement = disp - disp * (1 - m_EdgeDispFactor) * dispDistributionWeight(coord);
             
