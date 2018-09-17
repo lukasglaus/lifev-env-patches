@@ -49,7 +49,7 @@ protected:
         direction.normalize();
         
         
-        normalDistance = (coord - center).cross(coord - direction);
+        Real normalDistance = (coord - center).cross(coord - direction);
         
         return (normalDistance < 1.5);
     }
