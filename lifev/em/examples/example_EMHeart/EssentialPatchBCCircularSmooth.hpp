@@ -67,11 +67,9 @@ protected:
             coord(2) = p2PositionVector[kGID];
 
             // Radial and axial distance to center line
-            auto currentPatchCenter = m_Center + activationFunction(time) * direction;
-            auto radialDistance = ( (coord - m_Center).cross(coord - currentPatchCenter) ).norm() / (m_Center - currentPatchCenter).norm();
-            auto axialDistance = (coord - currentPatchCenter).dot(direction) * direction;
-
-            std::cout << currentPatchCenter << "\t" << radialDistance << "\t" << axialDistance << std::endl;
+            auto patchAxis = m_Center + 1.0 * direction;
+            auto radialDistance = ( (coord - m_Center).cross(coord - patchAxis) ).norm() / (m_Center - patchAxis).norm();
+            auto axialDistanceToCenter = (coord - m_Center).dot(direction); // * direction;
             
             // If coordiantes inside or outside of a certain radius
             auto displacement = (m_EdgeDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
