@@ -40,7 +40,7 @@ protected:
     
     virtual const bool nodeOnPatch(const Vector3D& coord) const
     {
-        Vector3D center (0.0);
+        Vector3D center;
 
         Vector3D direction;
         direction(0) = std::cos(m_angle * PI /180);
