@@ -46,7 +46,7 @@ protected:
         direction(0) = std::cos(m_angle * PI /180);
         direction(1) = 0.0;
         direction(2) = std::sin(m_angle * PI /180);
-        direction.normalize()
+        direction.normalize();
         
         
         normalDistance = (coord - center).cross(coord - direction);
