@@ -159,7 +159,8 @@ public:
 
     
     vector_Type patchLocation()
-    {        return *m_patchLocationPtr;
+    {
+        return *m_patchLocationPtr;
     }
 
     
