@@ -75,7 +75,7 @@ protected:
             auto displacement = (m_EdgeDispFactor * disp - disp) * std::pow(radialDistance / m_Radius, 2.0) + disp;
 
             // Scale the direction vector
-            auto displacementVec =  direction * disp; //displacement;
+            auto displacementVec =  direction * ( displacement <= m_patchDisplacement ? displacement : 0.0 )
             (*p2PatchDisplacement)[iGID] = displacementVec[0];
             (*p2PatchDisplacement)[jGID] = displacementVec[1];
             (*p2PatchDisplacement)[kGID] = displacementVec[2];
