@@ -68,7 +68,7 @@ protected:
             
             // Radial and axial distance to center line
             auto patchAxis = m_Center + 1.0 * direction;
-            auto radialDistance = ( (coord - m_Center).cross(coord - patchAxis) ).norm() / (m_Center - patchAxis).norm();
+            auto radialDistance = ( (coord - m_Center).cross(coord - patchAxis) ).norm(); // is 1.0 / (m_Center - patchAxis).norm();
             auto axialDistanceToCenter = (coord - m_Center).dot(direction); // * direction;
             
             // If coordiantes inside or outside of a certain radius
