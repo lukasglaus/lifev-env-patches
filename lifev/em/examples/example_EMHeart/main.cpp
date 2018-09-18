@@ -189,6 +189,13 @@ int main (int argc, char** argv)
     
     
     //============================================
+    // Create essential patch b.c.
+    //============================================
+    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
+    patchHandler.addPatchBC(solver);
+    
+    
+    //============================================
     // Setup solver (including fe-spaces & b.c.)
     //============================================
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
@@ -198,13 +205,6 @@ int main (int argc, char** argv)
     auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
-    
-    
-    //============================================
-    // Create essential patch b.c.
-    //============================================
-    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-    patchHandler.addPatchBC(solver);
     
     
     //============================================
