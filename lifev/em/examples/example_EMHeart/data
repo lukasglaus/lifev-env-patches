@@ -228,8 +228,8 @@ monodomain_xml_file = ParamListE.xml
         direction           = '-1.0 0.0 -1.0'
         edgeDispFactor      = 0.5
         displacement        = 1.2
-        [../EssentialPatchEllipsoid1]
 
+        [../EssentialPatchEllipsoid1]
         flag                = 464
         type                = EssentialPatchBCEllipseSmooth
         center              = '-1.8 -9.5 -4.5'
