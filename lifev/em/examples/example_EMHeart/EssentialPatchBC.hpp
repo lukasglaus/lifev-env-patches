@@ -98,7 +98,7 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
-                        (*m_patchLocationPtr)[10] = 1.0; // [face.point(k).id()] = 1.0;
+                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
                 }
@@ -269,9 +269,14 @@ public:
         {
             const std::string patchName = m_dataFile ( m_patchListName.c_str(), " ", i );
             const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
+            std:cout << "a";
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
+            std:cout << "b";
             m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
+            std:cout << "c";
             m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
+            std:cout << "d";
+
         }
     }
 
