@@ -68,7 +68,8 @@ public:
 
         m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() , Repeated ));
         *m_patchLocationPtr *= 0.0;
-        
+        std::cout << "b";
+
         m_patchFlag = newFlag;
         
         const auto& mesh = solver.fullMeshPtr();
@@ -100,7 +101,9 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
+                        std::cout << "c";
                         (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                        std::cout << "d";
                     }
                 
                 }
