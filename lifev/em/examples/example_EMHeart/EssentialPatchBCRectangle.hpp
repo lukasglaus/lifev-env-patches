@@ -31,7 +31,7 @@ public:
         m_angle= dataFile ( ("solid/boundary_conditions/" + m_Name + "/angle").c_str(), 0.0 );
         m_dAngle = dataFile ( ("solid/boundary_conditions/" + m_Name + "/dAngle").c_str(), 30.0 );
         m_height= dataFile ( ("solid/boundary_conditions/" + m_Name + "/height").c_str(), -7.5 );
-        m_width= dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 1.5 );
+        m_width= dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 3.0 );
         
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
@@ -49,12 +49,12 @@ protected:
         const auto angle = m_angle * PI/180;
         const auto dAngle = m_dAngle * PI/180;
 
-        const bool inAngleRange ( coordZyl(2) < (angle + dAngle) && coordZyl(2) > (angle - dAngle) );
-        const bool inVerticalRange ( coordZyl(1) < (m_height + m_width) && coordZyl(1) > (m_height - m_width) );
+        const bool inAngleRange ( coordZyl(2) < (angle + dAngle/2) && coordZyl(2) > (angle - dAngle/2) );
+        const bool inVerticalRange ( coordZyl(1) < (m_height + m
+                                                    _width/2) && coordZyl(1) > (m_height - m_width/2) );
         
         return (inAngleRange && inVerticalRange);
     }
-    
     
     Real m_angle;
     Real m_dAngle;
