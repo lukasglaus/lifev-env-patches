@@ -68,7 +68,7 @@ public:
 
         m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ));
         *m_patchLocationPtr *= 0.0;
-        std::cout << "b";
+        std::cout << "bbbbb";
 
         m_patchFlag = newFlag;
         
@@ -102,7 +102,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         std::cout << "c";
-                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                         std::cout << "d";
                     }
                 
