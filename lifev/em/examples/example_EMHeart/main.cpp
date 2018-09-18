@@ -196,6 +196,14 @@ int main (int argc, char** argv)
     
     
     //============================================
+    // Create displacement patch b.c.
+    //============================================
+    patchHandler.applyPatchBC(solver);
+    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
+    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
+
+    
+    //============================================
     // Setup solver (including fe-spaces & b.c.)
     //============================================
     EMAssembler::quadRule.setQuadRule( dataFile ( "solid/space_discretization/quad_rule", "4pt") );
@@ -255,14 +263,6 @@ int main (int argc, char** argv)
     // Electric stimulus function
     //============================================
     function_Type stim = &HeartSolver<EMSolver<mesh_Type, monodomain_Type> >::Iapp;
-
-    
-    //============================================
-    // Create displacement patch b.c.
-    //============================================
-    patchHandler.applyPatchBC(solver);
-    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
-    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
 
     
     //============================================
