@@ -67,7 +67,7 @@ public:
         std::cout << "a";
 
         m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ));
-        *m_patchLocationPtr *= 0.0;
+        //*m_patchLocationPtr *= 0.0;
         std::cout << "bbbbb";
 
         m_patchFlag = newFlag;
