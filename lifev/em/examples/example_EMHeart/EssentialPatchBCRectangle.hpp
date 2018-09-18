@@ -29,7 +29,7 @@ public:
         super::setup(dataFile, name);
 
         m_angle= dataFile ( ("solid/boundary_conditions/" + m_Name + "/angle").c_str(), 0.0 );
-        m_dAngle = dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 30.0 );
+        m_dAngle = dataFile ( ("solid/boundary_conditions/" + m_Name + "/dAngle").c_str(), 30.0 );
         m_height= dataFile ( ("solid/boundary_conditions/" + m_Name + "/height").c_str(), -7.5 );
         m_width= dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 1.5 );
         
@@ -46,8 +46,8 @@ protected:
         coordZyl(1) = coord(1); // height
         coordZyl(2) = std::atan2(coord(2), coord(1)); // angle
 
-        auto angle = m_angle * PI/180;
-        auto dAngle = m_dAngle * PI/180;
+        const auto angle = m_angle * PI/180;
+        const auto dAngle = m_dAngle * PI/180;
 
         const bool inAngleRange ( coordZyl(2) < (angle + dAngle) && coordZyl(2) > (angle - dAngle) );
         const bool inVerticalRange ( coordZyl(1) < (m_height + m_width) && coordZyl(1) > (m_height - m_width) );
