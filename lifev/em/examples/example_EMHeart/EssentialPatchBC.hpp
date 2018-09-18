@@ -64,12 +64,14 @@ public:
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
+        std::cout << "a";
+
         m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() , Repeated ));
         *m_patchLocationPtr *= 0.0;
         
         m_patchFlag = newFlag;
         
-        const auto& mesh = solver.localMeshPtr();
+        const auto& mesh = solver.fullMeshPtr();
 
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
@@ -269,13 +271,9 @@ public:
         {
             const std::string patchName = m_dataFile ( m_patchListName.c_str(), " ", i );
             const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
-            std::cout << "a";
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
-            std::cout << "b";
             m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
-            std::cout << "c";
             m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
-            std::cout << "d";
 
         }
     }
