@@ -46,7 +46,7 @@ protected:
         coordZyl(1) = coord(1); // height
         coordZyl(2) = std::atan2(coord(2), coord(1)); // angle
 
-        m_Angle *= PI/180;
+        m_angle *= PI/180;
         m_dAngle *= PI/180;
 
         const bool inAngleRange ( coordZyl(2) < (m_angle + m_dAnglw) && coordZyl(2) > (m_angle - m_dAnglw) );
