@@ -42,9 +42,9 @@ protected:
     virtual const bool nodeOnPatch(const Vector3D& coord) const
     {
         Vector3D coordZyl;
-        coordZyl(0) = std::sqrt(std::pow(coord(0), 2) + std::pow(coord(2), 2)) // radius
+        coordZyl(0) = std::sqrt(std::pow(coord(0), 2) + std::pow(coord(2), 2)); // radius
         coordZyl(1) = coord(1); // height
-        coordZyl(2) = std::tan2(coord(0), coord(2)); // angle
+        coordZyl(2) = std::atan2(coord(2), coord(1)); // angle
 
         m_Angle *= PI/180;
         m_dAngle *= PI/180;
