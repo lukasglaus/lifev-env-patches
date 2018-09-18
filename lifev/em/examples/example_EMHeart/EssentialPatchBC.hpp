@@ -66,7 +66,7 @@ public:
     {
         std::cout << "a";
 
-        m_patchLocationPtr = vectorPtr_Type (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() , Repeated ));
+        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->potentialPtr()->map() , Repeated ));
         *m_patchLocationPtr *= 0.0;
         std::cout << "b";
 
