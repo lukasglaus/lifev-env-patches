@@ -29,8 +29,9 @@ public:
         super::setup(dataFile, name);
 
         m_angle= dataFile ( ("solid/boundary_conditions/" + m_Name + "/angle").c_str(), 0.0 );
-        m_height= dataFile ( ("solid/boundary_conditions/" + m_Name + "/height").c_str(), 1.0 );
-        m_width= dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 1.0 );
+        m_dAngle = dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 30.0 );
+        m_height= dataFile ( ("solid/boundary_conditions/" + m_Name + "/height").c_str(), -7.5 );
+        m_width= dataFile ( ("solid/boundary_conditions/" + m_Name + "/width").c_str(), 1.5 );
         
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
@@ -40,22 +41,23 @@ protected:
     
     virtual const bool nodeOnPatch(const Vector3D& coord) const
     {
-        Vector3D center;
+        Vector3D coordZyl;
+        coordZyl(0) = std::sqrt(std::pow(coord(0), 2) + std::pow(coord(2), 2)) // radius
+        coordZyl(1) = coord(1); // height
+        coordZyl(2) = std::tan2(coord(0), coord(2)); // angle
 
-        Vector3D direction;
-        direction(0) = std::cos(m_angle * PI /180);
-        direction(1) = 0.0;
-        direction(2) = std::sin(m_angle * PI /180);
-        direction.normalize();
+        m_Angle *= PI/180;
+        m_dAngle *= PI/180;
+
+        const bool inAngleRange ( coordZyl(2) < (m_angle + m_dAnglw) && coordZyl(2) > (m_angle - m_dAnglw) );
+        const bool inVerticalRange ( coordZyl(1) < (m_height + m_width) && coordZyl(1) > (m_height - m_width) );
         
-        
-        Real normalDistance = ( (coord - center).cross(coord - direction) ).norm();
-        
-        return (normalDistance < 1.5);
+        return (inAngleRange && inVerticalRange);
     }
     
     
     Real m_angle;
+    Real m_dAngle;
     Real m_height;
     Real m_width;
 
