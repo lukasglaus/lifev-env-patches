@@ -64,8 +64,8 @@ public:
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
-        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
-        *m_patchLocationPtr *= 0.0;
+//        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
+//        *m_patchLocationPtr *= 0.0;
 
         m_patchFlag = newFlag;
         
@@ -98,7 +98,7 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
-                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
                 }
