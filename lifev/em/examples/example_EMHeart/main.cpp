@@ -192,6 +192,7 @@ int main (int argc, char** argv)
     // Create essential patch b.c.
     //============================================
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
+    PRINT_FACTORY(EssentialPatchBC);
     patchHandler.addPatchBC(solver);
     
     
