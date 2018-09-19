@@ -186,15 +186,6 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh done" << std::endl;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
-    
-    
-    //============================================
-    // Create essential patch b.c.
-    //============================================
-    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-    patchHandler.addPatchBC(solver);
-
-    PRINT_FACTORY(EssentialPatchBC);
 
     
     //============================================
@@ -207,6 +198,15 @@ int main (int argc, char** argv)
     auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
+    
+    
+    //============================================
+    // Create essential patch b.c.
+    //============================================
+    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
+    patchHandler.addPatchBC(solver);
+    
+    PRINT_FACTORY(EssentialPatchBC);
     
     
     //============================================
