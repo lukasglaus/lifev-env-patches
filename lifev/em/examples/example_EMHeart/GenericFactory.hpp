@@ -73,7 +73,7 @@ public:
     
     void printRegisteredCreators(const std::string& type)
     {
-        std::cout << "Registered " << type << "'s:" << std::endl;
+        std::cout << "Registered " << type << " derived classes: " << std::endl;
         for (auto& creator : _makers) std::cout << " - " << creator.first << std::endl;
     }
     
