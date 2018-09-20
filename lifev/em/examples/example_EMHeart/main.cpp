@@ -192,7 +192,6 @@ int main (int argc, char** argv)
     // Create essential patch b.c.
     //============================================
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-    patchHandler.addPatchBC(solver);
     
     if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
     
@@ -208,7 +207,8 @@ int main (int argc, char** argv)
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    
+    patchHandler.addPatchBC(solver);
+
     //============================================
     // Setup anisotropy vectors
     //============================================
