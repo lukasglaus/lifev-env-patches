@@ -34,7 +34,7 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n 1" << std::endl;
+        std::cout << "\n 1" << std::endl;
 
         // Patch name
         m_Name = name;
@@ -49,7 +49,7 @@ public:
         }
         m_patchDirection.normalize();
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n 2" << std::endl;
+        std::cout << "\n 2" << std::endl;
 
         // Boundary condition components
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
@@ -65,7 +65,7 @@ public:
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
 
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n 3" << std::endl;
+        std::cout << "\n 3" << std::endl;
 
     }
     
