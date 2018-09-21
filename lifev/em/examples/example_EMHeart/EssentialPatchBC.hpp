@@ -34,6 +34,8 @@ public:
     
     virtual void setup(const GetPot& dataFile, const std::string& name)
     {
+        MPI_Barrier(MPI_COMM_WORLD);
+
         // Patch name
         m_Name = name;
         
