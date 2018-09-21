@@ -49,8 +49,6 @@ public:
         }
         m_patchDirection.normalize();
         
-        std::cout << "\n a" << std::endl;
-
         // Boundary condition components
         UInt componentSize = dataFile.vector_variable_size ( ("solid/boundary_conditions/" + m_Name + "/component").c_str() );
         for ( UInt j (0); j < componentSize; ++j )
@@ -58,8 +56,6 @@ public:
             m_patchComponent.push_back( dataFile ( ("solid/boundary_conditions/" + m_Name + "/component").c_str(), 0, j ) );
         }
         
-        std::cout << "\n b" << std::endl;
-
         // Patch peak displacement
         m_patchDisplacement = dataFile ( ("solid/boundary_conditions/" + m_Name + "/displacement").c_str(), 1.0 );
         
