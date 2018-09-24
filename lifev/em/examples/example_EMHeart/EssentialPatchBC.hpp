@@ -66,6 +66,8 @@ public:
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
+        MPI_Barrier(MPI_COMM_WORLD);
+
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
         m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
@@ -113,6 +115,8 @@ public:
     
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
+        MPI_Barrier(MPI_COMM_WORLD);
+
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
         if ( solver.comm()->MyPID() == 0 ) std::cout << "Applying " << m_Name << " b.c" << std::endl;
@@ -260,6 +264,7 @@ protected:
     
 };
 
+    
 
 class EssentialPatchBCHandler
 {
