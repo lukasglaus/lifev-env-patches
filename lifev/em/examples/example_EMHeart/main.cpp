@@ -158,6 +158,14 @@ int main (int argc, char** argv)
     
     
     //============================================
+    // Create essential patch b.c.
+    //============================================
+    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
+    patchHandler.addPatchBC(solver);
+    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
+    
+    
+    //============================================
     // Load mesh
     //============================================
     std::string meshType = dataFile("solid/space_discretization/mesh_type", ".mesh");
@@ -249,14 +257,6 @@ int main (int argc, char** argv)
     //============================================
     function_Type stim = &HeartSolver<EMSolver<mesh_Type, monodomain_Type> >::Iapp;
 
-    
-    //============================================
-    // Create essential patch b.c.
-    //============================================
-    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-    patchHandler.addPatchBC(solver);
-    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
-    
     
     //============================================
     // Apply essential patch b.c.
