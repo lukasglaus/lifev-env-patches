@@ -73,7 +73,7 @@ monodomain_xml_file = ParamListE.xml
     lawType         = nonlinear
 
     [../boundary_conditions]
-    numPreloadSteps  = 0
+    numPreloadSteps  = 50
 
     list = 'BaseSemilunar BaseAV AorticRing MitralRing TricuspidRing Epicardium'
 
@@ -254,7 +254,7 @@ monodomain_xml_file = ParamListE.xml
 
 
     [../patches]
-    testAtPreload       = false
+    testAtPreload       = true
     tmax                = 176 #175 #250 #150 #200 #250
     tduration           = 350 #300
 

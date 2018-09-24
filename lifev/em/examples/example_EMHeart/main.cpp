@@ -207,7 +207,6 @@ int main (int argc, char** argv)
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
     
-    patchHandler.addPatchBC(solver);
 
     //============================================
     // Setup anisotropy vectors
@@ -233,6 +232,8 @@ int main (int argc, char** argv)
         solver.setupSheetVector (0., 1., 0.);
     }
     
+    patchHandler.addPatchBC(solver);
+
     
     //============================================
     // Initialize electrophysiology
