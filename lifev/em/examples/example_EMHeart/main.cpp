@@ -186,14 +186,6 @@ int main (int argc, char** argv)
     
     if ( 0 == comm->MyPID() ) std::cout << "\nResizing mesh done" << std::endl;
     if ( 0 == comm->MyPID() ) solver.fullMeshPtr()->showMe();
-
-    
-    //============================================
-    // Create essential patch b.c.
-    //============================================
-    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-    
-    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
     
     
     //============================================
@@ -232,8 +224,6 @@ int main (int argc, char** argv)
         solver.setupSheetVector (0., 1., 0.);
     }
     
-    patchHandler.addPatchBC(solver);
-
     
     //============================================
     // Initialize electrophysiology
@@ -261,7 +251,15 @@ int main (int argc, char** argv)
 
     
     //============================================
-    // Create displacement patch b.c.
+    // Create essential patch b.c.
+    //============================================
+    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
+    patchHandler.addPatchBC(solver);
+    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
+    
+    
+    //============================================
+    // Apply essential patch b.c.
     //============================================
     patchHandler.applyPatchBC(solver);
     heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
