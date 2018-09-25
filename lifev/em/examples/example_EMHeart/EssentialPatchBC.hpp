@@ -291,8 +291,8 @@ public:
     {
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  a" << std::endl;
 
-//        m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
-//        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
+        m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
+        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
 
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  b" << std::endl;
 
