@@ -66,10 +66,8 @@ public:
     {
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
-//        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
-//        *m_patchLocationPtr *= 0.0;
-        
-        m_patchLocationPtr = vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() );
+        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
+        *m_patchLocationPtr *= 0.0;
 
         m_patchFlag = newFlag;
         
@@ -86,13 +84,13 @@ public:
                 
                 for (int k(0); k < 3; ++k)
                 {
-                    auto& point = face.point(k);
-                    auto coord = point.coordinates();
-                    auto id = point.id();
+                    auto coord = face.point(k).coordinates();
+                    auto pointInPatch = nodeOnPatch(coord);
 
-                    if ( nodeOnPatch(coord) )
+                    if (pointInPatch)
                     {
                         ++numPointsInsidePatch;
+                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 }
                 
@@ -102,8 +100,8 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
-                        std::cout << face.point(k).id() << "  ";
-                        m_patchLocationPtr[face.point(k).id()] = 1.0;
+                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                        //std::cout << face.point(k).localId() << "  ";
                         //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
@@ -254,7 +252,7 @@ protected:
 
     vectorPtr_Type m_dispPtr;
 
-    vector_Type m_patchLocationPtr;
+    vectorPtr_Type m_patchLocationPtr;
 
     vectorPtr_Type m_patchDispPtr;
     bcVectorPtr_Type m_patchDispBCPtr;
