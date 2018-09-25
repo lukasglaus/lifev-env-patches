@@ -155,15 +155,7 @@ int main (int argc, char** argv)
     //============================================
     EMData emdata;
     emdata.setup (dataFile);
-    
-    
-    //============================================
-    // Create essential patch b.c.
-    //============================================
-    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
-    patchHandler.addPatchBC(solver);
-    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
-    
+
     
     //============================================
     // Load mesh
@@ -206,6 +198,15 @@ int main (int argc, char** argv)
     auto FESpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
     auto dETFESpace = solver.electroSolverPtr() -> displacementETFESpacePtr();
     auto ETFESpace = solver.electroSolverPtr() -> ETFESpacePtr();
+    
+    
+    //============================================
+    // Create essential patch b.c.
+    //============================================
+    EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
+    patchHandler.addPatchBC(solver);
+    
+    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
     
 
     //============================================
@@ -262,8 +263,8 @@ int main (int argc, char** argv)
     // Apply essential patch b.c.
     //============================================
     patchHandler.applyPatchBC(solver);
-    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
-    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
+//    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
+//    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
 
     
     //============================================
