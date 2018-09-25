@@ -80,10 +80,14 @@ public:
 
             if (faceFlag == m_PrevFlag)
             {
+                std::cout << faceFlag << " ; ";
+
                 int numPointsInsidePatch (0);
                 
                 for (int k(0); k < 3; ++k)
                 {
+                    std::cout << k << " ; ";
+
                     auto coord = face.point(k).coordinates();
                     auto pointInPatch = nodeOnPatch(coord);
 
