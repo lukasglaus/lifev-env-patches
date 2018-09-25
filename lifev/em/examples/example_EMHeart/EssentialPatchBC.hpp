@@ -66,7 +66,7 @@ public:
     {
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
-        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
+        m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ));
         *m_patchLocationPtr *= 0.0;
 
         m_patchFlag = newFlag;
@@ -113,9 +113,7 @@ public:
     
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
-
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "Applying " << m_Name << " b.c" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << " " << m_Name << std::endl;
 
         auto dFeSpace = solver.structuralOperatorPtr() -> dispFESpacePtr();
         m_dispPtr = solver.structuralOperatorPtr()->displacementPtr();
@@ -287,6 +285,8 @@ public:
             m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
 
         }
+        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
     }
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
@@ -297,10 +297,10 @@ public:
 //        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  a" << std::endl;
 
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            patch->applyBC(solver, m_dataFile);
-//        }
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            patch->applyBC(solver, m_dataFile);
+        }
 //
 //        updatePatchDisplacementSum(solver);
 //        updatePatchLocationSum(solver);
