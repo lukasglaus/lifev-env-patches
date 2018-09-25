@@ -282,7 +282,7 @@ public:
             const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
             m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
-            //m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
+            m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
 
         }
     }
