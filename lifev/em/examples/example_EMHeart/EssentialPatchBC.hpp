@@ -67,7 +67,7 @@ public:
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
         m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
-        //*m_patchLocationPtr *= 0.0;
+        *m_patchLocationPtr *= 0.0;
 
         m_patchFlag = newFlag;
         
@@ -101,6 +101,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                        (*m_patchLocationPtr)[0] = 1.0;
                     }
                 
                 }
