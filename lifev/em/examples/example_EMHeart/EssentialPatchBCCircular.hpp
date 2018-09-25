@@ -44,7 +44,7 @@ protected:
     virtual const bool nodeOnPatch(const Vector3D& coord) const
     {
         bool pointInCircle = (coord - m_Center).norm() < m_Radius;
-        std::cout << pointInCircle << ";";
+        std::cout << (coord - m_Center).norm() << ";";
         return pointInCircle;
     }
     
