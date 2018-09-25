@@ -71,7 +71,7 @@ public:
 
         m_patchFlag = newFlag;
         
-        const auto& mesh = solver.localMeshPtr();
+        const auto& mesh = solver.fullMeshPtr();
 
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
@@ -101,7 +101,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
-                        //(*m_patchLocationPtr)[0] = 1.0;
+                        (*m_patchLocationPtr)[0] = 1.0;
                     }
                 
                 }
