@@ -89,6 +89,7 @@ public:
 
                     if (pointInPatch)
                     {
+                        std::cout << face.point(k).id() << "  ";
                         ++numPointsInsidePatch;
                         (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
