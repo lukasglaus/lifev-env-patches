@@ -67,7 +67,7 @@ public:
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 
         m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
-        *m_patchLocationPtr *= 0.0;
+        //*m_patchLocationPtr *= 0.0;
 
         m_patchFlag = newFlag;
         
@@ -106,6 +106,8 @@ public:
                 }
             }
         }
+        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
     }
     
     
