@@ -296,11 +296,11 @@ public:
 
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  b" << std::endl;
 
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            patch->applyBC(solver, m_dataFile);
-//        }
-//
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            patch->applyBC(solver, m_dataFile);
+        }
+
 //        updatePatchDisplacementSum(solver);
 //        updatePatchLocationSum(solver);
     }
