@@ -90,6 +90,7 @@ public:
                     if (pointInPatch)
                     {
                         ++numPointsInsidePatch;
+                        std::cout << numPointsInsidePatch << " ; ";
                     }
                 }
                 
@@ -99,7 +100,7 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
-                        std::cout << face.point(k).localId() << " ; ";
+                        std::cout << numPointsInsidePatch << " ; ";
                         (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
@@ -295,7 +296,7 @@ public:
 
 //        m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 //        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
-        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  a" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  b" << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
