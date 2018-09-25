@@ -62,57 +62,99 @@ public:
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
     }
     
+//    void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
+//    {
+//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+//
+//        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
+//        *m_patchLocationPtr *= 0.0;
+//
+//        m_patchFlag = newFlag;
+//
+//        const auto& mesh = solver.localMeshPtr();
+//
+//        for (int j(0); j < mesh->numBoundaryFacets(); j++)
+//        {
+//            auto& face = mesh->boundaryFacet(j);
+//            auto faceFlag = face.markerID();
+//
+//            if (faceFlag == m_PrevFlag)
+//            {
+//                int numPointsInsidePatch (0);
+//
+//                for (int k(0); k < 3; ++k)
+//                {
+//                    auto coord = face.point(k).coordinates();
+//                    auto pointInPatch = nodeOnPatch(coord);
+//
+//                    if (pointInPatch)
+//                    {
+//                        std::cout << face.point(k).id() << "  ";
+//                        ++numPointsInsidePatch;
+//                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+//                    }
+//                }
+//
+//                if (numPointsInsidePatch > 2)
+//                {
+//                    face.setMarkerID(m_patchFlag);
+//
+//                    for (int k(0); k < 3; ++k)
+//                    {
+//                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+//                        //std::cout << face.point(k).localId() << "  ";
+//                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+//                    }
+//
+//                }
+//            }
+//        }
+//
+//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
+//    }
+    
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
     {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
-
-        m_patchLocationPtr.reset (new vector_Type ( solver.activationModelPtr()->fiberActivationPtr()->map() ));
+        //std::cout << "\n a field done" << std::endl;
+        
+        m_patchLocationPtr.reset (new vector_Type ( solver.electroSolverPtr()->potentialPtr()->map() ));
         *m_patchLocationPtr *= 0.0;
-
+        
         m_patchFlag = newFlag;
         
-        const auto& mesh = solver.localMeshPtr();
-
-        for (int j(0); j < mesh->numBoundaryFacets(); j++)
+        for (auto& mesh : solver.mesh())
         {
-            auto& face = mesh->boundaryFacet(j);
-            auto faceFlag = face.markerID();
-
-            if (faceFlag == m_PrevFlag)
+            for (int j(0); j < mesh->numBoundaryFacets(); j++)
             {
-                int numPointsInsidePatch (0);
+                auto& face = mesh->boundaryFacet(j);
+                auto faceFlag = face.markerID();
                 
-                for (int k(0); k < 3; ++k)
+                if (faceFlag == m_PrevFlag)
                 {
-                    auto coord = face.point(k).coordinates();
-                    auto pointInPatch = nodeOnPatch(coord);
-
-                    if (pointInPatch)
-                    {
-                        std::cout << face.point(k).id() << "  ";
-                        ++numPointsInsidePatch;
-                        (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
-                    }
-                }
-                
-                if (numPointsInsidePatch > 2)
-                {
-                    face.setMarkerID(m_patchFlag);
-    
+                    int numPointsInsidePatch (0);
+                    
                     for (int k(0); k < 3; ++k)
                     {
-                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
-                        //std::cout << face.point(k).localId() << "  ";
-                        //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                        auto coord = face.point(k).coordinates();
+                        auto pointInPatch = nodeOnPatch(coord);
+                        
+                        if (pointInPatch)
+                        {
+                            ++numPointsInsidePatch;
+                            (*m_patchLocationPtr)[face.point(k).id()] = 1.0;
+                            
+                        }
                     }
-                
+                    
+                    if (numPointsInsidePatch > 2)
+                    {
+                        face.setMarkerID(m_patchFlag);
+                    }
+                    
                 }
             }
         }
-        
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
     }
-    
     
     void applyBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const GetPot& dataFile)
     {
