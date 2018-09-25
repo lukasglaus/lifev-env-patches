@@ -293,14 +293,13 @@ public:
 
 //        m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
 //        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
+        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  a" << std::endl;
 
-        if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  b" << std::endl;
-
-        for (auto& patch : m_patchBCPtrVec)
-        {
-            patch->applyBC(solver, m_dataFile);
-        }
-
+//        for (auto& patch : m_patchBCPtrVec)
+//        {
+//            patch->applyBC(solver, m_dataFile);
+//        }
+//
 //        updatePatchDisplacementSum(solver);
 //        updatePatchLocationSum(solver);
     }
