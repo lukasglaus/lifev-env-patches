@@ -309,10 +309,10 @@ public:
     {
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            patch->modifyPatchBC(solver, time);
-//        }
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            patch->modifyPatchBC(solver, time);
+        }
 //
 //        updatePatchDisplacementSum(solver);
 //        updatePatchLocationSum(solver);
