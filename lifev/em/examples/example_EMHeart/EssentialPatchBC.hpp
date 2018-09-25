@@ -324,31 +324,31 @@ public:
         updatePatchLocationSum(solver);
     }
 
-    vector_Type& patchDisplacementSum()
-    {
-        return *m_patchDisplacementVecSumPtr;
-    }
-    
-    vectorPtr_Type patchDisplacementSumPtr()
-    {
-        return m_patchDisplacementVecSumPtr;
-    }
-
-    vector_Type& patchLocationSum()
-    {
-        return *m_patchLocationScalarSumPtr;
-    }
-
-    vectorPtr_Type patchLocationSumPtr()
-    {
-        return m_patchLocationScalarSumPtr;
-    }
+//    vector_Type& patchDisplacementSum()
+//    {
+//        return *m_patchDisplacementVecSumPtr;
+//    }
+//
+//    vectorPtr_Type patchDisplacementSumPtr()
+//    {
+//        return m_patchDisplacementVecSumPtr;
+//    }
+//
+//    vector_Type& patchLocationSum()
+//    {
+//        return *m_patchLocationScalarSumPtr;
+//    }
+//
+//    vectorPtr_Type patchLocationSumPtr()
+//    {
+//        return m_patchLocationScalarSumPtr;
+//    }
 
 
 private:
     
-//    void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
-//    {
+    void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    {
 //        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 //
 //        *m_patchDisplacementVecSumPtr *= 0.0;
@@ -357,10 +357,10 @@ private:
 //        {
 //            *m_patchDisplacementVecSumPtr += patch->patchDisplacement(solver);
 //        }
-//    }
-//
-//    void updatePatchLocationSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
-//    {
+    }
+    
+    void updatePatchLocationSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    {
 //        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
 //
 //        *m_patchLocationScalarSumPtr *= 0.0;
@@ -369,7 +369,7 @@ private:
 //        {
 //            *m_patchLocationScalarSumPtr += patch->patchLocation();
 //        }
-//    }
+    }
     
     const std::string m_patchListName;
     const GetPot& m_dataFile;
