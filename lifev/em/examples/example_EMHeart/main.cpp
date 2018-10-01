@@ -206,6 +206,8 @@ int main (int argc, char** argv)
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
     patchHandler.addPatchBC(solver);
     
+    if ( 0 == comm->MyPID() ) std::cout << "\n xyz \n";
+
     if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
     
 

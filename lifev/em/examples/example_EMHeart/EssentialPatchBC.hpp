@@ -116,7 +116,7 @@ public:
                     for (int k(0); k < 3; ++k)
                     {
                         //std::cout << numPointsInsidePatch << " ; ";
-                        p1ScalarField[face.point(k).id()] = 1.0;
+                        //p1ScalarField[face.point(k).id()] = 1.0;
                         //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
