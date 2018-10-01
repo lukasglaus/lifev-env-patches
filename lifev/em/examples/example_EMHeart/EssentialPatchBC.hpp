@@ -73,14 +73,20 @@ public:
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
         auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
 
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n a \n";
+
         FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 3, p2FeSpace->mesh()->comm());
         
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n b \n";
+
         // Create P1 VectorEpetra
         VectorEpetra p1ScalarField (p1FESpace.map());
         p1ScalarField *= 0.0;
         
         m_patchFlag = newFlag;
         const auto& mesh = solver.localMeshPtr();
+
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n c \n";
 
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
@@ -118,8 +124,12 @@ public:
             }
         }
         
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n d \n";
+
         m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
         *m_patchLocationPtr *= 0.0;
+
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n e \n";
 
         // Interpolate from P1-space to P2-space
         *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
