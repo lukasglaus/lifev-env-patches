@@ -75,7 +75,7 @@ public:
 
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n a \n";
 
-        FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 3, p2FeSpace->mesh()->comm());
+        FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 1, p2FeSpace->mesh()->comm());
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n b \n";
 
