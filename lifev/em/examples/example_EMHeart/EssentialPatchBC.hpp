@@ -135,6 +135,8 @@ public:
         *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n qc \n";
+
     }
     
     
@@ -207,8 +209,8 @@ protected:
         auto nCompLocalDof = vectorField->epetraVector().MyLength() / 3;
 
         direction.normalize();
+        
         direction *= disp;
-
         for (int j (0); j < nCompLocalDof; ++j)
         {
             UInt iGID = vectorField->blockMap().GID (j);
