@@ -70,7 +70,7 @@ public:
         // Create p1-vector here and transform into p2 later
         
         // New P1 Space
-        auto p2FeSpace = solver.electroSolverPtr()->FESpacePtr();
+        auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
         auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
 
         FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 3, p2FeSpace->mesh()->comm());
