@@ -121,7 +121,7 @@ public:
                         std::cout << p1ScalarField.normInf() << " / ";
                         std::cout << face.point(k).id() << " / ";
                         std::cout << face.point(k).localId() << "\n";
-                        p1ScalarField[face.point(k).id()] = 1.0;
+                        //p1ScalarField[face.point(k).id()] = 1.0;
                         //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
