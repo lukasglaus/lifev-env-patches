@@ -60,9 +60,6 @@ public:
         // Temporal activation parameter
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
         m_tduration = dataFile ( "solid/patches/tduration", 0. );
-        
-        m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
-        *m_patchLocationPtr *= 0.0;
     }
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
@@ -87,7 +84,7 @@ public:
         p1ScalarField *= 0.0;
         
         m_patchFlag = newFlag;
-        const auto& mesh = solver.localMeshPtr();
+        const auto& mesh = solver.fullMeshPtr();
 
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n c \n";
 
