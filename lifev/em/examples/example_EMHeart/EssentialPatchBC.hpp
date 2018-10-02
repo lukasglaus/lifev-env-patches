@@ -99,7 +99,7 @@ public:
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << m_patchLocationPtr << " " << numNodesOnPatch << " nodes found";
 
-        // Setup P1-space
+        // Set up P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
         auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
         FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 1, p2FeSpace->mesh()->comm());
@@ -116,7 +116,7 @@ public:
             UInt iGID = p1ScalarField.blockMap().GID(j);
             
             Vector3D coord = p1FESpace.mesh()->point(iGID).coordinates();
-            //if ( nodeOnPatch(coord) )
+            if ( nodeOnPatch(coord) )
             {
                 p1ScalarField[iGID] = 1.0;
             }
