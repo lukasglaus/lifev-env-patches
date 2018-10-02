@@ -115,6 +115,7 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
+                        std::cout << k << " / ";
                         std::cout << p1ScalarField.size() << " / ";
                         //std::cout << p1ScalarField.minValue() << " / ";
                         //std::cout << p1ScalarField.maxValue() << " / ";
