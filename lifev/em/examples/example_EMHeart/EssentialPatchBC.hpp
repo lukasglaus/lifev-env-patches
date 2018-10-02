@@ -299,13 +299,7 @@ public:
             const std::string patchType = m_dataFile ( ("solid/boundary_conditions/" + patchName + "/type").c_str(), "EssentialPatchBCCircular" );
             m_patchBCPtrVec.push_back(CREATE(EssentialPatchBC, patchType));
             m_patchBCPtrVec[i]->setup(m_dataFile, patchName);
-            if ( solver.comm()->MyPID() == 0 ) std::cout << "\n abc \n";
-
             m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
-            
-            if ( solver.comm()->MyPID() == 0 ) std::cout << "\n xyz \n";
-
-
         }
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
@@ -332,11 +326,11 @@ public:
     {
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << std::endl;
         
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            patch->modifyPatchBC(solver, time);
-//        }
-//
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            patch->modifyPatchBC(solver, time);
+        }
+
 //        updatePatchDisplacementSum(solver);
 //        updatePatchLocationSum(solver);
     }
