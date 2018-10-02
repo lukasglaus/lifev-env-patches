@@ -84,7 +84,7 @@ public:
         p1ScalarField *= 0.0;
         
         m_patchFlag = newFlag;
-        const auto& mesh = solver.fullMeshPtr();
+        const auto& mesh = solver.localMeshPtr();
 
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n c \n";
 
@@ -115,20 +115,35 @@ public:
     
                     for (int k(0); k < 3; ++k)
                     {
-                        std::cout << k << " / ";
-                        std::cout << p1ScalarField.size() << " / ";
+                        //std::cout << k << " / ";
+                        //std::cout << p1ScalarField.size() << " / ";
                         //std::cout << p1ScalarField.minValue() << " / ";
                         //std::cout << p1ScalarField.maxValue() << " / ";
                         //std::cout << p1ScalarField.normInf() << " / ";
-                        std::cout << face.point(k).id() << " / ";
-                        std::cout << face.point(k).localId() << std::endl;
-                        p1ScalarField[face.point(k).id()] = 1.0;
+                        //std::cout << face.point(k).id() << " / ";
+                        //std::cout << face.point(k).localId() << std::endl;
+                        //p1ScalarField[face.point(k).id()] = 1.0;
                         //(*m_patchLocationPtr)[face.point(k).id()] = 1.0;
                     }
                 
                 }
             }
         }
+        
+        
+        // Fill P1 vector with mesh values
+        Int p1ScalarFieldDof = p1ScalarField.epetraVector().MyLength() / 3;
+        for (int j (0); j < p1ScalarFieldDof; j++)
+        {
+            UInt iGID = p1ScalarField.blockMap().GID (j);
+            
+            Vector3D coord = p1FESpace->mesh()->point(iGID).coordinates()
+            if ( nodeOnPatch(coord) )
+            {
+                p1ScalarField[iGID] = 1.0;
+            }
+        }
+        
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\n d \n";
 
