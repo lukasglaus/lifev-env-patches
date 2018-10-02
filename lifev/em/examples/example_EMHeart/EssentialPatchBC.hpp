@@ -97,7 +97,7 @@ public:
             }
         }
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << numNodesOnPatch << " nodes on patch" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << numNodesOnPatch << " nodes on patch";
 
         // Setup P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
@@ -292,7 +292,7 @@ public:
             m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
         }
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBCHandler: " << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBCHandler: " << __FUNCTION__ << " - done" << std::endl;
     }
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
@@ -308,7 +308,7 @@ public:
         updatePatchDisplacementSum(solver);
         updatePatchLocationSum(solver);
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBCHandler: " << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBCHandler: " << __FUNCTION__ << " - done" << std::endl;
     }
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
@@ -321,7 +321,7 @@ public:
         updatePatchDisplacementSum(solver);
         updatePatchLocationSum(solver);
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBCHandler: " << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBCHandler: " << __FUNCTION__ << " - done" << std::endl;
     }
 
     vector_Type& patchDisplacementSum()
