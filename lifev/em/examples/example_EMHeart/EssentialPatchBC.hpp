@@ -108,6 +108,8 @@ public:
         VectorEpetra p1ScalarField (p1FESpace.map());
         p1ScalarField *= 0.0;
         
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np1Vec size: " << p1ScalarField.size();
+        
         Int p1ScalarFieldDof = p1ScalarField.epetraVector().MyLength() / 3;
         for (int j (0); j < p1ScalarFieldDof; j++)
         {
@@ -123,6 +125,9 @@ public:
         // Interpolation from P1-space to P2-space
         m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
         *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
+        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np2Vec size: " << m_patchLocationPtr->size();
+
     }
     
     
