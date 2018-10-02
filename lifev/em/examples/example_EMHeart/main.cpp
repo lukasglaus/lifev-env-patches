@@ -206,8 +206,6 @@ int main (int argc, char** argv)
     EssentialPatchBCHandler patchHandler ("listEssentialPatchBC", dataFile);
     patchHandler.addPatchBC(solver);
     
-    if ( 0 == comm->MyPID() ) std::cout << "\n xyz \n";
-
     if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
     
 
@@ -265,8 +263,8 @@ int main (int argc, char** argv)
     // Apply essential patch b.c.
     //============================================
     patchHandler.applyPatchBC(solver);
-//    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
-//    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
+    heartSolver.setPatchDisplacementSumPtr(patchHandler.patchDisplacementSumPtr());
+    heartSolver.setPatchLocationSumPtr(patchHandler.patchLocationSumPtr());
 
     
     //============================================

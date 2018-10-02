@@ -309,17 +309,17 @@ public:
     {
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  a" << std::endl;
 
-//        m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
-//        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
+        m_patchDisplacementVecSumPtr = vectorPtr_Type (new VectorEpetra( solver.structuralOperatorPtr()->dispFESpacePtr()->map(), Repeated ));
+        m_patchLocationScalarSumPtr = vectorPtr_Type (new VectorEpetra( solver.electroSolverPtr()->potentialPtr()->map(), Repeated ));
         if ( solver.comm()->MyPID() == 0 ) std::cout << __FUNCTION__ << "  b" << std::endl;
 
         for (auto& patch : m_patchBCPtrVec)
         {
             patch->applyBC(solver, m_dataFile);
         }
-//
-//        updatePatchDisplacementSum(solver);
-//        updatePatchLocationSum(solver);
+
+        updatePatchDisplacementSum(solver);
+        updatePatchLocationSum(solver);
     }
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
@@ -331,29 +331,29 @@ public:
             patch->modifyPatchBC(solver, time);
         }
 
-//        updatePatchDisplacementSum(solver);
-//        updatePatchLocationSum(solver);
+        updatePatchDisplacementSum(solver);
+        updatePatchLocationSum(solver);
     }
 
-//    vector_Type& patchDisplacementSum()
-//    {
-//        return *m_patchDisplacementVecSumPtr;
-//    }
-//
-//    vectorPtr_Type patchDisplacementSumPtr()
-//    {
-//        return m_patchDisplacementVecSumPtr;
-//    }
-//
-//    vector_Type& patchLocationSum()
-//    {
-//        return *m_patchLocationScalarSumPtr;
-//    }
-//
-//    vectorPtr_Type patchLocationSumPtr()
-//    {
-//        return m_patchLocationScalarSumPtr;
-//    }
+    vector_Type& patchDisplacementSum()
+    {
+        return *m_patchDisplacementVecSumPtr;
+    }
+
+    vectorPtr_Type patchDisplacementSumPtr()
+    {
+        return m_patchDisplacementVecSumPtr;
+    }
+
+    vector_Type& patchLocationSum()
+    {
+        return *m_patchLocationScalarSumPtr;
+    }
+
+    vectorPtr_Type patchLocationSumPtr()
+    {
+        return m_patchLocationScalarSumPtr;
+    }
 
 
 private:

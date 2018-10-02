@@ -234,17 +234,17 @@ public:
                                      M_emSolver.tensionEstimator().sigmaZPtr(),
                                      UInt (0) );
         
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
-//                                     "Patch displacement",
-//                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
-//                                     this->patchDispSumPtr(),
-//                                     UInt (0) );
-//
-//        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
-//                                     "Patch location",
-//                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
-//                                     this->patchLocSumPtr(),
-//                                     UInt (0) );
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
+                                     "Patch displacement",
+                                     M_emSolver.structuralOperatorPtr()->dispFESpacePtr(),
+                                     this->patchDispSumPtr(),
+                                     UInt (0) );
+
+        m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::ScalarField,
+                                     "Patch location",
+                                     M_emSolver.electroSolverPtr()->feSpacePtr(),
+                                     this->patchLocSumPtr(),
+                                     UInt (0) );
         
         m_exporter->addVariable (    ExporterData<RegionMesh<LinearTetra> >::VectorField,
                                      "Fibers",
@@ -366,25 +366,25 @@ public:
         return traction.dot(velocity);
     }
     
-//    void setPatchDisplacementSumPtr(vectorPtr_Type patchDisplacementSumPtr)
-//    {
-//        m_patchDisplacementSumPtr = patchDisplacementSumPtr;
-//    }
-//    
-//    vectorPtr_Type patchDispSumPtr()
-//    {
-//        return m_patchDisplacementSumPtr;
-//    }
-//
-//    void setPatchLocationSumPtr(vectorPtr_Type patchLocationSumPtr)
-//    {
-//        m_patchLocationSumPtr = patchLocationSumPtr;
-//    }
-//
-//    vectorPtr_Type patchLocSumPtr()
-//    {
-//        return m_patchLocationSumPtr;
-//    }
+    void setPatchDisplacementSumPtr(vectorPtr_Type patchDisplacementSumPtr)
+    {
+        m_patchDisplacementSumPtr = patchDisplacementSumPtr;
+    }
+
+    vectorPtr_Type patchDispSumPtr()
+    {
+        return m_patchDisplacementSumPtr;
+    }
+
+    void setPatchLocationSumPtr(vectorPtr_Type patchLocationSumPtr)
+    {
+        m_patchLocationSumPtr = patchLocationSumPtr;
+    }
+
+    vectorPtr_Type patchLocSumPtr()
+    {
+        return m_patchLocationSumPtr;
+    }
     
     
 protected:
@@ -406,7 +406,6 @@ protected:
     
     
     
-    
     std::string pipeToString ( const char* command )
     {
         FILE* file = popen( command, "r" ) ;
@@ -418,8 +417,6 @@ protected:
         return stm.str() ;
     };
     
-
-
     Real patchDispFunNormal (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
     {
         return (-0.000 - 0.00005*t);// sinSquared(t, 0.1, 50, 100)); // -0.001;// (t * 1e-5);
@@ -437,67 +434,6 @@ protected:
         return 1.4 * time; // ( Y < 2.5 && Y > 0.5 ? 1.0 : 0.0 );
     }
     
-    Real patchDispFun1 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-    {
-        switch (i)
-        {
-            case 0:
-                return (t);
-                break;
-            case 1:
-                return 0;
-                break;
-            case 2:
-                return (t);
-                break;
-            default:
-                ERROR_MSG ("This entry is not allowed");
-                return 0.;
-                break;
-        }
-    }
-    
-    Real patchDispFun2 (const Real& t, const Real&  X, const Real& Y, const Real& Z, const ID& i)
-    {
-        switch (i)
-        {
-            case 0:
-                return (-t);
-                break;
-            case 1:
-                return 0;
-                break;
-            case 2:
-                return (-t);
-                break;
-            default:
-                ERROR_MSG ("This entry is not allowed");
-                return 0.;
-                break;
-        }
-    }
-    
-    Real normalDirection ( const Real& /*t*/, const Real& x , const Real& y, const Real& z, const ID& i)
-    {
-        Real nnorm = std::sqrt(x * x + y * y + z * z);
-        switch (i)
-        {
-            case 0:
-                return 1/std::sqrt(2);
-                break;
-            case 1:
-                return 0;
-                break;
-            case 2:
-                return 1/std::sqrt(2);
-                break;
-            default:
-                ERROR_MSG ("This entry is not allowed");
-                return 0.;
-                break;
-        }
-    }
-
     
 };
 
