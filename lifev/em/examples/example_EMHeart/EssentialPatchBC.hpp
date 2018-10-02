@@ -85,7 +85,7 @@ public:
 
                     if (pointInPatch)
                     {
-                        ++numPointsInsidePatch;
+                        ++numPointsOnFace;
                     }
                 }
                 
