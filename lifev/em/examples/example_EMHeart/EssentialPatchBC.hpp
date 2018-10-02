@@ -137,7 +137,7 @@ public:
         {
             UInt iGID = p1ScalarField.blockMap().GID (j);
             
-            Vector3D coord = p1FESpace->mesh()->point(iGID).coordinates()
+            Vector3D coord = p1FESpace.mesh()->point(iGID).coordinates()
             if ( nodeOnPatch(coord) )
             {
                 p1ScalarField[iGID] = 1.0;
