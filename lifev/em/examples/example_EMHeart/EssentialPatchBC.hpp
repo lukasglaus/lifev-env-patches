@@ -114,7 +114,7 @@ public:
             UInt iGID = p1ScalarField.blockMap().GID(j);
             
             Vector3D coord = p1FESpace.mesh()->point(iGID).coordinates();
-            if ( nodeOnPatch(coord) )
+            //if ( nodeOnPatch(coord) )
             {
                 p1ScalarField[iGID] = 1.0;
             }
@@ -143,7 +143,7 @@ public:
         auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-3;
-        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " is displaced by " << currentPatchDisp << " cm";
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nEssentialPatchBC: " << m_Name << " displaced by " << currentPatchDisp << " cm";
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
 
