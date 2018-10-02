@@ -63,9 +63,7 @@ public:
     }
     
     void createPatchArea (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const int& newFlag)
-    {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
-        
+    {        
         m_patchFlag = newFlag;
         const auto& mesh = solver.localMeshPtr();
 
@@ -293,7 +291,7 @@ public:
             m_patchBCPtrVec[i]->createPatchArea(solver, 900 + i);
         }
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n" << __FUNCTION__ << " done" << std::endl;
     }
 
     void applyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
@@ -309,7 +307,7 @@ public:
         updatePatchDisplacementSum(solver);
         updatePatchLocationSum(solver);
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n" << __FUNCTION__ << " done" << std::endl;
     }
 
     void modifyPatchBC(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver, const Real& time)
@@ -322,7 +320,7 @@ public:
         updatePatchDisplacementSum(solver);
         updatePatchLocationSum(solver);
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << " done" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n" << __FUNCTION__ << " done" << std::endl;
     }
 
     vector_Type& patchDisplacementSum()
@@ -350,7 +348,7 @@ private:
     
     void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n" << __FUNCTION__ << std::endl;
 
         *m_patchDisplacementVecSumPtr *= 0.0;
 
@@ -362,7 +360,7 @@ private:
     
     void updatePatchLocationSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n" << __FUNCTION__ << std::endl;
 
         *m_patchLocationScalarSumPtr *= 0.0;
 
