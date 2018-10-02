@@ -235,8 +235,7 @@ int main (int argc, char** argv)
         solver.setupSheetVector (0., 1., 0.);
     }
     
-    if ( 0 == comm->MyPID() ) PRINT_FACTORY(EssentialPatchBC);
-
+    
     //============================================
     // Initialize electrophysiology
     //============================================
