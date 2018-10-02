@@ -68,6 +68,7 @@ public:
         const auto& mesh = solver.localMeshPtr();
 
         // Create patches by changing the markerID (flag) locally
+        unsigned int numNodesOnPatch(0);
         for (int j(0); j < mesh->numBoundaryFacets(); j++)
         {
             auto& face = mesh->boundaryFacet(j);
@@ -75,7 +76,7 @@ public:
 
             if (faceFlag == m_PrevFlag)
             {
-                int numPointsInsidePatch (0);
+                int numPointsOnFace(0);
                 
                 for (int k(0); k < 3; ++k)
                 {
@@ -88,13 +89,16 @@ public:
                     }
                 }
                 
-                if (numPointsInsidePatch > 2)
+                if (numPointsOnFace > 2)
                 {
                     face.setMarkerID(m_patchFlag);
+                    numNodesOnPatch++;
                 }
             }
         }
         
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << numNodes << " nodes on patch" << std::endl;
+
         // Setup P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
         auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
@@ -121,7 +125,6 @@ public:
         *m_patchLocationPtr *= 0.0;
 
         *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
-        
     }
     
     
@@ -142,7 +145,7 @@ public:
         auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
         
         Real currentPatchDisp = activationFunction(time) + 1e-3;
-        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " displacement: " << currentPatchDisp << " cm";
+        if ( 0 == solver.comm()->MyPID() ) std::cout << "\nPatch " << m_Name << " is displaced by " << currentPatchDisp << " cm";
 
         m_patchDispPtr = directionalVectorField(dFeSpace, m_patchDirection, currentPatchDisp, time);
 
