@@ -158,35 +158,35 @@ public:
     }
     
     
-//    vector_Type patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
-//    {
-//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
-//
-//        auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
-//        vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
-//        localPatchDisplacement *= 0.0;
-//
-//        auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
-//
-//        for (int j (0); j < nCompLocalDof; ++j)
-//        {
-//            UInt iGID = m_patchDispPtr->blockMap().GID (j);
-//            UInt jGID = m_patchDispPtr->blockMap().GID (j + nCompLocalDof);
-//            UInt kGID = m_patchDispPtr->blockMap().GID (j + 2 * nCompLocalDof);
-//
-//            localPatchDisplacement[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
-//            localPatchDisplacement[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
-//            localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
-//        }
-//
-//        return localPatchDisplacement;
-//    }
-//
-//
-//    vector_Type patchLocation()
-//    {
-//        return *m_patchLocationPtr;
-//    }
+    vector_Type patchDisplacement(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
+    {
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+
+        auto dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
+        vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
+        localPatchDisplacement *= 0.0;
+
+        auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
+
+        for (int j (0); j < nCompLocalDof; ++j)
+        {
+            UInt iGID = m_patchDispPtr->blockMap().GID (j);
+            UInt jGID = m_patchDispPtr->blockMap().GID (j + nCompLocalDof);
+            UInt kGID = m_patchDispPtr->blockMap().GID (j + 2 * nCompLocalDof);
+
+            localPatchDisplacement[iGID] = (*m_patchDispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[jGID] = (*m_patchDispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[kGID] = (*m_patchDispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
+        }
+
+        return localPatchDisplacement;
+    }
+
+
+    vector_Type patchLocation()
+    {
+        return *m_patchLocationPtr;
+    }
 
     
 protected:
@@ -360,26 +360,26 @@ private:
     
     void updatePatchDisplacementSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
-//
-//        *m_patchDisplacementVecSumPtr *= 0.0;
-//
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            *m_patchDisplacementVecSumPtr += patch->patchDisplacement(solver);
-//        }
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+
+        *m_patchDisplacementVecSumPtr *= 0.0;
+
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            *m_patchDisplacementVecSumPtr += patch->patchDisplacement(solver);
+        }
     }
     
     void updatePatchLocationSum(EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver)
     {
-//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
-//
-//        *m_patchLocationScalarSumPtr *= 0.0;
-//
-//        for (auto& patch : m_patchBCPtrVec)
-//        {
-//            *m_patchLocationScalarSumPtr += patch->patchLocation();
-//        }
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\n\n" << __FUNCTION__ << std::endl;
+
+        *m_patchLocationScalarSumPtr *= 0.0;
+
+        for (auto& patch : m_patchBCPtrVec)
+        {
+            *m_patchLocationScalarSumPtr += patch->patchLocation();
+        }
     }
     
     const std::string m_patchListName;
