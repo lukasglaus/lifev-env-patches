@@ -110,7 +110,7 @@ public:
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\np1Vec size: " << p1ScalarField.size();
         
-        Int p1ScalarFieldDof = p1ScalarField.epetraVector().MyLength() / 3;
+        Int p1ScalarFieldDof = p1ScalarField.epetraVector().MyLength();
         for (int j (0); j < p1ScalarFieldDof; j++)
         {
             UInt iGID = p1ScalarField.blockMap().GID(j);
