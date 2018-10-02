@@ -119,7 +119,7 @@ public:
                         std::cout << p1ScalarField.size() << " / ";
                         //std::cout << p1ScalarField.minValue() << " / ";
                         //std::cout << p1ScalarField.maxValue() << " / ";
-                        std::cout << p1ScalarField.normInf() << " / ";
+                        //std::cout << p1ScalarField.normInf() << " / ";
                         std::cout << face.point(k).id() << " / ";
                         std::cout << face.point(k).localId() << std::endl;
                         //p1ScalarField[face.point(k).id()] = 1.0;
