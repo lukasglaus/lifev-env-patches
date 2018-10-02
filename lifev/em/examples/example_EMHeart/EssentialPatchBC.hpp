@@ -97,7 +97,7 @@ public:
             }
         }
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << numNodes << " nodes on patch" << std::endl;
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << numNodesOnPatch << " nodes on patch" << std::endl;
 
         // Setup P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
@@ -122,8 +122,6 @@ public:
         
         // Interpolation from P1-space to P2-space
         m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
-        *m_patchLocationPtr *= 0.0;
-
         *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
     }
     
