@@ -97,7 +97,7 @@ public:
             }
         }
         
-        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << m_patchLocationPtr << " " << numNodesOnPatch << " nodes found";
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << m_Name << ": " << numNodesOnPatch << " nodes found";
 
         // Set up P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
