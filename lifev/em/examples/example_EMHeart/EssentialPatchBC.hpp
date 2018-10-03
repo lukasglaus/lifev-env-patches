@@ -171,9 +171,9 @@ public:
             UInt jGID = m_patchDispPtr->blockMap().GID (j + nCompLocalDof);
             UInt kGID = m_patchDispPtr->blockMap().GID (j + 2 * nCompLocalDof);
 
-            localPatchDisplacement[iGID] = (*m_dispPtr)[iGID] * (*m_patchLocationPtr)[iGID];
-            localPatchDisplacement[jGID] = (*m_dispPtr)[jGID] * (*m_patchLocationPtr)[iGID];
-            localPatchDisplacement[kGID] = (*m_dispPtr)[kGID] * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[iGID] = (*m_dispPtr)[iGID]// * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[jGID] = (*m_dispPtr)[jGID]// * (*m_patchLocationPtr)[iGID];
+            localPatchDisplacement[kGID] = (*m_dispPtr)[kGID]// * (*m_patchLocationPtr)[iGID];
         }
 
         return localPatchDisplacement;
