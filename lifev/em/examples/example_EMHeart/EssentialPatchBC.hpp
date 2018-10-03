@@ -98,7 +98,7 @@ public:
         }
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << m_Name << ": " << numNodesOnPatch << " nodes found";
-
+        
         // Set up P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
         auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
@@ -116,10 +116,10 @@ public:
             UInt iGID = p1ScalarField.blockMap().GID(j);
             
             Vector3D coord = p1FESpace.mesh()->point(iGID).coordinates();
-            if ( nodeOnPatch(coord) )
-            {
-                p1ScalarField[iGID] = 1.0;
-            }
+            //if ( nodeOnPatch(coord) )
+            //{
+                p1ScalarField[iGID] = 55.0;
+            //}
         }
         
         // Interpolation from P1-space to P2-space
