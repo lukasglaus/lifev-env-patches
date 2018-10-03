@@ -116,10 +116,10 @@ public:
             UInt iGID = p1ScalarField.blockMap().GID(j);
             
             Vector3D coord = p2FeSpace->mesh()->point(iGID).coordinates();
-            //if ( nodeOnPatch(coord) )
-            //{
+            if ( nodeOnPatch(coord) )
+            {
                 p1ScalarField[iGID] = 55.0;
-            //}
+            }
         }
         
         // Interpolation from P1-space to P2-space
@@ -163,7 +163,7 @@ public:
         vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
         localPatchDisplacement *= 0.0;
 
-        auto nCompLocalDof = m_patchDispPtr->epetraVector().MyLength() / 3;
+        auto nCompLocalDof = localPatchDisplacement->epetraVector().MyLength() / 3;
 
         for (int j (0); j < nCompLocalDof; ++j)
         {
