@@ -163,7 +163,7 @@ public:
         vector_Type localPatchDisplacement ( dFeSpace->map(), Repeated );
         localPatchDisplacement *= 0.0;
 
-        auto nCompLocalDof = localPatchDisplacement->epetraVector().MyLength() / 3;
+        auto nCompLocalDof = localPatchDisplacement.epetraVector().MyLength() / 3;
 
         for (int j (0); j < nCompLocalDof; ++j)
         {
