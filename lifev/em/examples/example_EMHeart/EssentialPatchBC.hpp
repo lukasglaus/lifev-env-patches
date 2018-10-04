@@ -99,34 +99,34 @@ public:
         
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << m_Name << ": " << numNodesOnPatch << " nodes found";
         
-//        // Set up P1-space
+        // Set up P1-space
         auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
-//        auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
-//        FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 1, p2FeSpace->mesh()->comm());
-//
-//        // Create P1 VectorEpetra and set it equal to 1.0 in patch regions
-//        VectorEpetra p1ScalarField (p1FESpace.map());
-//        p1ScalarField *= 0.0;
-//
-//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np1Vec size: " << p1ScalarField.size();
-//
-//        Int p1ScalarFieldDof = p1ScalarField.epetraVector().MyLength();
-//        for (int j (0); j < p1ScalarFieldDof; j++)
-//        {
-//            UInt iGID = p1ScalarField.blockMap().GID(j);
-//
-//            Vector3D coord = p2FeSpace->mesh()->point(iGID).coordinates();
-//            if ( nodeOnPatch(coord) )
-//            {
-//                p1ScalarField[iGID] = 55.0;
-//            }
-//        }
-//
-//        // Interpolation from P1-space to P2-space
+        auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
+        FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 1, p2FeSpace->mesh()->comm());
+        
+        // Create P1 VectorEpetra and set it equal to 1.0 in patch regions
+        VectorEpetra p1ScalarField (p1FESpace.map());
+        p1ScalarField *= 0.0;
+        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np1Vec size: " << p1ScalarField.size();
+        
+        Int p1ScalarFieldDof = p1ScalarField.epetraVector().MyLength();
+        for (int j (0); j < p1ScalarFieldDof; j++)
+        {
+            UInt iGID = p1ScalarField.blockMap().GID(j);
+            
+            Vector3D coord = p2FeSpace->mesh()->point(iGID).coordinates();
+            if ( nodeOnPatch(coord) )
+            {
+                p1ScalarField[iGID] = 55.0;
+            }
+        }
+        
+        // Interpolation from P1-space to P2-space
         m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
-//        *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
-//
-//        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np2Vec size: " << m_patchLocationPtr->size() << " " << p1ScalarFieldDof;
+        *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
+        
+        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np2Vec size: " << m_patchLocationPtr->size() << " " << p1ScalarFieldDof;
 
     }
     
