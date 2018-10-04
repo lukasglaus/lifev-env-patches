@@ -100,7 +100,7 @@ public:
         if ( solver.comm()->MyPID() == 0 ) std::cout << "\nEssentialPatchBC: " << __FUNCTION__ << ": " << m_Name << ": " << numNodesOnPatch << " nodes found";
         
 //        // Set up P1-space
-//        auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
+        auto p2FeSpace = solver.electroSolverPtr()->feSpacePtr();
 //        auto p2dFeSpace = solver.structuralOperatorPtr()->dispFESpacePtr();
 //        FESpace<RegionMesh<LinearTetra>, MapEpetra > p1FESpace (p2FeSpace->mesh(), "P1", 1, p2FeSpace->mesh()->comm());
 //
@@ -123,7 +123,7 @@ public:
 //        }
 //
 //        // Interpolation from P1-space to P2-space
-//        m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
+        m_patchLocationPtr.reset (new vector_Type (p2FeSpace->map() ));
 //        *m_patchLocationPtr = p2FeSpace->feToFEInterpolate(p1FESpace, p1ScalarField);
 //
 //        if ( solver.comm()->MyPID() == 0 ) std::cout << "\np2Vec size: " << m_patchLocationPtr->size() << " " << p1ScalarFieldDof;
