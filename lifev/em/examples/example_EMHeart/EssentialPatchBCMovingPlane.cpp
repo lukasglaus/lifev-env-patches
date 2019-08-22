@@ -352,7 +352,8 @@ vectorPtr_Type EssentialPatchBCMovingPlane::directionalVectorField(EMSolver<Regi
 	                    displacement_vector[1] = distance*direction[1];
 	                    displacement_vector[2] = distance*direction[2];
 
-				//std::cout << "This is displacmeent VEctor: " <<  displacement_vector(0) << "          " << displacement_vector(1) << "         " << displacement_vector(2) << std::endl;				
+				
+//std::cout << "This is displacmeent VEctor: " <<  displacement_vector(0) << "          " << displacement_vector(1) << "         " << displacement_vector(2) << std::endl;				
 
 	                    (*p2PatchDisplacement)[iGID] = displacement_vector[0];
 	                    (*p2PatchDisplacement)[jGID] = displacement_vector[1];
