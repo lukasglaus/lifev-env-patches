@@ -30,9 +30,14 @@ public:
 
         m_Radius= dataFile ( ("solid/boundary_conditions/" + m_Name + "/radius").c_str(), 1.0 );
         
+        //here we read in the information from the datafile and for example the radius, which can be set in the data file
+        //one thing that remains how does Thomas know to select number of flag and for example coordinates of center?
+
+
+
         for ( UInt j (0); j < 3; ++j )
         {
-            m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0, j );
+            m_Center[j] = dataFile ( ("solid/boundary_conditions/" + m_Name + "/center").c_str(), 0.0, j );
         }
         
         m_tmax = dataFile ( "solid/patches/tmax", 0. );
@@ -41,10 +46,10 @@ public:
     
 protected:
     
-    virtual const bool nodeOnPatch(const Vector3D& coord) const
+    virtual const bool nodeOnPatch(const Vector3D& coord, const Real& time) //this can note be the whole story because here no area is created
     {
-        bool pointInCircle = (coord - m_Center).norm() < m_Radius;
-        std::cout << coord(0) << "\t" << coord(1) << "\t" << coord(2) << ( (coord - m_Center).norm() ) << m_Radius << std::endl;
+        bool pointInCircle = (coord - m_Center).norm() < m_Radius; //here we check if node actually lies withing the circle
+        //std::cout << coord(0) << "\t" << coord(1) << "\t" << coord(2) << ( (coord - m_Center).norm() ) << m_Radius << std::endl;
         return pointInCircle;
     }
     

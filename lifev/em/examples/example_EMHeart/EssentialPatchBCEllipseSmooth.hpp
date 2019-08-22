@@ -43,10 +43,10 @@ public:
     
 protected:
     
-    virtual vectorPtr_Type directionalVectorField (const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time) const
+    virtual vectorPtr_Type directionalVectorField (EMSolver<RegionMesh<LinearTetra>, EMMonodomainSolver<RegionMesh<LinearTetra> > >& solver,const boost::shared_ptr<FESpace<RegionMesh<LinearTetra>, MapEpetra >> dFeSpace, Vector3D& direction, const Real& disp, const Real& time)
     {
         // auto p2PositionVector = p2PositionVectorDisplaced(dFeSpace);
-        auto p2PositionVector = p2PositionVectorInitial(dFeSpace);
+        auto p2PositionVector = p2PositionVectorInitial(dFeSpace, solver);
 
         vectorPtr_Type p2PatchDisplacement (new VectorEpetra( dFeSpace->map(), Repeated ));
         auto nCompLocalDof = p2PatchDisplacement->epetraVector().MyLength() / 3;
@@ -79,7 +79,7 @@ protected:
     }
     
     
-    virtual const bool nodeOnPatch(const Vector3D& coord) const
+    virtual const bool nodeOnPatch(const Vector3D& coord, const Real& time)
     {
         auto ellipsoidCoord = transformToLocalEllipsoidCoordinates(coord);
         return nodeInsideEllipsoid(ellipsoidCoord);

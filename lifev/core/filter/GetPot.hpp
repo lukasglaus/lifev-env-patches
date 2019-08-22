@@ -563,7 +563,7 @@ GetPot::GetPot (const char* FileName,
     //    variable assignments or nominuses.
     _apriori_argv.push_back (std::string (FileName) );
 
-    STRING_VECTOR args = __read_in_file (FileName);
+    STRING_VECTOR args = __read_in_file (FileName); //I think here we read in information from the data file
     _apriori_argv.insert (_apriori_argv.begin() + 1, args.begin(), args.end() );
     __parse_argument_vector (_apriori_argv);
 }

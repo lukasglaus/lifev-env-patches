@@ -39,7 +39,7 @@ public:
     
 protected:
     
-    virtual const bool nodeOnPatch(const Vector3D& coord) const
+    virtual const bool nodeOnPatch(const Vector3D& coord, const Real& time)
     {
         Vector3D coordZyl;
         coordZyl(0) = std::sqrt(std::pow(coord(0), 2) + std::pow(coord(2), 2)); // radius

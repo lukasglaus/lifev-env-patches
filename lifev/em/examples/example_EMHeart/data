@@ -204,57 +204,52 @@ monodomain_xml_file = ParamListE.xml
             index   = 1
 
         [../]
+	
 
-    listEssentialPatchBC = 'EssentialPatchCircular1 EssentialPatchCircular2'
+	listEssentialPatchBC = 'EssentialPatchRealPatch1'
+   # listEssentialPatchBC = 'EssentialPatchMovingPlane1 EssentialPatchMovingPlane2'
     #listEssentialPatchBC = 'EssentialPatchEllipsoid1 EssentialPatchEllipsoid2'
 
-        [./EssentialPatchCircular1]
-        flag                = 464
-        type                = EssentialPatchBCCircular
-        center              = '-1.8 -7.0 -4.5'
-        radius              = 2.0
-        component           = '0 2'
-        direction           = '1.0 0.0 1.0'
-        edgeDispFactor      = 0.5
-        displacement        = 1.2
+    [./EssentialPatchMovingPlane1]
+        flag                    = 464
+        startingpoint           = '-1.8 -7.0 -4.5'
+        direction               = '1.0 0.0 1.0'
+        component               = '0 2'
+        type                    = EssentialPatchBCMovingPlane
+        displacement            = 1.2
+
+        [../EssentialPatchMovingPlane2]
+        flag                    = 464
+        startingpoint           = '3.5 -7.0 1.0'
+        direction               = '-1.0 0.0 1.0'
+        component               = '0 2'
+        type                    = EssentialPatchBCMovingPlane
+        displacement            = 1.2
+
+	[../EssentialPatchRealPatch1]
+        flag                    = 464
+        phi			= 0
+	theta			= 0
+	a			= 3.5
+	b			= 8
+	c			= 5
+	height			= 3.5
+	width			= 4.5
+	shift			= 0
+	vertexEllipse		= '4.11401 -7.85605 -1.66889'
+        direction               = '0.0 0.0 0.0'
+        component               = '0 2'
+        type                    = EssentialPatchBCPatchReal
+        displacement            = 1.0
 
 
-        [../EssentialPatchCircular2]
-        flag                = 464
-        type                = EssentialPatchBCCircular
-        center              = '3.5 -7.0 1.0'
-        radius              = 2.0
-        component           = '0 2'
-        direction           = '-1.0 0.0 -1.0'
-        edgeDispFactor      = 0.5
-        displacement        = 1.2
-
-        [../EssentialPatchEllipsoid1]
-        flag                = 464
-        type                = EssentialPatchBCEllipseSmooth
-        center              = '-1.8 -9.5 -4.5'
-        component           = '0 2'
-        direction           = '1.0 0.0 1.0'
-        edgeDispFactor      = 0.5
-        princSemiAxesLength = '2.0 1.0 3.0'
-        displacement        = 1.2
-
-
-        [../EssentialPatchEllipsoid2]
-        flag                = 464
-        type                = EssentialPatchBCEllipseSmooth
-        center              = '3.5 -9.5 1.0'
-        component           = '0 2'
-        direction           = '-1.0 0.0 -1.0'
-        edgeDispFactor      = 0.5
-        princSemiAxesLength = '2.0 1.0 3.0'
-        displacement        = 1.2
+	
 
         [../]
 
 
     [../patches]
-    testAtPreload       = true
+    testAtPreload       = false  #true
     tmax                = 176 #175 #250 #150 #200 #250
     tduration           = 350 #300
 
@@ -283,7 +278,7 @@ monodomain_xml_file = ParamListE.xml
     mesh_scaling        = '1.2 1.2 1.2'
     #mesh_translation    = '-66 -72 -94.5'
     #mesh_rotation       = '0.9 0.0 -0.5'
-    order               = P2
+    order               = P1  #P2
     quad_rule           = 4pt
     anisotropic         = true
     fiber_name          = FiberDirection

@@ -303,6 +303,32 @@ Structure::run()
     //Mainly used for BCs assembling (Neumann type)
     solidFESpacePtr_Type dFESpace ( new solidFESpace_Type (meshPart, dOrder, 3, parameters->comm) );
     solidETFESpacePtr_Type dETFESpace ( new solidETFESpace_Type (meshPart, & (dFESpace->refFE() ), & (dFESpace->fe().geoMap() ), parameters->comm) );
+	
+
+	///////////////////////////////////////////////////////////////////////7
+	//HERE I MAKE A CHANGE
+
+
+	solidFESpace_Type p1FESpace (meshPart, dOrder, 1, parameters->comm);
+	
+
+	VectorEpetra p1Scalarfield (p1FESpace.map());
+	p1Scalarfield *=0.0;
+
+
+	int p1DOF = p1Scalarfield.epetraVector().MyLength()/3;
+
+	for(int j(0); j < p1DOF; j++)
+{
+	int GID = p1Scalarfield.blockMap().GID(j);
+	Vector3D coord meshPart.point(GID).coordinates();
+
+	std::cout << "THESE ARE THE NEWEST COORDINATES: " << coord[0] << "\t" << coord[1] << "\t" << coord[2] << std::endl;
+
+}
+
+/////////
+///////////////////////////////////////////////HERE THE CHANGE ENDS
 
     if (verbose)
     {

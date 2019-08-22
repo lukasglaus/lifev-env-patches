@@ -80,7 +80,7 @@ public:
 protected:
     
        
-    virtual const bool nodeOnPatch(const Vector3D& coord) const
+    virtual const bool nodeOnPatch(const Vector3D& coord, const Real& time)
     {
 	bool pointInShell;
 	Vector3D Node;

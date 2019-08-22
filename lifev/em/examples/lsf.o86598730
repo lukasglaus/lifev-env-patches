@@ -1,0 +1,44 @@
+Sender: LSF System <lsfadmin@eu-c7-079-05>
+Subject: Job 86598730: <mpirun EMHeart.exe> in cluster <euler> Exited
+
+Job <mpirun EMHeart.exe> was submitted from host <eu-login-17-ng> by user <pamstad> in cluster <euler> at Tue Mar  5 08:52:56 2019
+Job was executed on host(s) <4*eu-c7-079-05>, in queue <normal.4h>, as user <pamstad> in cluster <euler> at Tue Mar  5 08:53:16 2019
+</cluster/home/pamstad> was used as the home directory.
+</cluster/home/pamstad/LIFE5/lifev-env/lifev-em/lifev/em/examples> was used as the working directory.
+Started at Tue Mar  5 08:53:16 2019
+Terminated at Tue Mar  5 08:53:17 2019
+Results reported at Tue Mar  5 08:53:17 2019
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+mpirun EMHeart.exe
+------------------------------------------------------------
+
+Exited with exit code 133.
+
+Resource usage summary:
+
+    CPU time :                                   0.14 sec.
+    Max Memory :                                 4 MB
+    Average Memory :                             -
+    Total Requested Memory :                     4096.00 MB
+    Delta Memory :                               4092.00 MB
+    Max Swap :                                   -
+    Max Processes :                              -
+    Max Threads :                                -
+    Run time :                                   17 sec.
+    Turnaround time :                            21 sec.
+
+The output (if any) follows:
+
+--------------------------------------------------------------------------
+mpirun was unable to launch the specified application as it could not find an executable:
+
+Executable: EMHeart.exe
+Node: eu-c7-079-05
+
+while attempting to start process rank 0.
+--------------------------------------------------------------------------
+4 total processes failed to start

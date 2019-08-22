@@ -203,18 +203,33 @@ Int NonLinearRichardson ( VectorEpetra& sol,
                      << std::setw (15) << stepNormInf;
         }
         linres = linearRelTol;
+	
 
-        lambda = 1.;
+	////////////////////////////////////////////////HERE I HAVE CHANGED
+	// lambda = 1.;
+	// /////////////////////////////////////////////
+	//lambda = 0.1;
+	//lambda = 1.0;	
+	lambda = 0.4;
+
         slope  = normRes * normRes * ( linres * linres - 1 );
 
         Int status (EXIT_SUCCESS);
         switch ( NonLinearLineSearch )
         {
             case 0: // no NonLinearLineSearch
-                if ( iter > 20 ) lambda = 0.6;
-                //if ( normRes > 100 ) lambda = 0.4;
-                //if ( normRes > 500 ) lambda = 0.3;
-                //if ( normRes > 1500 ) lambda = 0.2;
+                //if ( iter > 20 ) lambda = 0.6;
+                //if (iter > 7 ) lambda = 1.0;
+                //if(iter > 30) lambda = 1.0;
+                if(normRes < 2000 && iter > 3) lambda = 1.0;
+		else if(iter > 10 && iter < 25 ) lambda = 0.5;
+		else if(iter > 25) lambda = 1.0;
+		//else if(normRes < 20000 && iter > 20) lambda = 0.6;
+
+                //if(iter > 25) lambda = 1.0;
+                //if(normRes < 4000 && iter > 20) lambda = 1.0; //Hier aendern zu lambda = 0.6
+                //if(normRes < 2000 && iter > 10) lambda = 1.0;
+                //if(normRes < 4000 || iter > 40 ) lambda = 1.0;
                 sol += lambda * step;
                 functional.evalResidual ( residual, sol, iter);
                 //                normRes = residual.NormInf();
